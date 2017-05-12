@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.0.1a
+// @version         0.0.2a
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -536,7 +536,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://iridiumcore.github.io/Particle/stylesheets/Iridium.css?v=0.0.1";
+                    holder.href = "https://iridiumcore.github.io/Particle/css/Iridium.css?v=0.0.2a";
                     document.documentElement.appendChild(holder);
                 }
 

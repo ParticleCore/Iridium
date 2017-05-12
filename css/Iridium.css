@@ -1,0 +1,161 @@
+/* start| Iridium settings */
+#iridium_settings {
+    background-color: #F1F1F1;
+    color: #666;
+    display: block !important;
+    font-family: "Segoe UI", sans-serif;
+    font-size: 13px;
+    margin: 0 auto;
+    max-width: 1024px;
+    padding: 5px;
+    position: relative;
+}
+#iridium_settings_container:after {
+    /*content: "";
+    display: block;
+    margin-bottom: 100%;*/
+}
+.settings_sidebar {
+    /*background-color: #25272A !important;*/
+    /*bottom: 10px;*/
+    /*color: rgba(156, 174, 192, 0.3) !important;*/
+    left: 10px;
+    padding: 10px 0;
+    position: absolute;
+    top: 10px;
+    width: 200px;
+    z-index: 1;
+}
+.settings_container {
+    box-sizing: border-box;
+    padding: 5px 5px 5px 215px;
+}
+.settings_section {
+    padding: 0 15px 15px 15px;
+}
+.settings_section:not(.active_section) {
+    /*display: none;*/
+}
+.settings_sidebar,
+.settings_section {
+    background-color: #FFF;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .1);
+    box-sizing: border-box;
+}
+.sidebar_section {
+    color: #666;
+    cursor: pointer;
+    display: block;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: capitalize;
+    line-height: 25px;
+    overflow: hidden;
+    padding: 0 20px;
+    text-decoration: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.sidebar_section:hover:not(.active_sidebar) {
+    background-color: #F4F4F4;
+    color: #CC181E;
+}
+.active_sidebar {
+    background-color: #CC181E;
+    color: #FFF;
+}
+.settings_section h3 {
+    color: #555;
+    font-size: 14px;
+    margin: 30px 0 16px;
+}
+.settings_section h2 {
+    color: #333;
+    font-size: 18px;
+    line-height: 20px;
+    margin: 20px 0;
+}
+.settings_section h2,
+.settings_section h3 {
+    display:inline-block;
+    font-weight: bold;
+}
+.settings_section h2:first-letter,
+.settings_section h3:first-letter {
+    text-transform: capitalize;
+}
+.settings_divider {
+    background-color: #E2E2E2;
+    height: 1px;
+    margin: 0 -15px;
+}
+.settings_setting {
+    font-size: 0;
+    line-height: 27px;
+}
+.setting {
+    font-size: 13px;
+    display: inline-block;
+    left: 39px;
+    margin: 0 5px 0 0;
+    position: relative;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+
+
+
+input[type=checkbox] {
+    display: none;
+    height: 0;
+    width: 0;
+    visibility: hidden;
+}
+label:before {
+    content: '';
+    cursor: pointer;
+    width: 34px;
+    height: 19px;
+    background: grey;
+    display: inline-block;
+    border-radius: 100px;
+    position: absolute;
+    vertical-align: middle;
+    transform: translateY(-50%);
+    top: 50%;
+    left: -39px;
+    transition: background 0.3s;
+}
+label:after {
+    box-shadow: 0 0 3px 0px #333;
+    content: '';
+    cursor: pointer;
+    display: inline-block;
+    position: absolute;
+    left: 2px;
+    width: 15px;
+    height: 15px;
+    background: #FFF;
+    border-radius: 90px;
+    transition: 0.3s;
+    vertical-align: middle;
+    transform: translateY(-50%);
+    top: 50%;
+    left: -37px;
+}
+input:checked + label:before {
+    background: #E52D27;
+    background: #27A6E5;
+}
+input:checked + label:after {
+    left: calc(-39px + 17px);
+}
+/*  end| Iridium settings */

@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.0.4a
+// @version         0.0.5a
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -459,6 +459,29 @@
                     }
 
                 },
+                initializeSettingsButton: function() {
+                    var buttons;
+                    var iridium_settings_button;
+
+                    buttons = document.querySelector("#end #buttons");
+
+                    if (buttons && !(iridium_settings_button = document.getElementById("iridium_settings_button"))) {
+                        iridium_settings_button = document.createElement("a");
+                        iridium_settings_button.id = "iridium_settings_button";
+                        iridium_settings_button.href = "/iridium-settings";
+                        iridium_settings_button.textContent = "test";
+                        iridium_settings_button.target = "_blank";
+                        iridium_settings_button.title = "Iridium settings"
+                        iridium_settings_button.innerHTML = //
+                            "<svg viewBox='0 0 18 20'>" +
+                            "    <polygon points='0,20 14,12 0,4'></polygon>" +
+                            "    <polygon points='15,3 15,0 13,0 13,3 10,3 10,5 13,5 13,8 15,8 15,5 18,5 18,3'></polygon>" +
+                            "</svg>";
+                        buttons.parentNode.insertBefore(iridium_settings_button, buttons);
+                        
+                        window.removeEventListener("readystatechange", iridiumApi.initializeSettingsButton, true);
+                    }
+                },
                 initializeModules: function() {
 
                     var i;
@@ -478,6 +501,10 @@
                     } else {
                         iridiumApi.initializeModules();
                     }
+
+                    window.addEventListener("readystatechange", iridiumApi.initializeSettingsButton, true);
+
+                    iridiumApi.initializeSettingsButton();
                 }
             };
 
@@ -547,7 +574,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.0.3a";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.0.5a";
                     document.documentElement.appendChild(holder);
                 }
 

@@ -1,4 +1,8 @@
 /* start | Iridium settings */
+html,
+body {
+    box-sizing: border-box; 
+}
 #iridium_settings {
     background-color: #F1F1F1;
     color: #666;
@@ -70,10 +74,6 @@
     overflow: hidden;
     padding: 0 20px;
     text-decoration: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
 }
 .sidebar_section:hover:not(.active_sidebar) {
@@ -91,19 +91,16 @@
 }
 .settings_setting {
     font-size: 0;
-    line-height: 27px;
+    line-height: 26px;
 }
 .setting {
-    font-size: 13px;
+    font-size: 14px;
     display: inline-block;
-    left: 39px;
+    /*left: 40px;*/
     /*margin: 0 5px 0 0;*/
+    padding-left: 40px;
     position: relative;
     vertical-align: middle;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
 }
 
@@ -119,40 +116,42 @@ input[type=checkbox] {
 label:before {
     content: '';
     cursor: pointer;
-    width: 34px;
-    height: 19px;
+    width: 40px;
+    height: 100%;
     background: grey;
     display: inline-block;
     border-radius: 100px;
     position: absolute;
     vertical-align: middle;
-    transform: translateY(-50%);
-    top: 50%;
-    left: -39px;
+    /*transform: translateY(-50%);*/
+    /*top: 50%;*/
+    left: 0;
     transition: background 0.3s;
+    border: 3px solid #FFF;
+    box-sizing: border-box;
 }
 label:after {
-    box-shadow: 0 0 3px 0px #333;
+    box-shadow: 0 0 2px 0 #333;
     content: '';
     cursor: pointer;
     display: inline-block;
     position: absolute;
-    left: 2px;
-    width: 15px;
-    height: 15px;
+    width: 16px;
+    height: 16px;
     background: #FFF;
     border-radius: 90px;
     transition: 0.3s;
     vertical-align: middle;
-    transform: translateY(-50%);
-    top: 50%;
-    left: -37px;
+    /*transform: translateY(-50%);*/
+    /*top: 50%;*/
+    left: 0;
+    margin: 5px;
 }
 input:checked + label:before {
     background: #E52D27;
     background: #27A6E5;
 }
 input:checked + label:after {
-    left: calc(-39px + 17px);
+    left: 14px;
 }
 /*  end | Iridium settings */

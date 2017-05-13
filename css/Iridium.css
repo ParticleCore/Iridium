@@ -1,3 +1,26 @@
+/* start | general settigns */
+#iridium_settings_button {
+    box-sizing: border-box;
+    height: 40px;
+    padding: 8px;
+    margin-right: 8px;
+    text-align: center;
+    width: 40px;
+}
+#iridium_settings_button svg {
+    fill: #888;
+    height:20px;
+}
+[dark='true'] #iridium_settings_button svg {
+    fill: #FFF;
+}
+@media (max-width: 656px) {
+    #iridium_settings_button {
+        margin-right: 0;
+    }
+}
+/*   end | general settings */
+
 /* start | Iridium settings */
 html,
 body {

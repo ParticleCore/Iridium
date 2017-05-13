@@ -1,4 +1,4 @@
-/* start| Iridium settings */
+/* start | Iridium settings */
 #iridium_settings {
     background-color: #F1F1F1;
     color: #666;
@@ -10,12 +10,7 @@
     padding: 5px;
     position: relative;
 }
-#iridium_settings_container:after {
-    /*content: "";
-    display: block;
-    margin-bottom: 100%;*/
-}
-.settings_sidebar {
+#iridium_settings_sidebar {
     /*background-color: #25272A !important;*/
     /*bottom: 10px;*/
     /*color: rgba(156, 174, 192, 0.3) !important;*/
@@ -26,21 +21,43 @@
     width: 200px;
     z-index: 1;
 }
-.settings_container {
+#iridium_settings_container {
     box-sizing: border-box;
     padding: 5px 5px 5px 215px;
 }
-.settings_section {
+#iridium_settings_container:after {
+    /*content: "";
+    display: block;
+    margin-bottom: 100%;*/
+}
+#settings_section {
     padding: 0 15px 15px 15px;
 }
-.settings_section:not(.active_section) {
-    /*display: none;*/
-}
-.settings_sidebar,
-.settings_section {
+#iridium_settings_sidebar,
+#settings_section {
     background-color: #FFF;
     box-shadow: 0 1px 2px rgba(0, 0, 0, .1);
     box-sizing: border-box;
+}
+#settings_section h3 {
+    color: #555;
+    font-size: 14px;
+    margin: 30px 0 16px;
+}
+#settings_section h2 {
+    color: #333;
+    font-size: 18px;
+    line-height: 20px;
+    margin: 20px 0;
+}
+#settings_section h2,
+#settings_section h3 {
+    display:inline-block;
+    font-weight: bold;
+}
+#settings_section h2:first-letter,
+#settings_section h3:first-letter {
+    text-transform: capitalize;
 }
 .sidebar_section {
     color: #666;
@@ -67,26 +84,6 @@
     background-color: #CC181E;
     color: #FFF;
 }
-.settings_section h3 {
-    color: #555;
-    font-size: 14px;
-    margin: 30px 0 16px;
-}
-.settings_section h2 {
-    color: #333;
-    font-size: 18px;
-    line-height: 20px;
-    margin: 20px 0;
-}
-.settings_section h2,
-.settings_section h3 {
-    display:inline-block;
-    font-weight: bold;
-}
-.settings_section h2:first-letter,
-.settings_section h3:first-letter {
-    text-transform: capitalize;
-}
 .settings_divider {
     background-color: #E2E2E2;
     height: 1px;
@@ -100,7 +97,7 @@
     font-size: 13px;
     display: inline-block;
     left: 39px;
-    margin: 0 5px 0 0;
+    /*margin: 0 5px 0 0;*/
     position: relative;
     vertical-align: middle;
     -webkit-user-select: none;
@@ -158,4 +155,4 @@ input:checked + label:before {
 input:checked + label:after {
     left: calc(-39px + 17px);
 }
-/*  end| Iridium settings */
+/*  end | Iridium settings */

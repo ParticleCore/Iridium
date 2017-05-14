@@ -6,6 +6,7 @@
     margin-right: 8px;
     text-align: center;
     width: 40px;
+    color: var(--yt-swatch-important-text, var(--yt-swatch-icon-color, #888));
 }
 @media (max-width: 656px) {
     #iridium_settings_button {
@@ -16,7 +17,6 @@
     opacity: 0.5;
 }
 #iridium_settings_button stop {
-    transition: 1s;
 }
 #iridium_settings_button path,
 #iridium_settings_button polygon {
@@ -24,16 +24,14 @@
 }
 #iridium_settings_button .iri-start-gradient,
 #iridium_settings_button .iri-stop-gradient {
-    stop-color: #888;
-}
-[dark='true'] #iridium_settings_button .iri-start-gradient,
-[dark='true'] #iridium_settings_button .iri-stop-gradient {
-    stop-color: #FFF;
+    stop-color: var(--iron-icon-fill-color, currentcolor);
 }
 #iridium_settings_button:hover .iri-start-gradient {
+    transition: 1s;
     stop-color: #0FF;
 }
 #iridium_settings_button:hover .iri-stop-gradient {
+    transition: 1s;
     stop-color: #F0F;
 }
 /*   end | general settings */
@@ -154,6 +152,7 @@ input[type=checkbox] {
     visibility: hidden;
 }
 label:before {
+    box-shadow: 0 0 2px 0 #333 inset;
     content: '';
     cursor: pointer;
     width: 40px;
@@ -171,7 +170,7 @@ label:before {
     box-sizing: border-box;
 }
 label:after {
-    box-shadow: 0 0 3px 0 #333;
+    box-shadow: 0 0 2px 0 #333;
     content: '';
     cursor: pointer;
     display: inline-block;

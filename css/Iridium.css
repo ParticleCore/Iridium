@@ -12,21 +12,29 @@
         margin-right: 0;
     }
 }
-#iridium_settings_button svg {
-    fill: #888;
-    transition: fill 1s;
-}
-[dark='true'] #iridium_settings_button svg {
-    fill: #FFF;
-}
-#iridium_settings_button:hover svg {
-    fill: #09f;
-}
-[dark='true'] #iridium_settings_button:hover svg {
-    fill: #f60;
-}
-#iridium_settings_button svg polygon {
+#iridium_settings_button polygon {
     opacity: 0.5;
+}
+#iridium_settings_button stop {
+    transition: 1s;
+}
+#iridium_settings_button path,
+#iridium_settings_button polygon {
+    fill: url(#iri-gradient);
+}
+#iridium_settings_button .iri-start-gradient,
+#iridium_settings_button .iri-stop-gradient {
+    stop-color: #888;
+}
+[dark='true'] #iridium_settings_button .iri-start-gradient,
+[dark='true'] #iridium_settings_button .iri-stop-gradient {
+    stop-color: #FFF;
+}
+#iridium_settings_button:hover .iri-start-gradient {
+    stop-color: #0FF;
+}
+#iridium_settings_button:hover .iri-stop-gradient {
+    stop-color: #F0F;
 }
 /*   end | general settings */
 

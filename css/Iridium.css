@@ -1,3 +1,7 @@
+html {
+    --iri-checkbox-bkg: 7px;
+}
+
 /* start | general settigns */
 #iridium_settings_button {
     box-sizing: border-box;
@@ -155,8 +159,8 @@ label:before {
     box-shadow: 0 0 2px 0 #333 inset;
     content: '';
     cursor: pointer;
-    width: calc(40px - 14px);
-    height: calc(100% - 14px);
+    width: calc(40px - 2 * var(--iri-checkbox-bkg));
+    height: calc(100% - 2 * var(--iri-checkbox-bkg));
     background: grey;
     display: inline-block;
     border-radius: 100px;
@@ -166,7 +170,7 @@ label:before {
     /*top: 50%;*/
     left: 0;
     transition: background 0.3s;
-    margin: 7px;
+    margin: var(--iri-checkbox-bkg);
     box-sizing: border-box;
 }
 label:after {

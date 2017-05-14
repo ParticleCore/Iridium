@@ -155,8 +155,8 @@ label:before {
     box-shadow: 0 0 2px 0 #333 inset;
     content: '';
     cursor: pointer;
-    width: 40px;
-    height: 100%;
+    width: calc(40px - 14px);
+    height: calc(100% - 14px);
     background: grey;
     display: inline-block;
     border-radius: 100px;
@@ -166,7 +166,7 @@ label:before {
     /*top: 50%;*/
     left: 0;
     transition: background 0.3s;
-    border: 7px solid #FFF;
+    margin: 7px;
     box-sizing: border-box;
 }
 label:after {

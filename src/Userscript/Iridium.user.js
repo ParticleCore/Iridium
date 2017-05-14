@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.0.7a
+// @version         0.0.8a
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -182,6 +182,55 @@
                                 }
 
                                 return this._fflags;
+                            }
+                        });
+                    }
+                },
+                {
+                    options: {
+                        player_ads: {
+                            id:          "player_ads",
+                            section:     "video",
+                            sub_section: "player",
+                            type:        "checkbox",
+                            value:       true,
+                            title:       "video settings",
+                            label:       "Disable ads in videos"
+                        }
+                    },
+                    ini: function() {
+
+                        var
+                        key,
+                        args;
+
+                        args = this;
+
+                        if (args.started) {
+                            return;
+                        }
+
+                        args.started = true;
+
+                        for (key in args.options) {
+                            if (args.options.hasOwnProperty(key)) {
+                                if (!(key in user_settings)) {
+                                    user_settings[key] = args.options[key].value;
+                                }
+                            }
+                        }
+
+                        Object.defineProperty(Object.prototype, "ad3_module", {
+                            set: function(data) {
+                                this._ad3_module = data;
+                            },
+                            get: function() {
+
+                                if (user_settings.player_ads && this._ad3_module) {
+                                    return;
+                                }
+
+                                return this._ad3_module;
                             }
                         });
                     }
@@ -457,7 +506,6 @@
                             }
                         }
                     }
-
                 },
                 initializeSettingsButton: function() {
                     var buttons;
@@ -483,7 +531,7 @@
                             "</svg>";
                         buttons.parentNode.insertBefore(iridium_settings_button, buttons);
                         
-                        window.removeEventListener("readystatechange", iridiumApi.initializeSettingsButton, true);
+                        document.documentElement.removeEventListener("load", iridiumApi.initializeSettingsButton, true);
                     }
                 },
                 initializeModules: function() {
@@ -506,9 +554,7 @@
                         iridiumApi.initializeModules();
                     }
 
-                    window.addEventListener("readystatechange", iridiumApi.initializeSettingsButton, true);
-
-                    iridiumApi.initializeSettingsButton();
+                    document.documentElement.addEventListener("load", iridiumApi.initializeSettingsButton, true);
                 }
             };
 
@@ -578,7 +624,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.0.7a";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.0.8a";
                     document.documentElement.appendChild(holder);
                 }
 

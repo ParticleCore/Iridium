@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.0.9a
+// @version         0.1.0a
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -42,7 +42,7 @@
                             section:     "video",
                             sub_section: "player",
                             type:        "checkbox",
-                            value:       true,
+                            value:       false,
                             label:       "Play videos automatically"
                         },
                         channel_trailer_auto_play: {
@@ -50,148 +50,9 @@
                             section:     "video",
                             sub_section: "channel",
                             type:        "checkbox",
-                            value:       true,
+                            value:       false,
                             label:       "Play channel trailers automatically"
-                        }
-                    },
-                    ini: function() {
-
-                        var
-                        key,
-                        auto_play,
-                        channel_regex;
-
-                        auto_play = this;
-
-                        if (auto_play.started) {
-                            return;
-                        }
-
-                        auto_play.started = true;
-                        channel_regex = /^\/(user|channel)\//;
-
-                        for (key in auto_play.options) {
-                            if (auto_play.options.hasOwnProperty(key)) {
-                                if (!(key in user_settings)) {
-                                    user_settings[key] = auto_play.options[key].value;
-                                }
-                            }
-                        }
-
-                        Object.defineProperty(Object.prototype, "TIMING_AFT_KEYS", {
-                            set: function(data) {
-                                this._TIMING_AFT_KEYS = data;
-                            },
-                            get: function() {
-
-                                var
-                                key,
-                                is_channel;
-
-                                is_channel = channel_regex.test(location.pathname);
-
-                                if (is_channel ? user_settings.channel_trailer_auto_play : user_settings.player_auto_play) {
-
-                                    if (window.ytcsi && window.ytcsi.data_ && window.ytcsi.data_.tick) {
-                                        for (key in window.ytcsi.data_.tick) {
-                                            return [key];
-                                        }
-                                    } else {
-                                        return ["srt"];
-                                    }
-                                }
-
-                                return this._TIMING_AFT_KEYS;
-                            }
-                        });
-
-                        Object.defineProperty(Object.prototype, "loaded", {
-                            set: function(data) {
-                                this._loaded = data;
-                            },
-                            get: function() {
-
-                                var
-                                is_channel;
-
-                                is_channel = channel_regex.test(location.pathname);
-
-                                if (this.args && (is_channel ? user_settings.channel_trailer_auto_play : user_settings.player_auto_play)) {
-                                    return false;
-                                }
-
-                                return this._loaded;
-                            },
-                            configurable: true
-                        });
-
-                        Object.defineProperty(Object.prototype, "loadVideoByPlayerVars", {
-                            set: function(data) {
-                                this._loadVideoByPlayerVars = data;
-                            },
-                            get: function() {
-
-                                var
-                                is_channel;
-
-                                is_channel = channel_regex.test(location.pathname);
-
-                                if (is_channel ? user_settings.channel_trailer_auto_play : user_settings.player_auto_play) {
-                                    return this.cueVideoByPlayerVars;
-                                }
-
-                                return this._loadVideoByPlayerVars;
-                            }
-                        });
-
-                        Object.defineProperty(Object.prototype, "autoplay", {
-                            set: function(data) {
-                                this._autoplay = data;
-                            },
-                            get: function() {
-
-                                var
-                                is_channel;
-
-                                is_channel = channel_regex.test(location.pathname);
-                                
-                                if (this.ucid && this._autoplay === "1" && (is_channel ? user_settings.channel_trailer_auto_play : user_settings.player_auto_play)) {
-                                    return "0";
-                                }
-
-                                return this._autoplay;
-                            }
-                        });
-
-                        Object.defineProperty(Object.prototype, "fflags", {
-                            set: function(data) {
-                                this._fflags = data;
-                            },
-                            get: function() {
-
-                                var
-                                is_channel;
-
-                                is_channel = channel_regex.test(location.pathname);
-
-                                if (this.ucid && (is_channel ? user_settings.channel_trailer_auto_play : user_settings.player_auto_play)) {
-                                    return this._fflags
-                                        .replace(
-                                            "legacy_autoplay_flag=true",
-                                            "legacy_autoplay_flag=false"
-                                        ).replace(
-                                            "disable_new_pause_state3=true",
-                                            "disable_new_pause_state3=false"
-                                        ); // removes transition-delay
-                                }
-
-                                return this._fflags;
-                            }
-                        });
-                    }
-                },
-                {
-                    options: {
+                        }, 
                         player_ads: {
                             id:          "player_ads",
                             section:     "video",
@@ -213,41 +74,156 @@
 
                         var
                         key,
-                        args;
+                        context,
+                        channel_regex;
 
-                        args = this;
+                        context = this;
 
-                        if (args.started) {
+                        if (context.started) {
                             return;
                         }
 
-                        args.started = true;
+                        context.started = true;
+                        channel_regex = /^\/(user|channel)\//;
 
-                        for (key in args.options) {
-                            if (args.options.hasOwnProperty(key)) {
+                        for (key in context.options) {
+                            if (context.options.hasOwnProperty(key)) {
                                 if (!(key in user_settings)) {
-                                    user_settings[key] = args.options[key].value;
+                                    user_settings[key] = context.options[key].value;
                                 }
                             }
                         }
 
-                        Object.defineProperty(Object.prototype, "ad3_module", {
-                            set: function(data) {
-                                this._ad3_module = data;
-                            },
-                            get: function() {
+                        function isChannel() {
+                            return /^\/(user|channel)\//.test(window.location.pathname);
+                        }
 
-                                if (this._ad3_module) {
-                                    if (user_settings.subscribed_channel_player_ads && this.subscribed === "1") {
-                                        return this._ad3_module;
-                                    }
+                        function modVideoByPlayerVars(original) {
+                            return function(args) {
+                                if (user_settings.subscribed_channel_player_ads ? args.subscribed !== "1" : !user_settings.player_ads) {
+                                    delete args.ad3_module;
+                                }
+                                return original.apply(this, arguments);
+                            }
+                        }
 
-                                    if (!user_settings.player_ads) {
-                                        return;
+                        function modJSONParse(original) {
+                            return function(text, reviver) {
+                                temp = original.apply(this, arguments);
+
+                                if (temp && temp.player && temp.player.args) {
+                                    if (user_settings.subscribed_channel_player_ads ? temp.player.args.subscribed !== "1" : !user_settings.player_ads) {
+                                        delete temp.player.args.ad3_module;
                                     }
                                 }
 
-                                return this._ad3_module;
+                                return temp;
+                            };
+                        }
+
+                        JSON.parse = modJSONParse(JSON.parse);
+
+                        Object.defineProperty(Object.prototype, "cueVideoByPlayerVars", {
+                            set: function(data) { this._cueVideoByPlayerVars = data; },
+                            get: function() {
+                                return modVideoByPlayerVars(this._cueVideoByPlayerVars);
+                            }
+                        });
+
+                        Object.defineProperty(Object.prototype, "loadVideoByPlayerVars", {
+                            set: function(data) { this._loadVideoByPlayerVars = data; },
+                            get: function() {
+
+                                if (isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
+                                    return this.cueVideoByPlayerVars;
+                                }
+
+                                return modVideoByPlayerVars(this._loadVideoByPlayerVars);
+                                return this._loadVideoByPlayerVars;
+                            }
+                        });
+
+                        Object.defineProperty(Object.prototype, "TIMING_AFT_KEYS", {
+                            set: function(data) {
+                                this._TIMING_AFT_KEYS = data;
+                            },
+                            get: function() {
+
+                                var key;
+
+                                if (isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
+
+                                    if (window.ytcsi && window.ytcsi.data_ && window.ytcsi.data_.tick) {
+                                        for (key in window.ytcsi.data_.tick) {
+                                            return [key];
+                                        }
+                                    } else {
+                                        return ["srt"];
+                                    }
+                                }
+
+                                return this._TIMING_AFT_KEYS;
+                            }
+                        });
+
+                        Object.defineProperty(Object.prototype, "loaded", {
+                            set: function(data) { this._loaded = data; },
+                            get: function() {
+
+                                if (this.args && (isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
+                                    return false;
+                                }
+
+                                return this._loaded;
+                            }
+                        });
+
+                        Object.defineProperty(Object.prototype, "load", {
+                            set: function(data) { this._load = data; },
+                            get: function() {
+
+                                var temp;
+
+                                temp = this._load && this._load.toString();
+
+                                if (temp && temp.match("Application.create")) {
+                                    if (user_settings.subscribed_channel_player_ads ? window.ytplayer.config.args.subscribed !== "1" : !user_settings.player_ads) {
+                                        delete window.ytplayer.config.args.ad3_module;
+                                    }
+                                }
+
+                                return this._load;
+                            }
+                        });
+
+                        Object.defineProperty(Object.prototype, "autoplay", {
+                            set: function(data) { this._autoplay = data; },
+                            get: function() {
+                                
+                                if (this.ucid && this._autoplay === "1" && (isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
+                                    return "0";
+                                }
+
+                                return this._autoplay;
+                            }
+                        });
+
+                        Object.defineProperty(Object.prototype, "fflags", {
+                            set: function(data) { this._fflags = data; },
+                            get: function() {
+
+                                if (this.ucid && (isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
+                                    return this._fflags
+                                        .replace(
+                                            "legacy_autoplay_flag=true",
+                                            "legacy_autoplay_flag=false"
+                                        ).replace(
+                                            "disable_new_pause_state3=true",
+                                            "disable_new_pause_state3=false"
+                                        ); // removes transition-delay
+                                }
+
+                                return this._fflags;
                             }
                         });
                     }
@@ -533,7 +509,7 @@
                         iridium_settings_button.target = "_blank";
                         iridium_settings_button.title = "Iridium settings"
                         iridium_settings_button.innerHTML = //
-                            "<svg viewBox='0 0 24 24'>" +
+                            "<svg viewBox='0 0 24 24' style='height:24px;'>" +
                                 "<linearGradient id='iri-gradient' gradientUnits='userSpaceOnUse' x1='6.1277' y1='22.0737' x2='15.0425' y2='6.633'>" +
                             "        <stop class='iri-start-gradient' offset='0'/>" +
                             "        <stop class='iri-stop-gradient' offset='0.9944'/>" +
@@ -569,7 +545,6 @@
                     document.documentElement.addEventListener("load", iridiumApi.initializeSettingsButton, true);
                 }
             };
-
             iridiumApi.initializeSettings();
 
             iridiumApi.ini();
@@ -636,7 +611,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.0.9a";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.0a";
                     document.documentElement.appendChild(holder);
                 }
 

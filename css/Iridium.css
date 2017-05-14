@@ -7,17 +7,26 @@
     text-align: center;
     width: 40px;
 }
-#iridium_settings_button svg {
-    fill: #888;
-    height:20px;
-}
-[dark='true'] #iridium_settings_button svg {
-    fill: #FFF;
-}
 @media (max-width: 656px) {
     #iridium_settings_button {
         margin-right: 0;
     }
+}
+#iridium_settings_button svg {
+    fill: #888;
+    transition: fill 1s;
+}
+[dark='true'] #iridium_settings_button svg {
+    fill: #FFF;
+}
+#iridium_settings_button:hover svg {
+    fill: #09f;
+}
+[dark='true'] #iridium_settings_button:hover svg {
+    fill: #f60;
+}
+#iridium_settings_button svg polygon {
+    opacity: 0.5;
 }
 /*   end | general settings */
 

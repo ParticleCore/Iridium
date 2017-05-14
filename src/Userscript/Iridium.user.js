@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.0.5a
+// @version         0.0.6a
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -473,9 +473,9 @@
                         iridium_settings_button.target = "_blank";
                         iridium_settings_button.title = "Iridium settings"
                         iridium_settings_button.innerHTML = //
-                            "<svg viewBox='0 0 18 20'>" +
-                            "    <polygon points='0,20 14,12 0,4'></polygon>" +
-                            "    <polygon points='15,3 15,0 13,0 13,3 10,3 10,5 13,5 13,8 15,8 15,5 18,5 18,3'></polygon>" +
+                            "<svg viewBox='0 0 24 24'>" +
+                            "    <polygon points='24,11.8 6,1.6 6,22'/>" +
+                            "    <path d='M6,1.6V22l18-10.2L6,1.6z M9,6.8l9,5.1L9,17V6.8z'/>" +
                             "</svg>";
                         buttons.parentNode.insertBefore(iridium_settings_button, buttons);
                         
@@ -574,7 +574,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.0.5a";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.0.6a";
                     document.documentElement.appendChild(holder);
                 }
 

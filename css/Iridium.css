@@ -167,17 +167,17 @@ label:before {
     /*top: 50%;*/
     left: 0;
     transition: background 0.3s;
-    border: 3px solid #FFF;
+    border: 7px solid #FFF;
     box-sizing: border-box;
 }
 label:after {
-    box-shadow: 0 0 2px 0 #333;
+    box-shadow: 0 0 3px 0 #333;
     content: '';
     cursor: pointer;
     display: inline-block;
     position: absolute;
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     background: #FFF;
     border-radius: 90px;
     transition: 0.3s;
@@ -185,7 +185,7 @@ label:after {
     /*transform: translateY(-50%);*/
     /*top: 50%;*/
     left: 0;
-    margin: 5px;
+    margin: 6px;
 }
 input:checked + label:before {
     background: #E52D27;

@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.0.8a
+// @version         0.0.9a
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -27,6 +27,12 @@
             var modules;
             var iridiumApi;
             var user_settings;
+            var section_titles;
+
+            section_titles = {
+                video: "video settings",
+                about: "information and useful links"
+            };
 
             modules = [
                 {
@@ -37,7 +43,6 @@
                             sub_section: "player",
                             type:        "checkbox",
                             value:       true,
-                            title:       "video settings",
                             label:       "Play videos automatically"
                         },
                         channel_trailer_auto_play: {
@@ -46,7 +51,6 @@
                             sub_section: "channel",
                             type:        "checkbox",
                             value:       true,
-                            title:       "video settings",
                             label:       "Play channel trailers automatically"
                         }
                     },
@@ -193,9 +197,16 @@
                             section:     "video",
                             sub_section: "player",
                             type:        "checkbox",
-                            value:       true,
-                            title:       "video settings",
-                            label:       "Disable ads in videos"
+                            value:       false,
+                            label:       "Allow ads on videos"
+                        },
+                        subscribed_channel_player_ads: {
+                            id:          "subscribed_channel_player_ads",
+                            section:     "video",
+                            sub_section: "player",
+                            type:        "checkbox",
+                            value:       false,
+                            label:       "Allow ads only on videos of subscribed channels"
                         }
                     },
                     ini: function() {
@@ -226,8 +237,14 @@
                             },
                             get: function() {
 
-                                if (user_settings.player_ads && this._ad3_module) {
-                                    return;
+                                if (this._ad3_module) {
+                                    if (user_settings.subscribed_channel_player_ads && this.subscribed === "1") {
+                                        return this._ad3_module;
+                                    }
+
+                                    if (!user_settings.player_ads) {
+                                        return;
+                                    }
                                 }
 
                                 return this._ad3_module;
@@ -239,8 +256,7 @@
                         about: {
                             id:      "about",
                             section: "about",
-                            type:    "custom",
-                            title:   "information and useful links"
+                            type:    "custom"
                         }
                     }
                 }
@@ -264,16 +280,12 @@
                     section.innerHTML = "";
 
                     if ((header = document.getElementById("settings_section_header"))) {
-                        header.textContent = "";
+                        header.textContent = section_titles[options_list[0].section];
                     }
 
                     for (i = 0; i < options_list.length; i++) {
 
                         option = options_list[i];
-
-                        if (header.textContent === "") {
-                            header.textContent = option.title;
-                        }
 
                         if (!(sub_section = document.getElementById(option.sub_section))) {
                             sub_section = document.createElement("div");
@@ -624,7 +636,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.0.8a";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.0.9a";
                     document.documentElement.appendChild(holder);
                 }
 

@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.0.6a
+// @version         0.0.7a
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -474,6 +474,10 @@
                         iridium_settings_button.title = "Iridium settings"
                         iridium_settings_button.innerHTML = //
                             "<svg viewBox='0 0 24 24'>" +
+                                "<linearGradient id='iri-gradient' gradientUnits='userSpaceOnUse' x1='6.1277' y1='22.0737' x2='15.0425' y2='6.633'>" +
+                            "        <stop class='iri-start-gradient' offset='0'/>" +
+                            "        <stop class='iri-stop-gradient' offset='0.9944'/>" +
+                            "    </linearGradient>" +
                             "    <polygon points='24,11.8 6,1.6 6,22'/>" +
                             "    <path d='M6,1.6V22l18-10.2L6,1.6z M9,6.8l9,5.1L9,17V6.8z'/>" +
                             "</svg>";
@@ -574,7 +578,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.0.6a";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.0.7a";
                     document.documentElement.appendChild(holder);
                 }
 

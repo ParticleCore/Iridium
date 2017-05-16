@@ -174,7 +174,7 @@ label:before {
     box-sizing: border-box;
 }
 label:after {
-    box-shadow: 0 0 2px 0 #333;
+    box-shadow: 0 0 3px 0 #333;
     content: '';
     cursor: pointer;
     display: inline-block;

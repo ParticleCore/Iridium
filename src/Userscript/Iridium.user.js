@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.1.0a
+// @version         0.1.1a
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -68,14 +68,72 @@
                             type:        "checkbox",
                             value:       false,
                             label:       "Allow ads only on videos of subscribed channels"
+                        },
+                        player_hfr: {
+                            id:          "player_hfr",
+                            section:     "video",
+                            sub_section: "player",
+                            type:        "checkbox",
+                            value:       true,
+                            label:       "Allow HFR (60fps) streams"
                         }
+                    },
+                    modArgs: function(args) {
+
+                        var i;
+                        var list;
+                        var temp;
+
+                        if (user_settings.subscribed_channel_player_ads ? args.subscribed !== "1" : !user_settings.player_ads) {
+                            delete args.ad3_module;
+                        }
+
+                        if (args.adaptive_fmts && !user_settings.player_hfr) {
+                            list = args.adaptive_fmts.split(",");
+
+                            for (i = 0; i < list.length; i++) {
+                                temp = list[i].split(/fps=([0-9]{2})/);
+                                temp = temp && temp[1];
+
+                                if (temp > 30) {
+                                    list.splice(i--, 1);
+                                }
+                            }
+
+                            args.adaptive_fmts = list.join(",");
+                        }
+                    },
+                    modVideoByPlayerVars: function(original) {
+
+                        var context = this;
+
+                        return function(args) {
+                            context.modArgs(args);
+                            return original.apply(this, arguments);
+                        }
+                    },
+                    modJSONParse: function(original) {
+
+                        var context = this;
+
+                        return function(text, reviver) {
+
+                            var temp = original.apply(this, arguments);
+
+                            if (temp && temp.player && temp.player.args) {
+                                context.modArgs(temp.player.args);
+                            }
+
+                            return temp;
+                        };
+                    },
+                    isChannel: function() {
+                        return /^\/(user|channel)\//.test(window.location.pathname);
                     },
                     ini: function() {
 
-                        var
-                        key,
-                        context,
-                        channel_regex;
+                        var key;
+                        var context;
 
                         context = this;
 
@@ -84,7 +142,6 @@
                         }
 
                         context.started = true;
-                        channel_regex = /^\/(user|channel)\//;
 
                         for (key in context.options) {
                             if (context.options.hasOwnProperty(key)) {
@@ -94,51 +151,22 @@
                             }
                         }
 
-                        function isChannel() {
-                            return /^\/(user|channel)\//.test(window.location.pathname);
-                        }
-
-                        function modVideoByPlayerVars(original) {
-                            return function(args) {
-                                if (user_settings.subscribed_channel_player_ads ? args.subscribed !== "1" : !user_settings.player_ads) {
-                                    delete args.ad3_module;
-                                }
-                                return original.apply(this, arguments);
-                            }
-                        }
-
-                        function modJSONParse(original) {
-                            return function(text, reviver) {
-                                temp = original.apply(this, arguments);
-
-                                if (temp && temp.player && temp.player.args) {
-                                    if (user_settings.subscribed_channel_player_ads ? temp.player.args.subscribed !== "1" : !user_settings.player_ads) {
-                                        delete temp.player.args.ad3_module;
-                                    }
-                                }
-
-                                return temp;
-                            };
-                        }
-
-                        JSON.parse = modJSONParse(JSON.parse);
+                        JSON.parse = context.modJSONParse(JSON.parse);
 
                         Object.defineProperty(Object.prototype, "cueVideoByPlayerVars", {
                             set: function(data) { this._cueVideoByPlayerVars = data; },
-                            get: function() {
-                                return modVideoByPlayerVars(this._cueVideoByPlayerVars);
-                            }
+                            get: function() { return context.modVideoByPlayerVars(this._cueVideoByPlayerVars); }
                         });
 
                         Object.defineProperty(Object.prototype, "loadVideoByPlayerVars", {
                             set: function(data) { this._loadVideoByPlayerVars = data; },
                             get: function() {
 
-                                if (isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
+                                if (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
                                     return this.cueVideoByPlayerVars;
                                 }
 
-                                return modVideoByPlayerVars(this._loadVideoByPlayerVars);
+                                return context.modVideoByPlayerVars(this._loadVideoByPlayerVars);
                                 return this._loadVideoByPlayerVars;
                             }
                         });
@@ -151,7 +179,7 @@
 
                                 var key;
 
-                                if (isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
+                                if (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
 
                                     if (window.ytcsi && window.ytcsi.data_ && window.ytcsi.data_.tick) {
                                         for (key in window.ytcsi.data_.tick) {
@@ -170,7 +198,7 @@
                             set: function(data) { this._loaded = data; },
                             get: function() {
 
-                                if (this.args && (isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
+                                if (this.args && (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
                                     return false;
                                 }
 
@@ -182,14 +210,10 @@
                             set: function(data) { this._load = data; },
                             get: function() {
 
-                                var temp;
-
-                                temp = this._load && this._load.toString();
+                                var temp = this._load && this._load.toString();
 
                                 if (temp && temp.match("Application.create")) {
-                                    if (user_settings.subscribed_channel_player_ads ? window.ytplayer.config.args.subscribed !== "1" : !user_settings.player_ads) {
-                                        delete window.ytplayer.config.args.ad3_module;
-                                    }
+                                    context.modArgs(window.ytplayer.config.args);
                                 }
 
                                 return this._load;
@@ -200,7 +224,7 @@
                             set: function(data) { this._autoplay = data; },
                             get: function() {
                                 
-                                if (this.ucid && this._autoplay === "1" && (isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
+                                if (this.ucid && this._autoplay === "1" && (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
                                     return "0";
                                 }
 
@@ -212,7 +236,7 @@
                             set: function(data) { this._fflags = data; },
                             get: function() {
 
-                                if (this.ucid && (isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
+                                if (this.ucid && (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
                                     return this._fflags
                                         .replace(
                                             "legacy_autoplay_flag=true",
@@ -510,10 +534,12 @@
                         iridium_settings_button.title = "Iridium settings"
                         iridium_settings_button.innerHTML = //
                             "<svg viewBox='0 0 24 24' style='height:24px;'>" +
-                                "<linearGradient id='iri-gradient' gradientUnits='userSpaceOnUse' x1='6.1277' y1='22.0737' x2='15.0425' y2='6.633'>" +
+                            //"    <linearGradient id='iri-gradient' gradientUnits='userSpaceOnUse' x1='6' y1='22' x2='15' y2='6'>" +
+                            "    <radialGradient id='iri-gradient' gradientUnits='userSpaceOnUse' cx='6' cy='22' r='18.5'>" +
                             "        <stop class='iri-start-gradient' offset='0'/>" +
-                            "        <stop class='iri-stop-gradient' offset='0.9944'/>" +
-                            "    </linearGradient>" +
+                            "        <stop class='iri-stop-gradient' offset='1'/>" +
+                            "    </radialGradient>" +
+                            //"    </linearGradient>" +
                             "    <polygon points='24,11.8 6,1.6 6,22'/>" +
                             "    <path d='M6,1.6V22l18-10.2L6,1.6z M9,6.8l9,5.1L9,17V6.8z'/>" +
                             "</svg>";
@@ -536,6 +562,8 @@
                 },
                 ini: function() {
 
+                    iridiumApi.initializeSettings();
+
                     if (window.location.pathname === "/iridium-settings") {
                         iridiumApi.loadSettingsMenu();
                     } else {
@@ -545,8 +573,6 @@
                     document.documentElement.addEventListener("load", iridiumApi.initializeSettingsButton, true);
                 }
             };
-            iridiumApi.initializeSettings();
-
             iridiumApi.ini();
         },
         contentScriptMessages: function() {
@@ -611,7 +637,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.0a";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.1a";
                     document.documentElement.appendChild(holder);
                 }
 

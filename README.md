@@ -6,6 +6,8 @@ Current development is in alpha stage and can be found in the respective fork: h
 
 The initial phase will be focused on the userscript version only and bugs are expected to occur.
 
+Each item on the lists below can be moved to the next version at any time
+
 ### TODO - alpha version
 
 - [x] Core: minimally working alpha version
@@ -17,18 +19,13 @@ The initial phase will be focused on the userscript version only and bugs are ex
 - [x] Feature: autoplay control
 - [ ] Feature: blacklist videos from specific channels
 - [x] Feature: disable ads on videos
-- [ ] Feature: toggle HFR (60fps) streams
+- [x] Feature: toggle HFR (60fps) streams
 - [ ] Feature: download video and audio
 - [ ] Feature: change volume using the mouse wheel
-- [ ] Feature: thumbnail video preview
-- [ ] Feature: control comment section visiblity
 - [ ] Feature: fullbrowser video mode
-- [ ] Feature: mini player when scrolling down
-- [ ] Feature: mini player when navigating to different pages
 - [ ] Feature: ability to open the player in a pop-out window
 - [ ] Feature: show the total number of uploaded videos by the video author
 - [ ] Feature: show the relative uploaded time of the video being watched
-- [ ] Feature: reverse playlist
 - [ ] Feature: global video shortcuts
 
 ### TODO - beta version
@@ -37,3 +34,8 @@ The initial phase will be focused on the userscript version only and bugs are ex
 - [ ] Core: settings menu shorcut for Firefox add-on
 - [ ] Core: create Opera add-on
 - [ ] Core: settings menu shorcut for Opera add-on
+- [ ] Feature: mini player when scrolling down
+- [ ] Feature: mini player when navigating to different pages
+- [ ] Feature: control comment section visiblity
+- [ ] Feature: thumbnail video preview
+- [ ] Feature: reverse playlist

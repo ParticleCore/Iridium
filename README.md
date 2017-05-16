@@ -1,5 +1,7 @@
 # Iridium [![current_version alpha](https://img.shields.io/badge/current_version-alpha-blue.svg)](https://github.com/ParticleCore/Iridium/tree/alpha)
 
+Iridium is the former YouTube Plus updated to work with the new YouTube Material layout.
+
 Current development is in alpha stage and can be found in the respective fork: https://github.com/ParticleCore/Iridium/tree/alpha
 
 The initial phase will be focused on the userscript version only and bugs are expected to occur.

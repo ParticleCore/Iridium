@@ -6,7 +6,7 @@ Current development is in alpha stage and can be found in the respective fork: h
 
 The initial phase will be focused on the userscript version only and bugs are expected to occur.
 
-Each item on the lists below can be moved to the next version at any time
+Each item on the lists below can be removed or moved to the a different version at any time
 
 ### TODO - alpha version
 

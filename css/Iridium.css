@@ -149,13 +149,13 @@ body {
 
 
 
-input[type=checkbox] {
+#iridium_settings input[type=checkbox] {
     display: none;
     height: 0;
     width: 0;
     visibility: hidden;
 }
-label:before {
+#iridium_settings label:before {
     box-shadow: 0 0 2px 0 #333 inset;
     content: '';
     cursor: pointer;
@@ -173,7 +173,7 @@ label:before {
     margin: var(--iri-checkbox-bkg);
     box-sizing: border-box;
 }
-label:after {
+#iridium_settings label:after {
     box-shadow: 0 0 3px 0 #333;
     content: '';
     cursor: pointer;
@@ -190,11 +190,11 @@ label:after {
     left: 0;
     margin: 6px;
 }
-input:checked + label:before {
+#iridium_settings input:checked + label:before {
     background: #E52D27;
     background: #27A6E5;
 }
-input:checked + label:after {
+#iridium_settings input:checked + label:after {
     left: 14px;
 }
 /*  end | Iridium settings */

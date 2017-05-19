@@ -23,7 +23,7 @@ Each item on the lists below can be removed or moved to the a different version 
 - [x] Feature: disable ads on videos
 - [x] Feature: toggle HFR (60fps) streams
 - [ ] Feature: download video and audio
-- [ ] Feature: change volume using the mouse wheel
+- [x] Feature: change volume using the mouse wheel
 - [ ] Feature: fullbrowser video mode
 - [ ] Feature: ability to open the player in a pop-out window
 - [ ] Feature: show the total number of uploaded videos by the video author

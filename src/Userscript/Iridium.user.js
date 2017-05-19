@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.1.1a
+// @version         0.1.2a
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -23,7 +23,6 @@
     var iridium = {
         inject: function(is_userscript) {
 
-            var fsexit;
             var modules;
             var iridiumApi;
             var user_settings;
@@ -250,6 +249,99 @@
                                 return this._fflags;
                             }
                         });
+                    }
+                }, {
+                    options: {
+                        player_volume_wheel: {
+                            id:          "player_volume_wheel",
+                            section:     "video",
+                            sub_section: "player",
+                            type:        "checkbox",
+                            value:       false,
+                            label:       "Change volume using the mouse wheel"
+                        }
+                    },
+                    changeVolume: function(event) {
+
+                        var api;
+                        var player;
+                        var direction;
+                        var can_scroll;
+                        var new_volume;
+                        var player_state;
+                        var chrome_bottom;
+                        var invideo_drawer;
+                        var player_settings;
+                        var fullscreen_playlist;
+
+                        api = document.getElementById("movie_player");
+                        player = document.querySelector("video");
+                        invideo_drawer = document.querySelector(".iv-drawer");
+                        player_settings = document.querySelector(".ytp-settings-menu");
+                        fullscreen_playlist = document.querySelector(".ytp-playlist-menu");
+                        can_scroll = (!fullscreen_playlist || !fullscreen_playlist.contains(event.target)) && (!invideo_drawer || !invideo_drawer.contains(event.target)) && (!player_settings || !player_settings.contains(event.target));
+
+                        if (can_scroll && player && api && api.contains(event.target)) {
+
+                            player_state = api.getPlayerState();
+
+                            if (player_state > 0 && player_state < 5) {
+
+                                event.preventDefault();
+                                chrome_bottom = document.querySelector(".ytp-chrome-bottom");
+
+                                if (chrome_bottom) {
+
+                                    if (!chrome_bottom.classList.contains("ytp-volume-slider-active")) {
+                                        chrome_bottom.classList.add("ytp-volume-slider-active");
+                                    }
+
+                                    if (chrome_bottom.timer) {
+                                        window.clearTimeout(chrome_bottom.timer);
+                                    }
+
+                                    api.dispatchEvent(new Event("mousemove"));
+
+                                    chrome_bottom.timer = window.setTimeout(function() {
+                                        if (chrome_bottom && chrome_bottom.classList.contains("ytp-volume-slider-active")) {
+                                            chrome_bottom.classList.remove("ytp-volume-slider-active");
+                                            delete chrome_bottom.timer;
+                                        }
+                                    }, 4000);
+                                }
+
+                                direction = event.deltaY || event.wheelDeltaY;
+                                new_volume = api.getVolume() - (Math.sign(direction) * 5);
+
+                                api.setVolume(new_volume);
+
+                                return false;
+                            }
+                        }
+                    },
+                    ini: function() {
+
+                        var context;
+
+                        context = this;
+
+                        if (context.started) {
+                            return;
+                        }
+
+                        context.started = true;
+
+                        for (key in context.options) {
+                            if (context.options.hasOwnProperty(key)) {
+                                if (!(key in user_settings)) {
+                                    user_settings[key] = context.options[key].value;
+                                }
+                            }
+                        }
+
+                        if (user_settings.player_volume_wheel) {
+                            document.addEventListener("wheel", context.changeVolume);
+                        }
                     }
                 }, {
                     options: {
@@ -480,9 +572,9 @@
                         }
                     }
 
-                    iridiumApi.loadSelectedSection();
-
                     document.addEventListener("click", iridiumApi.updateSidebarSelection);
+
+                    iridiumApi.loadSelectedSection();
                 },
                 autoSaveSettings: function(event) {
 
@@ -520,6 +612,7 @@
                     }
                 },
                 initializeSettingsButton: function() {
+
                     var buttons;
                     var iridium_settings_button;
 
@@ -550,9 +643,7 @@
                 },
                 initializeModules: function() {
 
-                    var i;
-
-                    i = modules.length;
+                    var i = modules.length;
 
                     for (i = 0; i < modules.length; i++) {
                         if (modules[i].ini) {
@@ -573,6 +664,7 @@
                     document.documentElement.addEventListener("load", iridiumApi.initializeSettingsButton, true);
                 }
             };
+
             iridiumApi.ini();
         },
         contentScriptMessages: function() {
@@ -637,7 +729,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.1a";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.2a";
                     document.documentElement.appendChild(holder);
                 }
 

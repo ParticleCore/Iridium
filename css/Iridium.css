@@ -49,8 +49,9 @@ html {
     position: absolute;
     right: 0;
     top: 0;
+    transition: 0.5s background-color;
 }
-#iri-video-preview:hover {
+[ytd-thumbnail]:hover #iri-video-preview {
     background-color: rgba(0, 0, 0, 0.5);
 }
 #iri-video-preview video {

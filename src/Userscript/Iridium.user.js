@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.1.2a
+// @version         0.1.3a
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -25,15 +25,184 @@
 
             var modules;
             var iridiumApi;
+            var options_order;
             var user_settings;
             var section_titles;
 
             section_titles = {
-                video: "video settings",
-                about: "information and useful links"
+                general: "general settings",
+                video:   "video settings",
+                about:   "information and useful links"
+            };
+
+            options_order = {
+                video: [
+                    "player",
+                    [],
+                    "channel",
+                    []
+                ],
+                about: []
             };
 
             modules = [
+                {
+                    options: {
+                        thumbnail_preview: {
+                            id:          "thumbnail_preview",
+                            section:     "general",
+                            sub_section: "thumbnails",
+                            type:        "checkbox",
+                            value:       false,
+                            label:       "Preview videos by hovering the thumbnails"
+                        }
+                    },
+                    setPreviewArgs: function(args) {
+                        args.autoplay = 1;
+                        args.controls = "0";
+                        args.enablecastapi = "0";
+                        args.iv_load_policy = "3";
+                        args.modestbranding = "1";
+                        args.mute = "1";
+                        args.player_wide = "0";
+                        args.rel = "0";
+                        args.showinfo = "0";
+                        args.vq = "small";
+                    },
+                    iniPreview: function(context, event) {
+
+                        var i;
+                        var args;
+                        var temp;
+                        var config;
+                        var data_list;
+
+                        delete context.getPreviewArgs.request;
+
+                        args = {};
+                        data_list = event.target.responseText.split("&");
+
+                        for (i = 0; i < data_list.length; i++) {
+                            temp = data_list[i].split("=");
+                            args[temp[0]] = window.decodeURIComponent(temp[1]);
+                        }
+
+                        context.setPreviewArgs(args);
+
+                        config = JSON.parse(JSON.stringify(window.yt.config_.FILLER_DATA.player));
+                        config.args = args;
+                        config.attrs.id = "iri-preview-player";
+
+                        window.yt.player.Application.create("iri-video-preview", config);
+                    },
+                    getPreviewArgs: function(video_id) {
+
+                        var xhr;
+                        var sts;
+                        var params;
+                        var context;
+
+                        context = this;
+                        sts = window.yt.config_.FILLER_DATA.player.sts;
+
+                        params = [
+                            "video_id=" + video_id,
+                            "sts=" + sts,
+                            "ps=gaming",
+                            "el=detailpage",
+                            "c=WEB_GAMING",
+                            "cplayer=UNIPLAYER",
+                            "mute=true",
+                            "authuser=0"
+                        ];
+
+                        xhr = new XMLHttpRequest();
+                        xhr.addEventListener("load", function(event) {
+                            context.iniPreview(context, event);
+                        });
+
+                        xhr.open("GET", "/get_video_info?" + params.join("&"), true);
+                        context.getPreviewArgs.request = xhr;
+                        xhr.send();
+                    },
+                    endPreviewContainer: function(context, event, container, listener) {
+
+                        var video_container;
+
+                        if (!container.dataHost.contains(event.toElement || event.relatedTarget)) {
+                            container.dataHost.removeEventListener("mouseleave", listener, true);
+
+                            if ((video_container = document.getElementById("iri-video-preview"))) {
+                                if (context.getPreviewArgs.request) {
+                                    context.getPreviewArgs.request.abort();
+                                    delete context.getPreviewArgs.request;
+                                }
+
+                                if (video_container.firstChild) {
+                                    video_container.firstChild.destroy();
+                                }
+                            }
+                        }
+
+                    },
+                    iniPreviewContainer: function(event) {
+
+                        var context;
+                        var video_id;
+                        var container;
+                        var video_container;
+
+                        if (user_settings.thumbnail_preview) {
+
+                            container = event.target;
+                            video_id = container.dataHost && container.dataHost.data && container.dataHost.data.videoId;
+
+                            if (container.tagName === "YT-IMG-SHADOW" && video_id && !container.querySelector("#iri-preview-player")) {
+
+                                if (!(video_container = document.getElementById("iri-video-preview"))) {
+                                    video_container = document.createElement("iri-video-preview");
+                                    video_container.id = "iri-video-preview";
+                                }
+
+                                if (video_container.parentNode !== container) {
+                                    container.appendChild(video_container);
+                                }
+
+                                context = this;
+
+                                context.getPreviewArgs(video_id);
+
+                                container.parentNode.addEventListener("mouseleave", function listener(event) {
+                                    context.endPreviewContainer(context, event, container, listener);
+                                }, true);
+                            }
+                        }
+
+                    },
+                    ini: function() {
+
+                        var key;
+                        var context;
+
+                        context = this;
+
+                        if (context.started) {
+                            return;
+                        }
+
+                        context.started = true;
+
+                        for (key in context.options) {
+                            if (context.options.hasOwnProperty(key)) {
+                                if (!(key in user_settings)) {
+                                    user_settings[key] = context.options[key].value;
+                                }
+                            }
+                        }
+
+                        document.addEventListener("mouseenter", this.iniPreviewContainer.bind(this), true);
+                    }
+                },
                 {
                     options: {
                         player_auto_play: {
@@ -122,7 +291,6 @@
                             if (temp && temp.player && temp.player.args) {
                                 context.modArgs(temp.player.args);
                             }
-
                             return temp;
                         };
                     },
@@ -166,7 +334,7 @@
                                 }
 
                                 return context.modVideoByPlayerVars(this._loadVideoByPlayerVars);
-                                return this._loadVideoByPlayerVars;
+                                // return this._loadVideoByPlayerVars;
                             }
                         });
 
@@ -222,7 +390,7 @@
                         Object.defineProperty(Object.prototype, "autoplay", {
                             set: function(data) { this._autoplay = data; },
                             get: function() {
-                                
+
                                 if (this.ucid && this._autoplay === "1" && (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
                                     return "0";
                                 }
@@ -235,7 +403,7 @@
                             set: function(data) { this._fflags = data; },
                             get: function() {
 
-                                if (this.ucid && (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
+                                if (this.ucid && (!this.autoplay || this.autoplay === "1") && (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
                                     return this._fflags
                                         .replace(
                                             "legacy_autoplay_flag=true",
@@ -729,7 +897,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.2a";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.3a";
                     document.documentElement.appendChild(holder);
                 }
 

@@ -24,6 +24,7 @@ Each item on the lists below can be removed or moved to the a different version 
 - [ ] Feature: download video and audio
 - [x] Feature: change volume using the mouse wheel
 - [ ] Feature: fullbrowser video mode
+- [x] Feature: thumbnail video preview
 - [ ] Feature: ability to open the player in a pop-out window
 - [ ] Feature: show the total number of uploaded videos by the video author
 - [ ] Feature: show the relative uploaded time of the video being watched
@@ -39,5 +40,4 @@ Each item on the lists below can be removed or moved to the a different version 
 - [ ] Feature: mini player when scrolling down
 - [ ] Feature: mini player when navigating to different pages
 - [ ] Feature: control comment section visiblity
-- [ ] Feature: thumbnail video preview
 - [ ] Feature: reverse playlist

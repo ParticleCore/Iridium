@@ -2,7 +2,7 @@ html {
     --iri-checkbox-bkg: 7px;
 }
 
-/* start | general settigns */
+/* ini | general settigns */
 #iridium_settings_button {
     box-sizing: border-box;
     height: 40px;
@@ -38,9 +38,19 @@ html {
     transition: 1s;
     stop-color: #F0F;
 }
-/*   end | general settings */
+/* end | general settings */
 
-/* start | Iridium settings */
+/* ini | thumbnail preview */
+#iri-video-preview video {
+    max-height: 100%;
+    max-width: 100%;
+}
+#iri-video-preview .html5-video-container {
+    height: 100%;
+}
+/* end | thumbnail preview */
+
+/* ini | Iridium settings */
 html,
 body {
     box-sizing: border-box; 
@@ -197,4 +207,4 @@ body {
 #iridium_settings input:checked + label:after {
     left: 14px;
 }
-/*  end | Iridium settings */
+/* end | Iridium settings */

@@ -51,7 +51,7 @@ html {
     top: 0;
     transition: 0.5s background-color;
 }
-[ytd-thumbnail]:hover #iri-video-preview {
+ytd-thumbnail:hover #iri-video-preview {
     background-color: rgba(0, 0, 0, 0.5);
 }
 #iri-video-preview video {

@@ -19,7 +19,6 @@ Each item on the lists below can be removed or moved to the a different version 
 - [ ] Core: reset user settings
 - [ ] Core: implement locales
 - [x] Feature: autoplay control
-- [ ] Feature: blacklist videos from specific channels
 - [x] Feature: disable ads on videos
 - [x] Feature: toggle HFR (60fps) streams
 - [ ] Feature: download video and audio
@@ -36,6 +35,7 @@ Each item on the lists below can be removed or moved to the a different version 
 - [ ] Core: settings menu shorcut for Firefox add-on
 - [ ] Core: create Opera add-on
 - [ ] Core: settings menu shorcut for Opera add-on
+- [ ] Feature: blacklist videos from specific channels
 - [ ] Feature: mini player when scrolling down
 - [ ] Feature: mini player when navigating to different pages
 - [ ] Feature: control comment section visiblity

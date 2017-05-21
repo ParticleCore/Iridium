@@ -50,12 +50,14 @@ html {
     right: 0;
     top: 0;
 }
-ytd-thumbnail:hover #iri-video-preview {
+yt-img-shadow:hover #iri-video-preview {
     background-color: rgba(0, 0, 0, 0.5);
 }
 #iri-video-preview video {
+    left: auto !important;
     max-height: 100%;
     max-width: 100%;
+    top: auto !important;
 }
 #iri-video-preview .html5-video-container {
     height: 100%;

@@ -2,7 +2,7 @@ html {
     --iri-checkbox-bkg: 7px;
 }
 
-/* ini | general settigns */
+/* ini | settings button */
 #iridium_settings_button {
     box-sizing: border-box;
     height: 40px;
@@ -38,7 +38,13 @@ html {
     transition: 1s;
     stop-color: #F0F;
 }
-/* end | general settings */
+/* end | settings button */
+
+/* ini | general layout */
+.iri-square-avatars yt-img-shadow {
+    border-radius: 0 !important;
+}
+/* end | general layout */
 
 /* ini | thumbnail preview */
 #iri-video-preview {

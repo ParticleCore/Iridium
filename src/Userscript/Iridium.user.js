@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.1.3a
+// @version         0.1.4a
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -48,6 +48,42 @@
             modules = [
                 {
                     options: {
+                        square_avatars: {
+                            id:          "square_avatars",
+                            section:     "general",
+                            sub_section: "layout",
+                            type:        "checkbox",
+                            value:       true,
+                            label:       "Square user and channel avatars"
+                        }
+                    },
+                    ini: function() {
+
+                        var key;
+
+                        if (this.started) {
+                            return;
+                        }
+
+                        this.started = true;
+
+                        for (key in this.options) {
+                            if (this.options.hasOwnProperty(key)) {
+                                if (!(key in user_settings)) {
+                                    user_settings[key] = this.options[key].value;
+                                }
+                            }
+                        }
+
+                        if (user_settings.square_avatars) {
+                            document.documentElement.classList.add("iri-square-avatars");
+                        } else {
+                            document.documentElement.classList.remove("iri-square-avatars");
+                        }
+                    }
+                },
+                {
+                    options: {
                         thumbnail_preview: {
                             id:          "thumbnail_preview",
                             section:     "general",
@@ -68,6 +104,14 @@
                         args.rel = "0";
                         args.showinfo = "0";
                         args.vq = "small";
+
+                        delete args.ad3_module;
+                        delete args.baseUrl;
+                        delete args.iv_endscreen_url;
+                        delete args.ppv_remarketing_url;
+                        delete args.probe_url;
+                        delete args.remarketing_url;
+                        delete args.videostats_playback_base_url;
                     },
                     iniPreview: function(context, event) {
 
@@ -122,31 +166,40 @@
                         });
 
                         xhr.open("GET", "/get_video_info?" + params.join("&"), true);
-                        context.getPreviewArgs.request = xhr;
                         xhr.send();
+                        return xhr;
                     },
-                    endPreviewContainer: function(context, event, container, listener) {
+                    endPreviewContainer: function(context, event, container, listener, xhr, timer, video_container, clicked) {
 
                         var video_container;
 
-                        if (!container.dataHost.contains(event.toElement || event.relatedTarget)) {
-                            container.dataHost.removeEventListener("mouseleave", listener, true);
+                        if (clicked || !container.parentNode.contains(event.toElement || event.relatedTarget)) {
+                            container.parentNode.removeEventListener("click", listener, false);
+                            container.parentNode.removeEventListener("mouseleave", listener, false);
+
+                            if (timer) {
+                                window.clearInterval(timer);
+                            }
 
                             if ((video_container = document.getElementById("iri-video-preview"))) {
-                                if (context.getPreviewArgs.request) {
-                                    context.getPreviewArgs.request.abort();
-                                    delete context.getPreviewArgs.request;
+                                if (xhr) {
+                                    xhr.abort();
                                 }
 
                                 if (video_container.firstChild) {
                                     video_container.firstChild.destroy();
                                 }
                             }
-                        }
 
+                            if (clicked) {
+                                video_container.remove();
+                            }
+                        }
                     },
                     iniPreviewContainer: function(event) {
 
+                        var xhr;
+                        var timer;
                         var context;
                         var video_id;
                         var container;
@@ -162,6 +215,7 @@
                                 if (!(video_container = document.getElementById("iri-video-preview"))) {
                                     video_container = document.createElement("iri-video-preview");
                                     video_container.id = "iri-video-preview";
+                                    video_container.setAttribute("class", "ytp-small-mode");
                                 }
 
                                 if (video_container.parentNode !== container) {
@@ -170,32 +224,41 @@
 
                                 context = this;
 
-                                context.getPreviewArgs(video_id);
+                                if (!window.yt || !window.yt.player || !window.yt.player.Application || !window.yt.player.Application.create) {
+                                    timer = window.setInterval(function() {
+                                        if (window.yt && window.yt.player && window.yt.player.Application && window.yt.player.Application.create) {
+                                            window.clearInterval(timer);
+                                            xhr = context.getPreviewArgs(video_id);
+                                        }
+                                    });
+                                } else {
+                                    xhr = context.getPreviewArgs(video_id);
+                                }
+
+                                container.parentNode.addEventListener("click", function listener(event) {
+                                    context.endPreviewContainer(context, event, container, listener, xhr, timer, video_container, true);
+                                }, false);
 
                                 container.parentNode.addEventListener("mouseleave", function listener(event) {
-                                    context.endPreviewContainer(context, event, container, listener);
-                                }, true);
+                                    context.endPreviewContainer(context, event, container, listener, xhr, timer);
+                                }, false);
                             }
                         }
-
                     },
                     ini: function() {
 
                         var key;
-                        var context;
 
-                        context = this;
-
-                        if (context.started) {
+                        if (this.started) {
                             return;
                         }
 
-                        context.started = true;
+                        this.started = true;
 
-                        for (key in context.options) {
-                            if (context.options.hasOwnProperty(key)) {
+                        for (key in this.options) {
+                            if (this.options.hasOwnProperty(key)) {
                                 if (!(key in user_settings)) {
-                                    user_settings[key] = context.options[key].value;
+                                    user_settings[key] = this.options[key].value;
                                 }
                             }
                         }
@@ -302,119 +365,114 @@
                         var key;
                         var context;
 
-                        context = this;
-
-                        if (context.started) {
+                        if (this.started) {
                             return;
                         }
 
-                        context.started = true;
+                        this.started = true;
 
-                        for (key in context.options) {
-                            if (context.options.hasOwnProperty(key)) {
+                        for (key in this.options) {
+                            if (this.options.hasOwnProperty(key)) {
                                 if (!(key in user_settings)) {
-                                    user_settings[key] = context.options[key].value;
+                                    user_settings[key] = this.options[key].value;
                                 }
                             }
                         }
 
+                        context = this;
+
                         JSON.parse = context.modJSONParse(JSON.parse);
 
-                        Object.defineProperty(Object.prototype, "cueVideoByPlayerVars", {
-                            set: function(data) { this._cueVideoByPlayerVars = data; },
-                            get: function() { return context.modVideoByPlayerVars(this._cueVideoByPlayerVars); }
-                        });
-
-                        Object.defineProperty(Object.prototype, "loadVideoByPlayerVars", {
-                            set: function(data) { this._loadVideoByPlayerVars = data; },
-                            get: function() {
-
-                                if (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
-                                    return this.cueVideoByPlayerVars;
-                                }
-
-                                return context.modVideoByPlayerVars(this._loadVideoByPlayerVars);
-                                // return this._loadVideoByPlayerVars;
-                            }
-                        });
-
-                        Object.defineProperty(Object.prototype, "TIMING_AFT_KEYS", {
-                            set: function(data) {
-                                this._TIMING_AFT_KEYS = data;
+                        Object.defineProperties(Object.prototype, {
+                            "cueVideoByPlayerVars": {
+                                set: function(data) { this._cueVideoByPlayerVars = data; },
+                                get: function() { return context.modVideoByPlayerVars(this._cueVideoByPlayerVars); }
                             },
-                            get: function() {
+                            "loadVideoByPlayerVars": {
+                                set: function(data) { this._loadVideoByPlayerVars = data; },
+                                get: function() {
 
-                                var key;
-
-                                if (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
-
-                                    if (window.ytcsi && window.ytcsi.data_ && window.ytcsi.data_.tick) {
-                                        for (key in window.ytcsi.data_.tick) {
-                                            return [key];
-                                        }
-                                    } else {
-                                        return ["srt"];
+                                    if (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
+                                        return this.cueVideoByPlayerVars;
                                     }
+
+                                    return context.modVideoByPlayerVars(this._loadVideoByPlayerVars);
                                 }
+                            },
+                            "TIMING_AFT_KEYS": {
+                                set: function(data) {
+                                    this._TIMING_AFT_KEYS = data;
+                                },
+                                get: function() {
 
-                                return this._TIMING_AFT_KEYS;
-                            }
-                        });
+                                    var key;
 
-                        Object.defineProperty(Object.prototype, "loaded", {
-                            set: function(data) { this._loaded = data; },
-                            get: function() {
+                                    if (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
 
-                                if (this.args && (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
-                                    return false;
+                                        if (window.ytcsi && window.ytcsi.data_ && window.ytcsi.data_.tick) {
+                                            for (key in window.ytcsi.data_.tick) {
+                                                return [key];
+                                            }
+                                        } else {
+                                            return ["srt"];
+                                        }
+                                    }
+
+                                    return this._TIMING_AFT_KEYS;
                                 }
+                            },
+                            "loaded": {
+                                set: function(data) { this._loaded = data; },
+                                get: function() {
 
-                                return this._loaded;
-                            }
-                        });
+                                    if (this.args && (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
+                                        return false;
+                                    }
 
-                        Object.defineProperty(Object.prototype, "load", {
-                            set: function(data) { this._load = data; },
-                            get: function() {
-
-                                var temp = this._load && this._load.toString();
-
-                                if (temp && temp.match("Application.create")) {
-                                    context.modArgs(window.ytplayer.config.args);
+                                    return this._loaded;
                                 }
+                            },
+                            "load": {
+                                set: function(data) { this._load = data; },
+                                get: function() {
 
-                                return this._load;
-                            }
-                        });
+                                    var temp = this._load && this._load.toString();
 
-                        Object.defineProperty(Object.prototype, "autoplay", {
-                            set: function(data) { this._autoplay = data; },
-                            get: function() {
+                                    if (temp && temp.match("Application.create")) {
+                                        context.modArgs(window.ytplayer.config.args);
+                                    }
 
-                                if (this.ucid && this._autoplay === "1" && (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
-                                    return "0";
+                                    return this._load;
                                 }
+                            },
+                            "autoplay": {
+                                set: function(data) { this._autoplay = data; },
+                                get: function() {
 
-                                return this._autoplay;
-                            }
-                        });
+                                    if (this.ucid && this._autoplay === "1" && (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
+                                        return "0";
+                                    }
 
-                        Object.defineProperty(Object.prototype, "fflags", {
-                            set: function(data) { this._fflags = data; },
-                            get: function() {
-
-                                if (this.ucid && (!this.autoplay || this.autoplay === "1") && (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
-                                    return this._fflags
-                                        .replace(
-                                            "legacy_autoplay_flag=true",
-                                            "legacy_autoplay_flag=false"
-                                        ).replace(
-                                            "disable_new_pause_state3=true",
-                                            "disable_new_pause_state3=false"
-                                        ); // removes transition-delay
+                                    return this._autoplay;
                                 }
+                            },
+                            "fflags": {
+                                set: function(data) { this._fflags = data; },
+                                get: function() {
 
-                                return this._fflags;
+                                    if (this.ucid && (!this.autoplay || this.autoplay === "1") && (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
+                                        return this._fflags
+                                            .replace(
+                                                "legacy_autoplay_flag=true",
+                                                "legacy_autoplay_flag=false"
+                                            ).replace(
+                                                "disable_new_pause_state3=true",
+                                                "disable_new_pause_state3=false"
+                                            );
+                                    }
+
+                                    return this._fflags;
+                                }
                             }
                         });
                     }
@@ -489,26 +547,24 @@
                     },
                     ini: function() {
 
-                        var context;
+                        var key;
 
-                        context = this;
-
-                        if (context.started) {
+                        if (this.started) {
                             return;
                         }
 
-                        context.started = true;
+                        this.started = true;
 
-                        for (key in context.options) {
-                            if (context.options.hasOwnProperty(key)) {
+                        for (key in this.options) {
+                            if (this.options.hasOwnProperty(key)) {
                                 if (!(key in user_settings)) {
-                                    user_settings[key] = context.options[key].value;
+                                    user_settings[key] = this.options[key].value;
                                 }
                             }
                         }
 
                         if (user_settings.player_volume_wheel) {
-                            document.addEventListener("wheel", context.changeVolume);
+                            document.addEventListener("wheel", this.changeVolume);
                         }
                     }
                 }, {
@@ -897,7 +953,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.3a";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.4a";
                     document.documentElement.appendChild(holder);
                 }
 

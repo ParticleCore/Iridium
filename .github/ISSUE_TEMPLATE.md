@@ -10,4 +10,4 @@ Feature requests:
  - If a feature request is considered to be implemented it will be re-opened for the duration of the implementation
 
 Bug/problem report:
- - Make sure you follow the instructions for reporting a bug here: https://github.com/ParticleCore/Iridium/wiki/Report-a-bug
+ - Follow the instructions for reporting a bug here: https://github.com/ParticleCore/Iridium/wiki/Report-a-bug

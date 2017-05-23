@@ -5,7 +5,7 @@ For any issue created it must only refer to one issue only.
 Do not include more than one subject (problem, request or both) in the same issue.
 
 Feature requests:
- - There is currently no intention to accept feature requests, but they can be requested nonetheless for future reference
+ - There is currently no intention to accept feature requests, but they can be requested nonetheless for future consideration
  - They will be automatically closed and labeled as "Feature" for easier access
 
 Bug/problem report:

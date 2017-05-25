@@ -21,7 +21,6 @@ Each item on the lists below can be removed or moved to the a different version 
 - [x] Feature: autoplay control
 - [x] Feature: disable ads on videos
 - [x] Feature: toggle HFR (60fps) streams
-- [ ] Feature: download video and audio
 - [x] Feature: change volume using the mouse wheel
 - [ ] Feature: fullbrowser video mode
 - [x] Feature: thumbnail video preview

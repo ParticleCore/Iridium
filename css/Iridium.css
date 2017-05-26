@@ -170,10 +170,12 @@ body {
     display: inline-block;
     /*left: 40px;*/
     /*margin: 0 5px 0 0;*/
-    padding-left: 40px;
     position: relative;
     vertical-align: middle;
     user-select: none;
+}
+label.setting {
+    padding-left: 40px;
 }
 
 

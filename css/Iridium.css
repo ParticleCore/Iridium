@@ -173,6 +173,7 @@ body {
     position: relative;
     vertical-align: middle;
     user-select: none;
+    white-space: pre;
 }
 label.setting {
     padding-left: 40px;
@@ -187,6 +188,7 @@ label.setting {
     width: 0;
     visibility: hidden;
 }
+
 #iridium_settings label:before {
     box-shadow: 0 0 2px 0 #333 inset;
     content: '';
@@ -228,5 +230,32 @@ label.setting {
 }
 #iridium_settings input:checked + label:after {
     left: 14px;
+}
+
+#iridium_settings button {
+    /*background-color: #167AC6;*/
+    box-shadow: rgba(0, 0, 0, 0.05) 0 1px 0;
+    color: #666666;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: bold;
+    height: 28px;
+    border-color: #167AC6;
+    border-radius: 2px;
+    outline: none 0;
+    padding: 0 10px;
+}
+#iridium_settings button {
+    background-color: #F8F8F8;
+    box-shadow: rgba(0, 0, 0, 0.05) 0 1px 0;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #D3D3D3;
+    border-image: initial;
+}
+#iridium_settings button:hover {
+    background: #F0F0F0;
+    border-color: #C6C6C6;
+    color: #333333;
 }
 /* end | Iridium settings */

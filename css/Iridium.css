@@ -179,6 +179,32 @@ label.setting {
     padding-left: 40px;
 }
 
+#iridium-i18n-editor {
+    background: #FFFFFF;
+    bottom: 0;
+    left: 0;
+    padding: 20px;
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 100;
+}
+#iridium-i18n-editor #buttons-section {
+    float: left;
+    height: 50px;
+    width: 100%;
+}
+#iridium-i18n-editor button {
+    margin-right: 20px;
+}
+#iridium-i18n-editor textarea {
+    box-sizing: border-box;
+    display: block;
+    height: calc(100% - 50px);
+    resize: none;
+    width: 100%;
+}
+
 
 
 

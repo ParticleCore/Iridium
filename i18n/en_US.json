@@ -1,0 +1,46 @@
+{
+    "language": "English (US)",
+    "section_titles": {
+        "general": "general settings",
+        "video": "video settings",
+        "about": "information and useful links",
+        "settings": "iridium settings"
+    },
+    "sub_section_titles": {
+        "layout": "layout",
+        "thumbnails": "thumbnails",
+        "player": "player",
+        "channel": "channel",
+        "general": "general"
+    },
+    "iridium_api": {
+        "settings_button": "Iridium settings"
+    },
+    "square_avatars": {
+        "label": "Make user images squared"
+    },
+    "thumbnail_preview": {
+        "label": "Preview videos by hovering the thumbnails"
+    },
+    "player_auto_play": {
+        "label": "Play videos automatically"
+    },
+    "channel_trailer_auto_play": {
+        "label": "Play channel trailers automatically"
+    },
+    "player_ads": {
+        "label": "Allow ads on videos"
+    },
+    "subscribed_channel_player_ads": {
+        "label": "Allow ads only on videos of subscribed channels"
+    },
+    "player_hfr": {
+        "label": "Allow HFR (60fps) streams"
+    },
+    "player_volume_wheel": {
+        "label": "Change volume using the mouse wheel"
+    },
+    "iridium_language": {
+        "label": "Current language: "
+    }
+}

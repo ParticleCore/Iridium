@@ -183,14 +183,14 @@ label.setting {
     background: #fff;
     box-shadow: 0 1px 2px rgba(0, 0, 0, .1);
     box-sizing: border-box;
-    bottom: 0;
-    left: 0;
+    bottom: 10px;
+    left: 10px;
     margin: 0 auto;
-    max-width: 1004px;
+    max-width: 1024px;
     padding: 20px;
     position: fixed;
-    right: 0;
-    top: 0;
+    right: 10px;
+    top: 10px;
     z-index: 100;
 }
 #iridium-i18n-editor #buttons-section {

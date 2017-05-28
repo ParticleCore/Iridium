@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.1.4a
+// @version         0.1.5a
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -20,22 +20,19 @@
 // ==/UserScript==
 (function () {
     "use strict";
+
     var iridium = {
+
         inject: function(is_userscript) {
 
+            var i18n;
             var modules;
-            var iridiumApi;
+            var iridium_api;
             var options_order;
             var user_settings;
-            var section_titles;
-
-            section_titles = {
-                general: "general settings",
-                video:   "video settings",
-                about:   "information and useful links"
-            };
 
             options_order = {
+                general: [],
                 video: [
                     "player",
                     [],
@@ -45,16 +42,63 @@
                 about: []
             };
 
+            i18n = {
+                language: "English (US)",
+                section_titles: {
+                    general: "general settings",
+                    video: "video settings",
+                    about: "information and useful links",
+                    settings: "iridium settings"
+                },
+                sub_section_titles: {
+                    layout: "layout",
+                    thumbnails: "thumbnails",
+                    player: "player",
+                    channel: "channel",
+                    general: "general"
+                },
+                iridium_api: {
+                    settings_button: "Iridium settings"
+                },
+                square_avatars: {
+                    label: "Make user images squared"
+                },
+                thumbnail_preview: {
+                    label: "Preview videos by hovering the thumbnails"
+                },
+                player_auto_play: {
+                    label: "Play videos automatically"
+                },
+                channel_trailer_auto_play: {
+                    label: "Play channel trailers automatically"
+                },
+                player_ads: {
+                    label: "Allow ads on videos"
+                },
+                subscribed_channel_player_ads: {
+                    label: "Allow ads only on videos of subscribed channels"
+                },
+                player_hfr: {
+                    label: "Allow HFR (60fps) streams"
+                },
+                player_volume_wheel: {
+                    label: "Change volume using the mouse wheel"
+                },
+                iridium_language: {
+                    label: "Current language: "
+                }
+            };
+
             modules = [
                 {
                     options: {
                         square_avatars: {
                             id:          "square_avatars",
                             section:     "general",
-                            sub_section: "layout",
+                            sub_section: i18n.sub_section_titles.layout,
                             type:        "checkbox",
                             value:       true,
-                            label:       "Square user and channel avatars"
+                            label:       i18n.square_avatars.label
                         }
                     },
                     ini: function() {
@@ -81,16 +125,15 @@
                             document.documentElement.classList.remove("iri-square-avatars");
                         }
                     }
-                },
-                {
+                }, {
                     options: {
                         thumbnail_preview: {
                             id:          "thumbnail_preview",
                             section:     "general",
-                            sub_section: "thumbnails",
+                            sub_section: i18n.sub_section_titles.thumbnails,
                             type:        "checkbox",
                             value:       false,
-                            label:       "Preview videos by hovering the thumbnails"
+                            label:       i18n.thumbnail_preview.label
                         }
                     },
                     setPreviewArgs: function(args) {
@@ -191,7 +234,7 @@
                                 }
                             }
 
-                            if (clicked) {
+                            if (clicked && video_container) {
                                 video_container.remove();
                             }
                         }
@@ -265,13 +308,12 @@
 
                         document.addEventListener("mouseenter", this.iniPreviewContainer.bind(this), true);
                     }
-                },
-                {
+                }, {
                     options: {
                         player_auto_play: {
                             id:          "player_auto_play",
                             section:     "video",
-                            sub_section: "player",
+                            sub_section: i18n.sub_section_titles.player,
                             type:        "checkbox",
                             value:       false,
                             label:       "Play videos automatically"
@@ -279,7 +321,7 @@
                         channel_trailer_auto_play: {
                             id:          "channel_trailer_auto_play",
                             section:     "video",
-                            sub_section: "channel",
+                            sub_section: i18n.sub_section_titles.channel,
                             type:        "checkbox",
                             value:       false,
                             label:       "Play channel trailers automatically"
@@ -287,7 +329,7 @@
                         player_ads: {
                             id:          "player_ads",
                             section:     "video",
-                            sub_section: "player",
+                            sub_section: i18n.sub_section_titles.player,
                             type:        "checkbox",
                             value:       false,
                             label:       "Allow ads on videos"
@@ -295,7 +337,7 @@
                         subscribed_channel_player_ads: {
                             id:          "subscribed_channel_player_ads",
                             section:     "video",
-                            sub_section: "player",
+                            sub_section: i18n.sub_section_titles.player,
                             type:        "checkbox",
                             value:       false,
                             label:       "Allow ads only on videos of subscribed channels"
@@ -303,7 +345,7 @@
                         player_hfr: {
                             id:          "player_hfr",
                             section:     "video",
-                            sub_section: "player",
+                            sub_section: i18n.sub_section_titles.player,
                             type:        "checkbox",
                             value:       true,
                             label:       "Allow HFR (60fps) streams"
@@ -341,7 +383,7 @@
                         return function(args) {
                             context.modArgs(args);
                             return original.apply(this, arguments);
-                        }
+                        };
                     },
                     modJSONParse: function(original) {
 
@@ -354,6 +396,7 @@
                             if (temp && temp.player && temp.player.args) {
                                 context.modArgs(temp.player.args);
                             }
+
                             return temp;
                         };
                     },
@@ -384,11 +427,11 @@
                         JSON.parse = context.modJSONParse(JSON.parse);
 
                         Object.defineProperties(Object.prototype, {
-                            "cueVideoByPlayerVars": {
+                            cueVideoByPlayerVars: {
                                 set: function(data) { this._cueVideoByPlayerVars = data; },
                                 get: function() { return context.modVideoByPlayerVars(this._cueVideoByPlayerVars); }
                             },
-                            "loadVideoByPlayerVars": {
+                            loadVideoByPlayerVars: {
                                 set: function(data) { this._loadVideoByPlayerVars = data; },
                                 get: function() {
 
@@ -399,10 +442,8 @@
                                     return context.modVideoByPlayerVars(this._loadVideoByPlayerVars);
                                 }
                             },
-                            "TIMING_AFT_KEYS": {
-                                set: function(data) {
-                                    this._TIMING_AFT_KEYS = data;
-                                },
+                            TIMING_AFT_KEYS: {
+                                set: function(data) { this._TIMING_AFT_KEYS = data; },
                                 get: function() {
 
                                     var key;
@@ -421,7 +462,7 @@
                                     return this._TIMING_AFT_KEYS;
                                 }
                             },
-                            "loaded": {
+                            loaded: {
                                 set: function(data) { this._loaded = data; },
                                 get: function() {
 
@@ -432,7 +473,7 @@
                                     return this._loaded;
                                 }
                             },
-                            "load": {
+                            load: {
                                 set: function(data) { this._load = data; },
                                 get: function() {
 
@@ -445,7 +486,7 @@
                                     return this._load;
                                 }
                             },
-                            "autoplay": {
+                            autoplay: {
                                 set: function(data) { this._autoplay = data; },
                                 get: function() {
 
@@ -456,7 +497,7 @@
                                     return this._autoplay;
                                 }
                             },
-                            "fflags": {
+                            fflags: {
                                 set: function(data) { this._fflags = data; },
                                 get: function() {
 
@@ -481,10 +522,10 @@
                         player_volume_wheel: {
                             id:          "player_volume_wheel",
                             section:     "video",
-                            sub_section: "player",
+                            sub_section: i18n.sub_section_titles.player,
                             type:        "checkbox",
                             value:       false,
-                            label:       "Change volume using the mouse wheel"
+                            label:       i18n.player_volume_wheel.label
                         }
                     },
                     changeVolume: function(event) {
@@ -492,6 +533,7 @@
                         var api;
                         var player;
                         var direction;
+                        var timestamp;
                         var can_scroll;
                         var new_volume;
                         var player_state;
@@ -539,7 +581,27 @@
                                 direction = event.deltaY || event.wheelDeltaY;
                                 new_volume = api.getVolume() - (Math.sign(direction) * 5);
 
+                                if (new_volume < 0) {
+                                    new_volume = 0;
+                                } else if (new_volume > 100) {
+                                    new_volume = 100;
+                                }
+
                                 api.setVolume(new_volume);
+
+                                timestamp = Date.now();
+
+                                window.localStorage.setItem(
+                                    "yt-player-volume",
+                                    JSON.stringify({
+                                        creation: timestamp,
+                                        data: JSON.stringify({
+                                            volume: new_volume,
+                                            muted: false
+                                        }),
+                                        expiration: timestamp + 2592E6
+                                    })
+                                );
 
                                 return false;
                             }
@@ -564,7 +626,7 @@
                         }
 
                         if (user_settings.player_volume_wheel) {
-                            document.addEventListener("wheel", this.changeVolume);
+                            document.addEventListener("wheel", this.changeVolume.bind(this));
                         }
                     }
                 }, {
@@ -575,13 +637,84 @@
                             type:    "custom"
                         }
                     }
+                }, {
+                    options: {
+                        iridium_language: {
+                            id:          "iridium_language",
+                            section:     "settings",
+                            sub_section: i18n.sub_section_titles.general,
+                            type:        "custom",
+                            value:       function() {
+
+                                var element;
+                                var element_list;
+
+                                element_list = [];
+
+                                element = document.createElement("div");
+                                element.setAttribute("class", "setting");
+                                element.textContent = i18n.iridium_language.label;
+
+                                element_list.push(element);
+
+                                element = document.createElement("button");
+                                element.setAttribute("class", "setting");
+                                element.textContent = i18n.language;
+                                element.addEventListener("click", this.languageEditor.bind(this));
+
+                                element_list.push(element);
+
+                                return element_list;
+                            },
+                            languageEditor: function(event) {
+
+                                var editor;
+                                var button;
+                                var textarea;
+                                var buttons_section;
+
+                                if (!(editor = document.getElementById("iridium-i18n-editor"))) {
+                                    editor = document.createElement("div");
+                                    editor.id = "iridium-i18n-editor";
+                                    document.body.appendChild(editor);
+                                }
+
+                                buttons_section = document.createElement("div");
+                                buttons_section.id = "buttons-section";
+
+                                button = document.createElement("button");
+                                button.textContent = "Save";
+
+                                buttons_section.appendChild(button);
+
+                                button = document.createElement("button");
+                                button.textContent = "Cancel";
+                                button.addEventListener("click", function() {
+                                    editor.remove();
+                                });
+
+                                buttons_section.appendChild(button);
+
+                                textarea = document.createElement("textarea");
+                                textarea.value = JSON.stringify(i18n, null, 4);
+
+                                editor.appendChild(buttons_section);
+                                editor.appendChild(textarea);
+                            }
+                        }
+                    },
+                    ini: function() {
+                        // check for language update
+                    }
                 }
             ];
 
-            iridiumApi = {
+            iridium_api = {
                 fillSettingsContainer: function(options_list) {
 
                     var i;
+                    var j;
+                    var temp;
                     var label;
                     var header;
                     var option;
@@ -596,7 +729,7 @@
                     section.innerHTML = "";
 
                     if ((header = document.getElementById("settings_section_header"))) {
-                        header.textContent = section_titles[options_list[0].section];
+                        header.textContent = i18n.section_titles[options_list[0].section];
                     }
 
                     for (i = 0; i < options_list.length; i++) {
@@ -633,6 +766,17 @@
                                 setting.appendChild(input);
                                 setting.appendChild(label);
                                 break;
+                            case "custom":
+
+                                if (option.value) {
+                                    temp = option.value();
+
+                                    for (j = 0; j < temp.length; j++) {
+                                        setting.appendChild(temp[j]);
+                                    }
+                                }
+
+                                break;
                         }
 
                         sub_section.appendChild(setting);
@@ -666,7 +810,7 @@
                         }
                     }
 
-                    iridiumApi.fillSettingsContainer(options_list);
+                    iridium_api.fillSettingsContainer(options_list);
                 },
                 updateSidebarSelection: function(event) {
 
@@ -687,7 +831,7 @@
 
                             event.target.classList.add("active_sidebar");
 
-                            iridiumApi.loadSelectedSection();
+                            iridium_api.loadSelectedSection();
                         }
                     }
                 },
@@ -727,7 +871,7 @@
                             section = document.createElement("div");
                             section.id = "settings_section";
 
-                            section.addEventListener("change", iridiumApi.autoSaveSettings, true);
+                            section.addEventListener("change", iridium_api.autoSaveSettings, true);
 
                             header = document.createElement("h2");
                             header.id = "settings_section_header";
@@ -765,8 +909,16 @@
                     var container;
                     var new_option;
 
-                    if (!document.head) {
+                    if (document.head) {
+                        document.head.textContent = "";
+                    } else {
                         document.documentElement.appendChild(document.createElement("head"));
+                    }
+
+                    if (document.body) {
+                        document.body.textContent = "";
+                    } else {
+                        document.documentElement.appendChild(document.createElement("body"));
                     }
 
                     if (!(title = document.querySelector("title"))) {
@@ -776,12 +928,6 @@
 
                     title.textContent = "Iridium settings";
 
-                    if (!document.body) {
-                        document.documentElement.appendChild(document.createElement("body"));
-                    } else {
-                        document.body.innerHTML = "";
-                    }
-
                     document.body.id = "iridium_settings";
                     document.body.style.display = "none";
 
@@ -790,15 +936,15 @@
                             for (name in modules[i].options) {
                                 if (modules[i].options.hasOwnProperty(name)) {
                                     option = modules[i].options[name];
-                                    iridiumApi.settingsBuilder(option);
+                                    iridium_api.settingsBuilder(option);
                                 }
                             }
                         }
                     }
 
-                    document.addEventListener("click", iridiumApi.updateSidebarSelection);
+                    document.addEventListener("click", iridium_api.updateSidebarSelection);
 
-                    iridiumApi.loadSelectedSection();
+                    iridium_api.loadSelectedSection();
                 },
                 autoSaveSettings: function(event) {
 
@@ -808,7 +954,7 @@
                             break;
                     }
 
-                    iridiumApi.saveSettings();
+                    iridium_api.saveSettings();
                 },
                 saveSettings: function(id, value) {
                     document.documentElement.dataset.iridium_save_settings = JSON.stringify(user_settings);
@@ -843,12 +989,11 @@
                     buttons = document.querySelector("#end #buttons");
 
                     if (buttons && !(iridium_settings_button = document.getElementById("iridium_settings_button"))) {
-                        iridium_settings_button = document.createElement("a");
-                        iridium_settings_button.id = "iridium_settings_button";
-                        iridium_settings_button.href = "/iridium-settings";
-                        iridium_settings_button.textContent = "test";
-                        iridium_settings_button.target = "_blank";
-                        iridium_settings_button.title = "Iridium settings"
+                        iridium_settings_button           = document.createElement("a");
+                        iridium_settings_button.id        = "iridium_settings_button";
+                        iridium_settings_button.href      = "/iridium-settings";
+                        iridium_settings_button.target    = "_blank";
+                        iridium_settings_button.title     = i18n.iridium_api.settings_button;
                         iridium_settings_button.innerHTML = //
                             "<svg viewBox='0 0 24 24' style='height:24px;'>" +
                             //"    <linearGradient id='iri-gradient' gradientUnits='userSpaceOnUse' x1='6' y1='22' x2='15' y2='6'>" +
@@ -862,7 +1007,7 @@
                             "</svg>";
                         buttons.parentNode.insertBefore(iridium_settings_button, buttons);
                         
-                        document.documentElement.removeEventListener("load", iridiumApi.initializeSettingsButton, true);
+                        document.documentElement.removeEventListener("load", iridium_api.initializeSettingsButton, true);
                     }
                 },
                 initializeModules: function() {
@@ -877,19 +1022,19 @@
                 },
                 ini: function() {
 
-                    iridiumApi.initializeSettings();
+                    iridium_api.initializeSettings();
 
                     if (window.location.pathname === "/iridium-settings") {
-                        iridiumApi.loadSettingsMenu();
+                        iridium_api.loadSettingsMenu();
                     } else {
-                        iridiumApi.initializeModules();
+                        iridium_api.initializeModules();
                     }
 
-                    document.documentElement.addEventListener("load", iridiumApi.initializeSettingsButton, true);
+                    document.documentElement.addEventListener("load", iridium_api.initializeSettingsButton, true);
                 }
             };
 
-            iridiumApi.ini();
+            iridium_api.ini();
         },
         contentScriptMessages: function() {
 
@@ -953,7 +1098,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.4a";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.5a";
                     document.documentElement.appendChild(holder);
                 }
 

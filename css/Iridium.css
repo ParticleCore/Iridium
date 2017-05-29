@@ -268,6 +268,7 @@ label.setting {
     font-size: 11px;
     font-weight: bold;
     height: 28px;
+    margin: 5px;
     outline: none 0;
     padding: 0 10px;
 }

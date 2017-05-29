@@ -176,7 +176,7 @@ body {
     white-space: pre;
 }
 label.setting {
-    padding-left: 40px;
+    padding-left: 35px;
 }
 
 #iridium-i18n-editor {
@@ -215,78 +215,72 @@ label.setting {
 #iridium_settings input[type=checkbox] {
     display: none;
     height: 0;
-    width: 0;
     visibility: hidden;
+    width: 0;
 }
 
 #iridium_settings label:before {
+    background: grey;
+    border-radius: 100px;
     box-shadow: 0 0 2px 0 #333 inset;
+    box-sizing: border-box;
     content: '';
     cursor: pointer;
-    width: calc(40px - 2 * var(--iri-checkbox-bkg));
-    height: calc(100% - 2 * var(--iri-checkbox-bkg));
-    background: grey;
     display: inline-block;
-    border-radius: 100px;
-    position: absolute;
-    vertical-align: middle;
-    /*transform: translateY(-50%);*/
-    /*top: 50%;*/
+    height: calc(100% - 2 * var(--iri-checkbox-bkg));
     left: 0;
+    margin: var(--iri-checkbox-bkg) 0;
+    position: absolute;
     transition: background 0.3s;
-    margin: var(--iri-checkbox-bkg);
-    box-sizing: border-box;
+    vertical-align: middle;
+    width: calc(40px - 2 * var(--iri-checkbox-bkg));
 }
 #iridium_settings label:after {
+    background: #FFF;
+    border-radius: 90px;
     box-shadow: 0 0 3px 0 #333;
     content: '';
     cursor: pointer;
     display: inline-block;
-    position: absolute;
-    width: 14px;
     height: 14px;
-    background: #FFF;
-    border-radius: 90px;
+    left: -7px;
+    margin: 6px;
+    position: absolute;
     transition: 0.3s;
     vertical-align: middle;
-    /*transform: translateY(-50%);*/
-    /*top: 50%;*/
-    left: 0;
-    margin: 6px;
+    width: 14px;
 }
 #iridium_settings input:checked + label:before {
     background: #E52D27;
     background: #27A6E5;
 }
 #iridium_settings input:checked + label:after {
-    left: 14px;
+    left: 7px;
 }
 
 #iridium_settings button {
     /*background-color: #167AC6;*/
+    border-color: #167AC6;
+    border-radius: 2px;
     box-shadow: rgba(0, 0, 0, 0.05) 0 1px 0;
-    color: #666666;
+    color: #666;
     cursor: pointer;
     font-size: 11px;
     font-weight: bold;
     height: 28px;
-    border-color: #167AC6;
-    border-radius: 2px;
     outline: none 0;
     padding: 0 10px;
 }
 #iridium_settings button {
     background-color: #F8F8F8;
     box-shadow: rgba(0, 0, 0, 0.05) 0 1px 0;
-    border-width: 1px;
-    border-style: solid;
-    border-color: #D3D3D3;
+    border: 1px solid #D3D3D3;
     border-image: initial;
 }
 #iridium_settings button:hover {
     background: #F0F0F0;
     border-color: #C6C6C6;
-    color: #333333;
+    color: #333;
 }
 #iridium_settings button:active {
     background: #E9E9E9;

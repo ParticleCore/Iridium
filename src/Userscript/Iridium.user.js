@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.1.5a
+// @version         0.1.6a
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -55,7 +55,9 @@
                     thumbnails: "thumbnails",
                     player: "player",
                     channel: "channel",
-                    general: "general"
+                    general: "general",
+                    language: "language",
+                    settings: "settings"
                 },
                 iridium_api: {
                     settings_button: "Iridium settings"
@@ -84,8 +86,20 @@
                 player_volume_wheel: {
                     label: "Change volume using the mouse wheel"
                 },
+                iridium_custom_language: {
+                    label: "Use modified language"
+                },
                 iridium_language: {
-                    label: "Current language: "
+                    label: "Current language: ",
+                    button_save: "Save",
+                    button_close: "Close"
+                },
+                iridium_user_settings: {
+                    button_save: "Save",
+                    button_close: "Close",
+                    button_export: "Export",
+                    button_import: "Import",
+                    button_reset: "Reset"
                 }
             };
 
@@ -113,7 +127,7 @@
 
                         for (key in this.options) {
                             if (this.options.hasOwnProperty(key)) {
-                                if (!(key in user_settings)) {
+                                if (!(key in user_settings) && this.options[key].value) {
                                     user_settings[key] = this.options[key].value;
                                 }
                             }
@@ -300,7 +314,7 @@
 
                         for (key in this.options) {
                             if (this.options.hasOwnProperty(key)) {
-                                if (!(key in user_settings)) {
+                                if (!(key in user_settings) && this.options[key].value) {
                                     user_settings[key] = this.options[key].value;
                                 }
                             }
@@ -416,7 +430,7 @@
 
                         for (key in this.options) {
                             if (this.options.hasOwnProperty(key)) {
-                                if (!(key in user_settings)) {
+                                if (!(key in user_settings) && this.options[key].value) {
                                     user_settings[key] = this.options[key].value;
                                 }
                             }
@@ -619,7 +633,7 @@
 
                         for (key in this.options) {
                             if (this.options.hasOwnProperty(key)) {
-                                if (!(key in user_settings)) {
+                                if (!(key in user_settings) && this.options[key].value) {
                                     user_settings[key] = this.options[key].value;
                                 }
                             }
@@ -631,20 +645,20 @@
                     }
                 }, {
                     options: {
-                        about: {
-                            id:      "about",
-                            section: "about",
-                            type:    "custom"
-                        }
-                    }
-                }, {
-                    options: {
+                        iridium_custom_language: {
+                            id:          "iridium_custom_language",
+                            section:     "settings",
+                            sub_section: i18n.sub_section_titles.language,
+                            type:        "checkbox",
+                            value:       false,
+                            label:       i18n.iridium_custom_language.label
+                        },
                         iridium_language: {
                             id:          "iridium_language",
                             section:     "settings",
-                            sub_section: i18n.sub_section_titles.general,
+                            sub_section: i18n.sub_section_titles.language,
                             type:        "custom",
-                            value:       function() {
+                            custom:      function() {
 
                                 var element;
                                 var element_list;
@@ -660,35 +674,37 @@
                                 element = document.createElement("button");
                                 element.setAttribute("class", "setting");
                                 element.textContent = i18n.language;
-                                element.addEventListener("click", this.languageEditor.bind(this));
+                                element.addEventListener("click", this.textEditor.bind(this));
 
                                 element_list.push(element);
 
                                 return element_list;
                             },
-                            languageEditor: function(event) {
+                            textEditor: function(event) {
 
                                 var editor;
                                 var button;
                                 var textarea;
                                 var buttons_section;
 
-                                if (!(editor = document.getElementById("iridium-i18n-editor"))) {
+                                if (!(editor = document.getElementById("iridium-text-editor"))) {
                                     editor = document.createElement("div");
-                                    editor.id = "iridium-i18n-editor";
+                                    editor.id = "iridium-text-editor";
                                     document.body.appendChild(editor);
+                                } else {
+                                    editor.textContent = "";
                                 }
 
                                 buttons_section = document.createElement("div");
                                 buttons_section.id = "buttons-section";
 
                                 button = document.createElement("button");
-                                button.textContent = "Save";
+                                button.textContent = i18n.iridium_language.button_save;
 
                                 buttons_section.appendChild(button);
 
                                 button = document.createElement("button");
-                                button.textContent = "Cancel";
+                                button.textContent = i18n.iridium_language.button_close;
                                 button.addEventListener("click", function() {
                                     editor.remove();
                                 });
@@ -701,10 +717,110 @@
                                 editor.appendChild(buttons_section);
                                 editor.appendChild(textarea);
                             }
+                        },
+                        iridium_user_settings: {
+                            id:          "iridium_user_settings",
+                            section:     "settings",
+                            sub_section: i18n.sub_section_titles.settings,
+                            type:        "custom",
+                            custom:      function() {
+
+                                var element;
+                                var element_list;
+
+                                element_list = [];
+
+                                element = document.createElement("button");
+                                element.setAttribute("class", "setting");
+                                element.textContent = i18n.iridium_user_settings.button_export;
+                                element.addEventListener("click", this.textEditor.bind(this, "export"));
+
+                                element_list.push(element);
+
+                                element = document.createElement("button");
+                                element.setAttribute("class", "setting");
+                                element.textContent = i18n.iridium_user_settings.button_import;
+                                element.addEventListener("click", this.textEditor.bind(this, "import"));
+
+                                element_list.push(element);
+
+                                element = document.createElement("button");
+                                element.setAttribute("class", "setting danger");
+                                element.textContent = i18n.iridium_user_settings.button_reset;
+                                // element.addEventListener("click", this.textEditor.bind(this, "reset"));
+
+                                element_list.push(element);
+
+                                return element_list;
+                            },
+                            textEditor: function(type, event) {
+
+                                var editor;
+                                var button;
+                                var textarea;
+                                var buttons_section;
+
+                                if (!(editor = document.getElementById("iridium-text-editor"))) {
+                                    editor = document.createElement("div");
+                                    editor.id = "iridium-text-editor";
+                                    document.body.appendChild(editor);
+                                } else {
+                                    editor.textContent = "";
+                                }
+
+                                buttons_section = document.createElement("div");
+                                buttons_section.id = "buttons-section";
+                                textarea = document.createElement("textarea");
+
+                                if (type === "import") {
+                                    button = document.createElement("button");
+                                    button.textContent = i18n.iridium_user_settings.button_save;
+
+                                    buttons_section.appendChild(button);
+                                }
+
+                                button = document.createElement("button");
+                                button.textContent = i18n.iridium_user_settings.button_close;
+                                button.addEventListener("click", function() {
+                                    editor.remove();
+                                });
+
+                                buttons_section.appendChild(button);
+
+                                if (type === "export") {
+                                    textarea.value = JSON.stringify(user_settings, null, 4);
+                                }
+
+                                editor.appendChild(buttons_section);
+                                editor.appendChild(textarea);
+                            }
                         }
                     },
                     ini: function() {
-                        // check for language update
+
+                        var key;
+
+                        if (this.started) {
+                            return;
+                        }
+
+                        this.started = true;
+
+                        for (key in this.options) {
+                            if (this.options.hasOwnProperty(key)) {
+                                if (!(key in user_settings) && this.options[key].value) {
+                                    user_settings[key] = this.options[key].value;
+                                }
+                            }
+                        }
+                    }
+                }, {
+                    options: {
+                        about: {
+                            id:      "about",
+                            section: "about",
+                            type:    "custom"
+                        }
                     }
                 }
             ];
@@ -768,8 +884,8 @@
                                 break;
                             case "custom":
 
-                                if (option.value) {
-                                    temp = option.value();
+                                if (option.custom) {
+                                    temp = option.custom();
 
                                     for (j = 0; j < temp.length; j++) {
                                         setting.appendChild(temp[j]);
@@ -975,7 +1091,7 @@
                         for (options in modules[i].options) {
                             option = modules[i].options[options];
 
-                            if (!(option.id in user_settings)) {
+                            if (!(option.id in user_settings) && option.value) {
                                 user_settings[option.id] = option.value;
                             }
                         }
@@ -1098,7 +1214,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.5a";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.6a";
                     document.documentElement.appendChild(holder);
                 }
 

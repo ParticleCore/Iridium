@@ -286,4 +286,15 @@ label.setting {
 #iridium_settings button:active {
     background: #E9E9E9;
 }
+#iridium_settings button.danger {
+    background-color: #C51616;
+    border-color: #C51616;
+    color: #FFF;
+}
+#iridium_settings button.danger:hover {
+    background: #b51212;
+}
+#iridium_settings button.danger:active {
+    background: #9a0909;
+}
 /* end | Iridium settings */

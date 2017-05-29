@@ -278,6 +278,9 @@ label.setting {
     border: 1px solid #D3D3D3;
     border-image: initial;
 }
+#iridium_settings button:first-child {
+    margin-left: 0;
+}
 #iridium_settings button:hover {
     background: #F0F0F0;
     border-color: #C6C6C6;

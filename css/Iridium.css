@@ -130,6 +130,7 @@ body {
 #settings_section h3 {
     display:inline-block;
     font-weight: bold;
+    user-select: none;
 }
 #settings_section h2:first-letter,
 #settings_section h3:first-letter {
@@ -179,7 +180,7 @@ label.setting {
     padding-left: 35px;
 }
 
-#iridium-i18n-editor {
+#iridium-text-editor {
     background: #fff;
     box-shadow: 0 1px 2px rgba(0, 0, 0, .1);
     box-sizing: border-box;
@@ -193,15 +194,15 @@ label.setting {
     top: 10px;
     z-index: 100;
 }
-#iridium-i18n-editor #buttons-section {
+#iridium-text-editor #buttons-section {
     float: left;
     height: 50px;
     width: 100%;
 }
-#iridium-i18n-editor button {
-    margin-right: 20px;
+#iridium-text-editor button {
+    margin: 0 20px 0 0 !important;
 }
-#iridium-i18n-editor textarea {
+#iridium-text-editor textarea {
     box-sizing: border-box;
     display: block;
     height: calc(100% - 50px);

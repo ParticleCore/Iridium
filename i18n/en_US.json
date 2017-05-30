@@ -11,7 +11,9 @@
         "thumbnails": "thumbnails",
         "player": "player",
         "channel": "channel",
-        "general": "general"
+        "general": "general",
+        "language": "language",
+        "settings": "settings"
     },
     "iridium_api": {
         "settings_button": "Iridium settings"
@@ -40,7 +42,19 @@
     "player_volume_wheel": {
         "label": "Change volume using the mouse wheel"
     },
+    "iridium_custom_language": {
+        "label": "Use modified language"
+    },
     "iridium_language": {
-        "label": "Current language: "
+        "label": "Current language: ",
+        "button_save": "Save",
+        "button_close": "Close"
+    },
+    "iridium_user_settings": {
+        "button_save": "Save",
+        "button_close": "Close",
+        "button_export": "Export",
+        "button_import": "Import",
+        "button_reset": "Reset"
     }
 }

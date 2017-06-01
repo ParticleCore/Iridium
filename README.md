@@ -22,6 +22,7 @@ Each item on the lists below can be removed or moved to the a different version 
 - [x] Feature: disable ads on videos
 - [x] Feature: toggle HFR (60fps) streams
 - [x] Feature: change volume using the mouse wheel
+- [x] Feature: default quality
 - [ ] Feature: fullbrowser video mode
 - [x] Feature: thumbnail video preview
 - [ ] Feature: ability to open the player in a pop-out window

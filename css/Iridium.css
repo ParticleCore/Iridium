@@ -176,9 +176,6 @@ body {
     user-select: none;
     white-space: pre;
 }
-label.setting {
-    padding-left: 35px;
-}
 
 #iridium-text-editor {
     background: #fff;
@@ -199,7 +196,7 @@ label.setting {
     height: 50px;
     width: 100%;
 }
-#iridium-text-editor button {
+#iridium-text-editor .iri-settings-button {
     margin: 0 20px 0 0 !important;
 }
 #iridium-text-editor textarea {
@@ -219,8 +216,10 @@ label.setting {
     visibility: hidden;
     width: 0;
 }
-
-#iridium_settings label:before {
+#iridium_settings input[type=checkbox] + label {
+    padding-left: 35px;
+}
+#iridium_settings input[type=checkbox] + label:before {
     background: grey;
     border-radius: 100px;
     box-shadow: 0 0 2px 0 #333 inset;
@@ -236,7 +235,7 @@ label.setting {
     vertical-align: middle;
     width: calc(40px - 2 * var(--iri-checkbox-bkg));
 }
-#iridium_settings label:after {
+#iridium_settings input[type=checkbox] + label:after {
     background: #FFF;
     border-radius: 90px;
     box-shadow: 0 0 3px 0 #333;
@@ -251,15 +250,15 @@ label.setting {
     vertical-align: middle;
     width: 14px;
 }
-#iridium_settings input:checked + label:before {
+#iridium_settings input[type=checkbox]:checked + label:before {
     background: #E52D27;
     background: #27A6E5;
 }
-#iridium_settings input:checked + label:after {
+#iridium_settings input[type=checkbox]:checked + label:after {
     left: 7px;
 }
 
-#iridium_settings button {
+#iridium_settings .iri-settings-button {
     /*background-color: #167AC6;*/
     border-color: #167AC6;
     border-radius: 2px;
@@ -272,33 +271,34 @@ label.setting {
     margin: 5px;
     outline: none 0;
     padding: 0 10px;
+    vertical-align: middle;
 }
-#iridium_settings button {
+#iridium_settings .iri-settings-button {
     background-color: #F8F8F8;
     box-shadow: rgba(0, 0, 0, 0.05) 0 1px 0;
     border: 1px solid #D3D3D3;
     border-image: initial;
 }
-#iridium_settings button:first-child {
+#iridium_settings .iri-settings-button:first-child {
     margin-left: 0;
 }
-#iridium_settings button:hover {
+#iridium_settings .iri-settings-button:hover {
     background: #F0F0F0;
     border-color: #C6C6C6;
     color: #333;
 }
-#iridium_settings button:active {
+#iridium_settings .iri-settings-button:active {
     background: #E9E9E9;
 }
-#iridium_settings button.danger {
+#iridium_settings .iri-settings-button.danger {
     background-color: #C51616;
     border-color: #C51616;
     color: #FFF;
 }
-#iridium_settings button.danger:hover {
+#iridium_settings .iri-settings-button.danger:hover {
     background: #b51212;
 }
-#iridium_settings button.danger:active {
+#iridium_settings .iri-settings-button.danger:active {
     background: #9a0909;
 }
 /* end | Iridium settings */

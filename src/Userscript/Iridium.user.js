@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.1.7a
+// @version         0.1.8a
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -30,6 +30,7 @@
             var iridium_api;
             var options_order;
             var user_settings;
+            var default_language;
 
             options_order = {
                 general: [],
@@ -42,7 +43,7 @@
                 about: []
             };
 
-            i18n = {
+            default_language = {
                 language: "English",
                 section_titles: {
                     general: "general settings",
@@ -86,11 +87,14 @@
                 player_volume_wheel: {
                     label: "Change volume using the mouse wheel"
                 },
+                player_quality: {
+                    label: "Default video quality:"
+                },
                 iridium_language: {
                     button_save: "Save",
                     button_close: "Close",
-                    confirm_save: "You are about to replace your extension language settings.\n\nDo you wish to continue?",
-                    save_success: "New language saved successfully.\n\nChanges will be applied after page refresh.",
+                    confirm_save: "You are about to replace your extension language settings.\n\nDo you whish to continue?",
+                    save_success: "New language saved successfully.\n\nChanges will be applied after a page refresh.",
                     save_error: "The new language could not be saved because it appears to be invalid.\n\n"
                 },
                 iridium_user_settings: {
@@ -98,7 +102,13 @@
                     button_close: "Close",
                     button_export: "Export",
                     button_import: "Import",
-                    button_reset: "Reset"
+                    button_reset: "Reset",
+                    placeholder: "Paste your new settings here",
+                    confirm_reset: "You are about to reset your settings. It is advised to backup your current settings before continuing.\n\nDo you whish to contiue?",
+                    reset_success: "Settings have been reset.\n\nChanges will be applied after a page refresh.",
+                    confirm_import: "You are about to override your current settings. It is advised to backup your current settings before continuing.\n\nDo you whish to contiue?",
+                    import_success: "Your settings have been imported with success.\n\nChanges will be applied after a page refresh.",
+                    import_error: "Your settings could not be imported because they appear to be invalid.\n\n"
                 }
             };
 
@@ -108,10 +118,9 @@
                         square_avatars: {
                             id:          "square_avatars",
                             section:     "general",
-                            sub_section: i18n.sub_section_titles.layout,
+                            sub_section: "layout",
                             type:        "checkbox",
-                            value:       true,
-                            label:       i18n.square_avatars.label
+                            value:       true
                         }
                     },
                     ini: function() {
@@ -119,23 +128,28 @@
                         iridium_api.initializeOption.call(this);
 
                         if (user_settings.square_avatars) {
+
                             document.documentElement.classList.add("iri-square-avatars");
+
                         } else {
+
                             document.documentElement.classList.remove("iri-square-avatars");
+
                         }
+
                     }
                 }, {
                     options: {
                         thumbnail_preview: {
                             id:          "thumbnail_preview",
                             section:     "general",
-                            sub_section: i18n.sub_section_titles.thumbnails,
+                            sub_section: "thumbnails",
                             type:        "checkbox",
-                            value:       false,
-                            label:       i18n.thumbnail_preview.label
+                            value:       false
                         }
                     },
                     setPreviewArgs: function(args) {
+
                         args.autoplay = 1;
                         args.controls = "0";
                         args.enablecastapi = "0";
@@ -154,6 +168,7 @@
                         delete args.probe_url;
                         delete args.remarketing_url;
                         delete args.videostats_playback_base_url;
+
                     },
                     iniPreview: function(context, event) {
 
@@ -169,8 +184,10 @@
                         data_list = event.target.responseText.split("&");
 
                         for (i = 0; i < data_list.length; i++) {
+
                             temp = data_list[i].split("=");
                             args[temp[0]] = window.decodeURIComponent(temp[1]);
+
                         }
 
                         context.setPreviewArgs(args);
@@ -180,6 +197,7 @@
                         config.attrs.id = "iri-preview-player";
 
                         window.yt.player.Application.create("iri-video-preview", config);
+
                     },
                     getPreviewArgs: function(video_id) {
 
@@ -204,40 +222,51 @@
 
                         xhr = new XMLHttpRequest();
                         xhr.addEventListener("load", function(event) {
-                            context.iniPreview(context, event);
-                        });
 
+                            context.iniPreview(context, event);
+
+                        });
                         xhr.open("GET", "/get_video_info?" + params.join("&"), true);
                         xhr.send();
 
                         return xhr;
+
                     },
                     endPreviewContainer: function(context, event, container, listener, xhr, timer, video_container, clicked) {
 
-                        var video_container;
-
                         if (clicked || !container.parentNode.contains(event.toElement || event.relatedTarget)) {
+
                             container.parentNode.removeEventListener("click", listener, false);
                             container.parentNode.removeEventListener("mouseleave", listener, false);
 
                             if (timer) {
+
                                 window.clearInterval(timer);
+
                             }
 
                             if ((video_container = document.getElementById("iri-video-preview"))) {
+
                                 if (xhr) {
+
                                     xhr.abort();
+
                                 }
 
                                 if (video_container.firstChild) {
+
                                     video_container.firstChild.destroy();
+
                                 }
                             }
 
                             if (clicked && video_container) {
+
                                 // video_container.remove();
+
                             }
                         }
+
                     },
                     iniPreviewContainer: function(event) {
 
@@ -256,53 +285,72 @@
                             if (container.tagName === "YT-IMG-SHADOW" && video_id && !container.querySelector("#iri-preview-player")) {
 
                                 if (!(video_container = document.getElementById("iri-video-preview"))) {
+
                                     video_container = document.createElement("iri-video-preview");
                                     video_container.id = "iri-video-preview";
                                     video_container.setAttribute("class", "ytp-small-mode");
+
                                 }
 
                                 if (video_container.parentNode !== container) {
+
                                     container.appendChild(video_container);
+
                                 }
 
                                 context = this;
 
                                 if (!window.yt || !window.yt.player || !window.yt.player.Application || !window.yt.player.Application.create) {
+
                                     timer = window.setInterval(function() {
+
                                         if (window.yt && window.yt.player && window.yt.player.Application && window.yt.player.Application.create) {
+
                                             window.clearInterval(timer);
                                             xhr = context.getPreviewArgs(video_id);
+
                                         }
+
                                     });
+
                                 } else {
+
                                     xhr = context.getPreviewArgs(video_id);
+
                                 }
 
                                 container.parentNode.addEventListener("click", function listener(event) {
+
                                     context.endPreviewContainer(context, event, container, listener, xhr, timer, video_container, true);
+
                                 }, false);
 
                                 container.parentNode.addEventListener("mouseleave", function listener(event) {
+
                                     context.endPreviewContainer(context, event, container, listener, xhr, timer);
+
                                 }, false);
+
                             }
+
                         }
+
                     },
                     ini: function() {
 
                         iridium_api.initializeOption.call(this);
 
                         document.addEventListener("mouseenter", this.iniPreviewContainer.bind(this), true);
+
                     }
                 }, {
                     options: {
                         player_quality: {
                             id:          "player_quality",
                             section:     "video",
-                            sub_section: i18n.sub_section_titles.player,
+                            sub_section: "player",
                             type:        "dropdown",
                             value:       "auto",
-                            label:       "Default video quality:",
                             options:    [
                                 "auto",
                                 "Auto",
@@ -331,42 +379,37 @@
                         player_auto_play: {
                             id:          "player_auto_play",
                             section:     "video",
-                            sub_section: i18n.sub_section_titles.player,
+                            sub_section: "player",
                             type:        "checkbox",
-                            value:       false,
-                            label:       "Play videos automatically"
+                            value:       false
                         },
                         channel_trailer_auto_play: {
                             id:          "channel_trailer_auto_play",
                             section:     "video",
-                            sub_section: i18n.sub_section_titles.channel,
+                            sub_section: "channel",
                             type:        "checkbox",
-                            value:       false,
-                            label:       "Play channel trailers automatically"
-                        }, 
+                            value:       false
+                        },
                         player_ads: {
                             id:          "player_ads",
                             section:     "video",
-                            sub_section: i18n.sub_section_titles.player,
+                            sub_section: "player",
                             type:        "checkbox",
-                            value:       false,
-                            label:       "Allow ads on videos"
+                            value:       false
                         },
                         subscribed_channel_player_ads: {
                             id:          "subscribed_channel_player_ads",
                             section:     "video",
-                            sub_section: i18n.sub_section_titles.player,
+                            sub_section: "player",
                             type:        "checkbox",
-                            value:       false,
-                            label:       "Allow ads only on videos of subscribed channels"
+                            value:       false
                         },
                         player_hfr: {
                             id:          "player_hfr",
                             section:     "video",
-                            sub_section: i18n.sub_section_titles.player,
+                            sub_section: "player",
                             type:        "checkbox",
-                            value:       true,
-                            label:       "Allow HFR (60fps) streams"
+                            value:       true
                         }
                     },
                     modArgs: function(args) {
@@ -376,23 +419,32 @@
                         var temp;
 
                         if (user_settings.subscribed_channel_player_ads ? args.subscribed !== "1" : !user_settings.player_ads) {
+
                             delete args.ad3_module;
+
                         }
 
                         if (args.adaptive_fmts && !user_settings.player_hfr) {
+
                             list = args.adaptive_fmts.split(",");
 
                             for (i = 0; i < list.length; i++) {
+
                                 temp = list[i].split(/fps=([0-9]{2})/);
                                 temp = temp && temp[1];
 
                                 if (temp > 30) {
+
                                     list.splice(i--, 1);
+
                                 }
+
                             }
 
                             args.adaptive_fmts = list.join(",");
+
                         }
+
                     },
                     modVideoByPlayerVars: function(original) {
 
@@ -407,11 +459,15 @@
                             temp = original.apply(this, arguments);
 
                             if (user_settings.player_quality !== "auto") {
+
                                 this.setPlaybackQuality(user_settings.player_quality);
+
                             }
 
                             return temp;
+
                         };
+
                     },
                     modPlayerLoad: function(original) {
 
@@ -427,11 +483,15 @@
                             temp = original.apply(this, arguments);
 
                             if (user_settings.player_quality !== "auto" && (player = document.getElementById("movie_player"))) {
+
                                 player.setPlaybackQuality(user_settings.player_quality);
+
                             }
 
                             return temp;
+
                         };
+
                     },
                     modJSONParse: function(original) {
 
@@ -442,14 +502,20 @@
                             var temp = original.apply(this, arguments);
 
                             if (temp && temp.player && temp.player.args) {
+
                                 context.modArgs(temp.player.args);
+
                             }
 
                             return temp;
+
                         };
+
                     },
                     isChannel: function() {
+
                         return /^\/(user|channel)\//.test(window.location.pathname);
+
                     },
                     ini: function() {
 
@@ -471,10 +537,13 @@
                                 get: function() {
 
                                     if (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
+
                                         return this.cueVideoByPlayerVars;
+
                                     }
 
                                     return context.modVideoByPlayerVars(this._loadVideoByPlayerVars);
+
                                 }
                             },
                             TIMING_AFT_KEYS: {
@@ -486,15 +555,23 @@
                                     if (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
 
                                         if (window.ytcsi && window.ytcsi.data_ && window.ytcsi.data_.tick) {
+
                                             for (key in window.ytcsi.data_.tick) {
+
                                                 return [key];
+
                                             }
+
                                         } else {
+
                                             return ["srt"];
+
                                         }
+
                                     }
 
                                     return this._TIMING_AFT_KEYS;
+
                                 }
                             },
                             loaded: {
@@ -502,11 +579,15 @@
                                 get: function() {
 
                                     if (this.args && (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
+
                                         return false;
+
                                     }
 
                                     return this._loaded;
+
                                 }
+
                             },
                             load: {
                                 set: function(data) { this._load = data; },
@@ -515,30 +596,37 @@
                                     var temp = this._load && this._load.toString();
 
                                     if (temp && temp.match("Application.create")) {
+
                                         return context.modPlayerLoad(this._load);
-                                        context.modArgs(window.ytplayer.config.args);
-                                        // context.modApplicationCreate = 
+
                                     }
 
                                     return this._load;
+
                                 }
+
                             },
                             autoplay: {
                                 set: function(data) { this._autoplay = data; },
                                 get: function() {
 
                                     if (this.ucid && this._autoplay === "1" && (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
+
                                         return "0";
+
                                     }
 
                                     return this._autoplay;
+
                                 }
+
                             },
                             fflags: {
                                 set: function(data) { this._fflags = data; },
                                 get: function() {
 
                                     if (this.ucid && (!this.autoplay || this.autoplay === "1") && (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
+
                                         return this._fflags
                                             .replace(
                                                 "legacy_autoplay_flag=true",
@@ -547,22 +635,25 @@
                                                 "disable_new_pause_state3=true",
                                                 "disable_new_pause_state3=false"
                                             );
+
                                     }
 
                                     return this._fflags;
+
                                 }
+
                             }
                         });
+
                     }
                 }, {
                     options: {
                         player_volume_wheel: {
                             id:          "player_volume_wheel",
                             section:     "video",
-                            sub_section: i18n.sub_section_titles.player,
+                            sub_section: "player",
                             type:        "checkbox",
-                            value:       false,
-                            label:       i18n.player_volume_wheel.label
+                            value:       false
                         }
                     },
                     changeVolume: function(event) {
@@ -598,30 +689,43 @@
                                 if (chrome_bottom) {
 
                                     if (!chrome_bottom.classList.contains("ytp-volume-slider-active")) {
+
                                         chrome_bottom.classList.add("ytp-volume-slider-active");
+
                                     }
 
                                     if (chrome_bottom.timer) {
+
                                         window.clearTimeout(chrome_bottom.timer);
+
                                     }
 
                                     api.dispatchEvent(new Event("mousemove"));
 
                                     chrome_bottom.timer = window.setTimeout(function() {
+
                                         if (chrome_bottom && chrome_bottom.classList.contains("ytp-volume-slider-active")) {
+
                                             chrome_bottom.classList.remove("ytp-volume-slider-active");
                                             delete chrome_bottom.timer;
+
                                         }
+
                                     }, 4000);
+
                                 }
 
                                 direction = event.deltaY || event.wheelDeltaY;
                                 new_volume = api.getVolume() - (Math.sign(direction) * 5);
 
                                 if (new_volume < 0) {
+
                                     new_volume = 0;
+
                                 } else if (new_volume > 100) {
+
                                     new_volume = 100;
+
                                 }
 
                                 api.setVolume(new_volume);
@@ -641,23 +745,29 @@
                                 );
 
                                 return false;
+
                             }
+
                         }
+
                     },
                     ini: function() {
 
                         iridium_api.initializeOption.call(this);
 
                         if (user_settings.player_volume_wheel) {
+
                             document.addEventListener("wheel", this.changeVolume.bind(this));
+
                         }
+
                     }
                 }, {
                     options: {
                         iridium_language: {
                             id:          "iridium_language",
                             section:     "settings",
-                            sub_section: i18n.sub_section_titles.language,
+                            sub_section: "language",
                             type:        "custom",
                             custom:      function() {
 
@@ -667,13 +777,19 @@
                                 element_list = [];
 
                                 element = document.createElement("button");
-                                element.setAttribute("class", "setting iri-settings-button");
                                 element.textContent = i18n.language;
+                                element.setAttribute("class", "setting iri-settings-button");
                                 element.addEventListener("click", this.textEditor.bind(this));
 
                                 element_list.push(element);
 
                                 return element_list;
+
+                            },
+                            closeEditor: function(editor) {
+
+                                editor.remove();
+
                             },
                             saveLanguage: function(textarea) {
 
@@ -681,23 +797,29 @@
                                 var textarea;
 
                                 if ((textarea = document.getElementById("iridium-textarea")) && window.confirm(i18n.iridium_language.confirm_save)) {
+
                                     try {
-                                        i18n = JSON.parse(textarea.value);
 
-                                        user_settings.custom_language = i18n;
+                                        user_settings.custom_language = JSON.parse(textarea.value);
 
+                                        iridium_api.setCustomLanguage(user_settings.custom_language);
                                         iridium_api.saveSettings();
 
                                         window.alert(i18n.iridium_language.save_success);
 
                                         if ((editor = document.getElementById("iridium-text-editor"))) {
+
                                             editor.remove();
+
                                         }
 
                                     } catch (error) {
+
                                         window.alert(i18n.iridium_language.save_error + error.name + ": " + error.message);
+
                                     }
                                 }
+
                             },
                             textEditor: function(event) {
 
@@ -707,29 +829,32 @@
                                 var buttons_section;
 
                                 if (!(editor = document.getElementById("iridium-text-editor"))) {
+
                                     editor = document.createElement("div");
                                     editor.id = "iridium-text-editor";
+
                                     document.body.appendChild(editor);
+
                                 } else {
+
                                     editor.textContent = "";
+
                                 }
 
                                 buttons_section = document.createElement("div");
                                 buttons_section.id = "buttons-section";
 
                                 button = document.createElement("button");
-                                button.setAttribute("class", "iri-settings-button");
                                 button.textContent = i18n.iridium_language.button_save;
+                                button.setAttribute("class", "iri-settings-button");
                                 button.addEventListener("click", this.saveLanguage.bind(this));
 
                                 buttons_section.appendChild(button);
 
                                 button = document.createElement("button");
-                                button.setAttribute("class", "iri-settings-button");
                                 button.textContent = i18n.iridium_language.button_close;
-                                button.addEventListener("click", function() {
-                                    editor.remove();
-                                });
+                                button.setAttribute("class", "iri-settings-button");
+                                button.addEventListener("click", this.closeEditor.bind(this, editor));
 
                                 buttons_section.appendChild(button);
 
@@ -739,12 +864,13 @@
 
                                 editor.appendChild(buttons_section);
                                 editor.appendChild(textarea);
+
                             }
                         },
                         iridium_user_settings: {
                             id:          "iridium_user_settings",
                             section:     "settings",
-                            sub_section: i18n.sub_section_titles.settings,
+                            sub_section: "settings",
                             type:        "custom",
                             custom:      function() {
 
@@ -754,27 +880,77 @@
                                 element_list = [];
 
                                 element = document.createElement("button");
-                                element.setAttribute("class", "setting iri-settings-button");
                                 element.textContent = i18n.iridium_user_settings.button_export;
+                                element.setAttribute("class", "setting iri-settings-button");
                                 element.addEventListener("click", this.textEditor.bind(this, "export"));
 
                                 element_list.push(element);
 
                                 element = document.createElement("button");
-                                element.setAttribute("class", "setting iri-settings-button");
                                 element.textContent = i18n.iridium_user_settings.button_import;
+                                element.setAttribute("class", "setting iri-settings-button");
                                 element.addEventListener("click", this.textEditor.bind(this, "import"));
 
                                 element_list.push(element);
 
                                 element = document.createElement("button");
-                                element.setAttribute("class", "setting iri-settings-button danger");
                                 element.textContent = i18n.iridium_user_settings.button_reset;
-                                // element.addEventListener("click", this.textEditor.bind(this, "reset"));
+                                element.setAttribute("class", "setting iri-settings-button danger");
+                                element.addEventListener("click", this.resetSettings.bind(this));
 
                                 element_list.push(element);
 
                                 return element_list;
+
+                            },
+                            resetSettings: function() {
+
+                                if (window.confirm(i18n.iridium_user_settings.confirm_reset)) {
+
+                                    user_settings = null;
+
+                                    iridium_api.initializeSettings();
+                                    iridium_api.saveSettings();
+
+                                    window.alert(i18n.iridium_user_settings.reset_success);
+
+                                }
+
+                            },
+                            importSettings: function() {
+
+                                var editor;
+                                var textarea;
+
+                                if ((textarea = document.getElementById("iridium-textarea")) && window.confirm(i18n.iridium_user_settings.confirm_import)) {
+
+                                    try {
+
+                                        user_settings = JSON.parse(textarea.value);
+
+                                        iridium_api.saveSettings();
+
+                                        window.alert(i18n.iridium_user_settings.import_success);
+
+                                        if ((editor = document.getElementById("iridium-text-editor"))) {
+
+                                            editor.remove();
+
+                                        }
+
+                                    } catch (error) {
+
+                                        window.alert(i18n.iridium_user_settings.import_error + error.name + ": " + error.message);
+
+                                    }
+
+                                }
+
+                            },
+                            closeEditor: function(editor) {
+
+                                editor.remove();
+
                             },
                             textEditor: function(type, event) {
 
@@ -784,46 +960,59 @@
                                 var buttons_section;
 
                                 if (!(editor = document.getElementById("iridium-text-editor"))) {
+
                                     editor = document.createElement("div");
                                     editor.id = "iridium-text-editor";
+
                                     document.body.appendChild(editor);
+
                                 } else {
+
                                     editor.textContent = "";
+
                                 }
 
                                 buttons_section = document.createElement("div");
                                 buttons_section.id = "buttons-section";
                                 textarea = document.createElement("textarea");
+                                textarea.id = "iridium-textarea";
 
                                 if (type === "import") {
+
+                                    textarea.setAttribute("placeholder", i18n.iridium_user_settings.placeholder);
+
                                     button = document.createElement("button");
-                                    button.setAttribute("class", "iri-settings-button");
                                     button.textContent = i18n.iridium_user_settings.button_save;
+                                    button.setAttribute("class", "iri-settings-button");
+                                    button.addEventListener("click", this.importSettings.bind(this));
 
                                     buttons_section.appendChild(button);
+
                                 }
 
                                 button = document.createElement("button");
-                                button.setAttribute("class", "iri-settings-button");
                                 button.textContent = i18n.iridium_user_settings.button_close;
-                                button.addEventListener("click", function() {
-                                    editor.remove();
-                                });
+                                button.setAttribute("class", "iri-settings-button");
+                                button.addEventListener("click", this.closeEditor.bind(this, editor));
 
                                 buttons_section.appendChild(button);
 
                                 if (type === "export") {
+
                                     textarea.value = JSON.stringify(user_settings, null, 4);
+
                                 }
 
                                 editor.appendChild(buttons_section);
                                 editor.appendChild(textarea);
+
                             }
                         }
                     },
                     ini: function() {
 
                         iridium_api.initializeOption.call(this);
+
                     }
                 }, {
                     options: {
@@ -837,6 +1026,36 @@
             ];
 
             iridium_api = {
+                setCustomLanguage: function(custom_language) {
+
+                    var i;
+                    var j;
+                    var key;
+                    var sub_key;
+
+                    key = Object.keys(custom_language);
+
+                    for (i = 0; i < key.length; i++) {
+
+                        sub_key = Object.keys(custom_language[key[i]]);
+
+                        if (!(key[i] in i18n)) {
+
+                            i18n[key[i]] = custom_language[key[i]];
+
+                        } else {
+
+                            for (j = 0; j < sub_key.length; j++) {
+
+                                i18n[key[i]][sub_key[j]] = custom_language[key[i]][sub_key[j]];
+
+                            }
+
+                        }
+
+                    }
+
+                },
                 fillSettingsContainer: function(options_list) {
 
                     var i;
@@ -852,35 +1071,43 @@
                     var sub_section;
 
                     if (!(section = document.getElementById("settings_sub_section"))) {
+
                         return;
+
                     }
 
                     section.innerHTML = "";
 
                     if ((header = document.getElementById("settings_section_header"))) {
+
                         header.textContent = i18n.section_titles[options_list[0].section];
+
                     }
 
                     for (i = 0; i < options_list.length; i++) {
 
                         option = options_list[i];
 
-                        if (!(sub_section = document.getElementById(option.sub_section))) {
+                        if (!(sub_section = document.getElementById(i18n.sub_section_titles[option.sub_section]))) {
+
                             sub_section = document.createElement("div");
-                            sub_section.id = option.sub_section;
+                            sub_section.id = i18n.sub_section_titles[option.sub_section];
 
                             header = document.createElement("h3");
-                            header.textContent = option.sub_section;
+                            header.textContent = i18n.sub_section_titles[option.sub_section];
 
                             sub_section.appendChild(header);
                             section.appendChild(sub_section);
+
                         }
 
                         setting = document.createElement("div");
                         setting.setAttribute("class", "settings_setting");
 
                         switch (option.type) {
+
                             case "checkbox":
+
                                 input = document.createElement("input");
                                 input.setAttribute("class", "setting");
                                 input.id = option.id;
@@ -888,31 +1115,35 @@
                                 input.checked = user_settings[option.id];
 
                                 label = document.createElement("label");
+                                label.textContent = i18n[option.id].label;
                                 label.setAttribute("class", "setting");
                                 label.setAttribute("for", option.id);
-                                label.textContent = option.label;
 
                                 setting.appendChild(input);
                                 setting.appendChild(label);
                                 break;
+
                             case "dropdown":
 
                                 label = document.createElement("label");
+                                label.textContent = i18n[option.id].label;
                                 label.setAttribute("class", "setting");
                                 label.setAttribute("for", option.id);
-                                label.textContent = option.label;
 
                                 select = document.createElement("select");
                                 select.id = option.id;
                                 select.setAttribute("class", "iri-settings-button");
 
                                 for (j = 0; j < option.options.length; j++) {
+
                                     options = document.createElement("option");
-                                    options.value = option.options[j++]
+                                    options.value = option.options[j++];
                                     options.textContent = option.options[j];
 
                                     if (user_settings[option.id] === options.value) {
+
                                         options.setAttribute("selected", "true");
+
                                     }
 
                                     select.appendChild(options);
@@ -921,21 +1152,29 @@
                                 setting.appendChild(label);
                                 setting.appendChild(select);
                                 break;
+
                             case "custom":
 
                                 if (option.custom) {
+
                                     temp = option.custom();
 
                                     for (j = 0; j < temp.length; j++) {
+
                                         setting.appendChild(temp[j]);
+
                                     }
+
                                 }
 
                                 break;
+
                         }
 
                         sub_section.appendChild(setting);
+
                     }
+
                 },
                 loadSelectedSection: function() {
 
@@ -945,27 +1184,40 @@
                     var active_sidebar;
 
                     if (!(active_sidebar = document.querySelector(".sidebar_section.active_sidebar"))) {
+
                         return;
+
                     }
 
                     active_id = active_sidebar.dataset.section;
-
                     options_list = [];
 
                     for (i = 0; i < modules.length; i++) {
+
                         if (modules[i].options) {
+
                             for (name in modules[i].options) {
+
                                 if (modules[i].options.hasOwnProperty(name)) {
+
                                     option = modules[i].options[name];
+
                                     if (option.section === active_id) {
+
                                         options_list.push(option);
+
                                     }
+
                                 }
+
                             }
+
                         }
+
                     }
 
                     iridium_api.fillSettingsContainer(options_list);
+
                 },
                 updateSidebarSelection: function(event) {
 
@@ -975,20 +1227,26 @@
                     var sidebar_current;
 
                     if (event.target.dataset.section) {
+
                         current = document.querySelector(".active_sidebar");
                         next = document.getElementById("sidebar_" + event.target.dataset.section);
 
                         if (next !== current) {
 
                             if ((sidebar_current = document.querySelector(".active_sidebar"))) {
+
                                 sidebar_current.classList.remove("active_sidebar");
+
                             }
 
                             event.target.classList.add("active_sidebar");
 
                             iridium_api.loadSelectedSection();
+
                         }
+
                     }
+
                 },
                 settingsBuilder: function(option) {
 
@@ -1002,31 +1260,32 @@
                     var settings_container;
 
                     if (!(settings_sidebar = document.getElementById("iridium_settings_sidebar"))) {
+
                         settings_sidebar = document.createElement("div");
                         settings_sidebar.id = "iridium_settings_sidebar";
 
                         document.body.appendChild(settings_sidebar);
+
                     }
 
                     if (!(sidebar_section = document.getElementById("sidebar_" + option.section))) {
+
                         sidebar_section = document.createElement("div");
                         sidebar_section.id = "sidebar_" + option.section;
-                        sidebar_section.setAttribute("class", "sidebar_section");
-                        sidebar_section.dataset.section = option.section;
                         sidebar_section.textContent = option.section;
+                        sidebar_section.dataset.section = option.section;
 
+                        sidebar_section.setAttribute("class", "sidebar_section");
                         settings_sidebar.appendChild(sidebar_section);
+
                     }
 
                     if (!(settings_container = document.getElementById("iridium_settings_container"))) {
+
                         settings_container = document.createElement("div");
                         settings_container.id = "iridium_settings_container";
 
                         if (!(section = document.getElementById("settings_section"))) {
-                            section = document.createElement("div");
-                            section.id = "settings_section";
-
-                            section.addEventListener("change", iridium_api.autoSaveSettings, true);
 
                             header = document.createElement("h2");
                             header.id = "settings_section_header";
@@ -1034,25 +1293,36 @@
                             divider = document.createElement("div");
                             divider.setAttribute("class", "settings_divider");
 
+                            section = document.createElement("div");
+                            section.id = "settings_section";
+
+                            section.addEventListener("change", iridium_api.autoSaveSettings, true);
                             section.appendChild(header);
                             section.appendChild(divider);
 
                             settings_container.appendChild(section);
+
                         }
 
                         if (!(sub_section = document.getElementById("settings_sub_section"))) {
+
                             sub_section = document.createElement("div");
                             sub_section.id = "settings_sub_section";
 
                             section.appendChild(sub_section);
+
                         }
 
                         document.body.appendChild(settings_container);
+
                     }
 
                     if (!(active_sidebar = document.querySelector(".active_sidebar"))) {
+
                         sidebar_section.classList.add("active_sidebar");
+
                     }
+
                 },
                 loadSettingsMenu: function() {
 
@@ -1065,57 +1335,84 @@
                     var new_option;
 
                     if (document.head) {
+
                         document.head.textContent = "";
+
                     } else {
+
                         document.documentElement.appendChild(document.createElement("head"));
+
                     }
 
                     if (document.body) {
+
                         document.body.textContent = "";
+
                     } else {
+
                         document.documentElement.appendChild(document.createElement("body"));
+
                     }
 
                     if (!(title = document.querySelector("title"))) {
+
                         title = document.createElement("title");
                         document.head.appendChild(title);
+
                     }
 
-                    title.textContent = "Iridium settings";
+                    title.textContent = i18n.iridium_api.settings_button;
 
                     document.body.id = "iridium_settings";
                     document.body.style.display = "none";
 
                     for (i = 0; i < modules.length; i++) {
+
                         if (modules[i].options) {
+
                             for (name in modules[i].options) {
+
                                 if (modules[i].options.hasOwnProperty(name)) {
+
                                     option = modules[i].options[name];
                                     iridium_api.settingsBuilder(option);
+
                                 }
+
                             }
+
                         }
+
                     }
 
                     document.addEventListener("click", iridium_api.updateSidebarSelection);
 
                     iridium_api.loadSelectedSection();
+
                 },
                 autoSaveSettings: function(event) {
 
                     switch (event.target.type) {
+
                         case "checkbox":
+
                             user_settings[event.target.id] = event.target.checked;
                             break;
+
                         case "select-one":
+
                             user_settings[event.target.id] = event.target.value;
                             break;
+
                     }
 
                     iridium_api.saveSettings();
+
                 },
-                saveSettings: function(id, value) {
+                saveSettings: function() {
+
                     document.documentElement.dataset.iridium_save_settings = JSON.stringify(user_settings);
+
                 },
                 initializeSettings: function() {
 
@@ -1124,38 +1421,38 @@
                     var options;
                     var timestamp;
 
-                    user_settings = JSON.parse(document.documentElement.dataset.iridium_user_settings || null) || {};
+                    user_settings = JSON.parse(document.documentElement.dataset.iridium_user_settings || "{}");
 
                     if (document.documentElement.dataset.iridium_user_settings) {
+
                         document.documentElement.removeAttribute("data-iridium_user_settings");
+
                     }
 
                     for (i = 0; i < modules.length; i++) {
+
                         for (options in modules[i].options) {
+
                             option = modules[i].options[options];
 
-                            if (!(option.id in user_settings) && option.value) {
+                            if (!(option.id in user_settings) && "value" in option) {
+
                                 user_settings[option.id] = option.value;
+
                             }
+
                         }
+
                     }
+
+                    i18n = default_language;
 
                     if (user_settings.custom_language) {
-                        i18n = user_settings.custom_language;
+
+                        iridium_api.setCustomLanguage(user_settings.custom_language);
+
                     }
 
-                    if (user_settings.player_quality !== "auto") {
-                        timestamp = Date.now();
-
-                        window.localStorage.setItem(
-                            "yt-player-quality",
-                            JSON.stringify({
-                                data: user_settings.player_quality,
-                                creation: timestamp,
-                                expiration: timestamp + 2592E6
-                            })
-                        );
-                    }
                 },
                 initializeSettingsButton: function() {
 
@@ -1165,11 +1462,12 @@
                     buttons = document.querySelector("#end #buttons");
 
                     if (buttons && !(iridium_settings_button = document.getElementById("iridium_settings_button"))) {
-                        iridium_settings_button           = document.createElement("a");
-                        iridium_settings_button.id        = "iridium_settings_button";
-                        iridium_settings_button.href      = "/iridium-settings";
-                        iridium_settings_button.target    = "_blank";
-                        iridium_settings_button.title     = i18n.iridium_api.settings_button;
+
+                        iridium_settings_button = document.createElement("a");
+                        iridium_settings_button.id = "iridium_settings_button";
+                        iridium_settings_button.href = "/iridium-settings";
+                        iridium_settings_button.target = "_blank";
+                        iridium_settings_button.title = i18n.iridium_api.settings_button;
                         iridium_settings_button.innerHTML = //
                             "<svg viewBox='0 0 24 24' style='height:24px;'>" +
                             //"    <linearGradient id='iri-gradient' gradientUnits='userSpaceOnUse' x1='6' y1='22' x2='15' y2='6'>" +
@@ -1182,53 +1480,91 @@
                             "    <path d='M6,1.6V22l18-10.2L6,1.6z M9,6.8l9,5.1L9,17V6.8z'/>" +
                             "</svg>";
                         buttons.parentNode.insertBefore(iridium_settings_button, buttons);
-                        
+
                         document.documentElement.removeEventListener("load", iridium_api.initializeSettingsButton, true);
+
                     }
+
                 },
                 initializeModules: function() {
 
                     var i = modules.length;
 
                     for (i = 0; i < modules.length; i++) {
+
                         if (modules[i].ini) {
+
                             modules[i].ini();
+
                         }
+
                     }
+
+                    if (user_settings.player_quality !== "auto") {
+
+                        timestamp = Date.now();
+
+                        window.localStorage.setItem(
+                            "yt-player-quality",
+                            JSON.stringify({
+                                data: user_settings.player_quality,
+                                creation: timestamp,
+                                expiration: timestamp + 2592E6
+                            })
+                        );
+
+                    }
+
                 },
                 initializeOption: function() {
 
                     var key;
 
                     if (this.started) {
+
                         return;
+
                     }
 
                     this.started = true;
 
                     for (key in this.options) {
+
                         if (this.options.hasOwnProperty(key)) {
+
                             if (!(key in user_settings) && this.options[key].value) {
+
                                 user_settings[key] = this.options[key].value;
+
                             }
+
                         }
+
                     }
+
                 },
                 ini: function() {
 
                     iridium_api.initializeSettings();
 
                     if (window.location.pathname === "/iridium-settings") {
+
                         iridium_api.loadSettingsMenu();
+
                     } else {
+
                         iridium_api.initializeModules();
+
                     }
 
                     document.documentElement.addEventListener("load", iridium_api.initializeSettingsButton, true);
+
                 }
+
             };
 
             iridium_api.ini();
+
         },
         contentScriptMessages: function() {
 
@@ -1246,6 +1582,7 @@
             locs = gate.dataset[key2] || null;
 
             if (!gate.contentscript) {
+
                 gate.contentscript = true;
                 observer = new MutationObserver(iridium.contentScriptMessages);
 
@@ -1253,47 +1590,64 @@
                     attributes: true,
                     attributeFilter: ["data-" + key1, "data-" + key2]
                 });
+
             }
 
             if (sets) {
 
                 if (iridium.is_userscript) {
+
                     iridium.GM_setValue(iridium.id, JSON.stringify(sets));
+
                 } else {
+
                     chrome.storage.local.set({iridiumSettings: sets});
+
                 }
 
                 document.documentElement.removeAttribute("data-iridium_save_settings");
+
             } else if (locs) {
+
                 document.documentElement.dataset.setlocale = chrome.i18n.getMessage(locs);
+
             }
+
         },
         filterChromeKeys: function(keys) {
 
             if (keys[iridium.id] && keys[iridium.id].new_value) {
+
                 document.documentElement.dataset.iridium_load_settings = JSON.stringify(
                     (keys[iridium.id].new_value && keys[iridium.id].new_value[iridium.id]) || keys[iridium.id].new_value || {}
                 );
+
             }
+
         },
         main: function(event) {
 
             var holder;
 
             if (!event && iridium.is_userscript) {
+
                 event = JSON.parse(iridium.GM_getValue(iridium.id, "{}"));
+
             }
 
             if (event) {
+
                 event = JSON.stringify(event[iridium.id] || event);
                 document.documentElement.dataset.iridium_user_settings = event;
 
                 if (iridium.is_userscript) {
+
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.7a";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.8a";
                     document.documentElement.appendChild(holder);
+
                 }
 
                 holder = document.createElement("script");
@@ -1302,29 +1656,41 @@
                 holder.remove();
 
                 if (!iridium.is_userscript) {
+
                     chrome.storage.onChanged.addListener(iridium.filterChromeKeys);
+
                 }
+
             }
+
         },
         ini: function() {
 
             if (window.location.pathname === "/iridium-settings") {
+
                 window.stop();
+
             }
 
             iridium.id = "iridiumSettings";
             iridium.is_userscript = typeof GM_info === "object";
 
             if (iridium.is_userscript) {
+
                 iridium.GM_getValue = GM_getValue;
                 iridium.GM_setValue = GM_setValue;
                 iridium.main();
+
             } else {
+
                 chrome.storage.local.get(iridium.id, iridium.main);
+
             }
 
             iridium.contentScriptMessages();
+
         }
+
     };
 
     iridium.ini();

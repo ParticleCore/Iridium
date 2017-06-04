@@ -2,6 +2,7 @@ html {
     --iri-checkbox-bkg: 7px;
 }
 
+
 /* ini | settings button */
 #iridium_settings_button {
     box-sizing: border-box;
@@ -40,11 +41,24 @@ html {
 }
 /* end | settings button */
 
+
 /* ini | general layout */
 .iri-square-avatars yt-img-shadow {
     border-radius: 0 !important;
 }
+.iri-video-count {
+    color: var(--yt-endpoint-color, #111111);
+    cursor: pointer;
+    display: inline-block;
+    line-height: 1.6rem;
+    font-size: 1.4rem;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: pre;
+    --yt-endpoint-color: var(--yt-channel-owner) !important;
+}
 /* end | general layout */
+
 
 /* ini | thumbnail preview */
 #iri-video-preview {
@@ -70,10 +84,11 @@ yt-img-shadow:hover #iri-video-preview {
 }
 /* end | thumbnail preview */
 
+
 /* ini | Iridium settings */
 html,
 body {
-    box-sizing: border-box; 
+    box-sizing: border-box;
 }
 #iridium_settings {
     background-color: #F1F1F1;

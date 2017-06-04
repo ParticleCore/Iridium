@@ -30,15 +30,14 @@ Each item on the lists below can be removed or moved to the a different version 
 - [ ] Feature: show the relative uploaded time of the video being watched
 - [ ] Feature: global video shortcuts
 
-### TODO - beta version
+### ~~TODO - beta version~~
+
+### TODO - release version
 
 - [ ] Core: create Firefox add-on
 - [ ] Core: settings menu shorcut for Firefox add-on
 - [ ] Core: create Opera add-on
 - [ ] Core: settings menu shorcut for Opera add-on
-
-### TODO - release version
-
 - [ ] Feature: blacklist videos from specific channels
 - [ ] Feature: mini player when scrolling down
 - [ ] Feature: mini player when navigating to different pages

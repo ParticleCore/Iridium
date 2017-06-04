@@ -26,7 +26,7 @@ Each item on the lists below can be removed or moved to the a different version 
 - [ ] Feature: fullbrowser video mode
 - [x] Feature: thumbnail video preview
 - [ ] Feature: ability to open the player in a pop-out window
-- [ ] Feature: show the total number of uploaded videos by the video author
+- [x] Feature: show the total number of uploaded videos by the video author
 - [ ] Feature: show the relative uploaded time of the video being watched
 - [ ] Feature: global video shortcuts
 

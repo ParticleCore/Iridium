@@ -15,9 +15,9 @@ Each item on the lists below can be removed or moved to the a different version 
 - [x] Core: minimally working alpha version
 - [x] Core: create settings menu on its own local page
 - [x] Core: save and load user settings
-- [ ] Core: import and export user settings
-- [ ] Core: reset user settings
-- [ ] Core: implement locales
+- [x] Core: import and export user settings
+- [x] Core: reset user settings
+- [x] Core: implement locales
 - [x] Feature: autoplay control
 - [x] Feature: disable ads on videos
 - [x] Feature: toggle HFR (60fps) streams

@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.1.8a
+// @version         0.1.9a
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -66,6 +66,12 @@
                 square_avatars: {
                     label: "Make user images squared"
                 },
+                channel_video_count: {
+                    label: "Display uploaded videos number"
+                },
+                channel_video_time: {
+                    label: "Display how long the video was uploaded"
+                },
                 thumbnail_preview: {
                     label: "Preview videos by hovering the thumbnails"
                 },
@@ -93,7 +99,7 @@
                 iridium_language: {
                     button_save: "Save",
                     button_close: "Close",
-                    confirm_save: "You are about to replace your extension language settings.\n\nDo you whish to continue?",
+                    confirm_save: "You are about to replace your extension language settings.\n\nDo you wish to continue?",
                     save_success: "New language saved successfully.\n\nChanges will be applied after a page refresh.",
                     save_error: "The new language could not be saved because it appears to be invalid.\n\n"
                 },
@@ -104,9 +110,9 @@
                     button_import: "Import",
                     button_reset: "Reset",
                     placeholder: "Paste your new settings here",
-                    confirm_reset: "You are about to reset your settings. It is advised to backup your current settings before continuing.\n\nDo you whish to contiue?",
+                    confirm_reset: "You are about to reset your settings. It is advised to backup your current settings before continuing.\n\nDo you wish to contiue?",
                     reset_success: "Settings have been reset.\n\nChanges will be applied after a page refresh.",
-                    confirm_import: "You are about to override your current settings. It is advised to backup your current settings before continuing.\n\nDo you whish to contiue?",
+                    confirm_import: "You are about to override your current settings. It is advised to backup your current settings before continuing.\n\nDo you wish to contiue?",
                     import_success: "Your settings have been imported with success.\n\nChanges will be applied after a page refresh.",
                     import_error: "Your settings could not be imported because they appear to be invalid.\n\n"
                 }
@@ -232,7 +238,7 @@
                         return xhr;
 
                     },
-                    endPreviewContainer: function(context, event, container, listener, xhr, timer, video_container, clicked) {
+                    endPreviewContainer: function(event, container, listener, xhr, timer, video_container, clicked) {
 
                         if (clicked || !container.parentNode.contains(event.toElement || event.relatedTarget)) {
 
@@ -273,6 +279,7 @@
                         var xhr;
                         var timer;
                         var context;
+                        var listener;
                         var video_id;
                         var container;
                         var video_container;
@@ -321,13 +328,13 @@
 
                                 container.parentNode.addEventListener("click", function listener(event) {
 
-                                    context.endPreviewContainer(context, event, container, listener, xhr, timer, video_container, true);
+                                    context.endPreviewContainer(event, container, listener, xhr, timer, video_container, true);
 
                                 }, false);
 
                                 container.parentNode.addEventListener("mouseleave", function listener(event) {
 
-                                    context.endPreviewContainer(context, event, container, listener, xhr, timer);
+                                    context.endPreviewContainer(event, container, listener, xhr, timer);
 
                                 }, false);
 
@@ -343,6 +350,157 @@
                         document.addEventListener("mouseenter", this.iniPreviewContainer.bind(this), true);
 
                     }
+                }, {
+                    options: {
+                        channel_video_count: {
+                            id:          "channel_video_count",
+                            section:     "video",
+                            sub_section: "general",
+                            type:        "checkbox",
+                            value:       false
+                        }/*,
+                        channel_video_time: {
+                            id:          "channel_video_time",
+                            section:     "video",
+                            sub_section: "general",
+                            type:        "checkbox",
+                            value:       false
+                        }*/
+                    },
+                    removeVideoCount: function(xhr, listener) {
+
+                        var video_count;
+                        var video_count_dot;
+
+                        document.removeEventListener("yt-navigate-finish", listener, false);
+
+                        if (xhr && xhr.abort) {
+
+                            xhr.abort();
+
+                        }
+
+                        if ((video_count_dot = document.querySelector("span.iri-video-count"))) {
+
+                            video_count_dot.remove();
+
+                        }
+
+                        if ((video_count = document.getElementById("iri-video-count"))) {
+
+                            video_count.remove();
+
+                        }
+
+                    },
+                    setVideoCount: function(count, channel_id) {
+
+                        var video_count;
+                        var video_count_dot;
+                        var owner_container;
+
+                        if ((owner_container = document.getElementById("owner-container"))) {
+
+                            video_count_dot = document.createElement("span");
+                            video_count_dot.textContent = " · ";
+                            video_count_dot.setAttribute("class", "iri-video-count");
+
+                            video_count = document.createElement("a");
+                            video_count.id = "iri-video-count";
+                            video_count.textContent = count;
+                            video_count.setAttribute("class", "iri-video-count");
+                            video_count.setAttribute("href", channel_id + "/videos");
+
+                            owner_container.appendChild(video_count_dot);
+                            owner_container.appendChild(video_count);
+
+                            owner_container.channel_id = channel_id;
+                            owner_container.video_count = count;
+
+                        }
+
+                    },
+                    addVideoCount: function(channel_url, event) {
+
+                        var count_match;
+
+                        delete this.addVideoCount.fetching;
+
+                        count_match = event.target.response.match(/"(?:stats|briefStats)":\[\{"runs":\[\{"text":"([\w\W ]+?")\}\]\}/);
+
+                        if (count_match && (count_match = count_match[1].replace("\"", ""))) {
+
+                            this.setVideoCount.call(this, count_match, channel_url);
+
+                        }
+
+                    },
+                    removeVideoTime: function(xhr, listener) {
+
+                        document.removeEventListener("yt-navigate-finish", listener, false);
+
+                    },
+                    addVideoTime: function(event) {
+
+                    },
+                    loadStart: function() {
+
+                        var xhr;
+                        var context;
+                        var channel_id;
+                        var channel_url;
+                        var upload_info;
+                        var video_count;
+                        var video_count_dot;
+                        var owner_container;
+
+                        if (user_settings.channel_video_count && !this.addVideoCount.fetching && (owner_container = document.getElementById("owner-container")) && !(video_count = document.getElementById("iri-video-count")) && (channel_url = document.querySelector("#owner-name a"))) {
+
+                            channel_url = channel_url.getAttribute("href");
+                            channel_id = channel_url.match(/UC([a-z0-9-_]{22})/i);
+
+                            if (channel_id && (channel_id = channel_id[1])) {
+
+                                this.addVideoCount.fetching = true;
+
+                                xhr = new XMLHttpRequest();
+                                xhr.addEventListener("load", this.addVideoCount.bind(this, channel_url));
+                                xhr.open("GET", "/playlist?list=UU" + channel_id, true);
+                                xhr.send();
+
+                                context = this;
+
+                                document.addEventListener("yt-navigate-finish", function listener() {
+
+                                        context.removeVideoCount.call(this, xhr, listener);
+
+                                }, false);
+
+                            }
+
+                        }
+
+                        /*if (user_settings.channel_video_time && (upload_info = document.querySelector("#upload-info .date")) && upload_info.textContent.indexOf("·") === -1) {
+
+                            upload_info.textContent += " · 19 hours ago";
+
+                            document.addEventListener("yt-navigate-finish", function listener() {
+
+                                    context.removeVideoTime.call(this, null, listener);
+
+                            }, false);
+
+                        }*/
+
+                    },
+                    ini: function() {
+
+                        iridium_api.initializeOption.call(this);
+
+                        document.documentElement.addEventListener("load", this.loadStart.bind(this), true);
+
+                    }
+
                 }, {
                     options: {
                         player_quality: {
@@ -1645,7 +1803,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.8a";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.9a";
                     document.documentElement.appendChild(holder);
 
                 }

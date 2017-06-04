@@ -192,17 +192,18 @@ body {
     z-index: 100;
 }
 #iridium-text-editor #buttons-section {
-    float: left;
     height: 50px;
+    text-align: right;
     width: 100%;
 }
 #iridium-text-editor .iri-settings-button {
-    margin: 0 20px 0 0 !important;
+    margin: 0 0 0 20px !important;
 }
 #iridium-text-editor textarea {
     box-sizing: border-box;
     display: block;
     height: calc(100% - 50px);
+    padding: 10px;
     resize: none;
     width: 100%;
 }

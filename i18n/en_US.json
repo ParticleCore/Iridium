@@ -1,5 +1,5 @@
 {
-    "language": "English (US)",
+    "language": "English",
     "section_titles": {
         "general": "general settings",
         "video": "video settings",
@@ -16,16 +16,26 @@
         "settings": "settings"
     },
     "iridium_api": {
-        "settings_button": "Iridium settings"
+        "settings_button": "Iridium settings",
+        "feature_link": "Find out what this does"
     },
     "square_avatars": {
         "label": "Make user images squared"
+    },
+    "channel_video_count": {
+        "label": "Display uploaded videos number"
+    },
+    "channel_video_time": {
+        "label": "Display how long the video was uploaded"
     },
     "thumbnail_preview": {
         "label": "Preview videos by hovering the thumbnails"
     },
     "player_auto_play": {
         "label": "Play videos automatically"
+    },
+    "player_always_active": {
+        "label": "Player shortcuts always active"
     },
     "channel_trailer_auto_play": {
         "label": "Play channel trailers automatically"
@@ -42,19 +52,27 @@
     "player_volume_wheel": {
         "label": "Change volume using the mouse wheel"
     },
-    "iridium_custom_language": {
-        "label": "Use modified language"
+    "player_quality": {
+        "label": "Default video quality:"
     },
     "iridium_language": {
-        "label": "Current language: ",
         "button_save": "Save",
-        "button_close": "Close"
+        "button_close": "Close",
+        "confirm_save": "You are about to replace your extension language settings.\n\nDo you wish to continue?",
+        "save_success": "New language saved successfully.\n\nChanges will be applied after a page refresh.",
+        "save_error": "The new language could not be saved because it appears to be invalid.\n\n"
     },
     "iridium_user_settings": {
         "button_save": "Save",
         "button_close": "Close",
         "button_export": "Export",
         "button_import": "Import",
-        "button_reset": "Reset"
+        "button_reset": "Reset",
+        "placeholder": "Paste your new settings here",
+        "confirm_reset": "You are about to reset your settings. It is advised to backup your current settings before continuing.\n\nDo you wish to contiue?",
+        "reset_success": "Settings have been reset.\n\nChanges will be applied after a page refresh.",
+        "confirm_import": "You are about to override your current settings. It is advised to backup your current settings before continuing.\n\nDo you wish to contiue?",
+        "import_success": "Your settings have been imported with success.\n\nChanges will be applied after a page refresh.",
+        "import_error": "Your settings could not be imported because they appear to be invalid.\n\n"
     }
 }

@@ -26,7 +26,7 @@ Each item on the lists below can be removed or moved to the a different version 
 - [x] Feature: thumbnail video preview
 - [x] Feature: show the total number of uploaded videos by the video author
 - [x] Feature: show the relative uploaded time of the video being watched
-- [ ] Feature: global video shortcuts
+- [x] Feature: global video shortcuts
 
 ### ~~TODO - beta version~~
 

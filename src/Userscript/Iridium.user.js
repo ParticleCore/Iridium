@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.2.0a
+// @version         0.2.1a
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -61,7 +61,8 @@
                     settings: "settings"
                 },
                 iridium_api: {
-                    settings_button: "Iridium settings"
+                    settings_button: "Iridium settings",
+                    feature_link: "Find out what this does"
                 },
                 square_avatars: {
                     label: "Make user images squared"
@@ -77,6 +78,9 @@
                 },
                 player_auto_play: {
                     label: "Play videos automatically"
+                },
+                player_always_active: {
+                    label: "Player shortcuts always active"
                 },
                 channel_trailer_auto_play: {
                     label: "Play channel trailers automatically"
@@ -537,7 +541,6 @@
                         document.documentElement.addEventListener("load", this.loadStart.bind(this), true);
 
                     }
-
                 }, {
                     options: {
                         player_quality: {
@@ -707,6 +710,42 @@
                         };
 
                     },
+                    modParseFromString: function(original) {
+
+                        return function() {
+
+                            var i;
+                            var fps;
+                            var result;
+                            var streams;
+
+                            if (!user_settings.player_hfr) {
+
+                                result = original.apply(this, arguments);
+                                streams = result.getElementsByTagName("Representation");
+                                i = streams.length;
+
+                                while (i--) {
+
+                                    fps = streams[i].getAttribute("frameRate");
+
+                                    if (fps > 30) {
+
+                                        streams[i].remove();
+
+                                    }
+
+                                }
+
+                                return result;
+
+                            }
+
+                            return original.apply(this, arguments);
+
+                        };
+
+                    },
                     isChannel: function() {
 
                         return /^\/(user|channel)\//.test(window.location.pathname);
@@ -721,6 +760,7 @@
                         context = this;
 
                         JSON.parse = context.modJSONParse(JSON.parse);
+                        DOMParser.prototype.parseFromString = context.modParseFromString(DOMParser.prototype.parseFromString);
 
                         Object.defineProperties(Object.prototype, {
                             cueVideoByPlayerVars: {
@@ -839,6 +879,60 @@
 
                             }
                         });
+
+                    }
+                }, {
+                    options: {
+                        player_always_active: {
+                            id:          "player_always_active",
+                            section:     "video",
+                            sub_section: "player",
+                            type:        "checkbox",
+                            value:       true
+                        }
+                    },
+                    alwaysActive: function(event) {
+
+                        var i;
+                        var api;
+                        var list;
+                        var clear;
+                        var length;
+                        var event_clone;
+
+                        if (user_settings.player_always_active && (api = document.getElementById("movie_player"))) {
+
+                            clear = window.location.pathname === "/watch" && api && api !== event.target && !api.contains(event.target);
+
+                            clear = clear && !event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey && !event.target.isContentEditable;
+
+                            clear = clear && (event.which > 47 && event.which < 58 || event.which > 95 && event.which < 106 || [27, 32, 35, 36, 37, 38, 39, 40, 66, 67, 79, 87, 187, 189].indexOf(event.which) > -1);
+
+                            if (clear && ["EMBED", "INPUT", "OBJECT", "TEXTAREA", "IFRAME"].indexOf(document.activeElement.tagName) === -1) {
+
+                                event_clone = new Event("keydown");
+                                list = Object.keys(Object.getPrototypeOf(event));
+                                length = list.length;
+
+                                for (i = 0; i < length; i++) {
+
+                                    event_clone[list[i]] = event[list[i]];
+
+                                }
+
+                                event.preventDefault();
+                                api.dispatchEvent(event_clone);
+
+                            }
+
+                        }
+
+                    },
+                    ini: function() {
+
+                        iridium_api.initializeOption.call(this);
+
+                        document.addEventListener("keydown", this.alwaysActive.bind(this));
 
                     }
                 }, {
@@ -1263,6 +1357,7 @@
                     var options;
                     var section;
                     var setting;
+                    var help_link;
                     var sub_section;
 
                     if (!(section = document.getElementById("settings_sub_section"))) {
@@ -1363,6 +1458,19 @@
                                 }
 
                                 break;
+
+                        }
+
+                        if (option.type !== "custom") {
+
+                            help_link = document.createElement("a");
+                            help_link.textContent = "?";
+                            help_link.href = "https://github.com/ParticleCore/Iridium/wiki/Features#" + option.id;
+                            help_link.setAttribute("title", i18n.iridium_api.feature_link);
+                            help_link.setAttribute("class", "feature-link");
+                            help_link.setAttribute("target", "features");
+
+                            setting.appendChild(help_link);
 
                         }
 
@@ -1840,7 +1948,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.0a";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.1a";
                     document.documentElement.appendChild(holder);
 
                 }

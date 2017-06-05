@@ -31,9 +31,8 @@ Each item on the lists below can be removed or moved to the a different version 
 ### TODO - beta version
 
 - [ ] Core: create Firefox add-on
-- [ ] Core: settings menu shorcut for Firefox add-on
 - [ ] Core: create Opera add-on
-- [ ] Core: settings menu shorcut for Opera add-on
+- [ ] Core: create Chrome extension?
 
 ### TODO - release version
 

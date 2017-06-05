@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.1.9a
+// @version         0.2.0a
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -357,15 +357,15 @@
                             section:     "video",
                             sub_section: "general",
                             type:        "checkbox",
-                            value:       false
-                        }/*,
+                            value:       true
+                        },
                         channel_video_time: {
                             id:          "channel_video_time",
                             section:     "video",
                             sub_section: "general",
                             type:        "checkbox",
-                            value:       false
-                        }*/
+                            value:       true
+                        }
                     },
                     removeVideoCount: function(xhr, listener) {
 
@@ -393,13 +393,18 @@
                         }
 
                     },
-                    setVideoCount: function(count, channel_id) {
+                    addVideoCount: function(channel_url, event) {
 
+                        var count_match;
                         var video_count;
                         var video_count_dot;
                         var owner_container;
 
-                        if ((owner_container = document.getElementById("owner-container"))) {
+                        delete this.addVideoCount.fetching;
+
+                        count_match = event.target.response.match(/"(?:stats|briefStats)":\[\{"runs":\[\{"text":"([\w\W ]+?")\}\]\}/);
+
+                        if (count_match && (count_match = count_match[1].replace("\"", "")) && (owner_container = document.getElementById("owner-container"))) {
 
                             video_count_dot = document.createElement("span");
                             video_count_dot.textContent = " · ";
@@ -407,46 +412,63 @@
 
                             video_count = document.createElement("a");
                             video_count.id = "iri-video-count";
-                            video_count.textContent = count;
+                            video_count.textContent = count_match;
                             video_count.setAttribute("class", "iri-video-count");
-                            video_count.setAttribute("href", channel_id + "/videos");
+                            video_count.setAttribute("href", channel_url + "/videos");
 
                             owner_container.appendChild(video_count_dot);
                             owner_container.appendChild(video_count);
 
-                            owner_container.channel_id = channel_id;
-                            owner_container.video_count = count;
-
-                        }
-
-                    },
-                    addVideoCount: function(channel_url, event) {
-
-                        var count_match;
-
-                        delete this.addVideoCount.fetching;
-
-                        count_match = event.target.response.match(/"(?:stats|briefStats)":\[\{"runs":\[\{"text":"([\w\W ]+?")\}\]\}/);
-
-                        if (count_match && (count_match = count_match[1].replace("\"", ""))) {
-
-                            this.setVideoCount.call(this, count_match, channel_url);
+                            owner_container.channel_url = channel_url;
+                            owner_container.video_count = count_match;
 
                         }
 
                     },
                     removeVideoTime: function(xhr, listener) {
 
+                        var time_container;
+
                         document.removeEventListener("yt-navigate-finish", listener, false);
 
+                        if (xhr && xhr.abort) {
+
+                            xhr.abort();
+
+                        }
+
+                        if ((time_container = document.getElementById("iri-video-time"))) {
+
+                            time_container.remove();
+
+                        }
+
                     },
-                    addVideoTime: function(event) {
+                    addVideoTime: function(published_date, event) {
+
+                        var time_match;
+                        var time_container;
+
+                        delete this.addVideoTime.fetching;
+
+                        time_match = event.target.response.match(/"publishedTimeText":\{"simpleText":"([\w\W ]+?")\}/);
+
+                        if (time_match && (time_match = time_match[1].replace("\"", ""))) {
+
+                            time_container = document.createElement("span");
+                            time_container.id = "iri-video-time";
+                            time_container.textContent = " · " + time_match;
+
+                            published_date.appendChild(time_container);
+
+                        }
 
                     },
                     loadStart: function() {
 
                         var xhr;
                         var context;
+                        var video_id;
                         var channel_id;
                         var channel_url;
                         var upload_info;
@@ -454,43 +476,58 @@
                         var video_count_dot;
                         var owner_container;
 
-                        if (user_settings.channel_video_count && !this.addVideoCount.fetching && (owner_container = document.getElementById("owner-container")) && !(video_count = document.getElementById("iri-video-count")) && (channel_url = document.querySelector("#owner-name a"))) {
+                        if ((channel_url = document.querySelector("#owner-name a"))) {
 
                             channel_url = channel_url.getAttribute("href");
                             channel_id = channel_url.match(/UC([a-z0-9-_]{22})/i);
 
                             if (channel_id && (channel_id = channel_id[1])) {
 
-                                this.addVideoCount.fetching = true;
+                                if (user_settings.channel_video_count && !this.addVideoCount.fetching && (owner_container = document.getElementById("owner-container")) && !(video_count = document.getElementById("iri-video-count")) && (channel_url = document.querySelector("#owner-name a"))) {
 
-                                xhr = new XMLHttpRequest();
-                                xhr.addEventListener("load", this.addVideoCount.bind(this, channel_url));
-                                xhr.open("GET", "/playlist?list=UU" + channel_id, true);
-                                xhr.send();
+                                    this.addVideoCount.fetching = true;
 
-                                context = this;
+                                    xhr = new XMLHttpRequest();
+                                    xhr.addEventListener("load", this.addVideoCount.bind(this, channel_url));
+                                    xhr.open("GET", "/playlist?list=UU" + channel_id, true);
+                                    xhr.send();
 
-                                document.addEventListener("yt-navigate-finish", function listener() {
+                                    context = this;
 
-                                        context.removeVideoCount.call(this, xhr, listener);
+                                    document.addEventListener("yt-navigate-finish", function listener() {
 
-                                }, false);
+                                            context.removeVideoCount.call(this, xhr, listener);
+
+                                    }, false);
+
+                                }
+
+                                if (user_settings.channel_video_time && !this.addVideoTime.fetching && (upload_info = document.querySelector("#upload-info .date")) && upload_info.textContent.indexOf("·") === -1) {
+
+                                    if ((video_id = window.location.href.match(/v=([\w]+)/)) && (video_id = video_id[1])) {
+
+                                        this.addVideoTime.fetching = true;
+
+                                        xhr = new XMLHttpRequest();
+                                        xhr.addEventListener("load", this.addVideoTime.bind(this, upload_info));
+                                        xhr.open("GET", "/channel/UC" + channel_id + "/search?query=%22" + video_id + "%22", true);
+                                        xhr.send();
+
+                                        context = this;
+
+                                        document.addEventListener("yt-navigate-finish", function listener() {
+
+                                                context.removeVideoTime.call(this, xhr, listener);
+
+                                        }, false);
+
+                                    }
+
+                                }
 
                             }
 
                         }
-
-                        /*if (user_settings.channel_video_time && (upload_info = document.querySelector("#upload-info .date")) && upload_info.textContent.indexOf("·") === -1) {
-
-                            upload_info.textContent += " · 19 hours ago";
-
-                            document.addEventListener("yt-navigate-finish", function listener() {
-
-                                    context.removeVideoTime.call(this, null, listener);
-
-                            }, false);
-
-                        }*/
 
                     },
                     ini: function() {
@@ -1803,7 +1840,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.9a";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.0a";
                     document.documentElement.appendChild(holder);
 
                 }

@@ -23,11 +23,9 @@ Each item on the lists below can be removed or moved to the a different version 
 - [x] Feature: toggle HFR (60fps) streams
 - [x] Feature: change volume using the mouse wheel
 - [x] Feature: default quality
-- [ ] Feature: fullbrowser video mode
 - [x] Feature: thumbnail video preview
-- [ ] Feature: ability to open the player in a pop-out window
 - [x] Feature: show the total number of uploaded videos by the video author
-- [ ] Feature: show the relative uploaded time of the video being watched
+- [x] Feature: show the relative uploaded time of the video being watched
 - [ ] Feature: global video shortcuts
 
 ### ~~TODO - beta version~~
@@ -42,4 +40,6 @@ Each item on the lists below can be removed or moved to the a different version 
 - [ ] Feature: mini player when scrolling down
 - [ ] Feature: mini player when navigating to different pages
 - [ ] Feature: control comment section visiblity
+- [ ] Feature: ability to open the player in a pop-out window
+- [ ] Feature: fullbrowser video mode
 - [ ] Feature: reverse playlist

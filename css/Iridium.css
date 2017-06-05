@@ -191,6 +191,23 @@ body {
     user-select: none;
     white-space: pre;
 }
+.feature-link {
+    font-size: 14px;
+    font-weight: 700;
+    color: #167AC6;
+    cursor: pointer;
+    margin-left: 5px;
+    opacity: 0;
+    overflow: hidden;
+    text-decoration: none;
+    vertical-align: middle;
+}
+.settings_setting:hover .feature-link {
+    opacity: 1;
+}
+.feature-link:hover {
+    text-decoration: underline;
+}
 
 #iridium-text-editor {
     background: #fff;

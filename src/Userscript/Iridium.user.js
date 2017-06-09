@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.2.1a
+// @version         0.2.2a
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -28,37 +28,25 @@
             var i18n;
             var modules;
             var iridium_api;
-            var options_order;
             var user_settings;
             var default_language;
-
-            options_order = {
-                general: [],
-                video: [
-                    "player",
-                    [],
-                    "channel",
-                    []
-                ],
-                about: []
-            };
 
             default_language = {
                 language: "English",
                 section_titles: {
-                    general: "general settings",
-                    video: "video settings",
-                    about: "information and useful links",
-                    settings: "iridium settings"
+                    general: "General settings",
+                    video: "Video settings",
+                    about: "Information and useful links",
+                    settings: "Iridium settings"
                 },
                 sub_section_titles: {
-                    layout: "layout",
-                    thumbnails: "thumbnails",
-                    player: "player",
-                    channel: "channel",
-                    general: "general",
-                    language: "language",
-                    settings: "settings"
+                    layout: "Layout",
+                    thumbnails: "Thumbnails",
+                    player: "Player",
+                    channel: "Channel",
+                    general: "General",
+                    language: "Language",
+                    settings: "Settings"
                 },
                 iridium_api: {
                     settings_button: "Iridium settings",
@@ -85,6 +73,9 @@
                 channel_trailer_auto_play: {
                     label: "Play channel trailers automatically"
                 },
+                player_annotations: {
+                    label: "Allow annotations on videos"
+                },
                 player_ads: {
                     label: "Allow ads on videos"
                 },
@@ -103,8 +94,8 @@
                 iridium_language: {
                     button_save: "Save",
                     button_close: "Close",
-                    confirm_save: "You are about to replace your extension language settings.\n\nDo you wish to continue?",
-                    save_success: "New language saved successfully.\n\nChanges will be applied after a page refresh.",
+                    confirm_save: "You are about to replace your extension language settings.\n\nDo you wish to continue?\n\n",
+                    save_success: "New language saved successfully.\n\nChanges will be applied after a page refresh.\n\n",
                     save_error: "The new language could not be saved because it appears to be invalid.\n\n"
                 },
                 iridium_user_settings: {
@@ -114,10 +105,10 @@
                     button_import: "Import",
                     button_reset: "Reset",
                     placeholder: "Paste your new settings here",
-                    confirm_reset: "You are about to reset your settings. It is advised to backup your current settings before continuing.\n\nDo you wish to contiue?",
-                    reset_success: "Settings have been reset.\n\nChanges will be applied after a page refresh.",
-                    confirm_import: "You are about to override your current settings. It is advised to backup your current settings before continuing.\n\nDo you wish to contiue?",
-                    import_success: "Your settings have been imported with success.\n\nChanges will be applied after a page refresh.",
+                    confirm_reset: "You are about to reset your settings. It is advised to backup your current settings before continuing.\n\nDo you wish to contiue?\n\n",
+                    reset_success: "Settings have been reset.\n\nChanges will be applied after a page refresh.\n\n",
+                    confirm_import: "You are about to override your current settings. It is advised to backup your current settings before continuing.\n\nDo you wish to contiue?\n\n",
+                    import_success: "Your settings have been imported with success.\n\nChanges will be applied after a page refresh.\n\n",
                     import_error: "Your settings could not be imported because they appear to be invalid.\n\n"
                 }
             };
@@ -417,8 +408,13 @@
                             video_count = document.createElement("a");
                             video_count.id = "iri-video-count";
                             video_count.textContent = count_match;
-                            video_count.setAttribute("class", "iri-video-count");
+                            video_count.setAttribute("class", "yt-simple-endpoint iri-video-count");
                             video_count.setAttribute("href", channel_url + "/videos");
+                            video_count.data = {
+                                webNavigationEndpointData: {
+                                    url: channel_url + "/videos"
+                                }
+                            };
 
                             owner_container.appendChild(video_count_dot);
                             owner_container.appendChild(video_count);
@@ -490,6 +486,7 @@
                                 if (user_settings.channel_video_count && !this.addVideoCount.fetching && (owner_container = document.getElementById("owner-container")) && !(video_count = document.getElementById("iri-video-count")) && (channel_url = document.querySelector("#owner-name a"))) {
 
                                     this.addVideoCount.fetching = true;
+                                    channel_url = channel_url.getAttribute("href");
 
                                     xhr = new XMLHttpRequest();
                                     xhr.addEventListener("load", this.addVideoCount.bind(this, channel_url));
@@ -588,6 +585,13 @@
                             type:        "checkbox",
                             value:       false
                         },
+                        player_annotations: {
+                            id:          "player_annotations",
+                            section:     "video",
+                            sub_section: "player",
+                            type:        "checkbox",
+                            value:       false
+                        },
                         player_ads: {
                             id:          "player_ads",
                             section:     "video",
@@ -613,13 +617,17 @@
                     modArgs: function(args) {
 
                         var i;
+                        var fps;
                         var list;
-                        var temp;
 
                         if (user_settings.subscribed_channel_player_ads ? args.subscribed !== "1" : !user_settings.player_ads) {
 
                             delete args.ad3_module;
 
+                        }
+
+                        if (!user_settings.player_annotations) {
+                            args.iv_load_policy = "3";
                         }
 
                         if (args.adaptive_fmts && !user_settings.player_hfr) {
@@ -628,10 +636,10 @@
 
                             for (i = 0; i < list.length; i++) {
 
-                                temp = list[i].split(/fps=([0-9]{2})/);
-                                temp = temp && temp[1];
+                                fps = list[i].split(/fps=([0-9]{2})/);
+                                fps = fps && fps[1];
 
-                                if (temp > 30) {
+                                if (fps > 30) {
 
                                     list.splice(i--, 1);
 
@@ -1948,7 +1956,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.1a";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.2a";
                     document.documentElement.appendChild(holder);
 
                 }

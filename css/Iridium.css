@@ -147,10 +147,6 @@ body {
     font-weight: bold;
     user-select: none;
 }
-#settings_section h2:first-letter,
-#settings_section h3:first-letter {
-    text-transform: capitalize;
-}
 .sidebar_section {
     color: #666;
     cursor: pointer;

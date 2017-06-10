@@ -353,7 +353,7 @@ body {
     color: #888;
 }
 .iri-dark-mode-settings #settings_section h2 {
-    color: #FFF;
+    color: rgba(255, 255, 255, 0.8);
 }
 .iri-dark-mode-settings #settings_section h3 {
     color: rgba(255, 255, 255, 0.5);
@@ -368,5 +368,10 @@ body {
     background-color: #131313;
     border-color: #303030;
     color: rgba(255, 255, 255, 0.5);
+}
+
+
+.iri-dark-mode-settings #iridium_settings input[type=checkbox] + label:before {
+    box-shadow: none;
 }
 /* end | Iridium settings dark mode */

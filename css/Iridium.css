@@ -320,9 +320,9 @@ body {
     background: #E9E9E9;
 }
 #iridium_settings .iri-settings-button.danger {
-    background-color: #C51616;
-    border-color: #C51616;
-    color: #FFF;
+    background-color: #C51616 !important;
+    border-color: #C51616 !important;
+    color: #FFF !important;
 }
 #iridium_settings .iri-settings-button.danger:hover {
     background: #b51212;
@@ -331,3 +331,42 @@ body {
     background: #9a0909;
 }
 /* end | Iridium settings */
+
+
+/* ini | Iridium settings dark mode */
+.iri-dark-mode-settings #iridium_settings {
+    color: rgba(255, 255, 255, 0.5);
+}
+.iri-dark-mode-settings #iridium_settings {
+    background-color: #131313;
+}
+.iri-dark-mode-settings #iridium_settings_sidebar,
+.iri-dark-mode-settings #settings_section,
+.iri-dark-mode-settings #iridium-text-editor {
+    background-color: #1c1c1c;
+}
+.iri-dark-mode-settings #iridium_settings .iri-settings-button,
+.iri-dark-mode-settings #iridium_settings .iri-settings-button:hover,
+.iri-dark-mode-settings #iridium_settings .iri-settings-button:active {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: #303030;
+    color: #888;
+}
+.iri-dark-mode-settings #settings_section h2 {
+    color: #FFF;
+}
+.iri-dark-mode-settings #settings_section h3 {
+    color: rgba(255, 255, 255, 0.5);
+}
+.iri-dark-mode-settings .settings_divider {
+    background-color: rgba(255, 255, 255, 0.14);
+}
+.iri-dark-mode-settings .sidebar_section:hover:not(.active_sidebar) {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+.iri-dark-mode-settings #iridium-text-editor textarea {
+    background-color: #131313;
+    border-color: #303030;
+    color: rgba(255, 255, 255, 0.5);
+}
+/* end | Iridium settings dark mode */

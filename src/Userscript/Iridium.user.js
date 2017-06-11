@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.2.3a
+// @version         0.2.4a
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -95,24 +95,31 @@
                             i18n: {
                                 label: "Preview videos by hovering the thumbnails"
                             }
+                        },
+                        thumbnail_preview_mute: {
+                            id: "thumbnail_preview_mute",
+                            section: "general",
+                            sub_section: "thumbnails",
+                            type: "checkbox",
+                            value: false,
+                            i18n: {
+                                label: "Shift key toggles audio on video preview"
+                            }
                         }
                     },
                     togglePreviewMute: function (event) {
 
-                        var preview_player;
+                        var player_api;
 
-                        if (event.which === 16 && (preview_player = document.getElementById("iri-preview-player"))) {
+                        if (user_settings.thumbnail_preview_mute && event.which === 16 && (player_api = document.getElementById("iri-preview-player"))) {
 
-                            if (event.type === "keydown") {
+                            if (player_api.isMuted()) {
 
-                                preview_player.unMute();
-                                preview_player.setVolume(50);
-
-                            } else {
-
-                                preview_player.mute();
+                                player_api.setVolume(50);
 
                             }
+
+                            player_api.handleGlobalKeyDown(77, false);
 
                         }
 
@@ -130,14 +137,14 @@
                         args.showinfo = "0";
                         args.vq = "small";
 
-                        delete args.ad3_module;
-                        delete args.baseUrl;
-                        delete args.eventid; // excludes from watch history
-                        delete args.iv_endscreen_url;
-                        delete args.ppv_remarketing_url;
-                        delete args.probe_url;
-                        delete args.remarketing_url;
-                        delete args.videostats_playback_base_url;
+                        args.ad3_module = null;
+                        args.baseUrl = null;
+                        args.eventid = null; // excludes from watch history
+                        args.iv_endscreen_url = null;
+                        args.ppv_remarketing_url = null;
+                        args.probe_url = null;
+                        args.remarketing_url = null;
+                        args.videostats_playback_base_url = null;
 
                     },
                     iniPreview: function (context, event) {
@@ -167,10 +174,6 @@
                         config.attrs.id = "iri-preview-player";
 
                         window.yt.player.Application.create("iri-video-preview", config);
-
-                        document.addEventListener("keydown", function(event) {
-
-                        }, false);
 
                     },
                     getPreviewArgs: function (video_id) {
@@ -211,7 +214,6 @@
                         if (clicked || !container.parentNode.contains(event.toElement || event.relatedTarget)) {
 
                             document.removeEventListener("keydown", context.togglePreviewMute, false);
-                            document.removeEventListener("keyup", context.togglePreviewMute, false);
 
                             container.parentNode.removeEventListener("click", listener, false);
                             container.parentNode.removeEventListener("mouseleave", listener, false);
@@ -250,7 +252,6 @@
                         var xhr;
                         var timer;
                         var context;
-                        var listener;
                         var video_id;
                         var container;
                         var video_container;
@@ -261,6 +262,8 @@
                             video_id = container.dataHost && container.dataHost.data && container.dataHost.data.videoId;
 
                             if (container.tagName === "YT-IMG-SHADOW" && video_id && !container.querySelector("#iri-preview-player")) {
+
+                                context = this;
 
                                 if (!(video_container = document.getElementById("iri-video-preview"))) {
 
@@ -283,7 +286,7 @@
                                         if (window.yt && window.yt.player && window.yt.player.Application && window.yt.player.Application.create) {
 
                                             window.clearInterval(timer);
-                                            xhr = this.getPreviewArgs(video_id);
+                                            xhr = context.getPreviewArgs(video_id);
 
                                         }
 
@@ -296,9 +299,6 @@
                                 }
 
                                 document.addEventListener("keydown", this.togglePreviewMute, false);
-                                document.addEventListener("keyup", this.togglePreviewMute, false);
-
-                                context = this;
 
                                 container.parentNode.addEventListener("click", function listener(event) {
 
@@ -2066,7 +2066,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.3a";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.4a";
                     document.documentElement.appendChild(holder);
 
                 }

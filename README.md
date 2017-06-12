@@ -28,6 +28,7 @@ Each item on the lists below can be removed or moved to the a different version 
 - [x] Feature: show the relative uploaded time of the video being watched
 - [x] Feature: global video shortcuts
 - [x] Feature: disable video annotations
+- [x] Feature: player always visible while scrolling
 
 ### TODO - beta version
 

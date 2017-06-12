@@ -1,19 +1,19 @@
 {
     "language": "English",
     "section_titles": {
-        "general": "general settings",
-        "video": "video settings",
-        "about": "information and useful links",
-        "settings": "iridium settings"
+        "general": "General settings",
+        "video": "Video settings",
+        "about": "Information and useful links",
+        "settings": "Iridium settings"
     },
     "sub_section_titles": {
-        "layout": "layout",
-        "thumbnails": "thumbnails",
-        "player": "player",
-        "channel": "channel",
-        "general": "general",
-        "language": "language",
-        "settings": "settings"
+        "layout": "Layout",
+        "thumbnails": "Thumbnails",
+        "player": "Player",
+        "channel": "Channel",
+        "general": "General",
+        "language": "Language",
+        "settings": "Settings"
     },
     "iridium_api": {
         "settings_button": "Iridium settings",
@@ -22,23 +22,29 @@
     "square_avatars": {
         "label": "Make user images squared"
     },
+    "thumbnail_preview": {
+        "label": "Preview videos by hovering the thumbnails"
+    },
+    "thumbnail_preview_mute": {
+        "label": "Shift key toggles audio on video preview"
+    },
     "channel_video_count": {
         "label": "Display uploaded videos number"
     },
     "channel_video_time": {
         "label": "Display how long the video was uploaded"
     },
-    "thumbnail_preview": {
-        "label": "Preview videos by hovering the thumbnails"
+    "player_quality": {
+        "label": "Default video quality:"
     },
     "player_auto_play": {
         "label": "Play videos automatically"
     },
-    "player_always_active": {
-        "label": "Player shortcuts always active"
-    },
     "channel_trailer_auto_play": {
         "label": "Play channel trailers automatically"
+    },
+    "player_annotations": {
+        "label": "Allow annotations on videos"
     },
     "player_ads": {
         "label": "Allow ads on videos"
@@ -49,18 +55,17 @@
     "player_hfr": {
         "label": "Allow HFR (60fps) streams"
     },
+    "player_always_active": {
+        "label": "Player shortcuts always active"
+    },
     "player_volume_wheel": {
         "label": "Change volume using the mouse wheel"
     },
-    "player_quality": {
-        "label": "Default video quality:"
+    "player_always_visible": {
+        "label": "Keep the player always visible while scrolling"
     },
-    "iridium_language": {
-        "button_save": "Save",
-        "button_close": "Close",
-        "confirm_save": "You are about to replace your extension language settings.\n\nDo you wish to continue?",
-        "save_success": "New language saved successfully.\n\nChanges will be applied after a page refresh.",
-        "save_error": "The new language could not be saved because it appears to be invalid.\n\n"
+    "iridium_dark_mode": {
+        "label": "Use dark theme"
     },
     "iridium_user_settings": {
         "button_save": "Save",
@@ -69,10 +74,17 @@
         "button_import": "Import",
         "button_reset": "Reset",
         "placeholder": "Paste your new settings here",
-        "confirm_reset": "You are about to reset your settings. It is advised to backup your current settings before continuing.\n\nDo you wish to contiue?",
-        "reset_success": "Settings have been reset.\n\nChanges will be applied after a page refresh.",
-        "confirm_import": "You are about to override your current settings. It is advised to backup your current settings before continuing.\n\nDo you wish to contiue?",
-        "import_success": "Your settings have been imported with success.\n\nChanges will be applied after a page refresh.",
+        "confirm_reset": "You are about to reset your settings. It is advised to backup your current settings before continuing.\n\nDo you wish to contiue?\n\n",
+        "reset_success": "Settings have been reset.\n\nChanges will be applied after a page refresh.\n\n",
+        "confirm_import": "You are about to override your current settings. It is advised to backup your current settings before continuing.\n\nDo you wish to contiue?\n\n",
+        "import_success": "Your settings have been imported with success.\n\nChanges will be applied after a page refresh.\n\n",
         "import_error": "Your settings could not be imported because they appear to be invalid.\n\n"
+    },
+    "iridium_language": {
+        "button_save": "Save",
+        "button_close": "Close",
+        "confirm_save": "You are about to replace your extension language settings.\n\nDo you wish to continue?\n\n",
+        "save_success": "New language saved successfully.\n\nChanges will be applied after a page refresh.\n\n",
+        "save_error": "The new language could not be saved because it appears to be invalid.\n\n"
     }
 }

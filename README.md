@@ -28,7 +28,7 @@ Each item on the lists below can be removed or moved to the a different version 
 - [x] Feature: show the relative uploaded time of the video being watched
 - [x] Feature: global video shortcuts
 - [x] Feature: disable video annotations
-- [x] Feature: player always visible while scrolling
+- [x] Feature: mini player when scrolling down
 
 ### TODO - beta version
 
@@ -39,7 +39,6 @@ Each item on the lists below can be removed or moved to the a different version 
 ### TODO - release version
 
 - [ ] Feature: blacklist videos from specific channels
-- [ ] Feature: mini player when scrolling down
 - [ ] Feature: mini player when navigating to different pages
 - [ ] Feature: control comment section visiblity
 - [ ] Feature: ability to open the player in a pop-out window

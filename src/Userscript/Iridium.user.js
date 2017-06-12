@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.2.4a
+// @version         0.2.5a
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1097,6 +1097,74 @@
                 },
                 {
                     options: {
+                        player_always_visible: {
+                            id: "player_always_visible",
+                            section: "video",
+                            sub_section: "player",
+                            type: "checkbox",
+                            value: false,
+                            i18n: {
+                                label: "Keep the player always visible while scrolling"
+                            }
+                        }
+                    },
+                    iniFloater: function() {
+
+                        var player;
+                        var player_api;
+                        var player_bounds;
+                        var is_out_of_sight;
+                        var player_container;
+                        var is_in_theater_mode;
+                        var is_already_floating;
+
+                        if (user_settings.player_always_visible && window.location.pathname === "/watch") {
+
+                            if ((player_container = document.getElementById("player-container")) && (player_bounds = player_container.getBoundingClientRect())) {
+
+                                is_out_of_sight = player_bounds.bottom < ((player_bounds.height / 2) + 50);
+                                is_already_floating = document.documentElement.classList.contains("iri-always-visible");
+                                player_api = document.getElementById("movie_player");
+
+                                if (is_out_of_sight && !is_already_floating) {
+
+                                    document.documentElement.classList.add("iri-always-visible");
+
+                                    if (player_api) {
+
+                                        player_api.setSizeStyle(false, true);
+
+                                    }
+
+                                } else if (!is_out_of_sight && is_already_floating) {
+
+                                    document.documentElement.classList.remove("iri-always-visible");
+
+                                    if (player_api) {
+
+                                        is_in_theater_mode = document.querySelector("ytd-watch[theater]");
+
+                                        player_api.setSizeStyle(true, is_in_theater_mode);
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                    },
+                    ini: function() {
+
+                        iridium_api.initializeOption.call(this);
+
+                        window.addEventListener("scroll", this.iniFloater, false);
+
+                    }
+                },
+                {
+                    options: {
                         iridium_dark_mode: {
                             id: "iridium_dark_mode",
                             section: "settings",
@@ -2066,7 +2134,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.4a";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.5a";
                     document.documentElement.appendChild(holder);
 
                 }

@@ -85,6 +85,19 @@ yt-img-shadow:hover #iri-video-preview {
 /* end | thumbnail preview */
 
 
+/* ini | player always visible */
+.iri-always-visible #movie_player{
+    box-shadow: 0 0 10px #000;
+    position: fixed;
+    width: 350px;
+    height: calc(350px * (9 / 16));
+    bottom: 10px;
+    right: 10px;
+    z-index: 100;
+}
+/* end | player always visible */
+
+
 /* ini | Iridium settings */
 html,
 body {
@@ -235,8 +248,6 @@ body {
     resize: none;
     width: 100%;
 }
-
-
 
 
 #iridium_settings input[type=checkbox] {

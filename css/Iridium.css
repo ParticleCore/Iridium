@@ -95,7 +95,7 @@ yt-img-shadow:hover #iri-video-preview {
     position: fixed;
     right: 10px;
     width: 352px;
-    z-index: 100;
+    z-index: 1000;
 }
 .iri-always-visible #movie_player video {
     background-color: rgba(0, 0, 0, 0.9);
@@ -104,7 +104,7 @@ yt-img-shadow:hover #iri-video-preview {
 
 
 /* ini | video always playing */
-.iri-always-playing ytd-watch {
+html.iri-always-playing ytd-watch[hidden] {
     display: block !important;
     height: 0;
     overflow: hidden;
@@ -120,7 +120,7 @@ yt-img-shadow:hover #iri-video-preview {
     position: fixed;
     right: 10px;
     width: 352px;
-    z-index: 100;
+    z-index: 1000;
 }
 .iri-always-playing #movie_player video {
     background-color: rgba(0, 0, 0, 0.9);

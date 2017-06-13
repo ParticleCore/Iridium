@@ -87,12 +87,12 @@ yt-img-shadow:hover #iri-video-preview {
 
 /* ini | player always visible */
 .iri-always-visible #movie_player{
-    box-shadow: 0 0 10px #000;
-    position: fixed;
-    width: 350px;
-    height: calc(350px * (9 / 16));
     bottom: 10px;
+    box-shadow: 0 0 10px #000;
+    height: 198px;
+    position: fixed;
     right: 10px;
+    width: 352px;
     z-index: 100;
 }
 /* end | player always visible */

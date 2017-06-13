@@ -85,9 +85,11 @@ yt-img-shadow:hover #iri-video-preview {
 /* end | thumbnail preview */
 
 
-/* ini | player always visible */
-.iri-always-visible #movie_player{
+/* ini | video always visible */
+.iri-always-visible #movie_player {
+    background: transparent;
     bottom: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 0 10px #000;
     height: 198px;
     position: fixed;
@@ -95,7 +97,38 @@ yt-img-shadow:hover #iri-video-preview {
     width: 352px;
     z-index: 100;
 }
-/* end | player always visible */
+.iri-always-visible #movie_player video {
+    background-color: rgba(0, 0, 0, 0.9);
+}
+/* end | video always visible */
+
+
+/* ini | video always playing */
+.iri-always-playing ytd-watch {
+    display: block !important;
+    height: 0;
+    overflow: hidden;
+    position: absolute;
+    width: 0;
+}
+.iri-always-playing #movie_player {
+    background: transparent;
+    bottom: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 10px #000;
+    height: 198px;
+    position: fixed;
+    right: 10px;
+    width: 352px;
+    z-index: 100;
+}
+.iri-always-playing #movie_player video {
+    background-color: rgba(0, 0, 0, 0.9);
+}
+.iri-always-playing .ytp-cued-thumbnail-overlay {
+    transition-delay: 0s !important;
+}
+/* end | video always playing */
 
 
 /* ini | Iridium settings */

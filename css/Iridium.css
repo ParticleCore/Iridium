@@ -111,21 +111,6 @@ html.iri-always-playing ytd-watch[hidden] {
     pointer-events: none;
     right: 12px;
     transition: opacity 0.25s cubic-bezier(0, 0, 0.2, 1);
-
-    /*display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-flex-wrap: nowrap;
-    -ms-flex-wrap: nowrap;
-    flex-wrap: nowrap;
-    -ms-flex-pack: end;
-    justify-content: flex-end;
-    left: 12px;
-    right: 12px;
-    top: 0;
-    z-index: 60;
-    position: absolute;
-    text-shadow: 0 0 2px rgba(0,0,0,.5);*/
 }
 #iri-mini-player-controls:after {
     box-shadow: rgba(8, 8, 8, 0.8) 0 120px 90px -90px inset;
@@ -146,10 +131,11 @@ html.iri-always-playing ytd-watch[hidden] {
 #iri-mini-player-controls svg {
     pointer-events: none;
 }
+
 .iri-mini-player-control {
     align-items: center;
     cursor: pointer;
-    display: flex;
+    display: none;
     height: 36px;
     justify-content: center;
     top: 0;
@@ -173,6 +159,12 @@ html.iri-always-playing ytd-watch[hidden] {
     stroke-opacity: 0.15;
     stroke-width: 2px;
 }
+
+.iri-always-playing ytd-watch[hidden] #iri-mini-player-close,
+.iri-always-playing ytd-watch[hidden] #iri-mini-player-restore {
+    display: flex;
+}
+
 .iri-always-visible #movie_player,
 .iri-always-playing ytd-watch[hidden] #movie_player:not(.unstarted-mode) {
     background-color: transparent;

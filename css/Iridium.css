@@ -86,26 +86,6 @@ yt-img-shadow:hover #iri-video-preview {
 /* end | thumbnail preview */
 
 
-/* ini | video always visible */
-.iri-always-visible #movie_player {
-    background: transparent;
-    bottom: 10px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(125, 125, 125, 0.3);
-    box-shadow: 0 0 10px #000;
-    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
-    height: 198px;
-    position: fixed;
-    right: 10px;
-    width: 352px;
-    z-index: 10000;
-}
-.iri-always-visible #movie_player video {
-    background-color: rgba(0, 0, 0, 0.9);
-}
-/* end | video always visible */
-
-
 /* ini | video always playing */
 html.iri-always-playing ytd-watch[hidden] {
     display: block !important;
@@ -114,11 +94,91 @@ html.iri-always-playing ytd-watch[hidden] {
     position: absolute;
     width: 0;
 }
+/* end | video always playing */
+
+
+/* ini | mini player */
+#iri-mini-player-controls {
+    font-size: 0px;
+    height: 0px;
+    margin-top: 6px;
+    opacity: 0;
+    position: absolute;
+    text-align: center;
+    top: 0px;
+    left: 12px;
+    z-index: 1000;
+    pointer-events: none;
+    right: 12px;
+    transition: opacity 0.25s cubic-bezier(0, 0, 0.2, 1);
+
+    /*display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-wrap: nowrap;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    -ms-flex-pack: end;
+    justify-content: flex-end;
+    left: 12px;
+    right: 12px;
+    top: 0;
+    z-index: 60;
+    position: absolute;
+    text-shadow: 0 0 2px rgba(0,0,0,.5);*/
+}
+#iri-mini-player-controls:after {
+    box-shadow: rgba(8, 8, 8, 0.8) 0 120px 90px -90px inset;
+    content: "";
+    height: 120px;
+    left: -12px;
+    pointer-events: none;
+    position: absolute;
+    right: -12px;
+    top: -6px;
+    z-index: -1;
+}
+.iri-always-visible #movie_player:hover #iri-mini-player-controls,
+.iri-always-playing #movie_player:hover #iri-mini-player-controls {
+    opacity: 1;
+    pointer-events: initial;
+}
+#iri-mini-player-controls svg {
+    pointer-events: none;
+}
+.iri-mini-player-control {
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    height: 36px;
+    justify-content: center;
+    top: 0;
+    opacity: 0.9;
+    position: absolute;
+    transition: opacity .1s cubic-bezier(0.4, 0.0, 1, 1);
+    width: 36px;
+}
+.iri-mini-player-control:hover {
+    opacity: 1;
+}
+.iri-mini-player-left-control {
+    left: 0;
+}
+.iri-mini-player-right-control {
+    right: 0;
+}
+.iri-svg-shadow {
+    fill: none;
+    stroke: #000;
+    stroke-opacity: 0.15;
+    stroke-width: 2px;
+}
+.iri-always-visible #movie_player,
 .iri-always-playing ytd-watch[hidden] #movie_player:not(.unstarted-mode) {
-    background: transparent;
+    background-color: transparent;
     bottom: 10px;
     border: 2px solid rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(125, 125, 125, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     box-shadow: 0 0 10px #000;
     box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
     height: 198px;
@@ -127,10 +187,18 @@ html.iri-always-playing ytd-watch[hidden] {
     width: 352px;
     z-index: 10000;
 }
-.iri-always-playing ytd-watch[hidden] #movie_player video {
-    background-color: rgba(0, 0, 0, 0.9);
+.iri-always-visible #movie_player:before,
+.iri-always-playing ytd-watch[hidden] #movie_player:not(.unstarted-mode):before {
+    background-color: #000;
+    bottom: 0;
+    content: "";
+    display: block;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
 }
-/* end | video always playing */
+/* end | mini player */
 
 
 /* ini | Iridium settings */

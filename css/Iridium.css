@@ -55,7 +55,7 @@ html {
     white-space: pre;
     --yt-endpoint-color: var(--yt-channel-owner) !important;
 }
-ytd-watch:not([hidden]) .ytp-cued-thumbnail-overlay {
+ytd-watch:not([hidden]) .ytp-thumbnail-overlay {
     transition: none !important;
 }
 /* end | general layout */

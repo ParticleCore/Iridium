@@ -94,6 +94,11 @@ html.iri-always-playing ytd-watch[hidden] {
     position: absolute;
     width: 0;
 }
+.iri-always-playing #movie_player .ytp-prev-button,
+.iri-always-playing #movie_player .ytp-next-button,
+.iri-always-playing #movie_player.ended-mode .html5-endscreen {
+    display: none;
+}
 /* end | video always playing */
 
 
@@ -123,7 +128,7 @@ html.iri-always-playing ytd-watch[hidden] {
     top: -6px;
     z-index: -1;
 }
-.iri-always-visible #movie_player:hover #iri-mini-player-controls,
+/*.iri-always-visible #movie_player:hover #iri-mini-player-controls,*/
 .iri-always-playing #movie_player:hover #iri-mini-player-controls {
     opacity: 1;
     pointer-events: initial;
@@ -160,13 +165,13 @@ html.iri-always-playing ytd-watch[hidden] {
     stroke-width: 2px;
 }
 
-.iri-always-playing ytd-watch[hidden] #iri-mini-player-close,
-.iri-always-playing ytd-watch[hidden] #iri-mini-player-restore {
+.iri-always-playing #iri-mini-player-close,
+.iri-always-playing #iri-mini-player-restore {
     display: flex;
 }
 
 .iri-always-visible #movie_player,
-.iri-always-playing ytd-watch[hidden] #movie_player:not(.unstarted-mode) {
+.iri-always-playing #movie_player:not(.unstarted-mode) {
     background-color: transparent;
     bottom: 10px;
     border: 2px solid rgba(255, 255, 255, 0.2);
@@ -180,12 +185,13 @@ html.iri-always-playing ytd-watch[hidden] {
     z-index: 10000;
 }
 .iri-always-visible #movie_player:before,
-.iri-always-playing ytd-watch[hidden] #movie_player:not(.unstarted-mode):before {
+.iri-always-playing #movie_player:not(.unstarted-mode):before {
     background-color: #000;
     bottom: 0;
     content: "";
     display: block;
     left: 0;
+    opacity: 0.8;
     position: absolute;
     right: 0;
     top: 0;

@@ -21,8 +21,6 @@ html {
 #iridium_settings_button polygon {
     opacity: 0.5;
 }
-#iridium_settings_button stop {
-}
 #iridium_settings_button path,
 #iridium_settings_button polygon {
     fill: url(#iri-gradient);
@@ -57,6 +55,9 @@ html {
     white-space: pre;
     --yt-endpoint-color: var(--yt-channel-owner) !important;
 }
+ytd-watch:not([hidden]) .ytp-cued-thumbnail-overlay {
+    transition: none !important;
+}
 /* end | general layout */
 
 
@@ -90,12 +91,14 @@ yt-img-shadow:hover #iri-video-preview {
     background: transparent;
     bottom: 10px;
     border: 2px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(125, 125, 125, 0.3);
     box-shadow: 0 0 10px #000;
+    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
     height: 198px;
     position: fixed;
     right: 10px;
     width: 352px;
-    z-index: 1000;
+    z-index: 10000;
 }
 .iri-always-visible #movie_player video {
     background-color: rgba(0, 0, 0, 0.9);
@@ -111,22 +114,21 @@ html.iri-always-playing ytd-watch[hidden] {
     position: absolute;
     width: 0;
 }
-.iri-always-playing #movie_player {
+.iri-always-playing ytd-watch[hidden] #movie_player:not(.unstarted-mode) {
     background: transparent;
     bottom: 10px;
     border: 2px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(125, 125, 125, 0.3);
     box-shadow: 0 0 10px #000;
+    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
     height: 198px;
     position: fixed;
     right: 10px;
     width: 352px;
-    z-index: 1000;
+    z-index: 10000;
 }
-.iri-always-playing #movie_player video {
+.iri-always-playing ytd-watch[hidden] #movie_player video {
     background-color: rgba(0, 0, 0, 0.9);
-}
-.iri-always-playing .ytp-cued-thumbnail-overlay {
-    transition-delay: 0s !important;
 }
 /* end | video always playing */
 

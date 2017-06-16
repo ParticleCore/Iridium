@@ -29,7 +29,7 @@ Each item on the lists below can be removed or moved to the a different version 
 - [x] Feature: global video shortcuts
 - [x] Feature: disable video annotations
 - [x] Feature: mini player when scrolling down
-- [ ] Feature: mini player when navigating to different pages
+- [x] Feature: mini player when navigating to different pages
 - [ ] Feature: default channel tab
 - [ ] Feature: youtube logo redirects to subscription or trending
 

@@ -62,7 +62,12 @@
         "label": "Change volume using the mouse wheel"
     },
     "player_always_visible": {
-        "label": "Keep the player always visible while scrolling"
+        "label": "Video stays always visible while scrolling"
+    },
+    "player_always_playing": {
+        "label": "Video keeps playing when changing pages",
+        "button_restore": "Return to video page",
+        "button_close": "Close mini player"
     },
     "iridium_dark_mode": {
         "label": "Use dark theme"

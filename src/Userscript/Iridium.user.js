@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.2.5a
+// @version         0.2.6a
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -113,12 +113,6 @@
 
                         if (user_settings.thumbnail_preview_mute && event.which === 16 && (player_api = document.getElementById("iri-preview-player"))) {
 
-                            if (player_api.isMuted()) {
-
-                                player_api.setVolume(50);
-
-                            }
-
                             player_api.handleGlobalKeyDown(77, false);
 
                         }
@@ -154,8 +148,7 @@
                         var temp;
                         var config;
                         var data_list;
-
-                        delete context.getPreviewArgs.request;
+                        var player_api;
 
                         args = {};
                         data_list = event.target.responseText.split("&");
@@ -174,6 +167,12 @@
                         config.attrs.id = "iri-preview-player";
 
                         window.yt.player.Application.create("iri-video-preview", config);
+
+                        if ((player_api = document.getElementById("iri-preview-player"))) {
+
+                            player_api.setVolume(50);
+
+                        }
 
                     },
                     getPreviewArgs: function (video_id) {
@@ -269,7 +268,7 @@
 
                                     video_container = document.createElement("iri-video-preview");
                                     video_container.id = "iri-video-preview";
-                                    video_container.setAttribute("class", "ytp-small-mode");
+                                    video_container.className = "ytp-small-mode";
 
                                 }
 
@@ -389,12 +388,12 @@
 
                             video_count_dot = document.createElement("span");
                             video_count_dot.textContent = " · ";
-                            video_count_dot.setAttribute("class", "iri-video-count");
+                            video_count_dot.className = "iri-video-count";
 
                             video_count = document.createElement("a");
                             video_count.id = "iri-video-count";
                             video_count.textContent = count_match;
-                            video_count.setAttribute("class", "yt-simple-endpoint iri-video-count");
+                            video_count.className = "yt-simple-endpoint iri-video-count";
                             video_count.setAttribute("href", channel_url + "/videos");
                             video_count.data = {
                                 webNavigationEndpointData: {
@@ -666,6 +665,15 @@
                         return function (args) {
 
                             var temp;
+                            var current_config;
+
+                            current_config = this.getUpdatedConfigurationData();
+
+                            if (current_config && current_config.args && current_config.args.eventid === args.eventid) {
+
+                                return;
+
+                            }
 
                             context.modArgs(args);
 
@@ -1102,49 +1110,86 @@
                             section: "video",
                             sub_section: "player",
                             type: "checkbox",
-                            value: false,
+                            value: true,
                             i18n: {
-                                label: "Keep the player always visible while scrolling"
+                                label: "Video stays always visible while scrolling"
+                            }
+                        },
+                        player_always_playing: {
+                            id: "player_always_playing",
+                            section: "video",
+                            sub_section: "player",
+                            type: "checkbox",
+                            value: true,
+                            i18n: {
+                                label: "Video keeps playing when changing pages",
+                                button_restore: "Return to video page",
+                                button_close: "Close mini player"
                             }
                         }
                     },
-                    iniFloater: function() {
+                    original_url: "",
+                    original_title: "",
+                    endMiniPlayer: function (class_name) {
+
+                        var player_api;
+                        var is_in_theater_mode;
+
+                        document.documentElement.classList.remove(class_name);
+
+                        if ((player_api = document.getElementById("movie_player"))) {
+
+                            is_in_theater_mode = document.querySelector("ytd-watch[theater]");
+
+                            player_api.setSizeStyle(true, is_in_theater_mode);
+
+                        }
+
+                    },
+                    iniMiniPlayer: function (class_name) {
+
+                        var player_api;
+
+                        document.documentElement.classList.add(class_name);
+
+                        if ((player_api = document.getElementById("movie_player"))) {
+
+                            player_api.setSizeStyle(false, true);
+
+                            this.iniMiniPlayerControls.call(this, player_api);
+
+                        }
+
+                    },
+                    iniAlwaysVisible: function (event) {
 
                         var player;
-                        var player_api;
                         var player_bounds;
                         var is_out_of_sight;
                         var player_container;
-                        var is_in_theater_mode;
                         var is_already_floating;
 
-                        if (user_settings.player_always_visible && window.location.pathname === "/watch") {
+                        if (user_settings.player_always_visible) {
 
-                            if ((player_container = document.getElementById("player-container")) && (player_bounds = player_container.getBoundingClientRect())) {
+                            is_already_floating = document.documentElement.classList.contains("iri-always-visible");
 
-                                is_out_of_sight = player_bounds.bottom < ((player_bounds.height / 2) + 50);
-                                is_already_floating = document.documentElement.classList.contains("iri-always-visible");
-                                player_api = document.getElementById("movie_player");
+                            if (event.detail && event.detail.pageType !== "watch" && is_already_floating) {
 
-                                if (is_out_of_sight && !is_already_floating) {
+                                this.endMiniPlayer("iri-always-visible");
 
-                                    document.documentElement.classList.add("iri-always-visible");
+                            } else if (window.location.pathname === "/watch") {
 
-                                    if (player_api) {
+                                if ((player_container = document.getElementById("player-container")) && (player_bounds = player_container.getBoundingClientRect())) {
 
-                                        player_api.setSizeStyle(false, true);
+                                    is_out_of_sight = player_bounds.bottom < ((player_bounds.height / 2) + 50);
 
-                                    }
+                                    if (is_out_of_sight && !is_already_floating) {
 
-                                } else if (!is_out_of_sight && is_already_floating) {
+                                        this.iniMiniPlayer("iri-always-visible");
 
-                                    document.documentElement.classList.remove("iri-always-visible");
+                                    } else if (!is_out_of_sight && is_already_floating) {
 
-                                    if (player_api) {
-
-                                        is_in_theater_mode = document.querySelector("ytd-watch[theater]");
-
-                                        player_api.setSizeStyle(true, is_in_theater_mode);
+                                        this.endMiniPlayer("iri-always-visible");
 
                                     }
 
@@ -1155,11 +1200,145 @@
                         }
 
                     },
-                    ini: function() {
+                    iniAlwaysPlaying: function (event) {
+
+                        if (user_settings.player_always_playing) {
+
+                            if (event.detail && event.detail.pageType === "watch") {
+
+                                this.original_url = window.location.href.replace(window.location.origin, "");
+
+                                this.endMiniPlayer("iri-always-playing");
+
+                            } else {
+
+                                this.iniMiniPlayer("iri-always-playing");
+
+                            }
+
+                        }
+
+                    },
+                    restorePlayer: function () {
+
+                        var player_api;
+                        var watch_page_api;
+                        var page_manager_api;
+
+                        if ((watch_page_api = document.querySelector("ytd-watch"))) {
+
+                            window.history.pushState({}, "", this.original_url);
+
+                            if ((player_api = document.getElementById("movie_player"))) {
+
+                                document.title = player_api.getUpdatedConfigurationData().args.title + " - YouTube";
+
+                            }
+
+                            this.endMiniPlayer("iri-always-playing");
+
+                            if ((page_manager_api = document.querySelector("ytd-page-manager"))) {
+
+                                page_manager_api.setActivePage_(watch_page_api);
+
+                            }
+
+                            watch_page_api.initComments_();
+
+                        }
+
+                    },
+                    closePlayer: function () {
+
+                        var player_api;
+
+                        this.endMiniPlayer("iri-always-playing");
+
+                        if ((player_api = document.getElementById("movie_player"))) {
+
+                            player_api.stopVideo(true);
+
+                        }
+
+                    },
+                    iniMiniPlayerControls: function (player_api) {
+
+                        var restore_page;
+                        var close_mini_player;
+                        var mini_player_controls;
+
+                        if (!(mini_player_controls = document.getElementById("iri-mini-player-controls")) && player_api) {
+
+                            mini_player_controls = document.createElement("div");
+                            mini_player_controls.id = "iri-mini-player-controls";
+
+                            restore_page = document.createElement("div");
+                            restore_page.id = "iri-mini-player-restore";
+                            restore_page.className = "iri-mini-player-control iri-mini-player-left-control";
+                            restore_page.title = i18n.player_always_playing.button_restore;
+                            restore_page.innerHTML =
+                                "<svg xmlns='http://www.w3.org/2000/svg' height='24' width='24' fill='#FFF'>" +
+                                "    <use xlink:href='#iri-svg-restore' class='iri-svg-shadow'/>" +
+                                "    <path id='iri-svg-restore' d='M21 4H1v16h22V4h-2zm0 14H3v-6h10V6h8v12z'/>" +
+                                "</svg>";
+                            restore_page.addEventListener("click", this.restorePlayer.bind(this), false);
+
+                            close_mini_player = document.createElement("div");
+                            close_mini_player.id = "iri-mini-player-close";
+                            close_mini_player.className = "iri-mini-player-control iri-mini-player-right-control";
+                            close_mini_player.title = i18n.player_always_playing.button_close;
+                            close_mini_player.innerHTML =
+                                "<svg xmlns='http://www.w3.org/2000/svg' height='24' width='24' fill='#FFF'>" +
+                                "    <use xlink:href='#iri-svg-close' class='iri-svg-shadow'/>" +
+                                "    <path id='iri-svg-close' d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/>" +
+                                "</svg>";
+                            close_mini_player.addEventListener("click", this.closePlayer.bind(this), false);
+
+                            mini_player_controls.appendChild(restore_page);
+                            mini_player_controls.appendChild(close_mini_player);
+
+                            player_api.appendChild(mini_player_controls);
+
+                        }
+
+                    },
+                    modStopVideo: function (original) {
+
+                        return function (bypass) {
+
+                            if (user_settings.player_always_playing && !bypass) {
+
+                                return;
+
+                            }
+
+                            return original.apply(this, arguments);
+
+                        };
+
+                    },
+                    ini: function () {
+
+                        var context;
 
                         iridium_api.initializeOption.call(this);
 
-                        window.addEventListener("scroll", this.iniFloater, false);
+                        window.addEventListener("scroll", this.iniAlwaysVisible.bind(this), false);
+                        window.addEventListener("yt-navigate-start", this.iniAlwaysVisible.bind(this), false);
+                        window.addEventListener("yt-navigate-finish", this.iniAlwaysVisible.bind(this), false);
+                        window.addEventListener("yt-navigate-start", this.iniAlwaysPlaying.bind(this), true);
+                        window.addEventListener("yt-navigate-finish", this.iniAlwaysPlaying.bind(this), false);
+
+                        context = this;
+
+                        Object.defineProperty(Object.prototype, "stopVideo", {
+                            set: function (data) {
+                                this._stopVideo = data;
+                            },
+                            get: function () {
+                                return context.modStopVideo(this._stopVideo);
+                            }
+                        })
 
                     }
                 },
@@ -1219,21 +1398,21 @@
 
                                 element = document.createElement("button");
                                 element.textContent = i18n.iridium_user_settings.button_export;
-                                element.setAttribute("class", "setting iri-settings-button");
+                                element.className = "setting iri-settings-button";
                                 element.addEventListener("click", this.textEditor.bind(this, "export"));
 
                                 element_list.push(element);
 
                                 element = document.createElement("button");
                                 element.textContent = i18n.iridium_user_settings.button_import;
-                                element.setAttribute("class", "setting iri-settings-button");
+                                element.className = "setting iri-settings-button";
                                 element.addEventListener("click", this.textEditor.bind(this, "import"));
 
                                 element_list.push(element);
 
                                 element = document.createElement("button");
                                 element.textContent = i18n.iridium_user_settings.button_reset;
-                                element.setAttribute("class", "setting iri-settings-button danger");
+                                element.className = "setting iri-settings-button danger";
                                 element.addEventListener("click", this.resetSettings.bind(this));
 
                                 element_list.push(element);
@@ -1321,7 +1500,7 @@
 
                                     button = document.createElement("button");
                                     button.textContent = i18n.iridium_user_settings.button_save;
-                                    button.setAttribute("class", "iri-settings-button");
+                                    button.className = "iri-settings-button";
                                     button.addEventListener("click", this.importSettings.bind(this));
 
                                     buttons_section.appendChild(button);
@@ -1330,7 +1509,7 @@
 
                                 button = document.createElement("button");
                                 button.textContent = i18n.iridium_user_settings.button_close;
-                                button.setAttribute("class", "iri-settings-button");
+                                button.className = "iri-settings-button";
                                 button.addEventListener("click", this.closeEditor.bind(this, editor));
 
                                 buttons_section.appendChild(button);
@@ -1367,7 +1546,7 @@
 
                                 element = document.createElement("button");
                                 element.textContent = i18n.language;
-                                element.setAttribute("class", "setting iri-settings-button");
+                                element.className = "setting iri-settings-button";
                                 element.addEventListener("click", this.textEditor.bind(this));
 
                                 element_list.push(element);
@@ -1434,14 +1613,14 @@
 
                                 button = document.createElement("button");
                                 button.textContent = i18n.iridium_language.button_save;
-                                button.setAttribute("class", "iri-settings-button");
+                                button.className = "iri-settings-button";
                                 button.addEventListener("click", this.saveLanguage.bind(this));
 
                                 buttons_section.appendChild(button);
 
                                 button = document.createElement("button");
                                 button.textContent = i18n.iridium_language.button_close;
-                                button.setAttribute("class", "iri-settings-button");
+                                button.className = "iri-settings-button";
                                 button.addEventListener("click", this.closeEditor.bind(this, editor));
 
                                 buttons_section.appendChild(button);
@@ -1526,7 +1705,7 @@
 
                     }
 
-                    section.innerHTML = "";
+                    section.textContent = "";
 
                     if ((header = document.getElementById("settings_section_header"))) {
 
@@ -1552,21 +1731,21 @@
                         }
 
                         setting = document.createElement("div");
-                        setting.setAttribute("class", "settings_setting");
+                        setting.className = "settings_setting";
 
                         switch (option.type) {
 
                             case "checkbox":
 
                                 input = document.createElement("input");
-                                input.setAttribute("class", "setting");
+                                input.className = "setting";
                                 input.id = option.id;
                                 input.type = option.type;
                                 input.checked = user_settings[option.id];
 
                                 label = document.createElement("label");
                                 label.textContent = i18n[option.id].label;
-                                label.setAttribute("class", "setting");
+                                label.className = "setting";
                                 label.setAttribute("for", option.id);
 
                                 setting.appendChild(input);
@@ -1584,12 +1763,12 @@
 
                                 label = document.createElement("label");
                                 label.textContent = i18n[option.id].label;
-                                label.setAttribute("class", "setting");
+                                label.className = "setting";
                                 label.setAttribute("for", option.id);
 
                                 select = document.createElement("select");
                                 select.id = option.id;
-                                select.setAttribute("class", "iri-settings-button");
+                                select.className = "iri-settings-button";
 
                                 for (j = 0; j < option.options.length; j++) {
 
@@ -1635,7 +1814,7 @@
                             help_link.textContent = "?";
                             help_link.href = "https://github.com/ParticleCore/Iridium/wiki/Features#" + option.id;
                             help_link.setAttribute("title", i18n.iridium_api.feature_link);
-                            help_link.setAttribute("class", "feature-link");
+                            help_link.className = "feature-link";
                             help_link.setAttribute("target", "features");
 
                             setting.appendChild(help_link);
@@ -1745,7 +1924,7 @@
                         sidebar_section.textContent = option.section;
                         sidebar_section.dataset.section = option.section;
 
-                        sidebar_section.setAttribute("class", "sidebar_section");
+                        sidebar_section.className = "sidebar_section";
                         settings_sidebar.appendChild(sidebar_section);
 
                     }
@@ -1761,7 +1940,7 @@
                             header.id = "settings_section_header";
 
                             divider = document.createElement("div");
-                            divider.setAttribute("class", "settings_divider");
+                            divider.className = "settings_divider";
 
                             section = document.createElement("div");
                             section.id = "settings_section";
@@ -2134,7 +2313,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.5a";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.6a";
                     document.documentElement.appendChild(holder);
 
                 }

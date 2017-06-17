@@ -41,6 +41,9 @@ html {
 
 
 /* ini | general layout */
+#logo yt-icon {
+    pointer-events: none;
+}
 .iri-square-avatars yt-img-shadow {
     border-radius: 0 !important;
 }

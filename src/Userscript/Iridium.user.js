@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.2.6a
+// @version         0.2.7a
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -347,16 +347,23 @@
                             }
                         }
                     },
-                    removeVideoCount: function (xhr, listener) {
+                    removeVideoCount: function (listener) {
 
+                        var xhr;
                         var video_count;
                         var video_count_dot;
 
+                        delete this.addVideoCount.fetching;
+
                         document.removeEventListener("yt-navigate-finish", listener, false);
+
+                        xhr = this.removeVideoCount.xhr;
 
                         if (xhr && xhr.abort) {
 
                             xhr.abort();
+
+                            delete this.removeVideoCount.xhr;
 
                         }
 
@@ -410,15 +417,22 @@
                         }
 
                     },
-                    removeVideoTime: function (xhr, listener) {
+                    removeVideoTime: function (listener) {
 
+                        var xhr;
                         var time_container;
 
+                        delete this.addVideoTime.fetching;
+
                         document.removeEventListener("yt-navigate-finish", listener, false);
+
+                        xhr = this.removeVideoTime.xhr;
 
                         if (xhr && xhr.abort) {
 
                             xhr.abort();
+
+                            delete this.removeVideoTime.xhr;
 
                         }
 
@@ -467,6 +481,12 @@
 
                                 if (user_settings.channel_video_count && !this.addVideoCount.fetching && document.getElementById("owner-container") && !document.getElementById("iri-video-count") && (channel_url = document.querySelector("#owner-name a"))) {
 
+                                    if (this.removeVideoCount.xhr) {
+
+                                        this.removeVideoCount.xhr.abort();
+
+                                    }
+
                                     this.addVideoCount.fetching = true;
                                     channel_url = channel_url.getAttribute("href");
 
@@ -475,11 +495,13 @@
                                     xhr.open("GET", "/playlist?list=UU" + channel_id, true);
                                     xhr.send();
 
+                                    this.removeVideoCount.xhr = xhr;
+
                                     context = this;
 
                                     document.addEventListener("yt-navigate-finish", function listener() {
 
-                                        context.removeVideoCount.call(this, xhr, listener);
+                                        context.removeVideoCount(listener);
 
                                     }, false);
 
@@ -489,18 +511,26 @@
 
                                     if ((video_id = window.location.href.match(/v=([\w]+)/)) && (video_id = video_id[1])) {
 
+                                        if (this.removeVideoTime.xhr) {
+
+                                            this.removeVideoTime.xhr.abort();
+
+                                        }
+
                                         this.addVideoTime.fetching = true;
 
                                         xhr = new XMLHttpRequest();
                                         xhr.addEventListener("load", this.addVideoTime.bind(this, upload_info));
-                                        xhr.open("GET", "/channel/UC" + channel_id + "/search?query=%22" + video_id + "%22", true);
+                                        xhr.open("GET", "/channel/UC" + channel_id + "/search?query=%22youtube.com%2Fwatch%3Fv%3D" + video_id + "%22", true);
                                         xhr.send();
+
+                                        this.removeVideoTime.xhr = xhr;
 
                                         context = this;
 
                                         document.addEventListener("yt-navigate-finish", function listener() {
 
-                                            context.removeVideoTime.call(this, xhr, listener);
+                                            context.removeVideoTime(listener);
 
                                         }, false);
 
@@ -517,7 +547,7 @@
 
                         iridium_api.initializeOption.call(this);
 
-                        document.documentElement.addEventListener("load", this.loadStart.bind(this), true);
+                        window.addEventListener("yt-page-data-updated", this.loadStart.bind(this), true);
 
                     }
                 },
@@ -623,6 +653,7 @@
                         var i;
                         var fps;
                         var list;
+                        var key_type;
 
                         if (user_settings.subscribed_channel_player_ads ? args.subscribed !== "1" : !user_settings.player_ads) {
 
@@ -638,11 +669,13 @@
 
                         if (!user_settings.player_hfr && args.adaptive_fmts) {
 
-                            list = args.adaptive_fmts.split(",");
+                            key_type = args.adaptive_fmts.indexOf(",") > -1 ? "," : "%2C";
+
+                            list = args.adaptive_fmts.split(key_type);
 
                             for (i = 0; i < list.length; i++) {
 
-                                fps = list[i].split(/fps=([0-9]{2})/);
+                                fps = list[i].split(/fps(?:=|%3D)([0-9]{2})/);
                                 fps = fps && fps[1];
 
                                 if (fps > 30) {
@@ -653,7 +686,7 @@
 
                             }
 
-                            args.adaptive_fmts = list.join(",");
+                            args.adaptive_fmts = list.join(key_type);
 
                         }
 
@@ -733,6 +766,71 @@
                         };
 
                     },
+                    patchXHR: function (event) {
+
+                        var i;
+                        var temp;
+                        var temp_list;
+                        var key_value;
+                        var player_api;
+
+                        if (event.target.readyState === 4 && event.target.responseText.match(/eventid=/)) {
+
+                            temp_list = {};
+                            temp = event.target.responseText.split("&");
+
+                            for (i = 0; i < temp.length; i++) {
+
+                                key_value = temp[i].split("=");
+                                temp_list[key_value[0]] = key_value[1] || "";
+
+                            }
+
+                            this.modArgs(temp_list);
+
+                            Object.defineProperty(event.target, "responseText", {writable: true});
+
+                            event.target.responseText = "";
+                            temp = Object.keys(temp_list);
+
+                            for (i = 0; i < temp.length; i++) {
+
+                                event.target.responseText += temp[i] + "=" + temp_list[temp[i]];
+
+                                if (i + 1 < temp.length) {
+
+                                    event.target.responseText += "&";
+
+                                }
+
+                            }
+
+                            if (user_settings.player_quality !== "auto" && (player_api = document.getElementById("movie_player"))) {
+
+                                player_api.setPlaybackQuality(user_settings.player_quality);
+
+                            }
+
+                        }
+
+                    },
+                    modOpen: function (original) {
+
+                        var context = this;
+
+                        return function (method, url) {
+
+                            if (url.match("get_video_info")) {
+
+                                this.addEventListener("readystatechange", context.patchXHR.bind(context));
+
+                            }
+
+                            return original.apply(this, arguments);
+
+                        };
+
+                    },
                     modParseFromString: function (original) {
 
                         return function () {
@@ -783,6 +881,7 @@
                         context = this;
 
                         JSON.parse = context.modJSONParse(JSON.parse);
+                        XMLHttpRequest.prototype.open = context.modOpen(XMLHttpRequest.prototype.open);
                         DOMParser.prototype.parseFromString = context.modParseFromString(DOMParser.prototype.parseFromString);
 
                         Object.defineProperties(Object.prototype, {
@@ -905,14 +1004,18 @@
 
                                     if (this.ucid && (!this.autoplay || this.autoplay === "1") && (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
 
-                                        return this._fflags
-                                            .replace(
-                                                "legacy_autoplay_flag=true",
-                                                "legacy_autoplay_flag=false"
-                                            ).replace(
-                                                "disable_new_pause_state3=true",
-                                                "disable_new_pause_state3=false"
-                                            );
+                                        if (this._fflags && this._fflags.replace) {
+
+                                            return this._fflags
+                                                .replace(
+                                                    "legacy_autoplay_flag=true",
+                                                    "legacy_autoplay_flag=false"
+                                                ).replace(
+                                                    "disable_new_pause_state3=true",
+                                                    "disable_new_pause_state3=false"
+                                                );
+
+                                        }
 
                                     }
 
@@ -1156,7 +1259,7 @@
 
                             player_api.setSizeStyle(false, true);
 
-                            this.iniMiniPlayerControls.call(this, player_api);
+                            this.iniMiniPlayerControls(player_api);
 
                         }
 
@@ -1222,16 +1325,23 @@
                     restorePlayer: function () {
 
                         var player_api;
+                        var history_state;
                         var watch_page_api;
                         var page_manager_api;
 
                         if ((watch_page_api = document.querySelector("ytd-watch"))) {
 
-                            window.history.pushState({}, "", this.original_url);
-
                             if ((player_api = document.getElementById("movie_player"))) {
 
                                 document.title = player_api.getUpdatedConfigurationData().args.title + " - YouTube";
+
+                                history_state = {
+                                    endpoint: JSON.parse(JSON.stringify(watch_page_api.data.currentVideoEndpoint)),
+                                    entryTime: window.performance.now(),
+                                    savedComponentState: null
+                                };
+
+                                window.history.pushState(history_state, document.title, this.original_url);
 
                             }
 
@@ -1326,7 +1436,7 @@
                         window.addEventListener("scroll", this.iniAlwaysVisible.bind(this), false);
                         window.addEventListener("yt-navigate-start", this.iniAlwaysVisible.bind(this), false);
                         window.addEventListener("yt-navigate-finish", this.iniAlwaysVisible.bind(this), false);
-                        window.addEventListener("yt-navigate-start", this.iniAlwaysPlaying.bind(this), true);
+                        window.addEventListener("yt-navigate-start", this.iniAlwaysPlaying.bind(this), false);
                         window.addEventListener("yt-navigate-finish", this.iniAlwaysPlaying.bind(this), false);
 
                         context = this;
@@ -2313,7 +2423,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.6a";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.7a";
                     document.documentElement.appendChild(holder);
 
                 }

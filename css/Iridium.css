@@ -41,7 +41,8 @@ html {
 
 
 /* ini | general layout */
-a#logo yt-icon {
+a#logo yt-icon,
+a.yt-simple-endpoint span {
     pointer-events: none;
 }
 .iri-square-avatars yt-img-shadow {

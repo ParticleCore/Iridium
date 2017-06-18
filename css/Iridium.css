@@ -323,7 +323,7 @@ body {
 }
 
 #iridium-text-editor {
-    background: #fff;
+    background: #FFF;
     box-shadow: 0 1px 2px rgba(0, 0, 0, .1);
     box-sizing: border-box;
     bottom: 10px;
@@ -440,10 +440,10 @@ body {
     color: #FFF !important;
 }
 #iridium_settings .iri-settings-button.danger:hover {
-    background: #b51212;
+    background: #B51212;
 }
 #iridium_settings .iri-settings-button.danger:active {
-    background: #9a0909;
+    background: #9A0909;
 }
 /* end | Iridium settings */
 
@@ -458,7 +458,7 @@ body {
 .iri-dark-mode-settings #iridium_settings_sidebar,
 .iri-dark-mode-settings #settings_section,
 .iri-dark-mode-settings #iridium-text-editor {
-    background-color: #1c1c1c;
+    background-color: #1C1C1C;
 }
 .iri-dark-mode-settings #iridium_settings .iri-settings-button,
 .iri-dark-mode-settings #iridium_settings .iri-settings-button:hover,
@@ -477,7 +477,8 @@ body {
     background-color: rgba(255, 255, 255, 0.14);
 }
 .iri-dark-mode-settings .sidebar_section:hover:not(.active_sidebar) {
-    background-color: rgba(255, 255, 255, 0.08);
+    background-color: #F4F4F4;
+    color: #444;
 }
 .iri-dark-mode-settings #iridium-text-editor textarea {
     background-color: #131313;

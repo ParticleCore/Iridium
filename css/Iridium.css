@@ -203,6 +203,61 @@ html.iri-always-playing ytd-watch[hidden] {
 /* end | mini player */
 
 
+/* ini | blacklist */
+.iri-add-to-blacklist {
+    background-color: #000;
+    border-radius: 2px;
+    color: #fff;
+    cursor: pointer;
+    height: 0;
+    left: 0;
+    margin: 4px;
+    opacity: 0;
+    padding: 14px;
+    position: absolute;
+    top: 0;
+    transition: opacity .3s;
+    width: 0;
+    z-index: 1;
+}
+html:not(.p-blacklist-allowed) .iri-add-to-blacklist {
+    display: none;
+}
+#avatar:not(:hover) .iri-add-to-blacklist,
+#thumbnail:not(:hover) .iri-add-to-blacklist,
+.ytd-thumbnail-0:not(:hover) .iri-add-to-blacklist,
+.ytd-playlist-thumbnail-0:not(:hover) .iri-add-to-blacklist {
+    user-select: none;
+}
+#avatar:hover .iri-add-to-blacklist,
+#thumbnail:hover .iri-add-to-blacklist,
+.ytd-thumbnail-0:hover .iri-add-to-blacklist,
+.ytd-playlist-thumbnail-0:hover .iri-add-to-blacklist {
+    opacity: .8;
+}
+.iri-add-to-blacklist svg {
+    fill: #fff;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    width: 16px;
+}
+#avatar,
+#thumbnail {
+    position: relative;
+}
+#avatar .iri-add-to-blacklist {
+    /*top: 32px*/
+}
+yt-img-shadow.ytd-channel-renderer {
+    border-radius: 0;
+    position: relative;
+}
+yt-img-shadow:not(.ytd-channel-renderer) .iri-add-to-blacklist {
+    display: none;
+}
+/* end | blacklist */
+
+
 /* ini | Iridium settings */
 html,
 body {

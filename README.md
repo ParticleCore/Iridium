@@ -1,6 +1,6 @@
 # Iridium [![current version](https://img.shields.io/github/release/ParticleCore/Iridium/all.svg)](https://github.com/ParticleCore/Iridium/tree/alpha)
 
-**[Download](https://github.com/ParticleCore/Iridium/wiki/Download) | [Features](https://github.com/ParticleCore/Iridium/wiki/Features) | [Report a problem](https://github.com/ParticleCore/Iridium/wiki/Report-a-bug) | [Donate](https://github.com/ParticleCore/Iridium/wiki/Donate)** [![Gratipay](https://img.shields.io/gratipay/user/particlecore.svg)](https://gratipay.com/~ParticleCore)
+**[Download](https://github.com/ParticleCore/Iridium/wiki/Download) | [Features](https://github.com/ParticleCore/Iridium/wiki/Features) | [Report a problem](https://github.com/ParticleCore/Iridium/wiki/Report-a-bug) | [Donate](https://github.com/ParticleCore/Iridium/wiki/Donate)**
 
 Iridium (former [YouTube Plus](https://github.com/ParticleCore/Particle)) is an extension built to improve the user experience on the new YouTube Material layout.
 

@@ -19,6 +19,25 @@
         "settings_button": "Iridium settings",
         "feature_link": "Find out what this does"
     },
+    "default_logo_page": {
+        "label": "Default YouTube logo page:",
+        "options": [
+            "Home",
+            "Trending",
+            "Subscriptions"
+        ]
+    },
+    "default_channel_tab": {
+        "label": "Default channel tab:",
+        "options": [
+            "Default",
+            "Videos",
+            "Playlists",
+            "Channels",
+            "Discussion",
+            "About"
+        ]
+    },
     "square_avatars": {
         "label": "Make user images squared"
     },
@@ -35,7 +54,20 @@
         "label": "Display how long the video was uploaded"
     },
     "player_quality": {
-        "label": "Default video quality:"
+        "label": "Default video quality:",
+        "options": [
+            "Auto",
+            "4320p (8k)",
+            "2880p (5k)",
+            "2160p (4k)",
+            "1440p",
+            "1080p",
+            "720p",
+            "480p",
+            "360p",
+            "240p",
+            "144p"
+        ]
     },
     "player_auto_play": {
         "label": "Play videos automatically"
@@ -45,6 +77,9 @@
     },
     "player_annotations": {
         "label": "Allow annotations on videos"
+    },
+    "player_subtitles": {
+        "label": "Allow subtitles on videos"
     },
     "player_ads": {
         "label": "Allow ads on videos"

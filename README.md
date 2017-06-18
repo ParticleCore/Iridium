@@ -1,4 +1,4 @@
-# Iridium [![current version](https://img.shields.io/github/release/ParticleCore/Particle.svg)](https://github.com/ParticleCore/Iridium/tree/alpha)
+# Iridium [![current version](https://img.shields.io/github/release/ParticleCore/Iridium/all.svg)](https://github.com/ParticleCore/Iridium/tree/alpha)
 
 **[Download](https://github.com/ParticleCore/Iridium/wiki/Download) | [Features](https://github.com/ParticleCore/Iridium/wiki/Features) | [Report a problem](https://github.com/ParticleCore/Iridium/wiki/Report-a-bug) | [Donate](https://github.com/ParticleCore/Iridium/wiki/Donate)**
 

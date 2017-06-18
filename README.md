@@ -1,4 +1,4 @@
-# Iridium [![current_version alpha](https://img.shields.io/badge/current_version-alpha-blue.svg)](https://github.com/ParticleCore/Iridium/tree/alpha)
+# Iridium [![current version](https://img.shields.io/github/release/ParticleCore/Particle.svg)](https://github.com/ParticleCore/Iridium/tree/alpha)
 
 **[Download](https://github.com/ParticleCore/Iridium/wiki/Download) | [Features](https://github.com/ParticleCore/Iridium/wiki/Features) | [Report a problem](https://github.com/ParticleCore/Iridium/wiki/Report-a-bug) | [Donate](https://github.com/ParticleCore/Iridium/wiki/Donate)**
 
@@ -30,8 +30,8 @@ Each item on the lists below can be removed or moved to the a different version 
 - [x] Feature: disable video annotations
 - [x] Feature: mini player when scrolling down
 - [x] Feature: mini player when navigating to different pages
-- [ ] Feature: default channel tab
-- [ ] Feature: youtube logo redirects to subscription or trending
+- [x] Feature: default channel tab
+- [x] Feature: youtube logo redirects to subscription or trending
 
 ### TODO - beta version
 

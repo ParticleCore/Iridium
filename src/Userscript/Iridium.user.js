@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.2.7a
+// @version         0.2.8a
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -55,6 +55,88 @@
             };
 
             modules = [
+                {
+                    options: {
+                        default_logo_page: {
+                            id: "default_logo_page",
+                            section: "general",
+                            sub_section: "general",
+                            type: "dropdown",
+                            value: "home",
+                            i18n: {
+                                label: "Default YouTube logo page:",
+                                options: [
+                                    "Home",
+                                    "Trending",
+                                    "Subscriptions"
+                                ]
+                            },
+                            options: [
+                                "home",
+                                "trending",
+                                "subscriptions"
+                            ]
+                        },
+                        default_channel_tab: {
+                            id: "default_channel_tab",
+                            section: "general",
+                            sub_section: "general",
+                            type: "dropdown",
+                            value: "default",
+                            i18n: {
+                                label: "Default channel tab:",
+                                options: [
+                                    "Default",
+                                    "Videos",
+                                    "Playlists",
+                                    "Channels",
+                                    "Discussion",
+                                    "About"
+                                ]
+                            },
+                            options: [
+                                "default",
+                                "videos",
+                                "playlists",
+                                "channels",
+                                "discussion",
+                                "about"
+                            ]
+                        }
+                    },
+                    setDestination: function (event) {
+
+                        var url;
+                        var data;
+
+                        if ((data = event.target.data) && (url = data.webNavigationEndpointData && data.webNavigationEndpointData.url)) {
+
+                            if (user_settings.default_channel_tab !== "default" && url.match(/^\/(?:channel|user)\/(?:[^\/])+$/)) {
+
+                                data.webNavigationEndpointData.url += "/" + user_settings.default_channel_tab;
+                                event.target.href = data.webNavigationEndpointData.url;
+
+                            }
+
+                            if (user_settings.default_logo_page !== "home" && url === "/" && event.target.tagName === "A" && event.target.id === "logo") {
+
+                                data.browseEndpoint.browseId = "FE" + user_settings.default_logo_page;
+                                data.webNavigationEndpointData.url += "feed/" + user_settings.default_logo_page;
+                                event.target.href = data.webNavigationEndpointData.url;
+
+                            }
+
+                        }
+
+                    },
+                    ini: function () {
+
+                        iridium_api.initializeOption.call(this);
+
+                        window.addEventListener("mouseup", this.setDestination.bind(this), true);
+
+                    }
+                },
                 {
                     options: {
                         square_avatars: {
@@ -184,17 +266,15 @@
 
                         context = this;
                         sts = window.yt.config_.FILLER_DATA.player.sts;
-
-                        params = [
-                            "video_id=" + video_id,
-                            "sts=" + sts,
-                            "ps=gaming",
-                            "el=detailpage",
-                            "c=WEB_GAMING",
-                            "cplayer=UNIPLAYER",
-                            "mute=true",
-                            "authuser=0"
-                        ];
+                        params =
+                            "video_id=" + video_id + "&" +
+                            "sts=" + sts + "&" +
+                            "ps=gaming" + "&" +
+                            "el=detailpage" + "&" +
+                            "c=WEB_GAMING" + "&" +
+                            "cplayer=UNIPLAYER" + "&" +
+                            "mute=true" + "&" +
+                            "authuser=0";
 
                         xhr = new XMLHttpRequest();
                         xhr.addEventListener("load", function (event) {
@@ -202,7 +282,7 @@
                             context.iniPreview(context, event);
 
                         });
-                        xhr.open("GET", "/get_video_info?" + params.join("&"), true);
+                        xhr.open("GET", "/get_video_info?" + params, true);
                         xhr.send();
 
                         return xhr;
@@ -471,8 +551,11 @@
                         var channel_id;
                         var channel_url;
                         var upload_info;
+                        var watch_page_active;
 
-                        if ((channel_url = document.querySelector("#owner-name a"))) {
+                        watch_page_active = document.querySelector("ytd-watch:not([hidden])");
+
+                        if (watch_page_active && (channel_url = document.querySelector("#owner-name a"))) {
 
                             channel_url = channel_url.getAttribute("href");
                             channel_id = channel_url.match(/UC([a-z0-9-_]{22})/i);
@@ -521,7 +604,7 @@
 
                                         xhr = new XMLHttpRequest();
                                         xhr.addEventListener("load", this.addVideoTime.bind(this, upload_info));
-                                        xhr.open("GET", "/channel/UC" + channel_id + "/search?query=%22youtube.com%2Fwatch%3Fv%3D" + video_id + "%22", true);
+                                        xhr.open("GET", "/channel/UC" + channel_id + "/search?query=%22com%2Fwatch%3Fv%3D" + video_id + "%22", true);
                                         xhr.send();
 
                                         this.removeVideoTime.xhr = xhr;
@@ -560,31 +643,33 @@
                             type: "dropdown",
                             value: "auto",
                             i18n: {
-                                label: "Default video quality:"
+                                label: "Default video quality:",
+                                options: [
+                                    "Auto",
+                                    "4320p (8k)",
+                                    "2880p (5k)",
+                                    "2160p (4k)",
+                                    "1440p",
+                                    "1080p",
+                                    "720p",
+                                    "480p",
+                                    "360p",
+                                    "240p",
+                                    "144p"
+                                ]
                             },
                             options: [
                                 "auto",
-                                "Auto",
                                 "highres",
-                                "4320p (8k)",
                                 "hd2880",
-                                "2880p (5k)",
                                 "hd2160",
-                                "2160p (4k)",
                                 "hd1440",
-                                "1440p",
                                 "hd1080",
-                                "1080p",
                                 "hd720",
-                                "720p",
                                 "large",
-                                "480p",
                                 "medium",
-                                "360p",
                                 "small",
-                                "240p",
-                                "tiny",
-                                "144p"
+                                "tiny"
                             ]
                         },
                         player_auto_play: {
@@ -615,6 +700,16 @@
                             value: false,
                             i18n: {
                                 label: "Allow annotations on videos"
+                            }
+                        },
+                        player_subtitles: {
+                            id: "player_subtitles",
+                            section: "video",
+                            sub_section: "player",
+                            type: "checkbox",
+                            value: false,
+                            i18n: {
+                                label: "Allow subtitles on videos"
                             }
                         },
                         player_ads: {
@@ -664,6 +759,12 @@
                         if (!user_settings.player_annotations) {
 
                             args.iv_load_policy = "3";
+
+                        }
+
+                        if (!user_settings.player_subtitles && args.caption_audio_tracks) {
+
+                            args.caption_audio_tracks = args.caption_audio_tracks.split(/&d=[0-9]|d=[0-9]&/).join("");
 
                         }
 
@@ -1231,8 +1332,6 @@
                             }
                         }
                     },
-                    original_url: "",
-                    original_title: "",
                     endMiniPlayer: function (class_name) {
 
                         var player_api;
@@ -1309,11 +1408,9 @@
 
                             if (event.detail && event.detail.pageType === "watch") {
 
-                                this.original_url = window.location.href.replace(window.location.origin, "");
-
                                 this.endMiniPlayer("iri-always-playing");
 
-                            } else {
+                            } else if (!document.querySelector(".ended-mode")) {
 
                                 this.iniMiniPlayer("iri-always-playing");
 
@@ -1325,6 +1422,8 @@
                     restorePlayer: function () {
 
                         var player_api;
+                        var current_data;
+                        var original_url;
                         var history_state;
                         var watch_page_api;
                         var page_manager_api;
@@ -1333,7 +1432,9 @@
 
                             if ((player_api = document.getElementById("movie_player"))) {
 
-                                document.title = player_api.getUpdatedConfigurationData().args.title + " - YouTube";
+                                current_data = player_api.getUpdatedConfigurationData();
+                                original_url = current_data.args.loaderUrl;
+                                document.title = current_data.args.title + " - YouTube";
 
                                 history_state = {
                                     endpoint: JSON.parse(JSON.stringify(watch_page_api.data.currentVideoEndpoint)),
@@ -1341,7 +1442,7 @@
                                     savedComponentState: null
                                 };
 
-                                window.history.pushState(history_state, document.title, this.original_url);
+                                window.history.pushState(history_state, document.title, original_url);
 
                             }
 
@@ -1387,7 +1488,7 @@
                             restore_page.className = "iri-mini-player-control iri-mini-player-left-control";
                             restore_page.title = i18n.player_always_playing.button_restore;
                             restore_page.innerHTML =
-                                "<svg xmlns='http://www.w3.org/2000/svg' height='24' width='24' fill='#FFF'>" +
+                                "<svg height='24' width='24' fill='#FFF'>" +
                                 "    <use xlink:href='#iri-svg-restore' class='iri-svg-shadow'/>" +
                                 "    <path id='iri-svg-restore' d='M21 4H1v16h22V4h-2zm0 14H3v-6h10V6h8v12z'/>" +
                                 "</svg>";
@@ -1398,7 +1499,7 @@
                             close_mini_player.className = "iri-mini-player-control iri-mini-player-right-control";
                             close_mini_player.title = i18n.player_always_playing.button_close;
                             close_mini_player.innerHTML =
-                                "<svg xmlns='http://www.w3.org/2000/svg' height='24' width='24' fill='#FFF'>" +
+                                "<svg height='24' width='24' fill='#FFF'>" +
                                 "    <use xlink:href='#iri-svg-close' class='iri-svg-shadow'/>" +
                                 "    <path id='iri-svg-close' d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/>" +
                                 "</svg>";
@@ -1883,8 +1984,8 @@
                                 for (j = 0; j < option.options.length; j++) {
 
                                     options = document.createElement("option");
-                                    options.value = option.options[j++];
-                                    options.textContent = option.options[j];
+                                    options.value = option.options[j];
+                                    options.textContent = i18n[option.id].options[j];
 
                                     if (user_settings[option.id] === options.value) {
 
@@ -2423,7 +2524,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.7a";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.8a";
                     document.documentElement.appendChild(holder);
 
                 }
@@ -2472,4 +2573,5 @@
     };
 
     iridium.ini();
+
 }());

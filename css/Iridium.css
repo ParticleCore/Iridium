@@ -165,6 +165,8 @@ html.iri-always-playing ytd-watch[hidden] {
     z-index: -1;
 }
 /*.iri-always-visible #movie_player:hover #iri-mini-player-controls,*/
+.paused-mode #iri-mini-player-controls,
+.ended-mode #iri-mini-player-controls,
 .iri-always-playing #movie_player:not(.ytp-fullscreen):hover #iri-mini-player-controls {
     opacity: 1;
     pointer-events: initial;
@@ -235,7 +237,7 @@ html.iri-always-playing ytd-watch[hidden] {
     background-color: rgba(28, 28, 28, .9);
     border-radius: 2px;
     padding: 5px 9px;
-    /*opacity: 0;*/
+    opacity: 0;
     font-size: 118%;
     pointer-events: none;
     position: absolute;
@@ -246,10 +248,10 @@ html.iri-always-playing ytd-watch[hidden] {
     font-weight: 500;
     line-height: 15px;
 }
-.iri-mini-player-left-control {
+.iri-mini-player-left-control .iri-mini-player-tooltip {
     left: 0;
 }
-.iri-mini-player-right-control {
+.iri-mini-player-right-control .iri-mini-player-tooltip {
     right: 0;
 }
 .iri-mini-player-control:hover .iri-mini-player-tooltip {

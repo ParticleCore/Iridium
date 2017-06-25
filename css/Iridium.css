@@ -45,7 +45,7 @@ html {
     transform: translateX(50%);
 }
 #iridium_settings_button:hover .iri-tooltip {
-    opacity: 0.9;
+    opacity: 0.9 !important;
     transition: opacity 0.3s ease-out 0.5s;
 }
 /* end | settings button */

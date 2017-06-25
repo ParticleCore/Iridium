@@ -32,6 +32,7 @@ Each item on the lists below can be removed or moved to the a different version 
 - [x] Feature: mini player when navigating to different pages
 - [x] Feature: default channel tab
 - [x] Feature: youtube logo redirects to subscription or trending
+- [x] Feature: blacklist videos from specific channels
 
 ### TODO - beta version
 
@@ -41,7 +42,6 @@ Each item on the lists below can be removed or moved to the a different version 
 
 ### TODO - release version
 
-- [ ] Feature: blacklist videos from specific channels
 - [ ] Feature: control comment section visiblity
 - [ ] Feature: ability to open the player in a pop-out window
 - [ ] Feature: fullbrowser video mode

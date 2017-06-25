@@ -205,7 +205,7 @@ html.iri-always-playing ytd-watch[hidden] {
 
 /* ini | blacklist */
 .iri-add-to-blacklist {
-    background-color: #000;
+    background-color: #111;
     border-radius: 2px;
     color: #fff;
     cursor: pointer;

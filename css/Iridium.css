@@ -59,6 +59,27 @@ a.yt-simple-endpoint span {
     white-space: pre;
     --yt-endpoint-color: var(--yt-channel-owner) !important;
 }
+.iri-tooltip {
+    display: block;
+    outline: none;
+    font-family: 'Roboto', 'Noto', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    font-size: 10px;
+    line-height: 1;
+    background-color: rgba(17, 17, 17, 0.8);
+    opacity: 0;
+    color: #FFF;
+    padding: 8px;
+    border-radius: 2px;
+    font-size: 1.3rem;
+    font-weight: 400;
+    line-height: 1.8rem;
+    text-transform: none;
+    position: absolute;
+    white-space: nowrap;
+    transition: opacity 0.3s ease-out 0s;
+    pointer-events: none;
+}
 ytd-watch:not([hidden]) .ytp-thumbnail-overlay {
     transition: none !important;
 }
@@ -242,6 +263,14 @@ html:not(.iri-blacklist-allowed) .iri-add-to-blacklist {
     transform: translate(-50%, -50%);
     user-select: none;
     width: 16px;
+}
+.iri-add-to-blacklist .iri-tooltip {
+    left: 32px;
+    top: -2px;
+}
+.iri-add-to-blacklist:hover .iri-tooltip {
+    opacity: 0.9;
+    transition: opacity 0.3s ease-out 1s;
 }
 #avatar,
 #thumbnail {

@@ -234,11 +234,13 @@ html:not(.iri-blacklist-allowed) .iri-add-to-blacklist {
 .ytd-thumbnail-0:hover .iri-add-to-blacklist,
 .ytd-playlist-thumbnail-0:hover .iri-add-to-blacklist {
     opacity: .8;
+    user-select: auto;
 }
 .iri-add-to-blacklist svg {
     fill: #fff;
     pointer-events: none;
     transform: translate(-50%, -50%);
+    user-select: none;
     width: 16px;
 }
 #avatar,
@@ -255,6 +257,7 @@ yt-img-shadow.ytd-channel-renderer {
 yt-img-shadow:not(.ytd-channel-renderer) .iri-add-to-blacklist {
     display: none;
 }
+
 /* end | blacklist */
 
 
@@ -407,6 +410,36 @@ body {
     padding: 10px;
     resize: none;
     width: 100%;
+}
+
+.iri-blacklist-channel {
+    position: relative;
+    padding-left: 40px;
+    /*background: #1C1C1C;*/
+    margin-left: -10px;
+    margin-right: -10px;
+}
+.iri-blacklist-channel .close {
+    background-color: transparent;
+    color: #666666;
+    cursor: pointer;
+    position: absolute;
+    left: 5px;
+    font-size: 0;
+    border: none;
+    padding: 5px;
+    margin: 5px;
+}
+.iri-blacklist-channel .close svg {
+    fill: #303030;
+    pointer-events: none;
+}
+.iri-blacklist-channel a {
+    color: #eee;
+    text-decoration: none;
+    display: block;
+    padding: 5px;
+    height: 20px;
 }
 
 

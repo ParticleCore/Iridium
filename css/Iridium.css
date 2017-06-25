@@ -9,6 +9,7 @@ html {
     height: 40px;
     padding: 8px;
     margin-right: 8px;
+    position: relative;
     text-align: center;
     width: 40px;
     color: var(--yt-swatch-important-text, var(--yt-swatch-icon-color, #888));
@@ -36,6 +37,16 @@ html {
 #iridium_settings_button:hover .iri-stop-gradient {
     transition: 1s;
     stop-color: #F0F;
+}
+#iridium_settings_button .iri-tooltip {
+    background-color: #616161;
+    right: 20px;
+    top: 56px;
+    transform: translateX(50%);
+}
+#iridium_settings_button:hover .iri-tooltip {
+    opacity: 0.9;
+    transition: opacity 0.3s ease-out 0.5s;
 }
 /* end | settings button */
 

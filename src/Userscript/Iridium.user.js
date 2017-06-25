@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.2.8a
+// @version         0.2.9a
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -32,21 +32,22 @@
             var default_language;
 
             default_language = {
-                language: "English",
+                language: "English (US)",
                 section_titles: {
+                    about: "Information and useful links",
                     general: "General settings",
                     video: "Video settings",
-                    about: "Information and useful links",
                     settings: "Iridium settings"
                 },
                 sub_section_titles: {
-                    layout: "Layout",
-                    thumbnails: "Thumbnails",
-                    player: "Player",
                     channel: "Channel",
+                    blacklist: "Blacklist",
                     general: "General",
                     language: "Language",
-                    settings: "Settings"
+                    layout: "Layout",
+                    player: "Player",
+                    settings: "Settings",
+                    thumbnails: "Thumbnails"
                 },
                 iridium_api: {
                     settings_button: "Iridium settings",
@@ -82,11 +83,11 @@
                             section: "general",
                             sub_section: "general",
                             type: "dropdown",
-                            value: "default",
+                            value: "home",
                             i18n: {
                                 label: "Default channel tab:",
                                 options: [
-                                    "Default",
+                                    "Home",
                                     "Videos",
                                     "Playlists",
                                     "Channels",
@@ -95,7 +96,7 @@
                                 ]
                             },
                             options: [
-                                "default",
+                                "home",
                                 "videos",
                                 "playlists",
                                 "channels",
@@ -111,7 +112,7 @@
 
                         if ((data = event.target.data) && (url = data.webNavigationEndpointData && data.webNavigationEndpointData.url)) {
 
-                            if (user_settings.default_channel_tab !== "default" && url.match(/^\/(?:channel|user)\/(?:[^\/])+$/)) {
+                            if (user_settings.default_channel_tab !== "home" && url.match(/^\/(?:channel|user)\/(?:[^\/])+$/)) {
 
                                 data.webNavigationEndpointData.url += "/" + user_settings.default_channel_tab;
                                 event.target.href = data.webNavigationEndpointData.url;
@@ -131,7 +132,11 @@
                     },
                     ini: function () {
 
-                        iridium_api.initializeOption.call(this);
+                        if (iridium_api.initializeOption.call(this)) {
+
+                            return;
+
+                        }
 
                         window.addEventListener("mouseup", this.setDestination.bind(this), true);
 
@@ -152,7 +157,11 @@
                     },
                     ini: function () {
 
-                        iridium_api.initializeOption.call(this);
+                        if (iridium_api.initializeOption.call(this)) {
+
+                            return;
+
+                        }
 
                         if (user_settings.square_avatars) {
 
@@ -398,9 +407,785 @@
                     },
                     ini: function () {
 
-                        iridium_api.initializeOption.call(this);
+                        if (iridium_api.initializeOption.call(this)) {
+
+                            return;
+
+                        }
 
                         document.addEventListener("mouseenter", this.iniPreviewContainer.bind(this), true);
+
+                    }
+                },
+                {
+                    options: {
+                        enable_blacklist: {
+                            id: "enable_blacklist",
+                            section: "general",
+                            sub_section: "blacklist",
+                            type: "checkbox",
+                            value: "home",
+                            i18n: {
+                                label: "Enable blacklist"
+                            }
+                        },
+                        blacklist_settings: {
+                            id: "blacklist_settings",
+                            section: "general",
+                            sub_section: "blacklist",
+                            type: "custom",
+                            value: {},
+                            i18n: {
+                                button_add_title: "Add to blacklist",
+                                button_edit: "Edit",
+                                button_import: "Import",
+                                button_export: "Export",
+                                button_reset: "Reset",
+                                button_save: "Save",
+                                button_close: "Close",
+                                button_remove: "Remove from blacklist",
+                                placeholder: "Paste your new blacklist here",
+                                confirm_reset: "You are about to reset your blacklist. It is advised to backup your current blacklist before continuing.\n\nDo you wish to contiue?\n\n",
+                                reset_success: "Blacklist has been reset.\n\nChanges will be applied after a page refresh.\n\n",
+                                confirm_import: "You are about to override your current blacklist. It is advised to backup your current blacklist before continuing.\n\nDo you wish to contiue?\n\n",
+                                import_success: "Your blacklist has been imported with success.\n\nChanges will be applied after a page refresh.\n\n",
+                                import_error: "Your blacklist could not be imported because it appears to be invalid.\n\n"
+                            },
+                            custom: function () {
+
+                                var element;
+                                var element_list;
+
+                                element_list = [];
+
+                                element = document.createElement("button");
+                                element.textContent = i18n.blacklist_settings.button_edit;
+                                element.className = "setting iri-settings-button";
+                                element.addEventListener("click", this.textEditor.bind(this, "edit"));
+
+                                element_list.push(element);
+
+                                element = document.createElement("button");
+                                element.textContent = i18n.blacklist_settings.button_import;
+                                element.className = "setting iri-settings-button";
+                                element.addEventListener("click", this.textEditor.bind(this, "import"));
+
+                                element_list.push(element);
+
+                                element = document.createElement("button");
+                                element.textContent = i18n.blacklist_settings.button_export;
+                                element.className = "setting iri-settings-button";
+                                element.addEventListener("click", this.textEditor.bind(this, "export"));
+
+                                element_list.push(element);
+
+                                element = document.createElement("button");
+                                element.textContent = i18n.blacklist_settings.button_reset;
+                                element.className = "setting iri-settings-button danger";
+                                element.addEventListener("click", this.resetBlacklist.bind(this));
+
+                                element_list.push(element);
+
+                                return element_list;
+
+                            },
+                            resetBlacklist: function () {
+
+                                if (window.confirm(i18n.blacklist_settings.confirm_reset)) {
+
+                                    user_settings.blacklist_settings = [];
+
+                                    iridium_api.initializeSettings();
+                                    iridium_api.saveSettings();
+
+                                    window.alert(i18n.blacklist_settings.reset_success);
+
+                                }
+
+                            },
+                            importBlacklist: function () {
+
+                                var editor;
+                                var textarea;
+
+                                if ((textarea = document.getElementById("iridium-textarea")) && window.confirm(i18n.blacklist_settings.confirm_import)) {
+
+                                    try {
+
+                                        user_settings.blacklist_settings = JSON.parse(textarea.value);
+
+                                        iridium_api.saveSettings();
+
+                                        window.alert(i18n.blacklist_settings.import_success);
+
+                                        if ((editor = document.getElementById("iridium-text-editor"))) {
+
+                                            editor.remove();
+
+                                        }
+
+                                    } catch (error) {
+
+                                        window.alert(i18n.blacklist_settings.import_error + error.name + ": " + error.message);
+
+                                    }
+
+                                }
+
+                            },
+                            closeEditor: function (editor) {
+
+                                editor.remove();
+
+                            },
+                            textEditor: function (type, event) {
+
+                                var i;
+                                var obj;
+                                var temp;
+                                var editor;
+                                var button;
+                                var channel;
+                                var textarea;
+                                var temp_list;
+                                var blocked_list;
+                                var close_button;
+                                var channel_link;
+                                var buttons_section;
+
+                                if (!(editor = document.getElementById("iridium-text-editor"))) {
+
+                                    editor = document.createElement("div");
+                                    editor.id = "iridium-text-editor";
+
+                                    document.body.appendChild(editor);
+
+                                } else {
+
+                                    editor.textContent = "";
+
+                                }
+
+                                buttons_section = document.createElement("div");
+                                buttons_section.id = "buttons-section";
+
+                                editor.appendChild(buttons_section);
+
+                                if (type === "import" || type === "export") {
+
+                                    textarea = document.createElement("textarea");
+                                    textarea.id = "iridium-textarea";
+                                    textarea.setAttribute("spellcheck", "false");
+
+                                    if (type === "import") {
+
+                                        textarea.setAttribute("placeholder", i18n.blacklist_settings.placeholder);
+
+                                        button = document.createElement("button");
+                                        button.textContent = i18n.blacklist_settings.button_save;
+                                        button.className = "iri-settings-button";
+                                        button.addEventListener("click", this.importBlacklist.bind(this));
+
+                                        buttons_section.appendChild(button);
+
+                                    } else {
+
+                                        textarea.value = JSON.stringify(user_settings.blacklist_settings, null, 4);
+
+                                    }
+
+                                    editor.appendChild(textarea);
+
+                                } else if (type === "edit") {
+
+                                    blocked_list = document.createElement("div");
+                                    blocked_list.id = "iridium-blacklist";
+
+                                    temp = Object.keys(user_settings.blacklist_settings);
+                                    temp_list = [];
+
+                                    for (i = 0; i < temp.length; i++) {
+
+                                        obj = {};
+                                        obj[temp[i]] = user_settings.blacklist_settings[temp[i]];
+
+                                        temp_list.push([
+                                            temp[i],
+                                            user_settings.blacklist_settings[temp[i]]
+                                        ]);
+
+                                    }
+
+                                    temp_list = temp_list.sort(function (previous, next) {
+                                        return previous[1].localeCompare(next[1]);
+                                    });
+
+                                    for (i = 0; i < temp_list.length; i++) {
+
+                                        channel = document.createElement("template");
+                                        channel.innerHTML =
+                                            "<div class='iri-blacklist-channel'>" +
+                                            "        <button class='close' title='" + i18n.blacklist_settings.button_remove + "'>" +
+                                            "            <svg viewBox='0 0 10 10' height='10' width='10'>" +
+                                            "                <polygon points='10 1.4 8.6 0 5 3.6 1.4 0 0 1.4 3.6 5 0 8.6 1.4 10 5 6.4 8.6 10 10 8.6 6.4 5'/>" +
+                                            "            </svg>" +
+                                            "        </button><a target='_blank'></a>" +
+                                            "</div>";
+                                        channel = channel.content;
+                                        channel.firstChild.data = true;
+
+                                        channel_link = channel.querySelector("a");
+                                        channel_link.href = "/channel/" + temp_list[i][0];
+                                        channel_link.textContent = temp_list[i][1];
+
+                                        close_button = channel.querySelector(".close");
+                                        close_button.container = channel.firstChild;
+                                        close_button.ucid = temp_list[i][0];
+                                        close_button.addEventListener("click", function (event) {
+
+                                            event.target.container.remove();
+                                            delete user_settings.blacklist_settings[event.target.ucid];
+
+                                            iridium_api.saveSettings();
+
+                                        });
+
+                                        blocked_list.appendChild(channel);
+
+                                    }
+
+                                    editor.appendChild(blocked_list);
+
+                                }
+
+                                button = document.createElement("button");
+                                button.textContent = i18n.blacklist_settings.button_close;
+                                button.className = "iri-settings-button";
+                                button.addEventListener("click", this.closeEditor.bind(this, editor));
+
+                                buttons_section.appendChild(button);
+
+                            }
+                        }
+                    },
+                    tag_list: [
+                        "YTD-COMPACT-LINK-RENDERER",
+                        "YTD-COMPACT-PLAYLIST-RENDERER",
+                        "YTD-COMPACT-PROMOTED-VIDEO-RENDERER",
+                        "YTD-COMPACT-RADIO-RENDERER",
+                        "YTD-COMPACT-VIDEO-RENDERER",
+                        "YTD-GRID-CHANNEL-RENDERER",
+                        "YTD-GRID-MOVIE-PLAYLIST-RENDERER",
+                        "YTD-GRID-MOVIE-RENDERER",
+                        "YTD-GRID-PLAYLIST-RENDERER",
+                        "YTD-GRID-RADIO-RENDERER",
+                        "YTD-GRID-RENDERER",
+                        "YTD-GRID-SHOW-RENDERER",
+                        "YTD-GRID-VIDEO-RENDERER",
+                        "YTD-CHANNEL-RENDERER",
+                        "YTD-MOVIE-RENDERER",
+                        "YTD-PLAYLIST-RENDERER",
+                        "YTD-RADIO-RENDERER",
+                        "YTD-SHOW-RENDERER",
+                        "YTD-VIDEO-RENDERER"
+                    ],
+                    allowedBlacklistPage: function () {
+
+                        return /^\/($|feed\/(?!subscriptions)|watch|results|shared)/.test(window.location.pathname);
+
+                    },
+                    hasContainers: function () {
+
+                        return window.location.pathname.match(/^\/(?:(?:|results)$|feed\/)/);
+
+                    },
+                    getObjectByKey: function (obj, keys, match, list, pos) {
+
+                        var i;
+                        var results;
+                        var property;
+
+                        results = [];
+
+                        for (property in obj) {
+
+                            if (obj.hasOwnProperty(property) && obj[property] !== null) {
+
+                                if (keys.indexOf(property) > -1 && (!match || typeof obj[property] !== "object" && match(obj[property]))) {
+
+                                    results.push({
+                                        target: obj,
+                                        property: property,
+                                        list: list,
+                                        pos: pos
+                                    });
+
+                                } else if (obj[property].constructor === Object) {
+
+                                    results = results.concat(this.getObjectByKey(obj[property], keys, match, list, pos));
+
+                                } else if (obj[property].constructor === Array) {
+
+                                    for (i = 0; i < obj[property].length; i++) {
+
+                                        results = results.concat(this.getObjectByKey(obj[property][i], keys, match, obj[property], i));
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                        return results;
+
+                    },
+                    clearList: function (obj) {
+
+                        var i;
+                        var ids;
+                        var videos;
+                        var shelves;
+                        var sections;
+                        var shelf_tag;
+                        var video_tag;
+                        var section_tag;
+
+                        section_tag = [
+                            "itemSectionRenderer",
+                            "showingResultsForRenderer",
+                            "includingResultsForRenderer",
+                        ];
+                        shelf_tag = [
+                            "shelfRenderer",
+                            "compactAutoplayRenderer"
+                        ];
+                        video_tag = [
+                            "playlistRenderer",
+                            "channelRenderer",
+                            "radioRenderer",
+                            "showRenderer",
+                            "videoRenderer",
+                            "gridChannelRenderer",
+                            "gridMoviePlaylistRenderer",
+                            "gridMovieRenderer",
+                            "gridPlaylistRenderer",
+                            "gridRadioRenderer",
+                            "gridShowRenderer",
+                            "gridVideoRenderer",
+                            "compactVideoRenderer",
+                            "compactPlaylistRenderer",
+                            "compactPromotedVideoRenderer",
+                            "playlistPanelVideoRenderer"
+                        ];
+
+                        videos = this.getObjectByKey(obj, video_tag);
+
+                        for (i = 0; i < videos.length; i++) {
+
+                            ids = this.getObjectByKey(videos[i].target, ["browseId"], function (string) {
+                                return string.indexOf("UC") === 0;
+                            });
+
+                            if (ids[0] && user_settings.blacklist_settings[ids[0].target["browseId"]]) {
+
+                                videos[i].list.splice(videos[i].list.indexOf(videos[i].target), 1);
+
+                            }
+
+                        }
+
+                        shelves = this.getObjectByKey(obj, shelf_tag);
+
+                        for (i = 0; i < shelves.length; i++) {
+
+                            videos = this.getObjectByKey(shelves[i].target, video_tag);
+
+                            if (videos.length === 0) {
+
+                                shelves[i].list.splice(shelves[i].list.indexOf(shelves[i].target), 1);
+
+                            }
+
+                        }
+
+                        if (this.hasContainers()) {
+
+                            sections = this.getObjectByKey(obj, section_tag);
+
+                            for (i = 0; i < sections.length; i++) {
+
+                                if (sections[i].target[sections[i].property].contents.length === 0) {
+
+                                    sections[i].list.splice(sections[i].list.indexOf(sections[i].target), 1);
+
+                                }
+
+                            }
+
+                        }
+
+                    },
+                    checkParse: function (original) {
+
+                        var context = this;
+
+                        return function (text, reviver) {
+
+                            var temp = original.apply(this, arguments);
+
+                            if (context.allowedBlacklistPage()) {
+
+                                context.clearList(temp);
+
+                            }
+
+                            return temp;
+
+                        };
+
+                    },
+                    getEmptyContainers: function () {
+
+                        var i;
+                        var temp;
+                        var shelf;
+                        var container;
+                        var container_nodes;
+
+                        container_nodes = "#contents ytd-item-section-renderer, #contents ytd-shelf-renderer";
+                        container = document.querySelectorAll(container_nodes);
+
+                        for (i = 0; i < container.length; i++) {
+
+                            shelf = container[i].querySelector("yt-horizontal-list-renderer");
+
+                            if (shelf && (shelf.hasAttribute("at-start") || shelf.hasAttribute("at-end"))) {
+
+                                shelf.fillRemainingListItems();
+
+                            }
+
+                            temp = container[i].querySelector(this.tag_list.join(","));
+
+                            if (!temp) {
+
+                                container[i].remove();
+
+                            }
+
+                        }
+
+                        window.dispatchEvent(new Event("resize"));
+
+                    },
+                    getContainers: function () {
+
+                        var i;
+                        var ucid;
+                        var container;
+                        var container_nodes;
+
+                        container_nodes = "#contents ytd-item-section-renderer, #contents ytd-shelf-renderer";
+                        container = document.querySelectorAll(container_nodes);
+
+                        for (i = 0; i < container.length; i++) {
+
+                            ucid = this.getObjectByKey(container[i].data, ["browseId"], function (string) {
+                                return string.indexOf("UC") === 0;
+                            });
+
+                            if (ucid[0] && ucid.length === 1 && ucid[0].target.browseId) {
+
+                                if (user_settings.blacklist_settings[ucid]) {
+
+                                    container[i].remove();
+
+                                }
+
+                            }
+
+                        }
+
+                    },
+                    getVideos: function () {
+
+                        var i;
+                        var temp;
+                        var ucid;
+                        var child;
+                        var parent;
+                        var videos;
+                        var remove;
+                        var up_next;
+
+                        remove = [];
+                        up_next = document.querySelector("ytd-compact-autoplay-renderer");
+                        videos = document.querySelectorAll(this.tag_list.join(","));
+
+                        for (i = 0; i < videos.length; i++) {
+
+                            if (videos[i].data) {
+
+                                temp = videos[i];
+
+                            }
+
+                            if (temp && temp.data) {
+
+                                ucid = this.getObjectByKey(temp.data, ["browseId"], function (string) {
+                                    return string.indexOf("UC") === 0;
+                                });
+
+                                if (ucid[0] && ucid[0].target.browseId) {
+
+                                    ucid = ucid[0].target.browseId;
+
+                                }
+
+                            }
+
+                            if (ucid) {
+
+                                if (user_settings.blacklist_settings[ucid]) {
+
+                                    if (up_next && up_next.contains(videos[i])) {
+
+                                        if (up_next.tagName === "YTD-COMPACT-AUTOPLAY-RENDERER") {
+
+                                            up_next.remove();
+
+                                        } else {
+
+                                            up_next.parentNode.remove();
+                                            up_next = document.querySelector(".watch-sidebar-separation-line");
+
+                                            if (up_next) {
+
+                                                up_next.remove();
+
+                                            }
+
+                                        }
+
+                                    } else {
+
+                                        remove.push(videos[i]);
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                        if (remove.length) {
+
+                            for (i = 0; i < remove.length; i++) {
+
+                                child = remove[i];
+
+                                while (child) {
+
+                                    parent = child.parentNode;
+
+                                    if (parent.childElementCount > 1 || parent.id === "contents" || parent.id === "items") {
+
+                                        child.remove();
+                                        break;
+
+                                    }
+
+                                    child = parent;
+
+                                }
+
+                            }
+
+                            if (this.hasContainers()) {
+
+                                // ignore.containers = [];
+
+                            } else {
+
+                                window.dispatchEvent(new Event("resize"));
+                            }
+
+                        }
+
+                    },
+                    modImportNode: function (original) {
+
+                        var blacklist_button;
+
+                        blacklist_button = document.createElement("div");
+                        blacklist_button.title = i18n.blacklist_settings.button_add_title;
+                        blacklist_button.className = "iri-add-to-blacklist";
+                        blacklist_button.innerHTML =
+                            "<svg viewBox='0 0 24 24' height='16' width='16'>" +
+                            "    <polygon points='24 2.1 21.9 0 12 9.9 2.1 0 0 2.1 9.9 12 0 21.9 2.1 24 12 14.1 21.9 24 24 21.9 14.1 12'/>" +
+                            "</svg>";
+
+                        return function (externalNode, deep) {
+
+                            var node;
+                            var container;
+
+                            node = externalNode.firstElementChild;
+
+                            if (node && (node.id === "thumbnail" || node.id === "img")) {
+
+                                container = node.id === "img" ? node.parentNode : node;
+
+                                if (!container.querySelector(".iri-add-to-blacklist")) {
+
+                                    container.appendChild(blacklist_button.cloneNode(true));
+
+                                }
+                            }
+
+                            return original.apply(this, arguments);
+
+                        };
+
+                    },
+                    applyBlacklist: function () {
+
+                        var hasContainers;
+
+                        if (!this.allowedBlacklistPage()) {
+
+                            return;
+
+                        }
+
+                        hasContainers = this.hasContainers();
+
+                        if (hasContainers) {
+
+                            this.getContainers();
+
+                        }
+
+                        this.getVideos();
+
+                        if (hasContainers) {
+
+                            this.getEmptyContainers();
+
+                        }
+
+                    },
+                    addToBlacklist: function (event) {
+
+                        var ucid;
+                        var brand;
+                        var parent;
+
+                        if (user_settings.enable_blacklist && event.target.className === "iri-add-to-blacklist") {
+
+                            event.preventDefault();
+                            event.stopPropagation();
+
+                            parent = event.target.parentNode;
+
+                            while (parent) {
+
+                                if (this.tag_list.indexOf(parent.tagName) > -1) {
+
+                                    if (parent.data) {
+
+                                        ucid = this.getObjectByKey(parent.data, ["browseId"], function (string) {
+                                            return string.indexOf("UC") === 0;
+                                        });
+
+                                        if (ucid[0] && ucid[0].target.browseId) {
+
+                                            brand = ucid[0].list[0].text;
+
+                                            ucid = ucid[0].target.browseId;
+
+                                        }
+
+                                    }
+
+                                    break;
+
+                                }
+
+                                parent = parent.parentNode;
+
+                            }
+
+                            if (ucid && brand) {
+
+                                user_settings.blacklist_settings[ucid] = brand;
+
+                                iridium_api.saveSettings();
+
+                                this.applyBlacklist();
+
+                            }
+
+                            return false;
+
+                        }
+
+                    },
+                    iniBlacklist: function () {
+
+                        if (this.allowedBlacklistPage()) {
+
+                            document.documentElement.classList.add("iri-blacklist-allowed");
+
+                        } else {
+
+                            document.documentElement.classList.remove("iri-blacklist-allowed");
+
+                        }
+
+                    },
+                    ini: function () {
+
+                        var context;
+
+                        if (iridium_api.initializeOption.call(this)) {
+
+                            return;
+
+                        }
+
+                        if (user_settings.enable_blacklist) {
+
+                            context = this;
+
+                            JSON.parse = this.checkParse(JSON.parse);
+                            HTMLDocument.prototype.importNode = this.modImportNode(HTMLDocument.prototype.importNode);
+
+                            document.addEventListener("readystatechange", this.iniBlacklist.bind(this), false);
+                            document.addEventListener("yt-page-data-fetched", this.iniBlacklist.bind(this), false);
+                            document.addEventListener("click", this.addToBlacklist.bind(this), true);
+
+                            Object.defineProperty(Object.prototype, "ytInitialData", {
+                                set: function (data) {
+                                    this._ytInitialData = data;
+                                },
+                                get: function () {
+
+                                    if (context.allowedBlacklistPage()) {
+
+                                        context.clearList(this._ytInitialData);
+
+                                    }
+
+                                    return this._ytInitialData;
+
+                                }
+                            });
+
+                        }
 
                     }
                 },
@@ -592,7 +1377,7 @@
 
                                 if (user_settings.channel_video_time && !this.addVideoTime.fetching && (upload_info = document.querySelector("#upload-info .date")) && upload_info.textContent.indexOf("·") === -1) {
 
-                                    if ((video_id = window.location.href.match(/v=([\w]+)/)) && (video_id = video_id[1])) {
+                                    if ((video_id = window.location.href.match(/v=([\w-]+)/)) && (video_id = video_id[1])) {
 
                                         if (this.removeVideoTime.xhr) {
 
@@ -628,7 +1413,11 @@
                     },
                     ini: function () {
 
-                        iridium_api.initializeOption.call(this);
+                        if (iridium_api.initializeOption.call(this)) {
+
+                            return;
+
+                        }
 
                         window.addEventListener("yt-page-data-updated", this.loadStart.bind(this), true);
 
@@ -762,16 +1551,21 @@
 
                         }
 
-                        if (!user_settings.player_subtitles && args.caption_audio_tracks) {
+                        if (!user_settings.player_subtitles) {
 
-                            args.caption_audio_tracks = args.caption_audio_tracks.split(/&d=[0-9]|d=[0-9]&/).join("");
+                            window.localStorage.setItem("yt-html5-player-modules::subtitlesModuleData::module-enabled", "false");
+
+                            if (args.caption_audio_tracks) {
+
+                                args.caption_audio_tracks = args.caption_audio_tracks.split(/&d=[0-9]|d=[0-9]&/).join("");
+
+                            }
 
                         }
 
                         if (!user_settings.player_hfr && args.adaptive_fmts) {
 
                             key_type = args.adaptive_fmts.indexOf(",") > -1 ? "," : "%2C";
-
                             list = args.adaptive_fmts.split(key_type);
 
                             for (i = 0; i < list.length; i++) {
@@ -801,9 +1595,16 @@
                             var temp;
                             var current_config;
 
+
+                            if (!this.getUpdatedConfigurationData) {
+
+                                return original.apply(this, arguments);
+
+                            }
+
                             current_config = this.getUpdatedConfigurationData();
 
-                            if (current_config && current_config.args && current_config.args.eventid === args.eventid) {
+                            if (current_config && current_config.args && (current_config.args.eventid === args.eventid || current_config.args.loaderUrl === args.loaderUrl) && !document.querySelector(".ended-mode")) {
 
                                 return;
 
@@ -977,7 +1778,11 @@
 
                         var context;
 
-                        iridium_api.initializeOption.call(this);
+                        if (iridium_api.initializeOption.call(this)) {
+
+                            return;
+
+                        }
 
                         context = this;
 
@@ -1131,8 +1936,8 @@
                 },
                 {
                     options: {
-                        player_always_active: {
-                            id: "player_always_active",
+                        shortcuts_always_active: {
+                            id: "shortcuts_always_active",
                             section: "video",
                             sub_section: "player",
                             type: "checkbox",
@@ -1151,7 +1956,7 @@
                         var length;
                         var event_clone;
 
-                        if (user_settings.player_always_active && (api = document.getElementById("movie_player"))) {
+                        if (user_settings.shortcuts_always_active && (api = document.getElementById("movie_player"))) {
 
                             clear = window.location.pathname === "/watch" && api && api !== event.target && !api.contains(event.target);
 
@@ -1181,7 +1986,11 @@
                     },
                     ini: function () {
 
-                        iridium_api.initializeOption.call(this);
+                        if (iridium_api.initializeOption.call(this)) {
+
+                            return;
+
+                        }
 
                         document.addEventListener("keydown", this.alwaysActive.bind(this));
 
@@ -1297,7 +2106,11 @@
                     },
                     ini: function () {
 
-                        iridium_api.initializeOption.call(this);
+                        if (iridium_api.initializeOption.call(this)) {
+
+                            return;
+
+                        }
 
                         if (user_settings.player_volume_wheel) {
 
@@ -1433,11 +2246,20 @@
                             if ((player_api = document.getElementById("movie_player"))) {
 
                                 current_data = player_api.getUpdatedConfigurationData();
-                                original_url = current_data.args.loaderUrl;
+                                original_url = current_data.args.loaderUrl.replace(window.location.origin, "");
                                 document.title = current_data.args.title + " - YouTube";
 
                                 history_state = {
-                                    endpoint: JSON.parse(JSON.stringify(watch_page_api.data.currentVideoEndpoint)),
+                                    endpoint: {
+                                        clickTrackingParams: "",
+                                        watchEndpoint: {
+                                            videoId: current_data.args.video_id
+                                        },
+                                        webNavigationEndpointData: {
+                                            url: original_url,
+                                            webPageType: "WATCH"
+                                        }
+                                    },
                                     entryTime: window.performance.now(),
                                     savedComponentState: null
                                 };
@@ -1532,7 +2354,11 @@
 
                         var context;
 
-                        iridium_api.initializeOption.call(this);
+                        if (iridium_api.initializeOption.call(this)) {
+
+                            return;
+
+                        }
 
                         window.addEventListener("scroll", this.iniAlwaysVisible.bind(this), false);
                         window.addEventListener("yt-navigate-start", this.iniAlwaysVisible.bind(this), false);
@@ -1704,6 +2530,7 @@
                                 buttons_section.id = "buttons-section";
                                 textarea = document.createElement("textarea");
                                 textarea.id = "iridium-textarea";
+                                textarea.setAttribute("spellcheck", "false");
 
                                 if (type === "import") {
 
@@ -1839,6 +2666,7 @@
                                 textarea = document.createElement("textarea");
                                 textarea.id = "iridium-textarea";
                                 textarea.value = JSON.stringify(i18n, null, 4);
+                                textarea.setAttribute("spellcheck", "false");
 
                                 editor.appendChild(buttons_section);
                                 editor.appendChild(textarea);
@@ -1848,7 +2676,11 @@
                     },
                     ini: function () {
 
-                        iridium_api.initializeOption.call(this);
+                        if (iridium_api.initializeOption.call(this)) {
+
+                            return;
+
+                        }
 
                     }
                 },
@@ -1864,6 +2696,7 @@
             ];
 
             iridium_api = {
+
                 setCustomLanguage: function (custom_language) {
 
                     var i;
@@ -2395,7 +3228,7 @@
 
                     if (this.started) {
 
-                        return;
+                        return true;
 
                     }
 
@@ -2414,6 +3247,8 @@
                         }
 
                     }
+
+                    return false;
 
                 },
                 ini: function () {
@@ -2524,7 +3359,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.8a";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.9a";
                     document.documentElement.appendChild(holder);
 
                 }

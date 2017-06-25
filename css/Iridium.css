@@ -270,7 +270,7 @@ html:not(.iri-blacklist-allowed) .iri-add-to-blacklist {
 }
 .iri-add-to-blacklist:hover .iri-tooltip {
     opacity: 0.9;
-    transition: opacity 0.3s ease-out 1s;
+    transition: opacity 0.3s ease-out 0.5s;
 }
 #avatar,
 #thumbnail {

@@ -415,13 +415,15 @@ body {
 .iri-blacklist-channel {
     position: relative;
     padding-left: 40px;
-    /*background: #1C1C1C;*/
     margin-left: -10px;
     margin-right: -10px;
 }
+.iri-blacklist-channel:hover {
+    background: #1C1C1C;
+}
 .iri-blacklist-channel .close {
     background-color: transparent;
-    color: #666666;
+    color: #666;
     cursor: pointer;
     position: absolute;
     left: 5px;
@@ -430,16 +432,22 @@ body {
     padding: 5px;
     margin: 5px;
 }
-.iri-blacklist-channel .close svg {
+.iri-blacklist-channel svg {
     fill: #303030;
     pointer-events: none;
 }
+.iri-blacklist-channel .close:hover svg {
+    fill: #FFF;
+}
 .iri-blacklist-channel a {
-    color: #eee;
+    color: #EEE;
     text-decoration: none;
     display: block;
     padding: 5px;
     height: 20px;
+}
+.iri-blacklist-channel:hover a {
+    color: #27A6E5;
 }
 
 

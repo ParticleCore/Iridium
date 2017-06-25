@@ -457,7 +457,7 @@ body {
     height: 20px;
 }
 .iri-blacklist-channel:hover a {
-    color: #27A6E5;
+    color: #27A6E5 !important;
 }
 
 
@@ -607,7 +607,7 @@ body {
 .iri-dark-mode-settings .iri-blacklist-channel svg {
     fill: #303030;
 }
-.iri-blacklist-channel .close:hover svg {
+.iri-dark-mode-settings .iri-blacklist-channel .close:hover svg {
     fill: #FFF;
 }
 

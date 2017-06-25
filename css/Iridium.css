@@ -246,6 +246,7 @@ html.iri-always-playing ytd-watch[hidden] {
     margin: 4px;
     opacity: 0;
     padding: 14px;
+    pointer-events: none;
     position: absolute;
     top: 0;
     transition: opacity .3s;
@@ -255,18 +256,12 @@ html.iri-always-playing ytd-watch[hidden] {
 html:not(.iri-blacklist-allowed) .iri-add-to-blacklist {
     display: none;
 }
-#avatar:not(:hover) .iri-add-to-blacklist,
-#thumbnail:not(:hover) .iri-add-to-blacklist,
-.ytd-thumbnail-0:not(:hover) .iri-add-to-blacklist,
-.ytd-playlist-thumbnail-0:not(:hover) .iri-add-to-blacklist {
-    user-select: none;
-}
 #avatar:hover .iri-add-to-blacklist,
 #thumbnail:not([href*="list=RD"]):hover .iri-add-to-blacklist,
 .ytd-thumbnail-0:hover .iri-add-to-blacklist,
 .ytd-playlist-thumbnail-0:hover .iri-add-to-blacklist {
     opacity: .8;
-    user-select: auto;
+    pointer-events: all;
 }
 .iri-add-to-blacklist svg {
     fill: #fff;

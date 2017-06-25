@@ -52,7 +52,7 @@
         "label": "Enable blacklist"
     },
     "blacklist_settings": {
-        "button_add_title": "Add to blacklist",
+        "button_add_title": "Block",
         "button_edit": "Edit",
         "button_import": "Import",
         "button_export": "Export",
@@ -101,6 +101,9 @@
     "player_subtitles": {
         "label": "Allow subtitles on videos"
     },
+    "player_loudness": {
+        "label": "Allow loudness normalization"
+    },
     "player_ads": {
         "label": "Allow ads on videos"
     },
@@ -109,6 +112,12 @@
     },
     "player_hfr": {
         "label": "Allow HFR (60fps) streams"
+    },
+    "player_memorize_size": {
+        "label": "Memorize player size"
+    },
+    "player_memorize_volume": {
+        "label": "Memorize player volume"
     },
     "shortcuts_always_active": {
         "label": "Player shortcuts always active"
@@ -121,8 +130,8 @@
     },
     "player_always_playing": {
         "label": "Video keeps playing when changing pages",
-        "button_restore": "Return to video page",
-        "button_close": "Close mini player"
+        "button_restore": "Restore",
+        "button_close": "Close"
     },
     "iridium_dark_mode": {
         "label": "Use dark theme"

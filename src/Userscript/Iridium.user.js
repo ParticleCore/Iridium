@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.2.9a
+// @version         0.3.0a
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -436,7 +436,7 @@
                             type: "custom",
                             value: {},
                             i18n: {
-                                button_add_title: "Add to blacklist",
+                                button_add_title: "Block",
                                 button_edit: "Edit",
                                 button_import: "Import",
                                 button_export: "Export",
@@ -1021,12 +1021,12 @@
                         var blacklist_button;
 
                         blacklist_button = document.createElement("div");
-                        blacklist_button.title = i18n.blacklist_settings.button_add_title;
                         blacklist_button.className = "iri-add-to-blacklist";
                         blacklist_button.innerHTML =
                             "<svg viewBox='0 0 24 24' height='16' width='16'>" +
                             "    <polygon points='24 2.1 21.9 0 12 9.9 2.1 0 0 2.1 9.9 12 0 21.9 2.1 24 12 14.1 21.9 24 24 21.9 14.1 12'/>" +
-                            "</svg>";
+                            "</svg>" +
+                            "<div class='iri-tooltip'>" + i18n.blacklist_settings.button_add_title + "</div>";
 
                         return function (externalNode, deep) {
 
@@ -1501,6 +1501,16 @@
                                 label: "Allow subtitles on videos"
                             }
                         },
+                        player_loudness: {
+                            id: "player_loudness",
+                            section: "video",
+                            sub_section: "player",
+                            type: "checkbox",
+                            value: false,
+                            i18n: {
+                                label: "Allow loudness normalisation"
+                            }
+                        },
                         player_ads: {
                             id: "player_ads",
                             section: "video",
@@ -1530,6 +1540,26 @@
                             i18n: {
                                 label: "Allow HFR (60fps) streams"
                             }
+                        },
+                        player_memorize_size: {
+                            id: "player_memorize_size",
+                            section: "video",
+                            sub_section: "player",
+                            type: "checkbox",
+                            value: true,
+                            i18n: {
+                                label: "Memorize player size"
+                            }
+                        },
+                        player_memorize_volume: {
+                            id: "player_memorize_volume",
+                            section: "video",
+                            sub_section: "player",
+                            type: "checkbox",
+                            value: true,
+                            i18n: {
+                                label: "Memorize player volume"
+                            }
                         }
                     },
                     modArgs: function (args) {
@@ -1548,6 +1578,22 @@
                         if (!user_settings.player_annotations) {
 
                             args.iv_load_policy = "3";
+
+                        }
+
+                        if (user_settings.player_memorize_size) {
+
+                            args.player_wide = user_settings.theaterMode ? "1" : "0";
+
+                        }
+
+                        if (!user_settings.player_loudness) {
+
+                            args.loudness = null;
+                            args.relative_loudness = null;
+
+                            delete args.loudness;
+                            delete args.relative_loudness;
 
                         }
 
@@ -1769,6 +1815,66 @@
                         };
 
                     },
+                    handleCustoms: function (event) {
+
+                        if (typeof event === "object") {
+
+                            user_settings.userVolume = event.volume;
+
+                        } else {
+
+                            user_settings.theaterMode = event;
+
+                        }
+
+                        iridium_api.saveSettings();
+
+                    },
+                    playerReady: function (api) {
+
+                        var watch_page_api;
+
+                        if (api) {
+
+                            if (user_settings.player_memorize_size) {
+
+                                api.addEventListener("SIZE_CLICKED", this.handleCustoms);
+
+                            }
+
+                            if (user_settings.player_memorize_volume) {
+
+                                api.setVolume(user_settings.userVolume);
+                                api.addEventListener("onVolumeChange", this.handleCustoms);
+
+                            }
+
+                            if (user_settings.player_memorize_size && (watch_page_api = document.querySelector("ytd-watch"))) {
+
+                                watch_page_api.playerApiReady_(api);
+                                watch_page_api.theaterModeChanged_(user_settings.theaterMode);
+
+                            }
+
+                        }
+
+                    },
+                    shareApi: function (original) {
+
+                        var context = this;
+
+                        return function (api) {
+
+                            context.playerReady(api);
+
+                            if (original) {
+
+                                return original.apply(this, arguments);
+
+                            }
+
+                        };
+                    },
                     isChannel: function () {
 
                         return /^\/(user|channel)\//.test(window.location.pathname);
@@ -1786,9 +1892,10 @@
 
                         context = this;
 
-                        JSON.parse = context.modJSONParse(JSON.parse);
-                        XMLHttpRequest.prototype.open = context.modOpen(XMLHttpRequest.prototype.open);
-                        DOMParser.prototype.parseFromString = context.modParseFromString(DOMParser.prototype.parseFromString);
+                        JSON.parse = this.modJSONParse(JSON.parse);
+                        XMLHttpRequest.prototype.open = this.modOpen(XMLHttpRequest.prototype.open);
+                        DOMParser.prototype.parseFromString = this.modParseFromString(DOMParser.prototype.parseFromString);
+                        window.onYouTubePlayerReady = this.shareApi(window.onYouTubePlayerReady);
 
                         Object.defineProperties(Object.prototype, {
                             cueVideoByPlayerVars: {
@@ -2140,8 +2247,8 @@
                             value: true,
                             i18n: {
                                 label: "Video keeps playing when changing pages",
-                                button_restore: "Return to video page",
-                                button_close: "Close mini player"
+                                button_restore: "Restore",
+                                button_close: "Close"
                             }
                         }
                     },
@@ -2278,6 +2385,9 @@
 
                             watch_page_api.initComments_();
 
+                            document.dispatchEvent(new Event("yt-page-data-fetched"));
+                            document.dispatchEvent(new Event("yt-page-data-updated"));
+
                         }
 
                     },
@@ -2308,23 +2418,23 @@
                             restore_page = document.createElement("div");
                             restore_page.id = "iri-mini-player-restore";
                             restore_page.className = "iri-mini-player-control iri-mini-player-left-control";
-                            restore_page.title = i18n.player_always_playing.button_restore;
                             restore_page.innerHTML =
                                 "<svg height='24' width='24' fill='#FFF'>" +
                                 "    <use xlink:href='#iri-svg-restore' class='iri-svg-shadow'/>" +
                                 "    <path id='iri-svg-restore' d='M21 4H1v16h22V4h-2zm0 14H3v-6h10V6h8v12z'/>" +
-                                "</svg>";
+                                "</svg>" +
+                                "<div class='iri-mini-player-tooltip'>" + i18n.player_always_playing.button_restore + "</div>";
                             restore_page.addEventListener("click", this.restorePlayer.bind(this), false);
 
                             close_mini_player = document.createElement("div");
                             close_mini_player.id = "iri-mini-player-close";
                             close_mini_player.className = "iri-mini-player-control iri-mini-player-right-control";
-                            close_mini_player.title = i18n.player_always_playing.button_close;
                             close_mini_player.innerHTML =
                                 "<svg height='24' width='24' fill='#FFF'>" +
                                 "    <use xlink:href='#iri-svg-close' class='iri-svg-shadow'/>" +
                                 "    <path id='iri-svg-close' d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/>" +
-                                "</svg>";
+                                "</svg>" +
+                                "<div class='iri-mini-player-tooltip'>" + i18n.player_always_playing.button_close + "</div>";
                             close_mini_player.addEventListener("click", this.closePlayer.bind(this), false);
 
                             mini_player_controls.appendChild(restore_page);
@@ -3174,7 +3284,6 @@
                         iridium_settings_button.id = "iridium_settings_button";
                         iridium_settings_button.href = "/iridium-settings";
                         iridium_settings_button.target = "_blank";
-                        iridium_settings_button.title = i18n.iridium_api.settings_button;
                         iridium_settings_button.innerHTML =
                             "<svg viewBox='0 0 24 24' style='height:24px;'>" +
                             "    <radialGradient id='iri-gradient' gradientUnits='userSpaceOnUse' cx='6' cy='22' r='18.5'>" +
@@ -3182,8 +3291,9 @@
                             "        <stop class='iri-stop-gradient' offset='1'/>" +
                             "    </radialGradient>" +
                             "    <polygon points='24,11.8 6,1.6 6,22'/>" +
-                            "    <path d='M6,1.6V22l18-10.2L6,1.6z M9,6.8l9,5.1L9,17V6.8z'/>" +
-                            "</svg>";
+                            "    <path d='M6 1.6V22l18-10.2L6 1.6z M9 6.8l9 5.1L9 17V6.8z'/>" +
+                            "</svg>" +
+                            "<div class='iri-tooltip' style='opacity: 0'>" + i18n.iridium_api.settings_button + "</div>";
                         buttons.parentNode.insertBefore(iridium_settings_button, buttons);
 
                         document.documentElement.removeEventListener("load", iridium_api.initializeSettingsButton, true);
@@ -3359,7 +3469,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.9a";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.3.0a";
                     document.documentElement.appendChild(holder);
 
                 }

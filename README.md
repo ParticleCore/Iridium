@@ -10,7 +10,7 @@ The initial phase will be focused on the userscript version only and bugs are ex
 
 Each item on the lists below can be removed or moved to the a different version at any time
 
-### TODO - alpha version
+### TODO - alpha version [complete]
 
 - [x] Core: minimally working alpha version
 - [x] Core: create settings menu on its own local page
@@ -34,7 +34,7 @@ Each item on the lists below can be removed or moved to the a different version 
 - [x] Feature: youtube logo redirects to subscription or trending
 - [x] Feature: blacklist videos from specific channels
 
-### TODO - beta version
+### TODO - beta version [current]
 
 - [ ] Core: create Firefox add-on
 - [ ] Core: create Opera add-on?

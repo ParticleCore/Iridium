@@ -412,6 +412,16 @@ body {
     width: 100%;
 }
 
+#iridium-blacklist {
+    border: 1px solid #A9A9A9;
+    color: rgba(255, 255, 255, 0.5);
+    box-sizing: border-box;
+    display: block;
+    height: calc(100% - 50px);
+    padding: 10px;
+    overflow: auto;
+    width: 100%;
+}
 .iri-blacklist-channel {
     position: relative;
     padding-left: 40px;
@@ -419,7 +429,7 @@ body {
     margin-right: -10px;
 }
 .iri-blacklist-channel:hover {
-    background: #1C1C1C;
+    background: #F0F0F0;
 }
 .iri-blacklist-channel .close {
     background-color: transparent;
@@ -433,14 +443,14 @@ body {
     margin: 5px;
 }
 .iri-blacklist-channel svg {
-    fill: #303030;
+    fill: #A9A9A9;
     pointer-events: none;
 }
 .iri-blacklist-channel .close:hover svg {
-    fill: #FFF;
+    fill: #444;
 }
 .iri-blacklist-channel a {
-    color: #EEE;
+    color: #444;
     text-decoration: none;
     display: block;
     padding: 5px;
@@ -583,6 +593,23 @@ body {
     color: rgba(255, 255, 255, 0.5);
 }
 
+.iri-dark-mode-settings #iridium-blacklist {
+    background-color: #131313;
+    border: 1px solid #303030;
+    color: rgba(255, 255, 255, 0.5);
+}
+.iri-dark-mode-settings .iri-blacklist-channel a {
+    color: #EEE;
+}
+.iri-dark-mode-settings .iri-blacklist-channel:hover {
+    background: #1C1C1C;
+}
+.iri-dark-mode-settings .iri-blacklist-channel svg {
+    fill: #303030;
+}
+.iri-blacklist-channel .close:hover svg {
+    fill: #FFF;
+}
 
 .iri-dark-mode-settings #iridium_settings input[type=checkbox] + label:before {
     box-shadow: none;

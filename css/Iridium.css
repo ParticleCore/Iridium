@@ -20,7 +20,7 @@ html {
     }
 }
 #iridium_settings_button polygon {
-    opacity: 0.5;
+    opacity: .5;
 }
 #iridium_settings_button path,
 #iridium_settings_button polygon {
@@ -45,8 +45,8 @@ html {
     transform: translateX(50%);
 }
 #iridium_settings_button:hover .iri-tooltip {
-    opacity: 0.9 !important;
-    transition: opacity 0.3s ease-out 0.5s;
+    opacity: .9 !important;
+    transition: opacity .3s ease-out .5s;
 }
 /* end | settings button */
 
@@ -77,7 +77,7 @@ a.yt-simple-endpoint span {
     -webkit-font-smoothing: antialiased;
     font-size: 10px;
     line-height: 1;
-    background-color: rgba(17, 17, 17, 0.8);
+    background-color: rgba(17, 17, 17, .8);
     opacity: 0;
     color: #FFF;
     padding: 8px;
@@ -88,7 +88,7 @@ a.yt-simple-endpoint span {
     text-transform: none;
     position: absolute;
     white-space: nowrap;
-    transition: opacity 0.3s ease-out 0s;
+    transition: opacity .3s ease-out 0s;
     pointer-events: none;
 }
 ytd-watch:not([hidden]) .ytp-thumbnail-overlay {
@@ -108,7 +108,7 @@ ytd-watch:not([hidden]) .ytp-thumbnail-overlay {
     top: 0;
 }
 yt-img-shadow:hover #iri-video-preview {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, .5);
 }
 #iri-video-preview video {
     left: auto !important;
@@ -151,10 +151,10 @@ html.iri-always-playing ytd-watch[hidden] {
     z-index: 1000;
     pointer-events: none;
     right: 12px;
-    transition: opacity 0.25s cubic-bezier(0, 0, 0.2, 1);
+    transition: opacity .25s cubic-bezier(0, 0, .2, 1);
 }
 #iri-mini-player-controls:after {
-    box-shadow: rgba(8, 8, 8, 0.8) 0 120px 90px -90px inset;
+    box-shadow: rgba(8, 8, 8, .8) 0 120px 90px -90px inset;
     content: "";
     height: 120px;
     left: -12px;
@@ -178,11 +178,12 @@ html.iri-always-playing ytd-watch[hidden] {
     cursor: pointer;
     display: none;
     height: 36px;
+    font-size: 11px;
     justify-content: center;
     top: 0;
-    opacity: 0.9;
+    opacity: .9;
     position: absolute;
-    transition: opacity .1s cubic-bezier(0.4, 0.0, 1, 1);
+    transition: opacity .1s cubic-bezier(.4, 0, 1, 1);
     width: 36px;
 }
 .iri-mini-player-control:hover {
@@ -197,23 +198,21 @@ html.iri-always-playing ytd-watch[hidden] {
 .iri-svg-shadow {
     fill: none;
     stroke: #000;
-    stroke-opacity: 0.15;
+    stroke-opacity: .15;
     stroke-width: 2px;
 }
-
 .iri-always-playing #iri-mini-player-close,
 .iri-always-playing #iri-mini-player-restore {
     display: flex;
 }
-
 .iri-always-visible #movie_player:not(.ytp-fullscreen),
 .iri-always-playing #movie_player:not(.ytp-fullscreen):not(.unstarted-mode) {
     background-color: transparent;
     bottom: 10px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(255, 255, 255, .2);
+    border: 1px solid rgba(255, 255, 255, .3);
     box-shadow: 0 0 10px #000;
-    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12), 0 2px 4px -1px rgba(0, 0, 0, .4);
     height: 198px;
     position: fixed;
     right: 10px;
@@ -227,10 +226,34 @@ html.iri-always-playing ytd-watch[hidden] {
     content: "";
     display: block;
     left: 0;
-    opacity: 0.8;
+    opacity: .8;
     position: absolute;
     right: 0;
     top: 0;
+}
+.iri-mini-player-tooltip {
+    background-color: rgba(28, 28, 28, .9);
+    border-radius: 2px;
+    padding: 5px 9px;
+    /*opacity: 0;*/
+    font-size: 118%;
+    pointer-events: none;
+    position: absolute;
+    top: 100%;
+    transition: opacity .1s cubic-bezier(.4, 0, 1, 1);
+    white-space: nowrap;
+    z-index: 1002;
+    font-weight: 500;
+    line-height: 15px;
+}
+.iri-mini-player-left-control {
+    left: 0;
+}
+.iri-mini-player-right-control {
+    right: 0;
+}
+.iri-mini-player-control:hover .iri-mini-player-tooltip {
+    opacity: 0.9;
 }
 /* end | mini player */
 
@@ -275,8 +298,8 @@ html:not(.iri-blacklist-allowed) .iri-add-to-blacklist {
     top: -2px;
 }
 .iri-add-to-blacklist:hover .iri-tooltip {
-    opacity: 0.9;
-    transition: opacity 0.3s ease-out 0.5s;
+    opacity: .9;
+    transition: opacity .3s ease-out .5s;
 }
 #avatar,
 #thumbnail {
@@ -315,7 +338,7 @@ body {
 #iridium_settings_sidebar {
     /*background-color: #25272A !important;*/
     /*bottom: 10px;*/
-    /*color: rgba(156, 174, 192, 0.3) !important;*/
+    /*color: rgba(156, 174, 192, .3) !important;*/
     /*left: 10px;*/
     padding: 10px 0;
     position: absolute;
@@ -449,7 +472,7 @@ body {
 
 #iridium-blacklist {
     border: 1px solid #A9A9A9;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, .5);
     box-sizing: border-box;
     display: block;
     height: calc(100% - 50px);
@@ -517,7 +540,7 @@ body {
     left: 0;
     margin: var(--iri-checkbox-bkg) 0;
     position: absolute;
-    transition: background 0.3s;
+    transition: background .3s;
     vertical-align: middle;
     width: calc(40px - 2 * var(--iri-checkbox-bkg));
 }
@@ -532,7 +555,7 @@ body {
     left: -7px;
     margin: 6px;
     position: absolute;
-    transition: 0.3s;
+    transition: .3s;
     vertical-align: middle;
     width: 14px;
 }
@@ -548,7 +571,7 @@ body {
     /*background-color: #167AC6;*/
     border-color: #167AC6;
     border-radius: 2px;
-    box-shadow: rgba(0, 0, 0, 0.05) 0 1px 0;
+    box-shadow: rgba(0, 0, 0, .05) 0 1px 0;
     color: #666;
     cursor: pointer;
     font-size: 11px;
@@ -561,7 +584,7 @@ body {
 }
 #iridium_settings .iri-settings-button {
     background-color: #F8F8F8;
-    box-shadow: rgba(0, 0, 0, 0.05) 0 1px 0;
+    box-shadow: rgba(0, 0, 0, .05) 0 1px 0;
     border: 1px solid #D3D3D3;
     border-image: initial;
 }
@@ -592,7 +615,7 @@ body {
 
 /* ini | Iridium settings dark mode */
 .iri-dark-mode-settings #iridium_settings {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, .5);
 }
 .iri-dark-mode-settings #iridium_settings {
     background-color: #131313;
@@ -605,18 +628,18 @@ body {
 .iri-dark-mode-settings #iridium_settings .iri-settings-button,
 .iri-dark-mode-settings #iridium_settings .iri-settings-button:hover,
 .iri-dark-mode-settings #iridium_settings .iri-settings-button:active {
-    background-color: rgba(255, 255, 255, 0.08);
+    background-color: rgba(255, 255, 255, .08);
     border-color: #303030;
     color: #888;
 }
 .iri-dark-mode-settings #settings_section h2 {
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, .8);
 }
 .iri-dark-mode-settings #settings_section h3 {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, .5);
 }
 .iri-dark-mode-settings .settings_divider {
-    background-color: rgba(255, 255, 255, 0.14);
+    background-color: rgba(255, 255, 255, .14);
 }
 .iri-dark-mode-settings .sidebar_section:hover:not(.active_sidebar) {
     background-color: #F4F4F4;
@@ -625,13 +648,13 @@ body {
 .iri-dark-mode-settings #iridium-text-editor textarea {
     background-color: #131313;
     border-color: #303030;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, .5);
 }
 
 .iri-dark-mode-settings #iridium-blacklist {
     background-color: #131313;
     border: 1px solid #303030;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, .5);
 }
 .iri-dark-mode-settings .iri-blacklist-channel a {
     color: #EEE;

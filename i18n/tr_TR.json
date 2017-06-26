@@ -1,0 +1,159 @@
+{
+    "language": "Türkçe",
+    "section_titles": {
+        "about": "Bilgi ve kullanışlı linkler",
+        "general": "Genel ayarlar",
+        "video": "Video ayarları",
+        "settings": "Iridium ayarları"
+    },
+    "sub_section_titles": {
+        "channel": "Kanallar",
+        "blacklist": "Kara liste",
+        "general": "Genel",
+        "language": "Dil",
+        "layout": "Arayüz",
+        "player": "Oynatıcı",
+        "settings": "Ayarlar",
+        "thumbnails": "Önizlemeler"
+    },
+    "iridium_api": {
+        "settings_button": "Iridium ayarları",
+        "feature_link": "Bu ne işe yarıyor öğren"
+    },
+    "default_logo_page": {
+        "label": "Youtube logosunun gideceği sayfa:",
+        "options": [
+            "Ana Sayfa",
+            "Trendler",
+            "Abonelikler"
+        ]
+    },
+    "default_channel_tab": {
+        "label": "Varsayılan kanal sekmesi:",
+        "options": [
+            "Ana Sayfa",
+            "Videolar",
+            "Oynatma Listeleri",
+            "Kanallar",
+            "Tartışma",
+            "Hakkında"
+        ]
+    },
+    "square_avatars": {
+        "label": "Kullanıcı resimlerini kare içinde göster"
+    },
+    "thumbnail_preview": {
+        "label": "Video üzerine gelince önizlemelerini oynat"
+    },
+    "thumbnail_preview_mute": {
+        "label": "Shift tuşu ile video önizlemesinde sesi de çal"
+    },
+    "enable_blacklist": {
+        "label": "Kara listeyi etkinleştir"
+    },
+    "blacklist_settings": {
+        "button_add_title": "Engelle",
+        "button_edit": "Düzenle",
+        "button_import": "İçe aktar",
+        "button_export": "Dışa aktar",
+        "button_reset": "Sıfırla",
+        "button_save": "Kaydet",
+        "button_close": "Kapat",
+        "button_remove": "Kara listeden çıkart",
+        "placeholder": "Yeni kara listenizi buraya yapıştırın",
+        "confirm_reset": "Kara listenizi temizlemek üzeresiniz. Devam etmeden önce yedek almanızı tavsiye ederiz. \n\nDevam etmek istiyor musunuz?\n\n",
+        "reset_success": "Kara liste sıfırlandı.\n\nDeğişiklikler sayfa yenilendiğinde geçerli olacaktır.\n\n",
+        "confirm_import": "Geçerli kara listenizin üzerine yazmak üzeresiniz. Devam etmeden önce yedek almanızı tavsiye ederiz.\n\nDevam etmek istiyor musunuz?\n\n",
+        "import_success": "Kara liste içeriye başarıyla aktarıldı.\n\nDeğişiklikler sayfa yenilendiğinde geçerli olacaktır.\n\n",
+        "import_error": "Kara listeniz hatalı veya bozuk olduğu için içeri aktarılamadı.\n\n"
+    },
+    "channel_video_count": {
+        "label": "Yüklenen video sayısını göster"
+    },
+    "channel_video_time": {
+        "label": "Videonun yayınlanma zamanını göster"
+    },
+    "player_quality": {
+        "label": "Varsayılan video kalitesi:",
+        "options": [
+            "Otomatik",
+            "4320p (8k)",
+            "2880p (5k)",
+            "2160p (4k)",
+            "1440p",
+            "1080p",
+            "720p",
+            "480p",
+            "360p",
+            "240p",
+            "144p"
+        ]
+    },
+    "player_auto_play": {
+        "label": "Videoları otomatik oynat"
+    },
+    "channel_trailer_auto_play": {
+        "label": "Kanal tanıtım videolarını otomatik oynat"
+    },
+    "player_annotations": {
+        "label": "Videolarda ek açıklamalara izin ver"
+    },
+    "player_subtitles": {
+        "label": "Videolarda altyazılara izin ver"
+    },
+	"player_loudness": {
+        "label": "Ses yüksekliğini dengele"
+    },
+    "player_ads": {
+        "label": "Videolarda reklama izin ver"
+    },
+    "subscribed_channel_player_ads": {
+        "label": "Sadece abone olduğunuz kanalların videolarında reklama izin ver"
+    },
+    "player_hfr": {
+        "label": "HFR (60fps)ye izin ver"
+    },
+	"player_memorize_size": {
+        "label": "Oynatıcı boyutunu hatırla"
+    },
+	"player_memorize_volume": {
+        "label": "Oynatıcı ses seviyesini hatırla"
+    },
+    "shortcuts_always_active": {
+        "label": "Oynatıcı kısayolları her zaman etkin"
+    },
+    "player_volume_wheel": {
+        "label": "Fare tekeri ile sesi değiştir"
+    },
+    "player_always_visible": {
+        "label": "Sayfayı kaydırırken video görünür kalsın"
+    },
+    "player_always_playing": {
+        "label": "Sayfa değişse de video oynamaya devam etsin",
+        "button_restore": "Geri yükle",
+        "button_close": "Kapat"
+    },
+    "iridium_dark_mode": {
+        "label": "Koyu temayı kullan"
+    },
+    "iridium_user_settings": {
+        "button_save": "Kaydet",
+        "button_close": "Kapat",
+        "button_export": "Dışa Aktar",
+        "button_import": "İçe Aktar",
+        "button_reset": "Sıfırla",
+        "placeholder": "Yeni ayarlarınızı buraya yapıştırın.",
+        "confirm_reset": "Ayarlarınızı sıfırlamak üzeresiniz. Devam etmeden önce yedek almanızı tavsiye ederiz.\n\nDevam etmek istiyor musunuz?\n\n",
+        "reset_success": "Ayarlar sıfırlandı.\n\nDeğişiklikler sayfa yenilendiğinde geçerli olacaktır.\n\n",
+        "confirm_import": "Mevcut ayarlarınızın üzerine yazmak üzeresiniz. Devam etmeden önce yedek almanızı tavsiye ederiz.\n\nDevam etmek istiyor musunuz?\n\n",
+        "import_success": "Ayarlarınız başarıyla alındı.\n\nDeğişiklikler sayfa yenilendiğinde geçerli olacaktır.\n\n",
+        "import_error": "Ayarlarınız geçersiz ya da hatalı olduğu için aktarılamadı.\n\n"
+    },
+    "iridium_language": {
+        "button_save": "Kaydet",
+        "button_close": "Kapat",
+        "confirm_save": "Eklenti dil ayarlarını değiştirmek üzeresiniz.\n\nDevam etmek istiyor musunuz?\n\n",
+        "save_success": "Yeni dil başarıyla kaydedildi.\n\nDeğişiklikler sayfa yenilendiğinde geçerli olacaktır.\n\n",
+        "save_error": "Yeni dil içeriği hatalı ya da bozuk olduğu için aktarılamadı.\n\n"
+    }
+}

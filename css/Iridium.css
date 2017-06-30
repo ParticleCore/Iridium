@@ -52,6 +52,9 @@ html {
 
 
 /* ini | general layout */
+#upload-info #owner-container {
+    display: initial !important;
+}
 a#logo yt-icon,
 a.yt-simple-endpoint span {
     pointer-events: none;

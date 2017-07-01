@@ -165,8 +165,8 @@ html.iri-always-playing ytd-watch[hidden] {
     z-index: -1;
 }
 /*.iri-always-visible #movie_player:hover #iri-mini-player-controls,*/
-.paused-mode #iri-mini-player-controls,
-.ended-mode #iri-mini-player-controls,
+.iri-always-playing .paused-mode #iri-mini-player-controls,
+.iri-always-playing .ended-mode #iri-mini-player-controls,
 .iri-always-playing #movie_player:not(.ytp-fullscreen):hover #iri-mini-player-controls {
     opacity: 1;
     pointer-events: initial;

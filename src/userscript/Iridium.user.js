@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.0.2b
+// @version         0.0.3b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -24,13 +24,16 @@
 
     var iridium = {
 
-        inject: function (is_userscript, page_content_keypass, settings_changed_beacon, loaded_settings) {
+        inject: function () {
 
             var i18n;
             var modules;
             var iridium_api;
+            var is_userscript;
             var user_settings;
             var default_language;
+            var send_settings_to_page;
+            var receive_settings_from_page;
 
             default_language = {
                 language: "English (US)",
@@ -349,6 +352,8 @@
 
                         if (user_settings.thumbnail_preview) {
 
+                            event.stopPropagation();
+
                             container = event.target;
                             video_id = container.dataHost && container.dataHost.data && container.dataHost.data.videoId;
 
@@ -505,7 +510,7 @@
                                     user_settings.blacklist_settings = [];
 
                                     iridium_api.initializeSettings();
-                                    iridium_api.saveSettings();
+                                    iridium_api.saveSettings("blacklist_settings");
 
                                     window.alert(i18n.blacklist_settings.reset_success);
 
@@ -523,7 +528,7 @@
 
                                         user_settings.blacklist_settings = JSON.parse(textarea.value);
 
-                                        iridium_api.saveSettings();
+                                        iridium_api.saveSettings("blacklist_settings");
 
                                         window.alert(i18n.blacklist_settings.import_success);
 
@@ -655,7 +660,7 @@
                                             event.target.container.remove();
                                             delete user_settings.blacklist_settings[event.target.ucid];
 
-                                            iridium_api.saveSettings();
+                                            iridium_api.saveSettings("blacklist_settings");
 
                                         });
 
@@ -1090,7 +1095,7 @@
 
                                 user_settings.blacklist_settings[ucid] = brand;
 
-                                iridium_api.saveSettings();
+                                iridium_api.saveSettings("blacklist_settings");
 
                                 this.applyBlacklist();
 
@@ -1333,7 +1338,7 @@
 
                                         if (obj && obj.publishedTimeText) {
 
-                                            if ((current_video_id = window.location.href.match(/v=([\w-]+)/))) {
+                                            if ((current_video_id = window.location.href.match(/v=([\w-_]+)/))) {
 
                                                 if ((current_video_id = current_video_id[1])) {
 
@@ -1422,7 +1427,7 @@
 
                                 if (user_settings.channel_video_time && !this.addVideoTime.fetching && (upload_info = document.querySelector("#upload-info .date")) && upload_info.textContent.indexOf("·") === -1) {
 
-                                    if ((video_id = window.location.href.match(/v=([\w-]+)/)) && (video_id = video_id[1])) {
+                                    if ((video_id = window.location.href.match(/v=([\w-_]+)/)) && (video_id = video_id[1])) {
 
                                         if (this.removeVideoTime.xhr) {
 
@@ -1870,13 +1875,15 @@
 
                             user_settings.userVolume = event.volume;
 
+                            iridium_api.saveSettings("userVolume");
+
                         } else {
 
                             user_settings.theaterMode = event;
 
-                        }
+                            iridium_api.saveSettings("theaterMode");
 
-                        iridium_api.saveSettings();
+                        }
 
                     },
                     playerReady: function (api) {
@@ -2781,7 +2788,7 @@
                                         user_settings.custom_language = JSON.parse(textarea.value);
 
                                         iridium_api.setCustomLanguage(user_settings.custom_language);
-                                        iridium_api.saveSettings();
+                                        iridium_api.saveSettings("custom_language");
 
                                         window.alert(i18n.iridium_language.save_success);
 
@@ -3368,60 +3375,14 @@
                     iridium_api.saveSettings();
 
                 },
-                saveSettings: function () {
+                saveSettings: function (single_setting) {
 
-                    if (this.pendingDispatchEvent) {
-
-                        window.clearTimeout(this.pendingDispatchEvent);
-
-                    }
-
-                    this.pendingDispatchEvent = window.setTimeout(function () {
-                        window.dispatchEvent(new CustomEvent(settings_changed_beacon, {
-                            detail: {
-                                key: page_content_keypass,
-                                settings: user_settings,
-                                from_content_script: true
-                            }
-                        }));
-                    }, 500);
-
-                },
-                updateSettings: function (event) {
-
-                    var key;
-
-                    if (event.type === settings_changed_beacon && event.detail.key === page_content_keypass) {
-
-                        if (event.detail.from_browser_script) {
-
-                            for (key in event.detail.settings) {
-
-                                if (event.detail.settings.hasOwnProperty(key)) {
-
-                                    this.initializeSettings(event.detail.settings);
-
-                                    if (window.location.pathname === "/iridium-settings") {
-
-                                        this.loadSettingsMenu(true);
-
-                                        if (user_settings.iridium_dark_mode) {
-
-                                            document.documentElement.classList.add("iri-dark-mode-settings");
-
-                                        }
-
-                                    }
-
-                                    break;
-
-                                }
-
-                            }
-
+                    window.dispatchEvent(new CustomEvent(receive_settings_from_page, {
+                        detail: {
+                            settings: single_setting || user_settings,
+                            single_setting: single_setting
                         }
-
-                    }
+                    }));
 
                 },
                 initializeSettings: function (new_settings) {
@@ -3429,15 +3390,22 @@
                     var i;
                     var option;
                     var options;
+                    var loaded_settings;
+                    var iridium_settings;
+
+                    if ((iridium_settings = document.getElementById("iridium-settings"))) {
+
+                        loaded_settings = JSON.parse(iridium_settings.textContent || "null");
+                        is_userscript = !!iridium_settings.getAttribute("is-userscript");
+                        receive_settings_from_page = iridium_settings.getAttribute("settings-beacon-from");
+                        send_settings_to_page = iridium_settings.getAttribute("settings-beacon-to");
+
+                        iridium_settings.remove();
+
+                    }
 
                     user_settings = new_settings || loaded_settings || {};
                     i18n = default_language;
-
-                    if (loaded_settings) {
-
-                        loaded_settings = null;
-
-                    }
 
                     if (user_settings.custom_language) {
 
@@ -3565,7 +3533,6 @@
                 ini: function () {
 
                     this.initializeSettings();
-                    window.addEventListener(settings_changed_beacon, this.updateSettings.bind(this));
                     document.documentElement.addEventListener("load", this.initializeSettingsButton, true);
 
                     if (window.location.pathname === "/iridium-settings") {
@@ -3591,66 +3558,35 @@
             iridium_api.ini();
 
         },
-        generateUUID: function () {
+        isAllowedPage: function () {
 
-            return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, function (point) {
+            var current_page;
+            var allowed_pages;
 
-                return (point ^ window.crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> point / 4).toString(16);
+            if ((current_page = window.location.pathname.match(/\/[a-z-]+/))) {
 
-            });
+                current_page = current_page[0];
 
-        },
-        updateContentScriptSettings: function (event) {
+            } else {
 
-            if (!event && this.is_userscript) {
-
-                event = JSON.parse(this.GM_getValue(this.id, "{}"));
+                current_page = window.location.pathname;
 
             }
 
-            if (event) {
+            allowed_pages = [
+                "/",
+                "/feed",
+                "/results",
+                "/shared",
+                "/watch",
+                "/channel",
+                "/user",
+                "/c",
+                "/playlist",
+                "/iridium-settings"
+            ];
 
-                window.dispatchEvent(new CustomEvent(this.settings_changed_beacon, {
-                    detail: {
-                        key: this.page_content_keypass,
-                        settings: event[this.id] || event,
-                        from_browser_script: true
-                    }
-                }));
-
-
-            }
-
-        },
-        listenSettingsChanged: function (event) {
-
-            var context;
-
-            if (event.type === "storage" && event.key === this.settings_changed_beacon) {
-
-                if (this.pendingUpdateContentScriptSettings) {
-
-                    window.clearTimeout(this.pendingUpdateContentScriptSettings);
-
-                }
-
-                context = this;
-
-                this.pendingUpdateContentScriptSettings = window.setTimeout(function () {
-
-                    if (context.is_userscript) {
-
-                        context.updateContentScriptSettings();
-
-                    } else {
-
-                        chrome.storage.local.get(context.id, context.updateContentScriptSettings.bind(context));
-
-                    }
-
-                }, 1000);
-
-            }
+            return allowed_pages.indexOf(current_page) > -1;
 
         },
         contentScriptMessages: function (custom_event) {
@@ -3659,50 +3595,49 @@
             var locale_request;
             var updated_settings;
 
-            if (custom_event.type === this.settings_changed_beacon) {
+            if ((updated_settings = custom_event.detail.settings)) {
 
-                if (custom_event.detail.key === this.page_content_keypass && custom_event.detail.from_content_script) {
+                if (custom_event.detail.single_setting) {
 
-                    if ((updated_settings = custom_event.detail.settings)) {
+                    if (this.user_settings[custom_event.detail.single_setting]) {
 
-                        for (key in updated_settings) {
+                        this.user_settings[custom_event.detail.single_setting] = custom_event.detail.settings;
 
-                            if (updated_settings.hasOwnProperty(key)) {
+                    }
 
-                                if (this.is_userscript) {
+                } else if (this.is_settings_page) {
 
-                                    this.GM_setValue(this.id, JSON.stringify(updated_settings));
+                    for (key in updated_settings) {
 
-                                } else {
+                        if (updated_settings.hasOwnProperty(key)) {
 
-                                    chrome.storage.local.set({iridiumSettings: updated_settings});
+                            this.user_settings = updated_settings;
 
-                                }
-
-                                window.localStorage.setItem(
-                                    this.settings_changed_beacon,
-                                    window.localStorage.getItem(this.settings_changed_beacon) ? "" : "1"
-                                );
-
-                                break;
-
-                            }
+                            break;
 
                         }
-
-                    } else if ((locale_request = custom_event.detail.locale)) {
-
-                        window.dispatchEvent(new CustomEvent(this.settings_changed_beacon, {
-                            detail: {
-                                key: this.page_content_keypass,
-                                locale: chrome.i18n.getMessage(locale_request),
-                                from_browser_script: true
-                            }
-                        }));
 
                     }
 
                 }
+
+                if (this.is_userscript) {
+
+                    this.GM_setValue(this.id, JSON.stringify(this.user_settings));
+
+                } else {
+
+                    chrome.storage.local.set({iridiumSettings: this.user_settings});
+
+                }
+
+            } else if ((locale_request = custom_event.detail.locale)) {
+
+                window.dispatchEvent(new CustomEvent(this.send_settings_to_page, {
+                    detail: {
+                        locale: chrome.i18n.getMessage(locale_request)
+                    }
+                }));
 
             }
 
@@ -3711,11 +3646,10 @@
 
             var holder;
 
-            this.page_content_keypass = this.generateUUID();
-            this.settings_changed_beacon = "iridiumSettingsUpdated";
+            this.receive_settings_from_page = "iridiumSettingsFromPage";
+            this.send_settings_to_page = "iridiumSettingsToPage";
 
-            window.addEventListener("storage", this.listenSettingsChanged.bind(this));
-            window.addEventListener(this.settings_changed_beacon, this.contentScriptMessages.bind(this));
+            window.addEventListener(this.receive_settings_from_page, this.contentScriptMessages.bind(this));
 
             if (!event && this.is_userscript) {
 
@@ -3725,33 +3659,33 @@
 
             if (event) {
 
-                event = JSON.stringify(event[this.id] || event);
+                this.user_settings = event[this.id] || event
+
+                event = JSON.stringify(this.user_settings);
 
                 if (this.is_userscript) {
 
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.0.2b";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.0.3b";
 
                     document.documentElement.appendChild(holder);
 
                 }
 
+                holder = document.createElement("iridium-settings");
+                holder.id = "iridium-settings";
+                holder.textContent = event;
+                holder.setAttribute("style", "display: none");
+                holder.setAttribute("is-userscript", this.is_userscript);
+                holder.setAttribute("settings-beacon-from", this.receive_settings_from_page);
+                holder.setAttribute("settings-beacon-to", this.send_settings_to_page);
+
+                document.documentElement.appendChild(holder);
+
                 holder = document.createElement("script");
-                holder.textContent = [
-                    '(',
-                    this.inject,
-                    '(',
-                    this.is_userscript,
-                    ',"',
-                    this.page_content_keypass,
-                    '","',
-                    this.settings_changed_beacon,
-                    '",',
-                    event,
-                    '))'
-                ].join("");
+                holder.textContent = "(" + this.inject + "())";
 
                 document.documentElement.appendChild(holder);
 
@@ -3764,20 +3698,27 @@
         },
         ini: function () {
 
-            window.location.pathname === "/iridium-settings" && window.stop();
+            if (this.isAllowedPage()) {
 
-            this.id = "iridiumSettings";
-            this.is_userscript = typeof GM_info === "object";
+                this.is_settings_page = window.location.pathname === "/iridium-settings";
 
-            if (this.is_userscript) {
+                this.is_settings_page && window.stop();
 
-                this.GM_getValue = GM_getValue;
-                this.GM_setValue = GM_setValue;
-                this.main();
+                this.id = "iridiumSettings";
+                this.is_userscript = typeof GM_info === "object";
 
-            } else {
+                if (this.is_userscript) {
 
-                chrome.storage.local.get(this.id, this.main);
+                    this.GM_getValue = GM_getValue;
+                    this.GM_setValue = GM_setValue;
+                    this.main();
+
+                } else {
+
+                    chrome.storage.local.get(this.id, this.main);
+
+                }
+
 
             }
 

@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.0.3b
+// @version         0.0.4b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -3379,7 +3379,7 @@
 
                     window.dispatchEvent(new CustomEvent(receive_settings_from_page, {
                         detail: {
-                            settings: single_setting || user_settings,
+                            settings: user_settings[single_setting] || user_settings,
                             single_setting: single_setting
                         }
                     }));
@@ -3589,6 +3589,15 @@
             return allowed_pages.indexOf(current_page) > -1;
 
         },
+        generateUUID: function () {
+
+            return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, function (point) {
+
+                return (point ^ window.crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> point / 4).toString(16);
+
+            });
+
+        },
         contentScriptMessages: function (custom_event) {
 
             var key;
@@ -3605,7 +3614,7 @@
 
                     }
 
-                } else if (this.is_settings_page) {
+                } else if (this.is_settings_page && typeof updated_settings === "object") {
 
                     for (key in updated_settings) {
 
@@ -3646,8 +3655,8 @@
 
             var holder;
 
-            this.receive_settings_from_page = "iridiumSettingsFromPage";
-            this.send_settings_to_page = "iridiumSettingsToPage";
+            this.receive_settings_from_page = this.generateUUID();
+            this.send_settings_to_page = this.generateUUID();
 
             window.addEventListener(this.receive_settings_from_page, this.contentScriptMessages.bind(this));
 
@@ -3668,7 +3677,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.0.3b";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.0.4b";
 
                     document.documentElement.appendChild(holder);
 

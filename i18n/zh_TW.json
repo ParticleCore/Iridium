@@ -126,10 +126,10 @@
         "label": "使用滑鼠滾輪變更音量"
     },
     "player_always_visible": {
-        "label": "影片 stays always visible while scrolling"
+        "label": "影片跟隨捲動頁面"
     },
     "player_always_playing": {
-        "label": "影片 keeps playing when changing pages",
+        "label": "更換頁面時影片持續撥放",
         "button_restore": "恢復",
         "button_close": "關閉"
     },

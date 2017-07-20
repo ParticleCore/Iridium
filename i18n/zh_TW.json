@@ -1,0 +1,159 @@
+{
+    "language": "中文 (繁體)",
+    "section_titles": {
+        "about": "資訊及有用的連結",
+        "general": "一般設定",
+        "video": "影片設定",
+        "settings": "Iridium 設定"
+    },
+    "sub_section_titles": {
+        "channel": "頻道",
+        "blacklist": "黑名單",
+        "general": "一般",
+        "language": "語系",
+        "layout": "佈局",
+        "player": "播放器",
+        "settings": "設定",
+        "thumbnails": "縮圖"
+    },
+    "iridium_api": {
+        "settings_button": "Iridium",
+        "feature_link": "弄清楚這是做什麼的"
+    },
+    "default_logo_page": {
+        "label": "YouTube 商標預設頁面：",
+        "options": [
+            "首頁",
+            "發燒影片",
+            "訂閱內容"
+        ]
+    },
+    "default_channel_tab": {
+        "label": "預設頻道分頁：",
+        "options": [
+            "首頁",
+            "影片",
+            "稍後觀看",
+            "頻道",
+            "評論",
+            "關於"
+        ]
+    },
+    "square_avatars": {
+        "label": "以正方形顯示用戶圖像"
+    },
+    "thumbnail_preview": {
+        "label": "游標懸停在縮圖時預覽影片"
+    },
+    "thumbnail_preview_mute": {
+        "label": "影片預覽時按下Shift切換靜音"
+    },
+    "enable_blacklist": {
+        "label": "啟用黑名單"
+    },
+    "blacklist_settings": {
+        "button_add_title": "黑名單",
+        "button_edit": "編輯",
+        "button_import": "匯入",
+        "button_export": "匯出",
+        "button_reset": "重設",
+        "button_save": "儲存",
+        "button_close": "關閉",
+        "button_remove": "自黑名單移除",
+        "placeholder": "在此貼上您新的黑名單",
+        "confirm_reset": "您正要重設您的黑名單。 建議在執行前備份您現有的黑名單。\n\n您想要繼續嗎？\n\n",
+        "reset_success": "黑名單已重設。\n\n重新整理後生效。\n\n",
+        "confirm_import": "將覆蓋您現有的黑名單。 建議在執行前備份您現有的黑名單。\n\n您想要繼續嗎？\n\n",
+        "import_success": "黑名單已成功匯入。\n\n重新整理後生效。\n\n",
+        "import_error": "您的黑名單匯入失敗，內容似乎是不正確的。\n\n"
+    },
+    "channel_video_count": {
+        "label": "顯示上傳影片數"
+    },
+    "channel_video_time": {
+        "label": "顯示上傳影片長度"
+    },
+    "player_quality": {
+        "label": "預設影片品質：",
+        "options": [
+            "自動",
+            "4320p (8k)",
+            "2880p (5k)",
+            "2160p (4k)",
+            "1440p",
+            "1080p",
+            "720p",
+            "480p",
+            "360p",
+            "240p",
+            "144p"
+        ]
+    },
+    "player_auto_play": {
+        "label": "自動撥放影片"
+    },
+    "channel_trailer_auto_play": {
+        "label": "自動撥放頻道宣傳短片"
+    },
+    "player_annotations": {
+        "label": "允許影片註解"
+    },
+    "player_subtitles": {
+        "label": "允許影片字幕"
+    },
+    "player_loudness": {
+        "label": "允許音量標準化"
+    },
+    "player_ads": {
+        "label": "允許影片顯示廣告"
+    },
+    "subscribed_channel_player_ads": {
+        "label": "僅允許訂閱頻道的影片顯示廣告"
+    },
+    "player_hfr": {
+        "label": "允許 HFR (60fps) 串流"
+    },
+    "player_memorize_size": {
+        "label": "記住播放器尺寸"
+    },
+    "player_memorize_volume": {
+        "label": "記住播放器音量"
+    },
+    "shortcuts_always_active": {
+        "label": "總是啟用播放器快捷鍵"
+    },
+    "player_volume_wheel": {
+        "label": "使用滑鼠滾輪變更音量"
+    },
+    "player_always_visible": {
+        "label": "影片跟隨捲動頁面"
+    },
+    "player_always_playing": {
+        "label": "更換頁面時影片持續撥放",
+        "button_restore": "恢復",
+        "button_close": "關閉"
+    },
+    "iridium_dark_mode": {
+        "label": "使用深色主題"
+    },
+    "iridium_user_settings": {
+        "button_save": "儲存",
+        "button_close": "關閉",
+        "button_export": "匯出",
+        "button_import": "匯入",
+        "button_reset": "重設",
+        "placeholder": "在此貼上您新的設定",
+        "confirm_reset": "您正要重設您的設定。 建議在執行前備份您現有的設定。\n\n您想要繼續嗎？\n\n",
+        "reset_success": "設定已重設。\n\n重新整理後生效。\n\n",
+        "confirm_import": "將覆蓋您現有的設定。 建議在執行前備份您現有的設定。\n\n您想要繼續嗎？\n\n",
+        "import_success": "設定已成功匯入。\n\n重新整理後生效。\n\n",
+        "import_error": "您的設定匯入失敗，內容似乎是不正確的。\n\n"
+    },
+    "iridium_language": {
+        "button_save": "儲存",
+        "button_close": "關閉",
+        "confirm_save": "將覆蓋您現有的語系設定.\n\n您想要繼續嗎？\n\n",
+        "save_success": "新的語系儲存成功。\n\n重新整理後生效。\n\n",
+        "save_error": "新的語系設定失敗，內容似乎是不正確的。\n\n"
+    }
+}

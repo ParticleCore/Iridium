@@ -1,5 +1,5 @@
 {
-    "language": "正體中文 (臺灣)",
+    "language": "中文 (繁體)",
     "section_titles": {
         "about": "資訊及有用的連結",
         "general": "一般設定",
@@ -126,10 +126,10 @@
         "label": "使用滑鼠滾輪變更音量"
     },
     "player_always_visible": {
-        "label": "影片跟隨捲動頁面"
+        "label": "影片 stays always visible while scrolling"
     },
     "player_always_playing": {
-        "label": "更換頁面時影片持續撥放",
+        "label": "影片 keeps playing when changing pages",
         "button_restore": "恢復",
         "button_close": "關閉"
     },

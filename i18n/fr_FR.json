@@ -1,0 +1,159 @@
+{
+    "language": "Français",
+    "section_titles": {
+        "about": "Informations et liens utiles",
+        "general": "Paramètres généraux",
+        "video": "Paramètres vidéos",
+        "settings": "Paramètres audios"
+    },
+    "sub_section_titles": {
+        "channel": "Chaîne",
+        "blacklist": "List noire",
+        "general": "Général",
+        "language": "Langue",
+        "layout": "Disposition",
+        "player": "Lecteur",
+        "settings": "Paramètres",
+        "thumbnails": "Miniature"
+    },
+    "iridium_api": {
+        "settings_button": "Iridium",
+        "feature_link": "Découvrez les fonctionnalités"
+    },
+    "default_logo_page": {
+        "label": "Page par défaut du logo YouTube:",
+        "options": [
+            "Accueil",
+            "Tendances",
+            "Abonnements"
+        ]
+    },
+    "default_channel_tab": {
+        "label": "Onglet par défaut des chaînes:",
+        "options": [
+            "Accueil",
+            "Vidéos",
+            "Playlists",
+            "Chaînes",
+            "Discussion",
+            "A propos"
+        ]
+    },
+    "square_avatars": {
+        "label": "Rendre les avatars carrés"
+    },
+    "thumbnail_preview": {
+        "label": "Prévisualiser les vidéos en passant la souris sur les miniatures"
+    },
+    "thumbnail_preview_mute": {
+        "label": "La touche shift active ou désactive le son des prévisualisations"
+    },
+    "enable_blacklist": {
+        "label": "Activer la liste noire"
+    },
+    "blacklist_settings": {
+        "button_add_title": "Bloquer",
+        "button_edit": "Editer",
+        "button_import": "Importer",
+        "button_export": "Exporter",
+        "button_reset": "Réinitialiser",
+        "button_save": "Sauvegarder",
+        "button_close": "Fermer",
+        "button_remove": "Retirer de la liste noire",
+        "placeholder": "Copiez votre nouvelle liste noire ici",
+        "confirm_reset": "Vous êtes sur le point de réinitialiser votre liste noire. Il est conseillé de sauvegarder votre liste noire actuelle avant de continuer.\n\nVoulez-vous continuer ?\n\n",
+        "reset_success": "La liste noire a été réinitialisée.\n\nLes changements seront pris en compte après le rechargement de la page.\n\n",
+        "confirm_import": "Vous êtes sur le point d'écraser votre liste noire actuelle. Il est conseillé de sauvegarder votre liste noire actuelle avant de continuer.\n\nVoulez-vous continuer ?\n\n",
+        "import_success": "Votre liste noire a été importée avec succès.\n\nLes changements seront pris en compte après le rechargement de la page.\n\n",
+        "import_error": "Votre liste noire n'a pas pu être importée car elle semble incorrecte.\n\n"
+    },
+    "channel_video_count": {
+        "label": "Afficher le nombre de vidéos mises en ligne"
+    },
+    "channel_video_time": {
+        "label": "Afficher la durée de mise en ligne de la vidéo"
+    },
+    "player_quality": {
+        "label": "Qualité vidéo par défaut:",
+        "options": [
+            "Auto",
+            "4320p (8k)",
+            "2880p (5k)",
+            "2160p (4k)",
+            "1440p",
+            "1080p",
+            "720p",
+            "480p",
+            "360p",
+            "240p",
+            "144p"
+        ]
+    },
+    "player_auto_play": {
+        "label": "Lire les vidéos automatiquement"
+    },
+    "channel_trailer_auto_play": {
+        "label": "Jouer les bandes annonces de chaînes automatiquement"
+    },
+    "player_annotations": {
+        "label": "Autoriser les annotations sur le vidéos"
+    },
+    "player_subtitles": {
+        "label": "Autoriser les sous-titres sur les vidéos"
+    },
+    "player_loudness": {
+        "label": "Autoriser la normalisation du volume"
+    },
+    "player_ads": {
+        "label": "Autoriser les publicités sur les vidéos"
+    },
+    "subscribed_channel_player_ads": {
+        "label": "N'autoriser les publicités que sur les vidéos des chaînes auxquelles je suis abonné"
+    },
+    "player_hfr": {
+        "label": "Autoriser le HFR (60fps)"
+    },
+    "player_memorize_size": {
+        "label": "Enregistrer la taille du lecteur"
+    },
+    "player_memorize_volume": {
+        "label": "Enregistrer le volume du lecteur"
+    },
+    "shortcuts_always_active": {
+        "label": "Raccourcis du lecteur toujours actifs"
+    },
+    "player_volume_wheel": {
+        "label": "Changer le volume en utilisant la molette"
+    },
+    "player_always_visible": {
+        "label": "La vidéo reste visible lors du défilement de la page"
+    },
+    "player_always_playing": {
+        "label": "La vidéo continue lors du changement de page",
+        "button_restore": "Restaurer",
+        "button_close": "Fermer"
+    },
+    "iridium_dark_mode": {
+        "label": "Utiliser le thème foncé"
+    },
+    "iridium_user_settings": {
+        "button_save": "Sauvegarder",
+        "button_close": "Fermer",
+        "button_export": "Exporter",
+        "button_import": "Importer",
+        "button_reset": "Réinitialiser",
+        "placeholder": "Collez vos nouveaux paramètres ici",
+        "confirm_reset": "Vous êtes sur le point de réinitialiser vos paramètres. Il est conseillé sauvegarder vos paramètres actuels avant de continuer.\n\nVoulez-vous continuer ?\n\n",
+        "reset_success": "Les paramètres ont été réinitialisés.\n\nLes changements seront appliqués après le rechargement de la page.\n\n",
+        "confirm_import": "Vous êtes sur le point de réinitialiser vos paramètres. Il est conseillé sauvegarder vos paramètres actuels avant de continuer.\n\nVoulez-vous continuer ?\n\n",
+        "import_success": "Your settings have been imported with success.\n\nChanges will be applied after a page refresh.\n\n",
+        "import_error": "Vos paramètres n'ont pas pu être importés car ils sembles incorrects.\n\n"
+    },
+    "iridium_language": {
+        "button_save": "Sauvegarder",
+        "button_close": "Fermer",
+        "confirm_save": "Vous êtes sur le point de changer le langage de l'extension.\n\nVoulez-vous continuer ?\n\n",
+        "save_success": "Nouveau langage sauvegardé.\n\nLes changements seront appliqués après le rechargement de la page.\n\n",
+        "save_error": "Le nouveau langage n'a pas pu être appliqué car il semble incorrect.\n\n"
+    }
+}

@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.0.4b
+// @version         0.0.5b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -188,7 +188,7 @@
                             type: "checkbox",
                             value: false,
                             i18n: {
-                                label: "Preview videos by hovering the thumbnails"
+                                label: "Play videos by hovering the thumbnails"
                             }
                         },
                         thumbnail_preview_mute: {
@@ -198,7 +198,7 @@
                             type: "checkbox",
                             value: false,
                             i18n: {
-                                label: "Shift key toggles audio on video preview"
+                                label: "Shift key toggles audio on video thumbnail playback"
                             }
                         }
                     },
@@ -3377,9 +3377,21 @@
                 },
                 saveSettings: function (single_setting) {
 
+                    var settings;
+
+                    if (single_setting in user_settings) {
+
+                        settings = user_settings[single_setting];
+
+                    } else {
+
+                        settings = user_settings;
+
+                    }
+
                     window.dispatchEvent(new CustomEvent(receive_settings_from_page, {
                         detail: {
-                            settings: user_settings[single_setting] || user_settings,
+                            settings: settings,
                             single_setting: single_setting
                         }
                     }));
@@ -3604,11 +3616,11 @@
             var locale_request;
             var updated_settings;
 
-            if ((updated_settings = custom_event.detail.settings)) {
+            if ((updated_settings = custom_event.detail.settings) !== undefined) {
 
                 if (custom_event.detail.single_setting) {
 
-                    if (this.user_settings[custom_event.detail.single_setting]) {
+                    if (custom_event.detail.single_setting in this.user_settings) {
 
                         this.user_settings[custom_event.detail.single_setting] = custom_event.detail.settings;
 
@@ -3677,7 +3689,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.0.4b";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.0.5b";
 
                     document.documentElement.appendChild(holder);
 

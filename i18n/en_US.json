@@ -43,10 +43,10 @@
         "label": "Make user images squared"
     },
     "thumbnail_preview": {
-        "label": "Preview videos by hovering the thumbnails"
+        "label": "Play videos by hovering the thumbnails"
     },
     "thumbnail_preview_mute": {
-        "label": "Shift key toggles audio on video preview"
+        "label": "Shift key toggles audio on video thumbnail playback"
     },
     "enable_blacklist": {
         "label": "Enable blacklist"

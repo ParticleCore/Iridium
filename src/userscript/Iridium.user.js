@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.0.6b
+// @version         0.0.7b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -227,6 +227,7 @@
                         args.vq = "small";
 
                         args.ad3_module = null;
+                        args.player_response = null;
                         args.baseUrl = null;
                         args.eventid = null; // excludes from watch history
                         args.iv_endscreen_url = null;
@@ -1623,6 +1624,7 @@
                         if (user_settings.subscribed_channel_player_ads ? args.subscribed !== "1" : !user_settings.player_ads) {
 
                             delete args.ad3_module;
+                            delete args.player_response;
 
                         }
 
@@ -2104,7 +2106,13 @@
 
                                     }
 
-                                    return this._fflags;
+                                    if (typeof this._fflags === "string") {
+
+                                        return this._fflags;
+
+                                    }
+
+                                    return "";
 
                                 }
 
@@ -3685,7 +3693,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.0.6b";
+                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.0.7b";
 
                     document.documentElement.appendChild(holder);
 

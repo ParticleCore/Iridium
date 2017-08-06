@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.0.7b
+// @version         0.0.8b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @compatible      opera
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.0.8b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -17,6 +17,8 @@
 // @contributionURL https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW
 // @grant           GM_getValue
 // @grant           GM_setValue
+// @grant           GM_addStyle
+// @grant           GM_getResourceText
 // @noframes
 // ==/UserScript==
 (function () {
@@ -1875,15 +1877,23 @@
 
                         if (typeof event === "object") {
 
-                            user_settings.userVolume = event.volume;
+                            if (user_settings.userVolume !== event.volume) {
 
-                            iridium_api.saveSettings("userVolume");
+                                user_settings.userVolume = event.volume;
+
+                                iridium_api.saveSettings("userVolume");
+
+                            }
 
                         } else {
 
-                            user_settings.theaterMode = event;
+                            if (user_settings.theaterMode !== event) {
 
-                            iridium_api.saveSettings("theaterMode");
+                                user_settings.theaterMode = event;
+
+                                iridium_api.saveSettings("theaterMode");
+
+                            }
 
                         }
 
@@ -2624,16 +2634,16 @@
                                 element_list = [];
 
                                 element = document.createElement("button");
-                                element.textContent = i18n.iridium_user_settings.button_export;
+                                element.textContent = i18n.iridium_user_settings.button_import;
                                 element.className = "setting iri-settings-button";
-                                element.addEventListener("click", this.textEditor.bind(this, "export"));
+                                element.addEventListener("click", this.textEditor.bind(this, "import"));
 
                                 element_list.push(element);
 
                                 element = document.createElement("button");
-                                element.textContent = i18n.iridium_user_settings.button_import;
+                                element.textContent = i18n.iridium_user_settings.button_export;
                                 element.className = "setting iri-settings-button";
-                                element.addEventListener("click", this.textEditor.bind(this, "import"));
+                                element.addEventListener("click", this.textEditor.bind(this, "export"));
 
                                 element_list.push(element);
 
@@ -3618,6 +3628,35 @@
             });
 
         },
+        saveSettings: function () {
+
+            if (this.is_userscript) {
+
+                this.GM_setValue(this.id, JSON.stringify(this.user_settings));
+
+            } else {
+
+                chrome.storage.local.set({iridiumSettings: this.user_settings});
+
+            }
+
+        },
+        updateSettingsOnOpenWindows: function () {
+
+            this.broadcast_channel.postMessage(this.user_settings);
+
+        },
+        settingsUpdatedFromOtherWindow: function (event) {
+
+            if (event.data && event.data.broadcast_id === this.broadcast_channel.name) {
+
+                this.user_settings = event.data;
+
+                this.saveSettings();
+
+            }
+
+        },
         contentScriptMessages: function (custom_event) {
 
             var key;
@@ -3646,15 +3685,8 @@
 
                 }
 
-                if (this.is_userscript) {
-
-                    this.GM_setValue(this.id, JSON.stringify(this.user_settings));
-
-                } else {
-
-                    chrome.storage.local.set({iridiumSettings: this.user_settings});
-
-                }
+                this.saveSettings();
+                this.updateSettingsOnOpenWindows();
 
             } else if ((locale_request = custom_event.detail.locale)) {
 
@@ -3684,16 +3716,25 @@
 
             if (event) {
 
-                this.user_settings = event[this.id] || event
+                this.user_settings = event[this.id] || event;
+
+                if (!this.user_settings.broadcast_id) {
+
+                    this.user_settings.broadcast_id = this.generateUUID();
+
+                    this.saveSettings();
+
+                }
+
+                this.broadcast_channel = new BroadcastChannel(this.user_settings.broadcast_id);
+                this.broadcast_channel.addEventListener("message", this.settingsUpdatedFromOtherWindow.bind(this));
 
                 event = JSON.stringify(this.user_settings);
 
                 if (this.is_userscript) {
 
-                    holder = document.createElement("link");
-                    holder.rel = "stylesheet";
-                    holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Iridium/css/Iridium.css?v=0.0.7b";
+                    holder = document.createElement("style");
+                    holder.textContent = GM_getResourceText("iridium_css");
 
                     document.documentElement.appendChild(holder);
 
@@ -3743,7 +3784,6 @@
                     chrome.storage.local.get(this.id, this.main);
 
                 }
-
 
             }
 

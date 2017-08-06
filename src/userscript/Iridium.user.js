@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.0.8b
+// @version         0.0.9b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.0.8b
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.0.9b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -208,7 +208,13 @@
 
                         var player_api;
 
-                        if (user_settings.thumbnail_preview_mute && event.which === 16 && (player_api = document.getElementById("iri-preview-player"))) {
+                        if (!user_settings.thumbnail_preview_mute) {
+
+                            return;
+
+                        }
+
+                        if (event.which === 16 && (player_api = document.getElementById("iri-preview-player"))) {
 
                             player_api.handleGlobalKeyDown(77, false);
 
@@ -229,7 +235,7 @@
                         args.vq = "small";
 
                         args.ad3_module = null;
-                        args.player_response = null;
+                        // args.player_response = null;
                         args.baseUrl = null;
                         args.eventid = null; // excludes from watch history
                         args.iv_endscreen_url = null;
@@ -266,7 +272,7 @@
 
                         window.yt.player.Application.create("iri-video-preview", config);
 
-                        if ((player_api = document.getElementById("iri-preview-player"))) {
+                        if ((player_api = document.getElementById("iri-preview-player")) && player.setVolume) {
 
                             player_api.setVolume(50);
 
@@ -327,7 +333,7 @@
 
                                 }
 
-                                if (video_container.firstChild) {
+                                if (iridium_api.checkIfExists("firstChild.destroy", video_container)) {
 
                                     video_container.firstChild.destroy();
 
@@ -353,71 +359,73 @@
                         var player_container;
                         var player_manager_api;
 
-                        if (user_settings.thumbnail_preview) {
+                        if (!user_settings.thumbnail_preview) {
 
-                            event.stopPropagation();
+                            return;
 
-                            container = event.target;
-                            video_id = container.dataHost && container.dataHost.data && container.dataHost.data.videoId;
+                        }
 
-                            if (container.tagName === "YT-IMG-SHADOW" && video_id && !container.querySelector("#iri-preview-player")) {
+                        event.stopPropagation();
 
-                                context = this;
+                        container = event.target;
+                        video_id = container.dataHost && container.dataHost.data && container.dataHost.data.videoId;
 
-                                if (!(video_container = document.getElementById("iri-video-preview"))) {
+                        if (container.tagName === "YT-IMG-SHADOW" && video_id && !container.querySelector("#iri-preview-player")) {
 
-                                    video_container = document.createElement("iri-video-preview");
-                                    video_container.id = "iri-video-preview";
-                                    video_container.className = "ytp-small-mode";
+                            context = this;
+
+                            if (!(video_container = document.getElementById("iri-video-preview"))) {
+
+                                video_container = document.createElement("iri-video-preview");
+                                video_container.id = "iri-video-preview";
+                                video_container.className = "ytp-small-mode";
+
+                            }
+
+                            if (video_container.parentNode !== container) {
+
+                                container.appendChild(video_container);
+
+                            }
+
+                            if (iridium_api.checkIfExists("window.yt.player.Application.create")) {
+
+                                xhr = this.getPreviewArgs(video_id);
+
+                            } else {
+
+                                if ((player_manager_api = document.querySelector("yt-player-manager")) && (player_container = document.getElementById("player-container")) && iridium_api.checkIfExists("yt.config_.FILLER_DATA.player")) {
+
+                                    player_manager_api.acquireApi(player_container, window.yt.config_.FILLER_DATA.player);
 
                                 }
 
-                                if (video_container.parentNode !== container) {
+                                timer = window.setInterval(function () {
 
-                                    container.appendChild(video_container);
+                                    if (window.yt && window.yt.player && window.yt.player.Application && window.yt.player.Application.create) {
 
-                                }
-
-                                if (iridium_api.checkIfExists("window.yt.player.Application.create")) {
-
-                                    xhr = this.getPreviewArgs(video_id);
-
-                                } else {
-
-                                    if ((player_manager_api = document.querySelector("yt-player-manager")) && (player_container = document.getElementById("player-container")) && iridium_api.checkIfExists("yt.config_.FILLER_DATA.player")) {
-
-                                        player_manager_api.acquireApi(player_container, window.yt.config_.FILLER_DATA.player);
+                                        window.clearInterval(timer);
+                                        xhr = context.getPreviewArgs(video_id);
 
                                     }
 
-                                    timer = window.setInterval(function () {
-
-                                        if (window.yt && window.yt.player && window.yt.player.Application && window.yt.player.Application.create) {
-
-                                            window.clearInterval(timer);
-                                            xhr = context.getPreviewArgs(video_id);
-
-                                        }
-
-                                    });
-
-                                }
-
-                                document.addEventListener("keydown", this.togglePreviewMute, false);
-
-                                container.parentNode.addEventListener("click", function listener(event) {
-
-                                    context.endPreviewContainer(event, container, listener, xhr, timer, context, video_container, true);
-
-                                }, false);
-
-                                container.parentNode.addEventListener("mouseleave", function listener(event) {
-
-                                    context.endPreviewContainer(event, container, listener, xhr, timer, context);
-
-                                }, false);
+                                });
 
                             }
+
+                            document.addEventListener("keydown", this.togglePreviewMute, false);
+
+                            container.parentNode.addEventListener("click", function listener(event) {
+
+                                context.endPreviewContainer(event, container, listener, xhr, timer, context, video_container, true);
+
+                            }, false);
+
+                            container.parentNode.addEventListener("mouseleave", function listener(event) {
+
+                                context.endPreviewContainer(event, container, listener, xhr, timer, context);
+
+                            }, false);
 
                         }
 
@@ -810,6 +818,12 @@
 
                             var temp = original.apply(this, arguments);
 
+                            if (!user_settings.enable_blacklist) {
+
+                                return temp;
+
+                            }
+
                             if (!bypass && context.allowedBlacklistPage()) {
 
                                 context.clearList(temp);
@@ -1008,6 +1022,12 @@
                             var node;
                             var container;
 
+                            if (!user_settings.enable_blacklist) {
+
+                                return original.apply(this, arguments);
+
+                            }
+
                             node = externalNode.firstElementChild;
 
                             if (node && (node.id === "thumbnail" || node.id === "img")) {
@@ -1059,7 +1079,13 @@
                         var brand;
                         var parent;
 
-                        if (user_settings.enable_blacklist && event.target.className === "iri-add-to-blacklist") {
+                        if (!user_settings.enable_blacklist) {
+
+                            return;
+
+                        }
+
+                        if (event.target.className === "iri-add-to-blacklist") {
 
                             event.preventDefault();
                             event.stopPropagation();
@@ -1111,7 +1137,7 @@
                     },
                     iniBlacklist: function () {
 
-                        if (this.allowedBlacklistPage()) {
+                        if (user_settings.enable_blacklist && this.allowedBlacklistPage()) {
 
                             document.documentElement.classList.add("iri-blacklist-allowed");
 
@@ -1132,35 +1158,31 @@
 
                         }
 
-                        if (user_settings.enable_blacklist) {
+                        document.addEventListener("readystatechange", this.iniBlacklist.bind(this), false);
+                        document.addEventListener("yt-page-data-fetched", this.iniBlacklist.bind(this), false);
+                        document.addEventListener("click", this.addToBlacklist.bind(this), true);
 
-                            context = this;
+                        JSON.parse = this.checkParse(JSON.parse);
+                        HTMLDocument.prototype.importNode = this.modImportNode(HTMLDocument.prototype.importNode);
 
-                            JSON.parse = this.checkParse(JSON.parse);
-                            HTMLDocument.prototype.importNode = this.modImportNode(HTMLDocument.prototype.importNode);
+                        context = this;
 
-                            document.addEventListener("readystatechange", this.iniBlacklist.bind(this), false);
-                            document.addEventListener("yt-page-data-fetched", this.iniBlacklist.bind(this), false);
-                            document.addEventListener("click", this.addToBlacklist.bind(this), true);
+                        Object.defineProperty(Object.prototype, "ytInitialData", {
+                            set: function (data) {
+                                this._ytInitialData = data;
+                            },
+                            get: function () {
 
-                            Object.defineProperty(Object.prototype, "ytInitialData", {
-                                set: function (data) {
-                                    this._ytInitialData = data;
-                                },
-                                get: function () {
+                                if (user_settings.enable_blacklist && context.allowedBlacklistPage()) {
 
-                                    if (context.allowedBlacklistPage()) {
-
-                                        context.clearList(this._ytInitialData);
-
-                                    }
-
-                                    return this._ytInitialData;
+                                    context.clearList(this._ytInitialData);
 
                                 }
-                            });
 
-                        }
+                                return this._ytInitialData;
+
+                            }
+                        });
 
                     }
                 },
@@ -1626,7 +1648,7 @@
                         if (user_settings.subscribed_channel_player_ads ? args.subscribed !== "1" : !user_settings.player_ads) {
 
                             delete args.ad3_module;
-                            delete args.player_response;
+                            // delete args.player_response;
 
                         }
 
@@ -1698,7 +1720,6 @@
 
                             var temp;
                             var current_config;
-
 
                             if (!this.getUpdatedConfigurationData) {
 
@@ -2099,7 +2120,7 @@
                                 },
                                 get: function () {
 
-                                    if (this.ucid && (!this.autoplay || this.autoplay === "1") && (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
+                                    if ((!this.autoplay || this.autoplay === "1") && (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
 
                                         if (this._fflags && this._fflags.replace) {
 
@@ -2153,7 +2174,13 @@
                         var length;
                         var event_clone;
 
-                        if (user_settings.shortcuts_always_active && (api = document.getElementById("movie_player"))) {
+                        if (!user_settings.shortcuts_always_active) {
+
+                            return;
+
+                        }
+
+                        if ((api = document.getElementById("movie_player"))) {
 
                             clear = window.location.pathname === "/watch" && api && api !== event.target && !api.contains(event.target);
 
@@ -2219,6 +2246,12 @@
                         var invideo_drawer;
                         var player_settings;
                         var fullscreen_playlist;
+
+                        if (!user_settings.player_volume_wheel) {
+
+                            return;
+
+                        }
 
                         api = document.getElementById("movie_player");
                         player = document.querySelector("video");
@@ -2309,11 +2342,7 @@
 
                         }
 
-                        if (user_settings.player_volume_wheel) {
-
-                            document.addEventListener("wheel", this.changeVolume.bind(this));
-
-                        }
+                        document.addEventListener("wheel", this.changeVolume.bind(this));
 
                     }
                 },
@@ -2375,35 +2404,36 @@
                     },
                     iniAlwaysVisible: function (event) {
 
-                        var player;
                         var player_bounds;
                         var is_out_of_sight;
                         var player_container;
                         var is_already_floating;
 
-                        if (user_settings.player_always_visible) {
+                        if (!user_settings.player_always_visible) {
 
-                            is_already_floating = document.documentElement.classList.contains("iri-always-visible");
+                            return;
 
-                            if (event.detail && event.detail.pageType !== "watch" && is_already_floating) {
+                        }
 
-                                this.endMiniPlayer("iri-always-visible");
+                        is_already_floating = document.documentElement.classList.contains("iri-always-visible");
 
-                            } else if (window.location.pathname === "/watch") {
+                        if (event.detail && event.detail.pageType !== "watch" && is_already_floating) {
 
-                                if ((player_container = document.getElementById("player-container")) && (player_bounds = player_container.getBoundingClientRect())) {
+                            this.endMiniPlayer("iri-always-visible");
 
-                                    is_out_of_sight = player_bounds.bottom < ((player_bounds.height / 2) + 50);
+                        } else if (window.location.pathname === "/watch") {
 
-                                    if (is_out_of_sight && !is_already_floating) {
+                            if ((player_container = document.getElementById("player-container")) && (player_bounds = player_container.getBoundingClientRect())) {
 
-                                        this.iniMiniPlayer("iri-always-visible");
+                                is_out_of_sight = player_bounds.bottom < ((player_bounds.height / 2) + 50);
 
-                                    } else if (!is_out_of_sight && is_already_floating) {
+                                if (is_out_of_sight && !is_already_floating) {
 
-                                        this.endMiniPlayer("iri-always-visible");
+                                    this.iniMiniPlayer("iri-always-visible");
 
-                                    }
+                                } else if (!is_out_of_sight && is_already_floating) {
+
+                                    this.endMiniPlayer("iri-always-visible");
 
                                 }
 
@@ -2416,15 +2446,17 @@
 
                         if (user_settings.player_always_playing) {
 
-                            if (event.detail && event.detail.pageType === "watch") {
+                            return;
 
-                                this.endMiniPlayer("iri-always-playing");
+                        }
 
-                            } else if (!document.querySelector(".ended-mode")) {
+                        if (event.detail && event.detail.pageType === "watch") {
 
-                                this.iniMiniPlayer("iri-always-playing");
+                            this.endMiniPlayer("iri-always-playing");
 
-                            }
+                        } else if (!document.querySelector(".ended-mode")) {
+
+                            this.iniMiniPlayer("iri-always-playing");
 
                         }
 
@@ -3560,9 +3592,22 @@
                     return false;
 
                 },
+                initializeBroadcast: function (event) {
+
+                    if (event.data && event.data.broadcast_id === this.broadcast_channel.name) {
+
+                        user_settings = event.data;
+
+                    }
+
+                },
                 ini: function () {
 
                     this.initializeSettings();
+
+                    this.broadcast_channel = new BroadcastChannel(user_settings.broadcast_id);
+                    this.broadcast_channel.addEventListener("message", this.initializeBroadcast.bind(this));
+
                     document.documentElement.addEventListener("load", this.initializeSettingsButton, true);
 
                     if (window.location.pathname === "/iridium-settings") {

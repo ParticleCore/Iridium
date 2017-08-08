@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.1.0b
+// @version         0.1.1b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.0b
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.1b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -2446,7 +2446,7 @@
 
                         if (!user_settings.player_always_playing) {
 
-                            this.iniMiniPlayer("iri-always-playing");
+                            this.endMiniPlayer("iri-always-playing");
 
                             return;
 

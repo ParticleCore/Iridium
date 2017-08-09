@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.1.1b
+// @version         0.1.2b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.1b
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.2b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -816,21 +816,31 @@
 
                         return function (text, reviver, bypass) {
 
-                            var temp = original.apply(this, arguments);
+                            var temp;
 
-                            if (!user_settings.enable_blacklist) {
+                            try {
+
+                                temp = original.apply(this, arguments);
+
+                                if (!user_settings.enable_blacklist) {
+
+                                    return temp;
+
+                                }
+
+                                if (!bypass && context.allowedBlacklistPage()) {
+
+                                    context.clearList(temp);
+
+                                }
 
                                 return temp;
 
-                            }
+                            } catch (e) {
 
-                            if (!bypass && context.allowedBlacklistPage()) {
-
-                                context.clearList(temp);
+                                return e;
 
                             }
-
-                            return temp;
 
                         };
 
@@ -1644,11 +1654,20 @@
                         var fps;
                         var list;
                         var key_type;
+                        var player_response;
+
+                        player_response = JSON.parse(args.player_response);
 
                         if (user_settings.subscribed_channel_player_ads ? args.subscribed !== "1" : !user_settings.player_ads) {
 
                             delete args.ad3_module;
-                            // delete args.player_response;
+
+                            if (player_response && player_response.adPlacements) {
+
+                                delete player_response.adPlacements;
+                                args.player_response = JSON.stringify(player_response);
+
+                            }
 
                         }
 

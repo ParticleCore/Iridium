@@ -317,8 +317,60 @@ yt-img-shadow.ytd-channel-renderer {
 yt-img-shadow:not(.ytd-channel-renderer) .iri-add-to-blacklist {
     display: none;
 }
-
 /* end | blacklist */
+
+
+/* ini | quick controls */
+#iri-quick-controls {
+    margin-bottom: -16px;
+    position: relative;
+}
+#iri-quick-controls-container {
+    overflow: hidden;
+}
+#iri-quick-controls-container button {
+    margin-top: -30px !important;
+    transition: 0.2s ease;
+}
+#iri-quick-controls-container button svg {
+    margin: 5px;
+}
+.iri-quick-controls-open #iri-quick-controls-container button {
+    margin-top: 0 !important;
+}
+#iri-quick-controls-controller svg {
+    margin: 1px;
+}
+#iri-quick-controls-controller .open {
+    opacity: 1;
+}
+#iri-quick-controls-controller .close {
+    opacity: 0;
+}
+.iri-quick-controls-open #iri-quick-controls-controller .open {
+    opacity: 0;
+}
+.iri-quick-controls-open #iri-quick-controls-controller .close {
+    opacity: 1;
+}
+#iri-quick-controls button {
+    border: 0;
+    cursor: pointer;
+    background: transparent;
+    margin: 0;
+    padding: 0;
+    outline: 0;
+    font-size: 0;
+}
+#iri-quick-controls button svg {
+    fill: rgba(255, 255, 255, 0.5);
+    pointer-events: none;
+    display: block;
+}
+#iri-quick-controls button:hover svg {
+    fill: rgba(255, 255, 255, 0.74);
+}
+/* end | quick controls */
 
 
 /* ini | Iridium settings */

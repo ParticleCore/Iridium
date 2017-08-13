@@ -331,7 +331,7 @@ yt-img-shadow:not(.ytd-channel-renderer) .iri-add-to-blacklist {
 }
 #iri-quick-controls-container:after {
     bottom: 0;
-    box-shadow: 0 10px 5px -5px #111111 inset;
+    box-shadow: 0 10px 5px -5px #121212 inset;
     content: "";
     position: absolute;
     top: 0;

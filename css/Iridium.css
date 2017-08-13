@@ -329,15 +329,6 @@ yt-img-shadow:not(.ytd-channel-renderer) .iri-add-to-blacklist {
     overflow: hidden;
     position: relative;
 }
-#iri-quick-controls-container:after {
-    bottom: 0;
-    box-shadow: 0 10px 5px -5px #121212 inset;
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
-}
 #iri-quick-controls-container button {
     margin-top: -30px !important;
     transition: 0.2s ease;

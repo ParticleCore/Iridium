@@ -370,6 +370,7 @@ yt-img-shadow:not(.ytd-channel-renderer) .iri-add-to-blacklist {
     pointer-events: none;
     display: block;
 }
+#iri-quick-controls button[enabled] svg,
 #iri-quick-controls button:hover svg {
     fill: rgba(255, 255, 255, 0.74);
 }

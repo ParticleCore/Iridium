@@ -379,6 +379,52 @@ yt-img-shadow:not(.ytd-channel-renderer) .iri-add-to-blacklist {
 /* end | quick controls */
 
 
+/* ini | quick control thumbnails */
+html {
+    overflow: hidden;
+}
+#iri-thumbnail-gallery {
+    background: rgba(0, 0, 0, 0.85);
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: auto;
+    text-align: center;
+    z-index: 10000;
+}
+#iri-thumbnail-gallery img {
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-sizing: border-box;
+    margin: 10px;
+    vertical-align: top;
+    min-width: 250px;
+    width: calc(100% / 3 - 60px);
+}
+#iri-thumbnail-gallery-first-row,
+#iri-thumbnail-gallery-second-row {
+    font-size: 0;
+    margin: 0 auto;
+    max-width: 1024px;
+    padding-top: 100px;
+}
+.iri-thumbnail-labels {
+    color: #FFFFFF;
+    user-select: none;
+    pointer-events: none;
+}
+.iri-thumbnail-labels div {
+    display: inline-block;
+    font-size: 10px;
+    height: 20px;
+    margin: 10px;
+    min-width: 250px;
+    width: calc(100% / 3 - 60px);
+}
+/* end | quick control thumbnails */
+
+
 /* ini | Iridium settings */
 html,
 body {

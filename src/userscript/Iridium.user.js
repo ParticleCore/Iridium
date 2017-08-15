@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.1.2b
+// @version         0.1.3b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.2b
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.3b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -650,13 +650,14 @@
                                         channel = document.createElement("template");
                                         channel.innerHTML =
                                             "<div class='iri-blacklist-channel'>" +
-                                            "        <button class='close' title='" + i18n.blacklist_settings.button_remove + "'>" +
-                                            "            <svg viewBox='0 0 10 10' height='10' width='10'>" +
-                                            "                <polygon points='10 1.4 8.6 0 5 3.6 1.4 0 0 1.4 3.6 5 0 8.6 1.4 10 5 6.4 8.6 10 10 8.6 6.4 5'/>" +
-                                            "            </svg>" +
-                                            "        </button><a target='_blank'></a>" +
+                                            "    <button class='close' data-locale='title|button_remove'>" +
+                                            "        <svg viewBox='0 0 10 10' height='10' width='10'>" +
+                                            "            <polygon points='10 1.4 8.6 0 5 3.6 1.4 0 0 1.4 3.6 5 0 8.6 1.4 10 5 6.4 8.6 10 10 8.6 6.4 5'/>" +
+                                            "        </svg>" +
+                                            "    </button><a target='_blank'></a>" +
                                             "</div>";
                                         channel = channel.content;
+                                        iridium_api.applyText(channel, i18n.blacklist_settings);
                                         channel.firstChild.data = true;
 
                                         channel_link = channel.querySelector("a");
@@ -1019,13 +1020,16 @@
 
                         var blacklist_button;
 
-                        blacklist_button = document.createElement("div");
-                        blacklist_button.className = "iri-add-to-blacklist";
+                        blacklist_button = document.createElement("template");
                         blacklist_button.innerHTML =
-                            "<svg viewBox='0 0 24 24' height='16' width='16'>" +
-                            "    <polygon points='24 2.1 21.9 0 12 9.9 2.1 0 0 2.1 9.9 12 0 21.9 2.1 24 12 14.1 21.9 24 24 21.9 14.1 12'/>" +
-                            "</svg>" +
-                            "<div class='iri-tooltip'>" + i18n.blacklist_settings.button_add_title + "</div>";
+                            "<div class='iri-add-to-blacklist'>" +
+                            "    <svg viewBox='0 0 24 24' height='16' width='16'>" +
+                            "        <polygon points='24 2.1 21.9 0 12 9.9 2.1 0 0 2.1 9.9 12 0 21.9 2.1 24 12 14.1 21.9 24 24 21.9 14.1 12'/>" +
+                            "    </svg>" +
+                            "    <div class='iri-tooltip' data-locale='text|button_add_title'></div>" +
+                            "</div>";
+                        blacklist_button = blacklist_button.content;
+                        iridium_api.applyText(blacklist_button, i18n.blacklist_settings);
 
                         return function (externalNode, deep) {
 
@@ -1373,7 +1377,7 @@
 
                                         if (obj && obj.publishedTimeText) {
 
-                                            if ((current_video_id = window.location.href.match(/v=([\w-_]+)/))) {
+                                            if ((current_video_id = window.location.href.match(iridium_api.videoIdPattern))) {
 
                                                 if ((current_video_id = current_video_id[1])) {
 
@@ -1462,7 +1466,7 @@
 
                                 if (user_settings.channel_video_time && !this.addVideoTime.fetching && (upload_info = document.querySelector("#upload-info .date")) && upload_info.textContent.indexOf("·") === -1) {
 
-                                    if ((video_id = window.location.href.match(/v=([\w-_]+)/)) && (video_id = video_id[1])) {
+                                    if ((video_id = window.location.href.match(iridium_api.videoIdPattern)) && (video_id = video_id[1])) {
 
                                         if (this.removeVideoTime.xhr) {
 
@@ -1646,6 +1650,23 @@
                             i18n: {
                                 label: "Memorize player volume"
                             }
+                        },
+                        player_quick_controls: {
+                            id: "player_quick_controls",
+                            section: "video",
+                            sub_section: "general",
+                            type: "checkbox",
+                            value: true,
+                            i18n: {
+                                label: "Enable quick controls",
+                                button_auto_play: "Autoplay",
+                                button_full_browser: "Full Browser\n(Not working yet)",
+                                button_screen_shot: "Screen Shot\n(Not working yet)",
+                                button_thumbnails: "Thumbnails",
+                                thumbnails_title: "Click to download\nRight click for options",
+                                open_controls: "Quick Controls",
+                                close_controls: "Close"
+                            }
                         }
                     },
                     modArgs: function (args) {
@@ -1750,7 +1771,7 @@
 
                             if (current_config && current_config.args && (current_config.args.eventid === args.eventid || current_config.args.loaderUrl === args.loaderUrl) && !document.querySelector(".ended-mode")) {
 
-                                return;
+                                return function () {};
 
                             }
 
@@ -2004,6 +2025,233 @@
                         return /^\/(user|channel)\//.test(window.location.pathname);
 
                     },
+                    quickControlsContainer: function (event) {
+
+                        if (document.documentElement.classList.contains("iri-quick-controls-open")) {
+
+                            event.target.title = i18n.player_quick_controls.open_controls;
+                            document.documentElement.classList.remove("iri-quick-controls-open");
+
+                        } else {
+
+                            event.target.title = i18n.player_quick_controls.close_controls;
+                            document.documentElement.classList.add("iri-quick-controls-open");
+
+                        }
+
+                    },
+                    quickControlAutoPlay: function () {
+
+                        user_settings.player_auto_play = !user_settings.player_auto_play;
+                        iridium_api.saveSettings("player_auto_play");
+                        this.quickControlsState();
+
+                    },
+                    closeThumbnails: function (event) {
+
+                        var thumbnail_gallery;
+
+                        if (event.target.tagName !== "IMG" && (thumbnail_gallery = document.getElementById("iri-thumbnail-gallery"))) {
+
+                            thumbnail_gallery.remove();
+
+                        }
+
+                    },
+                    quickControlThumbnail: function () {
+
+                        var i;
+                        var video_id;
+                        var thumbnail_list;
+                        var thumbnail_base;
+                        var thumbnail_size;
+                        var thumbnail_gallery;
+                        var thumbnail_size_list;
+
+                        if ((video_id = window.location.href.match(iridium_api.videoIdPattern))) {
+
+                            thumbnail_base = window.location.protocol + "//i.ytimg.com/vi/";
+
+                            thumbnail_size_list = {
+                                iurl: "default.jpg",
+                                iurlmq: "mqdefault.jpg",
+                                iurlhq: "hqdefault.jpg",
+                                iurlsd: "sddefault.jpg",
+                                iurlhq720: "hq720.jpg",
+                                iurlmaxres: "maxresdefault.jpg"
+                            };
+
+                            thumbnail_gallery = document.createElement("template");
+                            thumbnail_gallery.innerHTML =
+                                "<div id='iri-thumbnail-gallery'>" +
+                                "    <style>" +
+                                "        html {" +
+                                // "            overflow: hidden;" +
+                                "        }" +
+                                "    </style>" +
+                                "    <div id='iri-thumbnail-gallery-first-row'>" +
+                                "        <div class='iri-thumbnail-labels'>" +
+                                "            <div>MAXRES</div>" +
+                                "            <div>HQ720</div>" +
+                                "            <div>SD</div>" +
+                                "        </div>" +
+                                "        <a download><img data-thumbnail-type='iurlmaxres' /></a>" +
+                                "        <a download><img data-thumbnail-type='iurlhq720' /></a>" +
+                                "        <a download><img data-thumbnail-type='iurlsd' /></a>" +
+                                "    </div>" +
+                                "    <div id='iri-thumbnail-gallery-second-row'>" +
+                                "        <div class='iri-thumbnail-labels'>" +
+                                "            <div>HQ</div>" +
+                                "            <div>MQ</div>" +
+                                "            <div>DEFAULT</div>" +
+                                "        </div>" +
+                                "        <a download><img data-thumbnail-type='iurlhq' /></a>" +
+                                "        <a download><img data-thumbnail-type='iurlmq' /></a>" +
+                                "        <a download><img data-thumbnail-type='iurl' /></a>" +
+                                "    </div>" +
+                                "</div>";
+                            thumbnail_gallery = thumbnail_gallery.content;
+
+                            thumbnail_list = thumbnail_gallery.querySelectorAll("[data-thumbnail-type]");
+
+                            for (i = 0; i < thumbnail_list.length; i++) {
+
+                                thumbnail_size = thumbnail_list[i].dataset.thumbnailType;
+
+                                if ((thumbnail_size = thumbnail_size_list[thumbnail_size])){
+
+                                    thumbnail_list[i].src = thumbnail_base + video_id[1] + "/" + thumbnail_size;
+                                    thumbnail_list[i].parentNode.href = thumbnail_list[i].src;
+                                    thumbnail_list[i].parentNode.title = i18n.player_quick_controls.thumbnails_title;
+
+                                }
+
+                            }
+
+                            thumbnail_gallery.firstChild.addEventListener("click", this.closeThumbnails.bind(this), false);
+
+                            document.documentElement.appendChild(thumbnail_gallery);
+
+                        }
+
+                    },
+                    quickControlFullBrowser: function (event) {
+
+                    },
+                    quickControlScreenShot: function (event) {
+
+                    },
+                    quickControls: function (event) {
+
+                        switch (event.target.id) {
+
+                            case "iri-quick-controls-controller":
+                                this.quickControlsContainer(event);
+                                break;
+
+                            case "iri-quick-control-auto-play":
+                                this.quickControlAutoPlay();
+                                break;
+
+                            case "iri-quick-control-thumbnail":
+                                this.quickControlThumbnail();
+                                break;
+
+                            case "iri-quick-control-full-browser":
+                                this.quickControlFullBrowser(event);
+                                break;
+
+                            case "iri-quick-control-screen-shot":
+                                this.quickControlScreenShot(event);
+                                break;
+
+                        }
+
+                    },
+                    quickControlsState: function () {
+
+                        var button;
+
+                        if ((button = document.getElementById("iri-quick-control-auto-play"))) {
+
+                            if (user_settings.player_auto_play) {
+
+                                button.setAttribute("enabled", "true");
+
+                            } else {
+
+                                button.removeAttribute("enabled");
+
+                            }
+
+                        }
+
+                    },
+                    loadStart: function () {
+
+                        var meta_section;
+                        var quick_controls;
+                        var watch_page_active;
+
+                        watch_page_active = document.querySelector("ytd-watch:not([hidden])");
+
+                        if (watch_page_active) {
+
+                            if ((quick_controls = document.querySelector("#iri-quick-controls")) && !user_settings.player_quick_controls) {
+
+                                quick_controls.remove();
+
+                            } else if (user_settings.player_quick_controls && !quick_controls && (meta_section = document.getElementById("meta"))) {
+
+                                quick_controls = document.createElement("template");
+                                quick_controls.innerHTML =
+                                    "<div id='iri-quick-controls' class='closed-mode'>" +
+                                    "    <button id='iri-quick-controls-controller' data-locale='title|open_controls'>" +
+                                    "        <svg viewBox='0 0 24 24' height='14' width='14'>" +
+                                    "            <polygon class='open'  points='12 13.5  3  4.5  0  7.5 12 19.5 24  7.5 21  4.5'/>" +
+                                    "            <polygon class='close' points='12 10.5 21 19.5 24 16.5 12  4.5  0 16.5  3 19.5'/>" +
+                                    "        </svg>" +
+                                    "    </button>" +
+                                    "    <div id='iri-quick-controls-container'>" +
+                                    "        <button id='iri-quick-control-auto-play' data-locale='title|button_auto_play'>" +
+                                    "            <svg viewBox='0 0 20 20' height='20' width='20'>" +
+                                    "                <polygon points='3 2 16.9 10 3 18'/>" +
+                                    "            </svg>" +
+                                    "        </button>" +
+                                    "        <button id='iri-quick-control-thumbnail' data-locale='title|button_thumbnails'>" +
+                                    "            <svg viewBox='0 0 20 20' height='20' width='20'>" +
+                                    "                <circle cx='8' cy='7.2' r='2'/>" +
+                                    "                <path d='M0 2v16h20V2H0z M18 16H2V4h16V16z'/>" +
+                                    "                <polygon points='17 10.9 14 7.9 9 12.9 6 9.9 3 12.9 3 15 17 15'/>" +
+                                    "            </svg>" +
+                                    "        </button>" +
+                                    "        <button id='iri-quick-control-full-browser' data-locale='title|button_full_browser'>" +
+                                    "            <svg viewBox='0 0 20 20' height='20' width='20'>" +
+                                    "                <path d='M0 4v12h20V4H0z M12 12H2V6h10V12'/>" +
+                                    "            </svg>" +
+                                    "        </button>" +
+                                    "        <button id='iri-quick-control-screen-shot' data-locale='title|button_screen_shot'>" +
+                                    "            <svg viewBox='0 0 20 20' height='20' width='20'>" +
+                                    "                <circle cx='13' cy='10' r='3.5'/>" +
+                                    "                <path d='M0 4v12h20V4H0z M7 7H1V5h6V7z M13 15c-2.8 0-5-2.2-5-5s2.2-5 5-5s5 2.2 5 5S15.8 15 13 15z'/>" +
+                                    "            </svg>" +
+                                    "        </button>" +
+                                    "    </div>" +
+                                    "</div>";
+                                quick_controls = quick_controls.content;
+                                iridium_api.applyText(quick_controls, i18n.player_quick_controls);
+                                meta_section.insertBefore(quick_controls, meta_section.firstChild);
+
+                                // listen for broadcast changes as well
+                                this.quickControlsState();
+
+                                document.addEventListener("click", this.quickControls.bind(this), false);
+
+                            }
+
+                        }
+
+                    },
                     ini: function () {
 
                         var context;
@@ -2020,6 +2268,9 @@
                         XMLHttpRequest.prototype.open = this.modOpen(XMLHttpRequest.prototype.open);
                         DOMParser.prototype.parseFromString = this.modParseFromString(DOMParser.prototype.parseFromString);
                         window.onYouTubePlayerReady = this.shareApi(window.onYouTubePlayerReady);
+                        window.addEventListener("yt-page-data-updated", this.loadStart.bind(this), true);
+                        window.addEventListener("yt-navigate-start", this.loadStart.bind(this), false);
+                        window.addEventListener("yt-navigate-finish", this.loadStart.bind(this), false);
 
                         Object.defineProperties(Object.prototype, {
                             cueVideoByPlayerVars: {
@@ -2475,7 +2726,7 @@
 
                             this.endMiniPlayer("iri-always-playing");
 
-                        } else if (!document.querySelector(".ended-mode")) {
+                        } else if (document.querySelector(".paused-mode,.playing-mode")) {
 
                             this.iniMiniPlayer("iri-always-playing");
 
@@ -2558,27 +2809,31 @@
                             mini_player_controls = document.createElement("div");
                             mini_player_controls.id = "iri-mini-player-controls";
 
-                            restore_page = document.createElement("div");
-                            restore_page.id = "iri-mini-player-restore";
-                            restore_page.className = "iri-mini-player-control iri-mini-player-left-control";
+                            restore_page = document.createElement("template");
                             restore_page.innerHTML =
-                                "<svg height='24' width='24' fill='#FFF'>" +
-                                "    <use xlink:href='#iri-svg-restore' class='iri-svg-shadow'/>" +
-                                "    <path id='iri-svg-restore' d='M21 4H1v16h22V4h-2zm0 14H3v-6h10V6h8v12z'/>" +
-                                "</svg>" +
-                                "<div class='iri-mini-player-tooltip'>" + i18n.player_always_playing.button_restore + "</div>";
-                            restore_page.addEventListener("click", this.restorePlayer.bind(this), false);
+                                "<div id='iri-mini-player-restore' class='iri-mini-player-control iri-mini-player-left-control'>" +
+                                "    <svg height='24' width='24' fill='#FFF'>" +
+                                "        <use xlink:href='#iri-svg-restore' class='iri-svg-shadow'/>" +
+                                "        <path id='iri-svg-restore' d='M21 4H1v16h22V4h-2zm0 14H3v-6h10V6h8v12z'/>" +
+                                "    </svg>" +
+                                "    <div class='iri-mini-player-tooltip' data-locale='text|button_restore'></div>" +
+                                "</div>";
+                            restore_page = restore_page.content;
+                            iridium_api.applyText(restore_page, i18n.player_always_playing);
+                            restore_page.firstChild.addEventListener("click", this.restorePlayer.bind(this), false);
 
-                            close_mini_player = document.createElement("div");
-                            close_mini_player.id = "iri-mini-player-close";
-                            close_mini_player.className = "iri-mini-player-control iri-mini-player-right-control";
+                            close_mini_player = document.createElement("template");
                             close_mini_player.innerHTML =
-                                "<svg height='24' width='24' fill='#FFF'>" +
-                                "    <use xlink:href='#iri-svg-close' class='iri-svg-shadow'/>" +
-                                "    <path id='iri-svg-close' d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/>" +
-                                "</svg>" +
-                                "<div class='iri-mini-player-tooltip'>" + i18n.player_always_playing.button_close + "</div>";
-                            close_mini_player.addEventListener("click", this.closePlayer.bind(this), false);
+                                "<div id='iri-mini-player-close' class='iri-mini-player-control iri-mini-player-right-control'>" +
+                                "    <svg height='24' width='24' fill='#FFF'>" +
+                                "        <use xlink:href='#iri-svg-close' class='iri-svg-shadow'/>" +
+                                "        <path id='iri-svg-close' d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/>" +
+                                "    </svg>" +
+                                "    <div class='iri-mini-player-tooltip' data-locale='text|button_close'></div>" +
+                                "</div>";
+                            close_mini_player = close_mini_player.content;
+                            iridium_api.applyText(close_mini_player, i18n.player_always_playing);
+                            close_mini_player.firstChild.addEventListener("click", this.closePlayer.bind(this), false);
 
                             mini_player_controls.appendChild(restore_page);
                             mini_player_controls.appendChild(close_mini_player);
@@ -2628,7 +2883,7 @@
                             get: function () {
                                 return context.modStopVideo(this._stopVideo);
                             }
-                        })
+                        });
 
                     }
                 },
@@ -2948,6 +3203,7 @@
 
             iridium_api = {
 
+                videoIdPattern: /v=([\w-_]+)/,
                 checkIfExists: function (path, host) {
 
                     var i;
@@ -2967,6 +3223,43 @@
                     }
 
                     return host;
+
+                },
+                applyText: function (html, text_list) {
+
+                    var i;
+                    var j;
+                    var locale;
+                    var locale_text;
+                    var node_list;
+                    var locale_list;
+
+                    node_list = html.querySelectorAll("[data-locale]");
+
+                    for (i = 0; i < node_list.length; i++) {
+
+                        locale_list = node_list[i].dataset.locale.split("&");
+
+                        for (j = 0; j < locale_list.length; j++) {
+
+                            locale = locale_list[j].split("|");
+                            locale_text = text_list[locale[1]];
+
+                            switch (locale[0]) {
+                                case "title":
+                                    node_list[i].setAttribute("title", locale_text);
+                                    break;
+                                case "text":
+                                    node_list[i].appendChild(document.createTextNode(locale_text));
+                                    break;
+                                case "tooltip":
+                                    node_list[i].tooltipText = locale_text;
+                                    break;
+                            }
+
+                        }
+
+                    }
 
                 },
                 getObjectByKey: function (obj, keys, match, list, pos) {
@@ -3532,20 +3825,21 @@
 
                     if (buttons && !(iridium_settings_button = document.getElementById("iridium_settings_button"))) {
 
-                        iridium_settings_button = document.createElement("a");
-                        iridium_settings_button.id = "iridium_settings_button";
-                        iridium_settings_button.href = "/iridium-settings";
-                        iridium_settings_button.target = "_blank";
+                        iridium_settings_button = document.createElement("template");
                         iridium_settings_button.innerHTML =
-                            "<svg viewBox='0 0 24 24' style='height:24px;'>" +
-                            "    <radialGradient id='iri-gradient' gradientUnits='userSpaceOnUse' cx='6' cy='22' r='18.5'>" +
-                            "        <stop class='iri-start-gradient' offset='0'/>" +
-                            "        <stop class='iri-stop-gradient' offset='1'/>" +
-                            "    </radialGradient>" +
-                            "    <polygon points='21 12 3,1.8 3 22.2'/>" +
-                            "    <path d='M3 1.8v20.4L21 12L3 1.8z M6 7l9 5.1l-9 5.1V7z'/>" +
-                            "</svg>" +
-                            "<div class='iri-tooltip' style='opacity: 0'>" + i18n.iridium_api.settings_button + "</div>";
+                            "<a id='iridium_settings_button' href='/iridium-settings' target='_blank'>" +
+                            "    <svg viewBox='0 0 24 24' style='height:24px;'>" +
+                            "        <radialGradient id='iri-gradient' gradientUnits='userSpaceOnUse' cx='6' cy='22' r='18.5'>" +
+                            "            <stop class='iri-start-gradient' offset='0'/>" +
+                            "            <stop class='iri-stop-gradient' offset='1'/>" +
+                            "        </radialGradient>" +
+                            "        <polygon points='21 12 3,1.8 3 22.2'/>" +
+                            "        <path d='M3 1.8v20.4L21 12L3 1.8z M6 7l9 5.1l-9 5.1V7z'/>" +
+                            "    </svg>" +
+                            "    <div class='iri-tooltip' data-locale='text|settings_button' style='opacity: 0'></div>" +
+                            "</a>";
+                        iridium_settings_button = iridium_settings_button.content;
+                        iridium_api.applyText(iridium_settings_button, i18n.iridium_api);
                         buttons.parentNode.insertBefore(iridium_settings_button, buttons);
 
                         document.documentElement.removeEventListener("load", iridium_api.initializeSettingsButton, true);

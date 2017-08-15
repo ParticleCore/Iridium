@@ -380,9 +380,9 @@ yt-img-shadow:not(.ytd-channel-renderer) .iri-add-to-blacklist {
 
 
 /* ini | quick control thumbnails */
-html {
+/*html {
     overflow: hidden;
-}
+}*/
 #iri-thumbnail-gallery {
     background: rgba(0, 0, 0, 0.85);
     position: fixed;

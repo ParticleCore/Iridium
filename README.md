@@ -46,4 +46,4 @@ Each item on the lists below can be removed or moved to the a different version 
 - [ ] Feature: ability to open the player in a pop-out window
 - [ ] Feature: fullbrowser video mode
 - [ ] Feature: reverse playlist
-- [ ] Feature: advanced options / quick shortcuts below player
+- [x] Feature: advanced options / quick shortcuts below player

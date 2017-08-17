@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.1.3b
+// @version         0.1.4b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.3b
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.4b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -1760,6 +1760,7 @@
 
                             var temp;
                             var current_config;
+                            var current_video_id;
 
                             if (!this.getUpdatedConfigurationData) {
 
@@ -1769,9 +1770,21 @@
 
                             current_config = this.getUpdatedConfigurationData();
 
-                            if (current_config && current_config.args && (current_config.args.eventid === args.eventid || current_config.args.loaderUrl === args.loaderUrl) && !document.querySelector(".ended-mode")) {
+                            if (current_config && current_config.args) {
 
-                                return function () {};
+                                if ((current_config.args.eventid === args.eventid || current_config.args.loaderUrl === args.loaderUrl)) {
+
+                                    if (!document.querySelector(".ended-mode") && (current_video_id = window.location.href.match(iridium_api.videoIdPattern))) {
+
+                                        if (current_video_id[1] === current_config.args.video_id) {
+
+                                            return function () {};
+
+                                        }
+
+                                    }
+
+                                }
 
                             }
 
@@ -1996,8 +2009,11 @@
 
                             if (user_settings.player_memorize_size && (watch_page_api = document.querySelector("ytd-watch"))) {
 
-                                watch_page_api.playerApiReady_(api);
-                                watch_page_api.theaterModeChanged_(user_settings.theaterMode);
+                                try {
+
+                                    watch_page_api.theaterModeChanged_(user_settings.theaterMode);
+
+                                } catch (ignore) {}
 
                             }
 
@@ -2085,9 +2101,9 @@
                             thumbnail_gallery.innerHTML =
                                 "<div id='iri-thumbnail-gallery'>" +
                                 "    <style>" +
-                                "        html {" +
+                                // "        html {" +
                                 // "            overflow: hidden;" +
-                                "        }" +
+                                // "        }" +
                                 "    </style>" +
                                 "    <div id='iri-thumbnail-gallery-first-row'>" +
                                 "        <div class='iri-thumbnail-labels'>" +
@@ -2095,9 +2111,9 @@
                                 "            <div>HQ720</div>" +
                                 "            <div>SD</div>" +
                                 "        </div>" +
-                                "        <a download><img data-thumbnail-type='iurlmaxres' /></a>" +
-                                "        <a download><img data-thumbnail-type='iurlhq720' /></a>" +
-                                "        <a download><img data-thumbnail-type='iurlsd' /></a>" +
+                                "        <a target='_blank' download><img data-thumbnail-type='iurlmaxres' /></a>" +
+                                "        <a target='_blank' download><img data-thumbnail-type='iurlhq720' /></a>" +
+                                "        <a target='_blank' download><img data-thumbnail-type='iurlsd' /></a>" +
                                 "    </div>" +
                                 "    <div id='iri-thumbnail-gallery-second-row'>" +
                                 "        <div class='iri-thumbnail-labels'>" +
@@ -2105,9 +2121,9 @@
                                 "            <div>MQ</div>" +
                                 "            <div>DEFAULT</div>" +
                                 "        </div>" +
-                                "        <a download><img data-thumbnail-type='iurlhq' /></a>" +
-                                "        <a download><img data-thumbnail-type='iurlmq' /></a>" +
-                                "        <a download><img data-thumbnail-type='iurl' /></a>" +
+                                "        <a target='_blank' download><img data-thumbnail-type='iurlhq' /></a>" +
+                                "        <a target='_blank' download><img data-thumbnail-type='iurlmq' /></a>" +
+                                "        <a target='_blank' download><img data-thumbnail-type='iurl' /></a>" +
                                 "    </div>" +
                                 "</div>";
                             thumbnail_gallery = thumbnail_gallery.content;
@@ -2641,6 +2657,11 @@
                             }
                         }
                     },
+                    setMiniPlayerSize: function (player_api, event) {
+
+                        player_api.setSizeStyle(false, true);
+
+                    },
                     endMiniPlayer: function (class_name) {
 
                         var player_api;
@@ -2654,6 +2675,13 @@
 
                             player_api.setSizeStyle(true, is_in_theater_mode);
 
+                            if (this.setMiniPlayerSizeListener) {
+
+                                player_api.removeEventListener("onFullscreenChange", this.setMiniPlayerSizeListener, false);
+                                delete this.setMiniPlayerSizeListener;
+
+                            }
+
                         }
 
                     },
@@ -2665,9 +2693,17 @@
 
                         if ((player_api = document.getElementById("movie_player"))) {
 
-                            player_api.setSizeStyle(false, true);
+                            if (this.setMiniPlayerSizeListener) {
+
+                                player_api.removeEventListener("onFullscreenChange", this.setMiniPlayerSizeListener, false);
+                                delete this.setMiniPlayerSizeListener;
+
+                            }
 
                             this.iniMiniPlayerControls(player_api);
+                            this.setMiniPlayerSize(player_api);
+                            this.setMiniPlayerSizeListener = this.setMiniPlayerSize.bind(this, player_api);
+                            player_api.addEventListener("onFullscreenChange", this.setMiniPlayerSizeListener, false);
 
                         }
 
@@ -2788,12 +2824,13 @@
                     closePlayer: function () {
 
                         var player_api;
+                        var current_config;
 
                         this.endMiniPlayer("iri-always-playing");
 
-                        if ((player_api = document.getElementById("movie_player"))) {
+                        if ((player_api = document.getElementById("movie_player")) && iridium_api.checkIfExists("yt.config_.FILLER_DATA.player.args") && (current_config = player_api.getUpdatedConfigurationData())) {
 
-                            player_api.stopVideo(true);
+                            player_api.cueVideoByPlayerVars(current_config.args);
 
                         }
 
@@ -2845,9 +2882,9 @@
                     },
                     modStopVideo: function (original) {
 
-                        return function (bypass) {
+                        return function () {
 
-                            if (user_settings.player_always_playing && !bypass) {
+                            if (user_settings.player_always_playing) {
 
                                 return;
 

@@ -383,9 +383,6 @@ button:hover > .iri-quick-controls-tooltip {
 
 
 /* ini | quick control thumbnails */
-/*html {
-    overflow: hidden;
-}*/
 #iri-thumbnail-gallery {
     background: rgba(0, 0, 0, 0.85);
     position: fixed;

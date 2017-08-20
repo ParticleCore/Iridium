@@ -425,6 +425,56 @@ button:hover > .iri-quick-controls-tooltip {
 /* end | quick control thumbnails */
 
 
+/* end | quick control full browser */
+.iri-full-browser.video_active {
+    overflow: hidden
+}
+.iri-full-browser.video_active .ytp-size-button {
+    display: none;
+}
+.iri-full-browser #iri-full-browser-info {
+    opacity: 1;
+}
+#iri-full-browser-info {
+    color: #EEEEEE;
+    text-align: center;
+    font-size: 100%;
+    font-weight: bold;
+    opacity: 0;
+    padding: 20px;
+    pointer-events: none;
+    position: absolute;
+    user-select: none;
+    transition: opacity 0.1s cubic-bezier(0.4, 0.0, 1, 1);
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 100;
+}
+#iri-full-browser-info-message {
+    display: inline-block;
+    border: 1px solid;
+    padding: 10px;
+    border-radius: 5px;
+    background: rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 10px #000000;
+    white-space: pre-wrap;
+}
+.iri-full-browser .ended-mode #iri-full-browser-info,
+.iri-full-browser .ytp-autohide #iri-full-browser-info,
+.iri-full-browser .ytp-hide-controls #iri-full-browser-info {
+    opacity: 0;
+}
+.iri-full-browser.video_active #movie_player {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 10000;
+}
+/* ini | quick control full browser */
+
+
 /* ini | Iridium settings */
 html,
 body {

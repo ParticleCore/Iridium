@@ -325,36 +325,18 @@ yt-img-shadow:not(.ytd-channel-renderer) .iri-add-to-blacklist {
     font-size: 0;
     margin-bottom: -16px;
     position: relative;
-    text-align: center;
+    text-align: right;
 }
 #iri-quick-controls-container {
     overflow: hidden;
     position: relative;
 }
 #iri-quick-controls-container button {
-    margin-top: -30px !important;
-    transition: 0.2s ease;
+    height: 40px;
+    width: 40px;
 }
 #iri-quick-controls-container button svg {
-    margin: 5px;
-}
-.iri-quick-controls-open #iri-quick-controls-container button {
-    margin-top: 0 !important;
-}
-#iri-quick-controls-controller svg {
-    margin: 1px;
-}
-#iri-quick-controls-controller .open {
-    opacity: 1;
-}
-#iri-quick-controls-controller .close {
-    opacity: 0;
-}
-.iri-quick-controls-open #iri-quick-controls-controller .open {
-    opacity: 0;
-}
-.iri-quick-controls-open #iri-quick-controls-controller .close {
-    opacity: 1;
+    margin: 10px;
 }
 #iri-quick-controls button {
     border: 0;

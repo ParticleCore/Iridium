@@ -328,7 +328,6 @@ yt-img-shadow:not(.ytd-channel-renderer) .iri-add-to-blacklist {
     text-align: right;
 }
 #iri-quick-controls-container {
-    overflow: hidden;
     position: relative;
 }
 #iri-quick-controls-container button {

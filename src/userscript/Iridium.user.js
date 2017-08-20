@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.1.4b
+// @version         0.1.5b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.4b
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.5b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -1660,12 +1660,11 @@
                             i18n: {
                                 label: "Enable quick controls",
                                 button_auto_play: "Autoplay",
-                                button_full_browser: "Full Browser\n(Not working yet)",
+                                button_full_browser: "Full Browser",
                                 button_screen_shot: "Screen Shot\n(Not working yet)",
                                 button_thumbnails: "Thumbnails",
                                 thumbnails_title: "Click to download\nRight click for options",
-                                open_controls: "Quick Controls",
-                                close_controls: "Close"
+                                full_browser_info: "Press \"Esc\" to exit"
                             }
                         }
                     },
@@ -1846,6 +1845,26 @@
                         };
 
                     },
+                    modMatchMedia: function (original) {
+
+                        return function(text) {
+
+                            var temp = original.apply(this, arguments);
+
+                            if (temp.matches && (text === "(max-width: 656px)" || text === "(min-width: 882px)")) {
+
+                                return temp;
+
+                            }
+
+                            Object.defineProperty(temp, "matches", {writable: true});
+                            temp.matches = false;
+
+                            return temp;
+
+                        };
+
+                    },
                     patchXHR: function (event) {
 
                         var i;
@@ -1951,7 +1970,7 @@
 
                         if (typeof event === "object") {
 
-                            if (user_settings.userVolume !== event.volume) {
+                            if (user_settings.player_memorize_volume && user_settings.userVolume !== event.volume) {
 
                                 user_settings.userVolume = event.volume;
 
@@ -1961,13 +1980,47 @@
 
                         } else {
 
-                            if (user_settings.theaterMode !== event) {
+                            if (user_settings.player_memorize_size && user_settings.theaterMode !== event) {
 
                                 user_settings.theaterMode = event;
 
                                 iridium_api.saveSettings("theaterMode");
 
                             }
+
+                        }
+
+                    },
+                    onStateChange: function (event) {
+
+                        document.documentElement.classList.remove("video_unstarted", "video_active", "video_ended", "video_playing", "video_paused", "video_buffering", "video_cued");
+
+                        switch (event) {
+
+                            case -1:
+                                document.documentElement.classList.add("video_unstarted");
+                                break;
+                            case 0:
+                                document.documentElement.classList.add("video_ended");
+                                break;
+                            case 1:
+                                document.documentElement.classList.add("video_active", "video_playing");
+                                break;
+                            case 2:
+                                document.documentElement.classList.add("video_active", "video_paused");
+                                break;
+                            case 3:
+                                document.documentElement.classList.add("video_active", "video_buffering");
+                                break;
+                            case 5:
+                                document.documentElement.classList.add("video_cued");
+                                break;
+
+                        }
+
+                        if (user_settings.fullBrowser) {
+
+                            window.dispatchEvent(new Event("resize"));
 
                         }
 
@@ -1979,11 +2032,9 @@
 
                         if (api) {
 
-                            if (user_settings.player_memorize_size) {
-
-                                api.addEventListener("SIZE_CLICKED", this.handleCustoms);
-
-                            }
+                            api.addEventListener("SIZE_CLICKED", this.handleCustoms);
+                            api.addEventListener("onVolumeChange", this.handleCustoms);
+                            api.addEventListener("onStateChange", this.onStateChange);
 
                             if (user_settings.player_memorize_volume) {
 
@@ -2002,8 +2053,6 @@
                                         expiration: timestamp + 2592E6
                                     })
                                 );
-
-                                api.addEventListener("onVolumeChange", this.handleCustoms);
 
                             }
 
@@ -2041,17 +2090,18 @@
                         return /^\/(user|channel)\//.test(window.location.pathname);
 
                     },
-                    quickControlsContainer: function (event) {
+                    exitFullBrowser: function (event) {
 
-                        if (document.documentElement.classList.contains("iri-quick-controls-open")) {
+                        if (!user_settings.fullBrowser || (event.keyCode === 27 || event.key === "Escape")) {
 
-                            event.target.title = i18n.player_quick_controls.open_controls;
-                            document.documentElement.classList.remove("iri-quick-controls-open");
+                            window.removeEventListener("keydown", this.exitFullBrowserlistener, false);
+                            this.exitFullBrowserlistener = null;
+                            document.documentElement.classList.remove("iri-full-browser");
+                            user_settings.fullBrowser = false;
+                            iridium_api.saveSettings("fullBrowser");
+                            window.dispatchEvent(new Event("resize"));
 
-                        } else {
-
-                            event.target.title = i18n.player_quick_controls.close_controls;
-                            document.documentElement.classList.add("iri-quick-controls-open");
+                            this.quickControlsState();
 
                         }
 
@@ -2153,6 +2203,62 @@
                     },
                     quickControlFullBrowser: function (event) {
 
+                        var video_player;
+                        var full_browser_info;
+
+                        if (this.exitFullBrowserlistener) {
+
+                            window.removeEventListener("keydown", this.exitFullBrowserlistener, false);
+                            this.exitFullBrowserlistener = null;
+
+                        }
+
+                        if (event) {
+
+                            user_settings.fullBrowser = !user_settings.fullBrowser;
+                            iridium_api.saveSettings("fullBrowser");
+
+                        }
+
+                        if (user_settings.fullBrowser) {
+
+                            document.documentElement.classList.add("iri-full-browser");
+
+                            if ((video_player = document.getElementById("movie_player"))) {
+
+                                if (!document.getElementById("iri-full-browser-info")) {
+
+                                    full_browser_info = document.createElement("template");
+                                    full_browser_info.innerHTML =
+                                        "<div id='iri-full-browser-info'>" +
+                                        "    <div id='iri-full-browser-info-message' data-locale='text|full_browser_info'></div>" +
+                                        "</div>";
+                                    full_browser_info = full_browser_info.content;
+
+                                    iridium_api.applyText(full_browser_info, i18n.player_quick_controls);
+                                    video_player.insertBefore(full_browser_info.firstChild, video_player.firstChild);
+
+                                }
+
+                                this.exitFullBrowserlistener = this.exitFullBrowser.bind(this);
+                                window.addEventListener("keydown", this.exitFullBrowserlistener, false);
+                                window.dispatchEvent(new Event("resize"));
+
+                            }
+
+                        } else if (!user_settings.fullBrowser) {
+
+                            document.documentElement.classList.remove("iri-full-browser");
+                            window.dispatchEvent(new Event("resize"));
+
+                        }
+
+                        if (event) {
+
+                            this.quickControlsState();
+
+                        }
+
                     },
                     quickControlScreenShot: function (event) {
 
@@ -2160,10 +2266,6 @@
                     quickControls: function (event) {
 
                         switch (event.target.id) {
-
-                            case "iri-quick-controls-controller":
-                                this.quickControlsContainer(event);
-                                break;
 
                             case "iri-quick-control-auto-play":
                                 this.quickControlAutoPlay();
@@ -2202,68 +2304,78 @@
 
                         }
 
+                        if ((button = document.getElementById("iri-quick-control-full-browser"))) {
+
+                            if (user_settings.fullBrowser) {
+
+                                button.setAttribute("enabled", "true");
+                                this.quickControlFullBrowser();
+
+                            } else {
+
+                                button.removeAttribute("enabled");
+                                this.quickControlFullBrowser();
+
+                            }
+
+                        }
+
                     },
                     loadStart: function () {
 
                         var meta_section;
                         var quick_controls;
-                        var watch_page_active;
 
-                        watch_page_active = document.querySelector("ytd-watch:not([hidden])");
+                        quick_controls = document.querySelector("#iri-quick-controls");
 
-                        if (watch_page_active) {
+                        if (user_settings.player_quick_controls && !quick_controls && document.querySelector("ytd-watch:not([hidden])") && (meta_section = document.querySelector("ytd-watch #meta"))) {
 
-                            if ((quick_controls = document.querySelector("#iri-quick-controls")) && !user_settings.player_quick_controls) {
+                            quick_controls = document.createElement("template");
+                            quick_controls.innerHTML =
+                                "<div id='iri-quick-controls' class='closed-mode'>" +
+                                "    <div id='iri-quick-controls-container'>" +
+                                "        <button id='iri-quick-control-auto-play'>" +
+                                "            <svg viewBox='0 0 20 20' height='20' width='20'>" +
+                                "                <polygon points='3 2 16.9 10 3 18'/>" +
+                                "            </svg>" +
+                                "            <div class='iri-quick-controls-tooltip' data-locale='text|button_auto_play'></div>" +
+                                "        </button>" +
+                                "        <button id='iri-quick-control-thumbnail'>" +
+                                "            <svg viewBox='0 0 20 20' height='20' width='20'>" +
+                                "                <circle cx='8' cy='7.2' r='2'/>" +
+                                "                <path d='M0 2v16h20V2H0z M18 16H2V4h16V16z'/>" +
+                                "                <polygon points='17 10.9 14 7.9 9 12.9 6 9.9 3 12.9 3 15 17 15'/>" +
+                                "            </svg>" +
+                                "            <div class='iri-quick-controls-tooltip' data-locale='text|button_thumbnails'></div>" +
+                                "        </button>" +
+                                "        <button id='iri-quick-control-full-browser'>" +
+                                "            <svg viewBox='0 0 20 20' height='20' width='20'>" +
+                                "                <path d='M0 4v12h20V4H0z M12 12H2V6h10V12'/>" +
+                                "            </svg>" +
+                                "            <div class='iri-quick-controls-tooltip' data-locale='text|button_full_browser'></div>" +
+                                "        </button>" +
+                                "        <button id='iri-quick-control-screen-shot'>" +
+                                "            <svg viewBox='0 0 20 20' height='20' width='20'>" +
+                                "                <circle cx='13' cy='10' r='3.5'/>" +
+                                "                <path d='M0 4v12h20V4H0z M7 7H1V5h6V7z M13 15c-2.8 0-5-2.2-5-5s2.2-5 5-5s5 2.2 5 5S15.8 15 13 15z'/>" +
+                                "            </svg>" +
+                                "            <div class='iri-quick-controls-tooltip' data-locale='text|button_screen_shot'></div>" +
+                                "        </button>" +
+                                "    </div>" +
+                                "</div>";
+                            quick_controls = quick_controls.content;
 
-                                quick_controls.remove();
+                            iridium_api.applyText(quick_controls, i18n.player_quick_controls);
+                            meta_section.insertBefore(quick_controls, meta_section.firstChild);
 
-                            } else if (user_settings.player_quick_controls && !quick_controls && (meta_section = document.getElementById("meta"))) {
+                            // TODO listen for broadcast changes as well
+                            this.quickControlsState();
 
-                                quick_controls = document.createElement("template");
-                                quick_controls.innerHTML =
-                                    "<div id='iri-quick-controls' class='closed-mode'>" +
-                                    "    <button id='iri-quick-controls-controller' data-locale='title|open_controls'>" +
-                                    "        <svg viewBox='0 0 24 24' height='14' width='14'>" +
-                                    "            <polygon class='open'  points='12 13.5  3  4.5  0  7.5 12 19.5 24  7.5 21  4.5'/>" +
-                                    "            <polygon class='close' points='12 10.5 21 19.5 24 16.5 12  4.5  0 16.5  3 19.5'/>" +
-                                    "        </svg>" +
-                                    "    </button>" +
-                                    "    <div id='iri-quick-controls-container'>" +
-                                    "        <button id='iri-quick-control-auto-play' data-locale='title|button_auto_play'>" +
-                                    "            <svg viewBox='0 0 20 20' height='20' width='20'>" +
-                                    "                <polygon points='3 2 16.9 10 3 18'/>" +
-                                    "            </svg>" +
-                                    "        </button>" +
-                                    "        <button id='iri-quick-control-thumbnail' data-locale='title|button_thumbnails'>" +
-                                    "            <svg viewBox='0 0 20 20' height='20' width='20'>" +
-                                    "                <circle cx='8' cy='7.2' r='2'/>" +
-                                    "                <path d='M0 2v16h20V2H0z M18 16H2V4h16V16z'/>" +
-                                    "                <polygon points='17 10.9 14 7.9 9 12.9 6 9.9 3 12.9 3 15 17 15'/>" +
-                                    "            </svg>" +
-                                    "        </button>" +
-                                    "        <button id='iri-quick-control-full-browser' data-locale='title|button_full_browser'>" +
-                                    "            <svg viewBox='0 0 20 20' height='20' width='20'>" +
-                                    "                <path d='M0 4v12h20V4H0z M12 12H2V6h10V12'/>" +
-                                    "            </svg>" +
-                                    "        </button>" +
-                                    "        <button id='iri-quick-control-screen-shot' data-locale='title|button_screen_shot'>" +
-                                    "            <svg viewBox='0 0 20 20' height='20' width='20'>" +
-                                    "                <circle cx='13' cy='10' r='3.5'/>" +
-                                    "                <path d='M0 4v12h20V4H0z M7 7H1V5h6V7z M13 15c-2.8 0-5-2.2-5-5s2.2-5 5-5s5 2.2 5 5S15.8 15 13 15z'/>" +
-                                    "            </svg>" +
-                                    "        </button>" +
-                                    "    </div>" +
-                                    "</div>";
-                                quick_controls = quick_controls.content;
-                                iridium_api.applyText(quick_controls, i18n.player_quick_controls);
-                                meta_section.insertBefore(quick_controls, meta_section.firstChild);
+                            document.addEventListener("click", this.quickControls.bind(this), false);
 
-                                // listen for broadcast changes as well
-                                this.quickControlsState();
+                        } else if (quick_controls && !user_settings.player_quick_controls) {
 
-                                document.addEventListener("click", this.quickControls.bind(this), false);
-
-                            }
+                            quick_controls.remove();
 
                         }
 
@@ -2283,6 +2395,7 @@
                         JSON.parse = this.modJSONParse(JSON.parse);
                         XMLHttpRequest.prototype.open = this.modOpen(XMLHttpRequest.prototype.open);
                         DOMParser.prototype.parseFromString = this.modParseFromString(DOMParser.prototype.parseFromString);
+                        window.matchMedia = this.modMatchMedia(window.matchMedia);
                         window.onYouTubePlayerReady = this.shareApi(window.onYouTubePlayerReady);
                         window.addEventListener("yt-page-data-updated", this.loadStart.bind(this), true);
                         window.addEventListener("yt-navigate-start", this.loadStart.bind(this), false);
@@ -3948,7 +4061,7 @@
 
                     if (event.data && event.data.broadcast_id === this.broadcast_channel.name) {
 
-                        user_settings = event.data;
+                        this.initializeSettings(event.data);
 
                     }
 

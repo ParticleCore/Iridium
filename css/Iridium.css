@@ -357,6 +357,28 @@ yt-img-shadow:not(.ytd-channel-renderer) .iri-add-to-blacklist {
 #iri-quick-controls button[enabled] svg {
     fill: rgba(255, 255, 255, 0.90);
 }
+.iri-quick-controls-tooltip {
+    display: block;
+    outline: none;
+    font-family: 'Roboto', 'Noto', sans-serif;
+    background-color: var(--paper-tooltip-background, #616161);
+    opacity: 0;
+    color: white;
+    padding: 8px;
+    position: absolute;
+    border-radius: 2px;
+    margin: 8px;
+    font-size: 1.3rem;
+    font-weight: 400;
+    line-height: 1.8rem;
+    text-transform: none;
+    transition: opacity .3s ease-out .5s;
+    white-space: pre;
+    z-index: 1;
+}
+button:hover > .iri-quick-controls-tooltip {
+    opacity: 0.9 !important;
+}
 /* end | quick controls */
 
 

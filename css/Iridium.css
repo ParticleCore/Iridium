@@ -1,6 +1,11 @@
 html {
     --iri-checkbox-bkg: 7px;
 }
+svg {
+    /* workaround for Firefox 7 years old
+    half-pixel svg blur @ bugzilla#608812 */
+    transform: scale(1);
+}
 
 
 /* ini | settings button */

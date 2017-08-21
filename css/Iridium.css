@@ -367,6 +367,7 @@ yt-img-shadow:not(.ytd-channel-renderer) .iri-add-to-blacklist {
     padding: 8px;
     position: absolute;
     border-radius: 2px;
+    pointer-events: none;
     margin: 8px;
     font-size: 1.3rem;
     font-weight: 400;

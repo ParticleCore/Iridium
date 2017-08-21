@@ -44,6 +44,6 @@ Each item on the lists below can be removed or moved to the a different version 
 - [ ] Core: create Chrome extension?
 - [ ] Feature: control comment section visiblity
 - [ ] Feature: ability to open the player in a pop-out window
-- [ ] Feature: fullbrowser video mode
+- [x] Feature: fullbrowser video mode
 - [ ] Feature: reverse playlist
 - [x] Feature: advanced options / quick shortcuts below player

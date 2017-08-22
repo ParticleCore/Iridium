@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.1.5b
+// @version         0.1.6b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.5b
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.6b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -1661,9 +1661,10 @@
                                 label: "Enable quick controls",
                                 button_auto_play: "Autoplay",
                                 button_full_browser: "Full Browser",
-                                button_screen_shot: "Screen Shot\n(Not working yet)",
+                                button_screen_shot: "Screen Shot",
                                 button_thumbnails: "Thumbnails",
                                 thumbnails_title: "Click to download\nRight click for options",
+                                screen_shot_title: "Right click for options",
                                 full_browser_info: "Press \"Esc\" to exit"
                             }
                         }
@@ -2124,6 +2125,24 @@
                         }
 
                     },
+                    closeScreenShot: function (event) {
+
+                        var link;
+                        var screen_shot_container;
+
+                        if (event.target.tagName !== "CANVAS" && (screen_shot_container = document.getElementById("iri-screen-shot-container"))) {
+
+                            if ((link = screen_shot_container.querySelector("a"))) {
+
+                                URL.revokeObjectURL(link.href);
+
+                            }
+
+                            screen_shot_container.remove();
+
+                        }
+
+                    },
                     quickControlThumbnail: function () {
 
                         var i;
@@ -2150,20 +2169,21 @@
                             thumbnail_gallery = document.createElement("template");
                             thumbnail_gallery.innerHTML =
                                 "<div id='iri-thumbnail-gallery'>" +
-                                "    <style>" +
-                                // "        html {" +
-                                // "            overflow: hidden;" +
-                                // "        }" +
-                                "    </style>" +
                                 "    <div id='iri-thumbnail-gallery-first-row'>" +
                                 "        <div class='iri-thumbnail-labels'>" +
                                 "            <div>MAXRES</div>" +
                                 "            <div>HQ720</div>" +
                                 "            <div>SD</div>" +
                                 "        </div>" +
-                                "        <a target='_blank' download><img data-thumbnail-type='iurlmaxres' /></a>" +
-                                "        <a target='_blank' download><img data-thumbnail-type='iurlhq720' /></a>" +
-                                "        <a target='_blank' download><img data-thumbnail-type='iurlsd' /></a>" +
+                                "        <a target='_blank' download>" +
+                                "            <img data-thumbnail-type='iurlmaxres' />" +
+                                "        </a>" +
+                                "        <a target='_blank' download>" +
+                                "            <img data-thumbnail-type='iurlhq720' />" +
+                                "        </a>" +
+                                "        <a target='_blank' download>" +
+                                "            <img data-thumbnail-type='iurlsd' />" +
+                                "        </a>" +
                                 "    </div>" +
                                 "    <div id='iri-thumbnail-gallery-second-row'>" +
                                 "        <div class='iri-thumbnail-labels'>" +
@@ -2171,9 +2191,15 @@
                                 "            <div>MQ</div>" +
                                 "            <div>DEFAULT</div>" +
                                 "        </div>" +
-                                "        <a target='_blank' download><img data-thumbnail-type='iurlhq' /></a>" +
-                                "        <a target='_blank' download><img data-thumbnail-type='iurlmq' /></a>" +
-                                "        <a target='_blank' download><img data-thumbnail-type='iurl' /></a>" +
+                                "        <a target='_blank' download>" +
+                                "            <img data-thumbnail-type='iurlhq' />" +
+                                "        </a>" +
+                                "        <a target='_blank' download>" +
+                                "            <img data-thumbnail-type='iurlmq' />" +
+                                "        </a>" +
+                                "        <a target='_blank' download>" +
+                                "            <img data-thumbnail-type='iurl' />" +
+                                "        </a>" +
                                 "    </div>" +
                                 "</div>";
                             thumbnail_gallery = thumbnail_gallery.content;
@@ -2260,7 +2286,53 @@
                         }
 
                     },
-                    quickControlScreenShot: function (event) {
+                    quickControlScreenShot: function () {
+
+                        var canvas;
+                        var aspect_ratio;
+                        var video;
+                        var canvas_height;
+                        var canvas_width;
+                        var canvas_context;
+                        var screen_shot_container;
+
+                        if ((video = document.querySelector("video")) && video.src) {
+
+                            if (!(screen_shot_container = document.getElementById("iri-screen-shot-container"))) {
+
+                                screen_shot_container = document.createElement("template");
+                                screen_shot_container.innerHTML =
+                                    "<div id='iri-screen-shot-container'>" +
+                                    "    <a target='_blank' download data-locale='title|screen_shot_title'>" +
+                                    "        <canvas></canvas>" +
+                                    "    </a>" +
+                                    "</div>";
+                                screen_shot_container = screen_shot_container.content;
+
+                            }
+
+                            iridium_api.applyText(screen_shot_container, i18n.player_quick_controls);
+
+                            canvas = screen_shot_container.querySelector("canvas");
+                            canvas_context = canvas.getContext("2d");
+                            aspect_ratio = video.videoWidth / video.videoHeight;
+                            canvas_width = video.videoWidth;
+                            canvas_height = parseInt(canvas_width / aspect_ratio, 10);
+                            canvas.width = canvas_width;
+                            canvas.height = canvas_height;
+                            canvas_context.drawImage(video, 0, 0, canvas_width, canvas_height);
+
+                            canvas.toBlob(function (blob) {
+
+                                canvas.parentNode.href = URL.createObjectURL(blob);
+
+                            });
+
+                            screen_shot_container.firstChild.addEventListener("click", this.closeScreenShot.bind(this), false);
+
+                            document.documentElement.appendChild(screen_shot_container);
+
+                        }
 
                     },
                     quickControls: function (event) {
@@ -2326,52 +2398,72 @@
                         var meta_section;
                         var quick_controls;
 
+                        if (this.quickControlsListener) {
+
+                            document.removeEventListener("click", this.quickControlsListener, false);
+                            this.quickControlsListener = null;
+
+                        }
+
+                        if (this.quickControlsStateListener) {
+
+                            iridium_api.broadcast_channel.removeEventListener("message", this.quickControlsStateListener);
+                            this.quickControlsStateListener = null;
+
+                        }
+
                         quick_controls = document.querySelector("#iri-quick-controls");
 
-                        if (user_settings.player_quick_controls && !quick_controls && document.querySelector("ytd-watch:not([hidden])") && (meta_section = document.querySelector("ytd-watch #meta"))) {
+                        if (user_settings.player_quick_controls && document.querySelector("ytd-watch:not([hidden])") && (meta_section = document.querySelector("ytd-watch #meta"))) {
 
-                            quick_controls = document.createElement("template");
-                            quick_controls.innerHTML =
-                                "<div id='iri-quick-controls' class='closed-mode'>" +
-                                "    <div id='iri-quick-controls-container'>" +
-                                "        <button id='iri-quick-control-auto-play'>" +
-                                "            <svg viewBox='0 0 20 20' height='20' width='20'>" +
-                                "                <polygon points='3 2 16.9 10 3 18'/>" +
-                                "            </svg>" +
-                                "            <div class='iri-quick-controls-tooltip' data-locale='text|button_auto_play'></div>" +
-                                "        </button>" +
-                                "        <button id='iri-quick-control-thumbnail'>" +
-                                "            <svg viewBox='0 0 20 20' height='20' width='20'>" +
-                                "                <circle cx='8' cy='7.2' r='2'/>" +
-                                "                <path d='M0 2v16h20V2H0z M18 16H2V4h16V16z'/>" +
-                                "                <polygon points='17 10.9 14 7.9 9 12.9 6 9.9 3 12.9 3 15 17 15'/>" +
-                                "            </svg>" +
-                                "            <div class='iri-quick-controls-tooltip' data-locale='text|button_thumbnails'></div>" +
-                                "        </button>" +
-                                "        <button id='iri-quick-control-full-browser'>" +
-                                "            <svg viewBox='0 0 20 20' height='20' width='20'>" +
-                                "                <path d='M0 4v12h20V4H0z M12 12H2V6h10V12'/>" +
-                                "            </svg>" +
-                                "            <div class='iri-quick-controls-tooltip' data-locale='text|button_full_browser'></div>" +
-                                "        </button>" +
-                                "        <button id='iri-quick-control-screen-shot'>" +
-                                "            <svg viewBox='0 0 20 20' height='20' width='20'>" +
-                                "                <circle cx='13' cy='10' r='3.5'/>" +
-                                "                <path d='M0 4v12h20V4H0z M7 7H1V5h6V7z M13 15c-2.8 0-5-2.2-5-5s2.2-5 5-5s5 2.2 5 5S15.8 15 13 15z'/>" +
-                                "            </svg>" +
-                                "            <div class='iri-quick-controls-tooltip' data-locale='text|button_screen_shot'></div>" +
-                                "        </button>" +
-                                "    </div>" +
-                                "</div>";
-                            quick_controls = quick_controls.content;
+                            if (!quick_controls) {
 
-                            iridium_api.applyText(quick_controls, i18n.player_quick_controls);
-                            meta_section.insertBefore(quick_controls, meta_section.firstChild);
+                                quick_controls = document.createElement("template");
+                                quick_controls.innerHTML =
+                                    "<div id='iri-quick-controls' class='closed-mode'>" +
+                                    "    <div id='iri-quick-controls-container'>" +
+                                    "        <button id='iri-quick-control-auto-play'>" +
+                                    "            <svg viewBox='0 0 20 20' height='20' width='20'>" +
+                                    "                <polygon points='3 2 16.9 10 3 18'/>" +
+                                    "            </svg>" +
+                                    "            <div class='iri-quick-controls-tooltip' data-locale='text|button_auto_play'></div>" +
+                                    "        </button>" +
+                                    "        <button id='iri-quick-control-thumbnail'>" +
+                                    "            <svg viewBox='0 0 20 20' height='20' width='20'>" +
+                                    "                <circle cx='8' cy='7.2' r='2'/>" +
+                                    "                <path d='M0 2v16h20V2H0z M18 16H2V4h16V16z'/>" +
+                                    "                <polygon points='17 10.9 14 7.9 9 12.9 6 9.9 3 12.9 3 15 17 15'/>" +
+                                    "            </svg>" +
+                                    "            <div class='iri-quick-controls-tooltip' data-locale='text|button_thumbnails'></div>" +
+                                    "        </button>" +
+                                    "        <button id='iri-quick-control-full-browser'>" +
+                                    "            <svg viewBox='0 0 20 20' height='20' width='20'>" +
+                                    "                <path d='M0 4v12h20V4H0z M12 12H2V6h10V12'/>" +
+                                    "            </svg>" +
+                                    "            <div class='iri-quick-controls-tooltip' data-locale='text|button_full_browser'></div>" +
+                                    "        </button>" +
+                                    "        <button id='iri-quick-control-screen-shot'>" +
+                                    "            <svg viewBox='0 0 20 20' height='20' width='20'>" +
+                                    "                <circle cx='13' cy='10' r='3.5'/>" +
+                                    "                <path d='M0 4v12h20V4H0z M7 7H1V5h6V7z M13 15c-2.8 0-5-2.2-5-5s2.2-5 5-5s5 2.2 5 5S15.8 15 13 15z'/>" +
+                                    "            </svg>" +
+                                    "            <div class='iri-quick-controls-tooltip' data-locale='text|button_screen_shot'></div>" +
+                                    "        </button>" +
+                                    "    </div>" +
+                                    "</div>";
+                                quick_controls = quick_controls.content;
 
-                            // TODO listen for broadcast changes as well
+                                iridium_api.applyText(quick_controls, i18n.player_quick_controls);
+                                meta_section.insertBefore(quick_controls, meta_section.firstChild);
+
+                            }
+
                             this.quickControlsState();
+                            this.quickControlsStateListener = this.quickControlsState.bind(this);
+                            iridium_api.broadcast_channel.addEventListener("message", this.quickControlsStateListener);
 
-                            document.addEventListener("click", this.quickControls.bind(this), false);
+                            this.quickControlsListener = this.quickControls.bind(this);
+                            document.addEventListener("click", this.quickControlsListener, false);
 
                         } else if (quick_controls && !user_settings.player_quick_controls) {
 
@@ -2390,16 +2482,26 @@
 
                         }
 
-                        context = this;
+                        if (this.loadStartListener) {
 
+                            window.removeEventListener("yt-page-data-updated", this.loadStartListener, true);
+                            window.removeEventListener("yt-navigate-start", this.loadStartListener, false);
+                            window.removeEventListener("yt-navigate-finish", this.loadStartListener, false);
+                            this.loadStartListener = null;
+
+                        }
+
+                        this.loadStartListener = this.loadStart.bind(this);
+                        window.addEventListener("yt-page-data-updated", this.loadStartListener, true);
+                        window.addEventListener("yt-navigate-start", this.loadStartListener, false);
+                        window.addEventListener("yt-navigate-finish", this.loadStartListener, false);
+                        window.matchMedia = this.modMatchMedia(window.matchMedia);
+                        window.onYouTubePlayerReady = this.shareApi(window.onYouTubePlayerReady);
                         JSON.parse = this.modJSONParse(JSON.parse);
                         XMLHttpRequest.prototype.open = this.modOpen(XMLHttpRequest.prototype.open);
                         DOMParser.prototype.parseFromString = this.modParseFromString(DOMParser.prototype.parseFromString);
-                        window.matchMedia = this.modMatchMedia(window.matchMedia);
-                        window.onYouTubePlayerReady = this.shareApi(window.onYouTubePlayerReady);
-                        window.addEventListener("yt-page-data-updated", this.loadStart.bind(this), true);
-                        window.addEventListener("yt-navigate-start", this.loadStart.bind(this), false);
-                        window.addEventListener("yt-navigate-finish", this.loadStart.bind(this), false);
+
+                        context = this;
 
                         Object.defineProperties(Object.prototype, {
                             cueVideoByPlayerVars: {
@@ -2884,54 +2986,56 @@
                     },
                     restorePlayer: function () {
 
+                        var i;
+                        var keys;
+                        var history;
+                        var ytd_app;
                         var player_api;
                         var current_data;
-                        var original_url;
                         var history_state;
-                        var watch_page_api;
-                        var page_manager_api;
+                        var yt_history_manager;
 
-                        if ((watch_page_api = document.querySelector("ytd-watch"))) {
+                        if ((player_api = document.getElementById("movie_player"))) {
 
-                            if ((player_api = document.getElementById("movie_player"))) {
+                            current_data = player_api.getUpdatedConfigurationData();
 
-                                current_data = player_api.getUpdatedConfigurationData();
-                                original_url = current_data.args.loaderUrl.replace(window.location.origin, "");
-                                document.title = current_data.args.title + " - YouTube";
+                            if ((yt_history_manager = document.querySelector("yt-history-manager"))) {
 
-                                history_state = {
-                                    endpoint: {
-                                        clickTrackingParams: "",
-                                        watchEndpoint: {
-                                            videoId: current_data.args.video_id
-                                        },
-                                        webNavigationEndpointData: {
-                                            url: original_url,
-                                            webPageType: "WATCH"
+                                keys = Object.keys(yt_history_manager.historyEntryTimeToDataMap_);
+
+                                for (i = 0; i < keys.length; i++) {
+
+                                    history = yt_history_manager.historyEntryTimeToDataMap_[keys[i]].rootData;
+
+                                    if (current_data.args.eventid === history.csn) {
+
+                                        history_state = {
+                                            endpoint: history.response.currentVideoEndpoint,
+                                            entryTime: +keys[i],
+                                            savedComponentState: null
+                                        };
+
+                                        window.history.pushState(history_state, current_data.args.title, history.url);
+
+                                        yt_history_manager.onPopState_({state: history_state});
+
+                                        if ((ytd_app = document.querySelector("ytd-app"))) {
+
+                                            ytd_app.setPageTitle(current_data.args.title);
+
                                         }
-                                    },
-                                    entryTime: window.performance.now(),
-                                    savedComponentState: null
-                                };
 
-                                window.history.pushState(history_state, document.title, original_url);
+                                        break;
 
-                            }
+                                    }
 
-                            this.endMiniPlayer("iri-always-playing");
-
-                            if ((page_manager_api = document.querySelector("ytd-page-manager"))) {
-
-                                page_manager_api.setActivePage_(watch_page_api);
+                                }
 
                             }
-
-                            watch_page_api.initComments_();
-
-                            document.dispatchEvent(new Event("yt-page-data-fetched"));
-                            document.dispatchEvent(new Event("yt-page-data-updated"));
 
                         }
+
+                        this.endMiniPlayer("iri-always-playing");
 
                     },
                     closePlayer: function () {
@@ -3011,6 +3115,8 @@
                     ini: function () {
 
                         var context;
+                        var always_playing_listener;
+                        var always_visible_listener;
 
                         if (iridium_api.initializeOption.call(this)) {
 
@@ -3018,11 +3124,15 @@
 
                         }
 
-                        window.addEventListener("scroll", this.iniAlwaysVisible.bind(this), false);
-                        window.addEventListener("yt-navigate-start", this.iniAlwaysVisible.bind(this), false);
-                        window.addEventListener("yt-navigate-finish", this.iniAlwaysVisible.bind(this), false);
-                        window.addEventListener("yt-navigate-start", this.iniAlwaysPlaying.bind(this), false);
-                        window.addEventListener("yt-navigate-finish", this.iniAlwaysPlaying.bind(this), false);
+                        always_playing_listener = this.iniAlwaysPlaying.bind(this);
+                        always_visible_listener = this.iniAlwaysVisible.bind(this);
+
+                        window.addEventListener("scroll", always_visible_listener, false);
+                        window.addEventListener("popstate", always_playing_listener, true);
+                        window.addEventListener("yt-navigate-start", always_visible_listener, false);
+                        window.addEventListener("yt-navigate-finish", always_visible_listener, false);
+                        window.addEventListener("yt-navigate-start", always_playing_listener, false);
+                        window.addEventListener("yt-navigate-finish", always_playing_listener, false);
 
                         context = this;
 

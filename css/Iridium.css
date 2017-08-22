@@ -365,15 +365,15 @@ ytd-watch[theater] #iri-quick-controls {
 #iri-quick-controls button[enabled] svg {
     fill: rgb(17, 17, 17);
 }
-html[dark] #iri-quick-controls button svg {
+[dark] #iri-quick-controls button svg {
     fill: #111111;
     pointer-events: none;
     display: block;
 }
-html[dark] #iri-quick-controls button:hover svg {
+[dark] #iri-quick-controls button:hover svg {
     fill: rgba(255, 255, 255, 0.75);
 }
-html[dark] #iri-quick-controls button[enabled] svg {
+[dark] #iri-quick-controls button[enabled] svg {
     fill: rgba(255, 255, 255, 0.90);
 }
 .iri-quick-controls-tooltip {

@@ -481,6 +481,32 @@ button:hover > .iri-quick-controls-tooltip {
 /* ini | quick control full browser */
 
 
+/* ini | quick control screen shot */
+#iri-screen-shot-container {
+    background: rgba(0, 0, 0, 0.85);
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: auto;
+    text-align: center;
+    z-index: 10000;
+}
+#iri-screen-shot-container canvas {
+    position: relative;
+    transform: translateY(-50%);
+    max-width: 80%;
+    max-height: 80%;
+    top: 50%;
+    border: 1px solid #FFFFFF;
+    padding: 10px;
+    box-sizing: border-box;
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.2) inset;
+}
+/* ini | quick control screen shot */
+
+
 /* ini | Iridium settings */
 html,
 body {

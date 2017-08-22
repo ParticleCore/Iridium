@@ -363,10 +363,10 @@ ytd-watch[theater] #iri-quick-controls {
     fill: rgba(17, 17, 17, 0.8);
 }
 #iri-quick-controls button[enabled] svg {
-    fill: rgb(17, 17, 17);
+    fill: #111111;
 }
 [dark] #iri-quick-controls button svg {
-    fill: #111111;
+    fill: rgba(255, 255, 255, 0.5);
     pointer-events: none;
     display: block;
 }

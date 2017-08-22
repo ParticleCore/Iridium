@@ -355,14 +355,25 @@ ytd-watch[theater] #iri-quick-controls {
     font-size: 0;
 }
 #iri-quick-controls button svg {
-    fill: rgba(255, 255, 255, 0.5);
+    fill: rgba(17, 17, 17, 0.4);
     pointer-events: none;
     display: block;
 }
 #iri-quick-controls button:hover svg {
-    fill: rgba(255, 255, 255, 0.75);
+    fill: rgba(17, 17, 17, 0.8);
 }
 #iri-quick-controls button[enabled] svg {
+    fill: rgb(17, 17, 17);
+}
+html[dark] #iri-quick-controls button svg {
+    fill: #111111;
+    pointer-events: none;
+    display: block;
+}
+html[dark] #iri-quick-controls button:hover svg {
+    fill: rgba(255, 255, 255, 0.75);
+}
+html[dark] #iri-quick-controls button[enabled] svg {
     fill: rgba(255, 255, 255, 0.90);
 }
 .iri-quick-controls-tooltip {

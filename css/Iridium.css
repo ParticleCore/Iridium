@@ -325,6 +325,13 @@ yt-img-shadow:not(.ytd-channel-renderer) .iri-add-to-blacklist {
 /* end | blacklist */
 
 
+/* ini | hide end screen cards */
+.iri-hide-end-screen-cards #movie_player:hover .ytp-ce-element:not(:hover) {
+    opacity: 0;
+}
+/* end | hide end screen cards */
+
+
 /* ini | quick controls */
 #iri-quick-controls {
     font-size: 0;

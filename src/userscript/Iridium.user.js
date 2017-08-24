@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.1.6b
+// @version         0.1.7b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.6b
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.7b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -3144,6 +3144,54 @@
                                 return context.modStopVideo(this._stopVideo);
                             }
                         });
+
+                    }
+                },
+                {
+                    options: {
+                        player_hide_end_screen: {
+                            id: "player_hide_end_screen",
+                            section: "video",
+                            sub_section: "player",
+                            type: "checkbox",
+                            value: false,
+                            i18n: {
+                                label: "Hide end screen cards on mouse hover"
+                            }
+                        }
+                    },
+                    toggleHideCards: function () {
+
+                        if (user_settings.player_hide_end_screen) {
+
+                            document.documentElement.classList.add("iri-hide-end-screen-cards");
+
+                        } else {
+
+                            document.documentElement.classList.remove("iri-hide-end-screen-cards");
+
+                        }
+
+                    },
+                    ini: function () {
+
+                        if (iridium_api.initializeOption.call(this)) {
+
+                            return;
+
+                        }
+
+                        this.toggleHideCards();
+
+                        if (this.toggleHideCardsListener) {
+
+                            iridium_api.broadcast_channel.removeEventListener("message", this.toggleHideCardsListener);
+                            this.toggleHideCardsListener = null;
+
+                        }
+
+                        this.toggleHideCardsListener = this.toggleHideCards.bind(this);
+                        iridium_api.broadcast_channel.addEventListener("message", this.toggleHideCardsListener);
 
                     }
                 },

@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.1.7b
+// @version         0.1.8b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.7b
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.8b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -1770,23 +1770,25 @@
 
                             current_config = this.getUpdatedConfigurationData();
 
-                            if (current_config && current_config.args) {
-
-                                if ((current_config.args.eventid === args.eventid || current_config.args.loaderUrl === args.loaderUrl)) {
-
-                                    if (!document.querySelector(".ended-mode") && (current_video_id = window.location.href.match(iridium_api.videoIdPattern))) {
-
-                                        if (current_video_id[1] === current_config.args.video_id) {
-
-                                            return function () {};
-
-                                        }
-
-                                    }
-
-                                }
-
-                            }
+                            // if (current_config && current_config.args) {
+                            //
+                            //     if ((current_config.args.eventid === args.eventid || current_config.args.loaderUrl === args.loaderUrl)) {
+                            //
+                            //         if (!document.querySelector(".ended-mode") && (current_video_id = window.location.href.match(iridium_api.videoIdPattern))) {
+                            //
+                            //             if (current_video_id[1] === current_config.args.video_id) {
+                            //
+                            //                 console.log(3);
+                            //
+                            //                 return function () {};
+                            //
+                            //             }
+                            //
+                            //         }
+                            //
+                            //     }
+                            //
+                            // }
 
                             context.modArgs(args);
 
@@ -1819,6 +1821,7 @@
                             if (user_settings.player_quality !== "auto" && (player = document.getElementById("movie_player"))) {
 
                                 player.setPlaybackQuality(user_settings.player_quality);
+                                player.cueVideoByPlayerVars(this.config.args);
 
                             }
 
@@ -2872,6 +2875,179 @@
                             }
                         }
                     },
+                    move_data: {
+                        mouse_offset: {X: 0, Y: 0},
+                        player_position: {X: 0, Y: 0},
+                        player_dimension: {height: 0, width: 0}
+                    },
+                    updatePlayerPosition: function () {
+
+                        var masthead;
+                        var video_player;
+                        var player_margin;
+                        var masthead_offset;
+
+                        player_margin = 10;
+                        masthead_offset = player_margin;
+
+                        if ((masthead = document.getElementById("masthead"))) {
+
+                            masthead_offset += masthead.offsetHeight;
+
+                        }
+
+                        if (this.move_data.player_position.X < player_margin) {
+
+                            this.move_data.player_position.X = player_margin;
+
+                        } else if (this.move_data.player_position.X + this.move_data.player_dimension.width > document.documentElement.clientWidth - player_margin) {
+
+                            this.move_data.player_position.X = document.documentElement.clientWidth - player_margin - this.move_data.player_dimension.width;
+
+                        }
+
+                        if (this.move_data.player_position.Y < masthead_offset) {
+
+                            this.move_data.player_position.Y = masthead_offset;
+
+                        } else if (this.move_data.player_position.Y + this.move_data.player_dimension.height > document.documentElement.clientHeight - player_margin) {
+
+                            this.move_data.player_position.Y = document.documentElement.clientHeight - player_margin - this.move_data.player_dimension.height;
+
+                        }
+
+                        if ((video_player = document.getElementById("movie_player"))) {
+
+                            video_player.setAttribute(
+                                "style",
+                                "left:" + this.move_data.player_position.X + "px;" +
+                                "top:" + this.move_data.player_position.Y + "px;"
+                            );
+
+                        }
+
+                    },
+                    movePlayer: function (event) {
+
+                        var video_rects;
+                        var video_player;
+
+                        if (event.type === "mousemove") {
+
+                            this.move_data.player_position.X = event.clientX - this.move_data.mouse_offset.X;
+                            this.move_data.player_position.Y = event.clientY - this.move_data.mouse_offset.Y;
+
+                            this.updatePlayerPosition();
+
+                        } else if (event.type === "click" || event.type === "mouseup" || event.type === "mousedown") {
+
+                            if (this.mouseListener) {
+
+                                window.removeEventListener("click", this.mouseListener, true);
+                                window.removeEventListener("mouseup", this.mouseListener, false);
+                                window.removeEventListener("mousemove", this.mouseListener, false);
+
+                                this.mouseListener = null;
+
+                            }
+
+                            if (event.type === "mousedown") {
+
+                                if ((video_player = document.getElementById("movie_player"))) {
+
+                                    video_rects = video_player.getBoundingClientRect();
+
+                                    this.move_data.player_dimension.height = video_rects.height;
+                                    this.move_data.player_dimension.width = video_rects.width;
+                                    this.move_data.player_position.X = video_rects.left;
+                                    this.move_data.player_position.Y = video_rects.top;
+                                    this.move_data.mouse_offset.X = event.clientX - video_rects.left;
+                                    this.move_data.mouse_offset.Y = event.clientY - video_rects.top;
+
+                                }
+
+                                this.mouseListener = this.movePlayer.bind(this);
+
+                                window.addEventListener("click", this.mouseListener, true);
+                                window.addEventListener("mouseup", this.mouseListener, false);
+                                window.addEventListener("mousemove", this.mouseListener, false);
+
+                            }
+
+                            event.preventDefault();
+                            return false;
+
+                        }
+
+                    },
+                    restorePlayer: function () {
+
+                        var i;
+                        var keys;
+                        var history;
+                        var ytd_app;
+                        var player_api;
+                        var current_data;
+                        var history_state;
+                        var yt_history_manager;
+
+                        if ((player_api = document.getElementById("movie_player"))) {
+
+                            current_data = player_api.getUpdatedConfigurationData();
+
+                            if ((yt_history_manager = document.querySelector("yt-history-manager"))) {
+
+                                keys = Object.keys(yt_history_manager.historyEntryTimeToDataMap_);
+
+                                for (i = 0; i < keys.length; i++) {
+
+                                    history = yt_history_manager.historyEntryTimeToDataMap_[keys[i]].rootData;
+
+                                    if (current_data.args.eventid === history.csn) {
+
+                                        history_state = {
+                                            endpoint: history.response.currentVideoEndpoint,
+                                            entryTime: +keys[i],
+                                            savedComponentState: null
+                                        };
+
+                                        window.history.pushState(history_state, current_data.args.title, history.url);
+
+                                        yt_history_manager.onPopState_({state: history_state});
+
+                                        if ((ytd_app = document.querySelector("ytd-app"))) {
+
+                                            ytd_app.setPageTitle(current_data.args.title);
+
+                                        }
+
+                                        break;
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                        this.endMiniPlayer("iri-always-playing");
+
+                    },
+                    closePlayer: function () {
+
+                        var player_api;
+                        var current_config;
+
+                        this.endMiniPlayer("iri-always-playing");
+
+                        if ((player_api = document.getElementById("movie_player")) && iridium_api.checkIfExists("yt.config_.FILLER_DATA.player.args") && (current_config = player_api.getUpdatedConfigurationData())) {
+
+                            player_api.cueVideoByPlayerVars(current_config.args);
+
+                        }
+
+                    },
                     setMiniPlayerSize: function (player_api, event) {
 
                         player_api.setSizeStyle(false, true);
@@ -2888,12 +3064,13 @@
 
                             is_in_theater_mode = document.querySelector("ytd-watch[theater]");
 
+                            player_api.removeAttribute("style");
                             player_api.setSizeStyle(true, is_in_theater_mode);
 
                             if (this.setMiniPlayerSizeListener) {
 
                                 player_api.removeEventListener("onFullscreenChange", this.setMiniPlayerSizeListener, false);
-                                delete this.setMiniPlayerSizeListener;
+                                this.setMiniPlayerSizeListener = null;
 
                             }
 
@@ -2984,76 +3161,9 @@
                         }
 
                     },
-                    restorePlayer: function () {
-
-                        var i;
-                        var keys;
-                        var history;
-                        var ytd_app;
-                        var player_api;
-                        var current_data;
-                        var history_state;
-                        var yt_history_manager;
-
-                        if ((player_api = document.getElementById("movie_player"))) {
-
-                            current_data = player_api.getUpdatedConfigurationData();
-
-                            if ((yt_history_manager = document.querySelector("yt-history-manager"))) {
-
-                                keys = Object.keys(yt_history_manager.historyEntryTimeToDataMap_);
-
-                                for (i = 0; i < keys.length; i++) {
-
-                                    history = yt_history_manager.historyEntryTimeToDataMap_[keys[i]].rootData;
-
-                                    if (current_data.args.eventid === history.csn) {
-
-                                        history_state = {
-                                            endpoint: history.response.currentVideoEndpoint,
-                                            entryTime: +keys[i],
-                                            savedComponentState: null
-                                        };
-
-                                        window.history.pushState(history_state, current_data.args.title, history.url);
-
-                                        yt_history_manager.onPopState_({state: history_state});
-
-                                        if ((ytd_app = document.querySelector("ytd-app"))) {
-
-                                            ytd_app.setPageTitle(current_data.args.title);
-
-                                        }
-
-                                        break;
-
-                                    }
-
-                                }
-
-                            }
-
-                        }
-
-                        this.endMiniPlayer("iri-always-playing");
-
-                    },
-                    closePlayer: function () {
-
-                        var player_api;
-                        var current_config;
-
-                        this.endMiniPlayer("iri-always-playing");
-
-                        if ((player_api = document.getElementById("movie_player")) && iridium_api.checkIfExists("yt.config_.FILLER_DATA.player.args") && (current_config = player_api.getUpdatedConfigurationData())) {
-
-                            player_api.cueVideoByPlayerVars(current_config.args);
-
-                        }
-
-                    },
                     iniMiniPlayerControls: function (player_api) {
 
+                        var move_area;
                         var restore_page;
                         var close_mini_player;
                         var mini_player_controls;
@@ -3062,6 +3172,29 @@
 
                             mini_player_controls = document.createElement("div");
                             mini_player_controls.id = "iri-mini-player-controls";
+
+                            move_area = document.createElement("template");
+                            move_area.innerHTML =
+                                "<div id='iri-mini-player-move'>" +
+                                "    <style>" +
+                                "        .paused-mode #iri-mini-player-controls," +
+                                "        .ended-mode #iri-mini-player-controls," +
+                                "        #movie_player:not(.ytp-fullscreen):hover #iri-mini-player-controls {" +
+                                "            opacity: 1;" +
+                                "            pointer-events: initial;" +
+                                "        }" +
+                                "        #iri-mini-player-move {" +
+                                "            cursor: move;" +
+                                "            height: 42px;" +
+                                "            left: -12px;" +
+                                "            right: -12px;" +
+                                "            top: -6px;" +
+                                "            position: absolute;" +
+                                "        }" +
+                                "    </style>" +
+                                "</div>";
+                            move_area = move_area.content;
+                            move_area.firstChild.addEventListener("mousedown", this.movePlayer.bind(this), false);
 
                             restore_page = document.createElement("template");
                             restore_page.innerHTML =
@@ -3089,6 +3222,7 @@
                             iridium_api.applyText(close_mini_player, i18n.player_always_playing);
                             close_mini_player.firstChild.addEventListener("click", this.closePlayer.bind(this), false);
 
+                            mini_player_controls.appendChild(move_area);
                             mini_player_controls.appendChild(restore_page);
                             mini_player_controls.appendChild(close_mini_player);
 

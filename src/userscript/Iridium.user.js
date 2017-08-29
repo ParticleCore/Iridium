@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.1.8b
+// @version         0.1.9b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.8b
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.9b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -1770,25 +1770,23 @@
 
                             current_config = this.getUpdatedConfigurationData();
 
-                            // if (current_config && current_config.args) {
-                            //
-                            //     if ((current_config.args.eventid === args.eventid || current_config.args.loaderUrl === args.loaderUrl)) {
-                            //
-                            //         if (!document.querySelector(".ended-mode") && (current_video_id = window.location.href.match(iridium_api.videoIdPattern))) {
-                            //
-                            //             if (current_video_id[1] === current_config.args.video_id) {
-                            //
-                            //                 console.log(3);
-                            //
-                            //                 return function () {};
-                            //
-                            //             }
-                            //
-                            //         }
-                            //
-                            //     }
-                            //
-                            // }
+                            if (current_config && current_config.args) {
+
+                                if ((current_config.args.eventid === args.eventid || current_config.args.loaderUrl === args.loaderUrl)) {
+
+                                    if (!document.querySelector(".ended-mode") && (current_video_id = window.location.href.match(iridium_api.videoIdPattern))) {
+
+                                        if (current_video_id[1] === current_config.args.video_id) {
+
+                                            return function () {};
+
+                                        }
+
+                                    }
+
+                                }
+
+                            }
 
                             context.modArgs(args);
 
@@ -1821,7 +1819,6 @@
                             if (user_settings.player_quality !== "auto" && (player = document.getElementById("movie_player"))) {
 
                                 player.setPlaybackQuality(user_settings.player_quality);
-                                player.cueVideoByPlayerVars(this.config.args);
 
                             }
 

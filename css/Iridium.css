@@ -64,6 +64,18 @@ a.yt-simple-endpoint span {
 .iri-square-avatars yt-img-shadow {
     border-radius: 0 !important;
 }
+.iri-improved-logo [dark] #lozenge-path {
+    fill: #FFFFFF;
+}
+.iri-improved-logo [dark] #play-polygon {
+    fill: #232323;
+}
+.iri-improved-logo #lozenge-path {
+    fill: #282828;
+}
+.iri-improved-logo #play-polygon {
+    fill: #FFFFFF;
+}
 .iri-video-count {
     color: var(--yt-endpoint-color, #111111);
     cursor: pointer;

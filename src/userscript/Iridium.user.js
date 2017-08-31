@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.1.9b
+// @version         0.2.0b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.1.9b
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.0b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -176,6 +176,39 @@
                         } else {
 
                             document.documentElement.classList.remove("iri-square-avatars");
+
+                        }
+
+                    }
+                },
+                {
+                    options: {
+                        improved_logo: {
+                            id: "improved_logo",
+                            section: "general",
+                            sub_section: "layout",
+                            type: "checkbox",
+                            value: true,
+                            i18n: {
+                                label: "Improve the YouTube logo"
+                            }
+                        }
+                    },
+                    ini: function () {
+
+                        if (iridium_api.initializeOption.call(this)) {
+
+                            return;
+
+                        }
+
+                        if (user_settings.improved_logo) {
+
+                            document.documentElement.classList.add("iri-improved-logo");
+
+                        } else {
+
+                            document.documentElement.classList.remove("iri-improved-logo");
 
                         }
 
@@ -1768,25 +1801,25 @@
 
                             }
 
-                            current_config = this.getUpdatedConfigurationData();
-
-                            if (current_config && current_config.args) {
-
-                                if ((current_config.args.eventid === args.eventid || current_config.args.loaderUrl === args.loaderUrl)) {
-
-                                    if (!document.querySelector(".ended-mode") && (current_video_id = window.location.href.match(iridium_api.videoIdPattern))) {
-
-                                        if (current_video_id[1] === current_config.args.video_id) {
-
-                                            return function () {};
-
-                                        }
-
-                                    }
-
-                                }
-
-                            }
+                            // current_config = this.getUpdatedConfigurationData();
+                            //
+                            // if (current_config && current_config.args) {
+                            //
+                            //     if ((current_config.args.eventid === args.eventid || current_config.args.loaderUrl === args.loaderUrl)) {
+                            //
+                            //         if (!document.querySelector(".ended-mode") && (current_video_id = window.location.href.match(iridium_api.videoIdPattern))) {
+                            //
+                            //             if (current_video_id[1] === current_config.args.video_id) {
+                            //
+                            //                 return function () {};
+                            //
+                            //             }
+                            //
+                            //         }
+                            //
+                            //     }
+                            //
+                            // }
 
                             context.modArgs(args);
 
@@ -1819,6 +1852,7 @@
                             if (user_settings.player_quality !== "auto" && (player = document.getElementById("movie_player"))) {
 
                                 player.setPlaybackQuality(user_settings.player_quality);
+                                player.cueVideoByPlayerVars(this.config.args);
 
                             }
 

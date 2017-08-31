@@ -64,16 +64,20 @@ a.yt-simple-endpoint span {
 .iri-square-avatars yt-img-shadow {
     border-radius: 0 !important;
 }
-.iri-improved-logo [dark] #lozenge-path {
+.iri-improved-logo [dark] #lozenge-path,
+.iri-improved-logo [dark] polygon.yt-icon[fill="#FFFFFF"] {
     fill: #FFFFFF;
 }
-.iri-improved-logo [dark] #play-polygon {
+.iri-improved-logo [dark] #play-polygon,
+.iri-improved-logo [dark] path.yt-icon[fill="#FF0000"] {
     fill: #232323;
 }
-.iri-improved-logo #lozenge-path {
+.iri-improved-logo #lozenge-path,
+.iri-improved-logo [dark] polygon.yt-icon[fill="#FFFFFF"] {
     fill: #282828;
 }
-.iri-improved-logo #play-polygon {
+.iri-improved-logo #play-polygon,
+.iri-improved-logo [dark] path.yt-icon[fill="#FF0000"] {
     fill: #FFFFFF;
 }
 .iri-video-count {

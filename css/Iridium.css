@@ -172,7 +172,7 @@ html:not(.iri-always-visible):not(.iri-always-playing) #iri-mini-player-controls
     text-align: center;
     top: 0px;
     left: 12px;
-    z-index: 1000;
+    z-index: 50;
     pointer-events: none;
     right: 12px;
     transition: opacity .25s cubic-bezier(0, 0, .2, 1);

@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.2.0b
+// @version         0.2.1b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.0b
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.1b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -1710,11 +1710,17 @@
                         var key_type;
                         var player_response;
 
-                        player_response = JSON.parse(args.player_response);
+                        if (user_settings.player_max_res_thumbnail && args.thumbnail_url) {
+
+                            args.iurlmaxres = args.thumbnail_url.replace(/\/[^\/]+$/, "/maxresdefault.jpg");
+
+                        }
 
                         if (user_settings.subscribed_channel_player_ads ? args.subscribed !== "1" : !user_settings.player_ads) {
 
                             delete args.ad3_module;
+
+                            player_response = JSON.parse(args.player_response);
 
                             if (player_response && player_response.adPlacements) {
 
@@ -1801,25 +1807,25 @@
 
                             }
 
-                            // current_config = this.getUpdatedConfigurationData();
-                            //
-                            // if (current_config && current_config.args) {
-                            //
-                            //     if ((current_config.args.eventid === args.eventid || current_config.args.loaderUrl === args.loaderUrl)) {
-                            //
-                            //         if (!document.querySelector(".ended-mode") && (current_video_id = window.location.href.match(iridium_api.videoIdPattern))) {
-                            //
-                            //             if (current_video_id[1] === current_config.args.video_id) {
-                            //
-                            //                 return function () {};
-                            //
-                            //             }
-                            //
-                            //         }
-                            //
-                            //     }
-                            //
-                            // }
+                            current_config = this.getUpdatedConfigurationData();
+
+                            if (current_config && current_config.args) {
+
+                                if ((current_config.args.eventid === args.eventid || current_config.args.loaderUrl === args.loaderUrl)) {
+
+                                    if (!document.querySelector(".ended-mode") && (current_video_id = window.location.href.match(iridium_api.videoIdPattern))) {
+
+                                        if (current_video_id[1] === current_config.args.video_id) {
+
+                                            return function () {};
+
+                                        }
+
+                                    }
+
+                                }
+
+                            }
 
                             context.modArgs(args);
 
@@ -1840,19 +1846,18 @@
 
                         var context = this;
 
-                        return function () {
+                        return function (api_name, config) {
 
                             var temp;
                             var player;
 
-                            context.modArgs(this.config.args);
+                            context.modArgs(config.args);
 
                             temp = original.apply(this, arguments);
 
                             if (user_settings.player_quality !== "auto" && (player = document.getElementById("movie_player"))) {
 
                                 player.setPlaybackQuality(user_settings.player_quality);
-                                player.cueVideoByPlayerVars(this.config.args);
 
                             }
 
@@ -2572,7 +2577,7 @@
 
                                     if (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
 
-                                        if (window.ytcsi && window.ytcsi.data_ && window.ytcsi.data_.tick) {
+                                        if (iridium_api.checkIfExists("ytcsi.data_.tick")) {
 
                                             for (key in window.ytcsi.data_.tick) {
 
@@ -2621,9 +2626,9 @@
 
                                     var temp = this._load && this._load.toString();
 
-                                    if (temp && temp.match("Application.create")) {
+                                    if (temp && temp.match(/Application.create/)) {
 
-                                        return context.modPlayerLoad(this._load);
+                                        window.yt.player.Application.create = context.modPlayerLoad(window.yt.player.Application.create);
 
                                     }
 
@@ -2632,58 +2637,53 @@
                                 }
 
                             },
-                            autoplay: {
+                            isMobile: {
                                 set: function (data) {
-                                    this._autoplay = data;
+                                    this._isMobile = data;
                                 },
-                                get: function () {
+                                get: function isMobileGetter() {
 
-                                    if (this.ucid && this._autoplay === "1" && (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
+                                    var matching;
+                                    var function_string;
 
-                                        return "0";
+                                    if (context.isChannel() ? !user_settings.channel_trailer_auto_play : (!user_settings.player_auto_play && window.location.pathname === "/watch")) {
 
-                                    }
+                                        function_string = isMobileGetter["caller"].toString();
+                                        matching = function_string.match(/this\.([a-z0-9$_]{1,3})=[^;]+\.autoplay/i);
 
-                                    return this._autoplay;
+                                        if (matching && matching[1]) {
 
-                                }
-
-                            },
-                            fflags: {
-                                set: function (data) {
-                                    this._fflags = data;
-                                },
-                                get: function () {
-
-                                    if ((!this.autoplay || this.autoplay === "1") && (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
-
-                                        if (this._fflags && this._fflags.replace) {
-
-                                            return this._fflags
-                                                .replace(
-                                                    "legacy_autoplay_flag=true",
-                                                    "legacy_autoplay_flag=false"
-                                                ).replace(
-                                                    "disable_new_pause_state3=true",
-                                                    "disable_new_pause_state3=false"
-                                                );
+                                            this[matching[1]] = false;
 
                                         }
 
                                     }
 
-                                    if (typeof this._fflags === "string") {
-
-                                        return this._fflags;
-
-                                    }
-
-                                    return "";
+                                    return this._isMobile;
 
                                 }
 
                             }
                         });
+
+                    }
+                },
+                {
+                    options: {
+                        player_max_res_thumbnail: {
+                            id: "player_max_res_thumbnail",
+                            section: "video",
+                            sub_section: "player",
+                            type: "checkbox",
+                            value: true,
+                            i18n: {
+                                label: "Force high quality player thumbnail"
+                            }
+                        }
+                    },
+                    ini: function () {
+
+                        iridium_api.initializeOption.call(this);
 
                     }
                 },
@@ -2907,19 +2907,28 @@
                         }
                     },
                     move_data: {
+                        is_mini: false,
                         mouse_offset: {X: 0, Y: 0},
-                        player_position: {X: 0, Y: 0},
+                        player_position: {X: 0, Y: 0, snapRight: true, snapBottom: true},
                         player_dimension: {height: 0, width: 0}
                     },
-                    updatePlayerPosition: function () {
+                    updatePlayerPosition: function (is_moving) {
 
+                        var style;
                         var masthead;
                         var video_player;
                         var player_margin;
                         var masthead_offset;
 
+                        is_moving = is_moving === true;
                         player_margin = 10;
                         masthead_offset = player_margin;
+
+                        if (!this.move_data.is_mini || document.webkitIsFullScreen ||  window.fullScreen) {
+
+                            return;
+
+                        }
 
                         if ((masthead = document.getElementById("masthead"))) {
 
@@ -2927,88 +2936,152 @@
 
                         }
 
-                        if (this.move_data.player_position.X < player_margin) {
+                        this.move_data.player_position.snapRight = false;
+                        this.move_data.player_position.snapBottom = false;
 
-                            this.move_data.player_position.X = player_margin;
+                        if (is_moving || !user_settings.miniPlayer.position.snapRight) {
 
-                        } else if (this.move_data.player_position.X + this.move_data.player_dimension.width > document.documentElement.clientWidth - player_margin) {
+                            if (this.move_data.player_position.X < player_margin) {
 
-                            this.move_data.player_position.X = document.documentElement.clientWidth - player_margin - this.move_data.player_dimension.width;
+                                this.move_data.player_position.X = player_margin;
+
+                            } else if (this.move_data.player_position.X + this.move_data.player_dimension.width > document.documentElement.clientWidth - player_margin) {
+
+                                this.move_data.player_position.snapRight = true;
+
+                            }
 
                         }
 
-                        if (this.move_data.player_position.Y < masthead_offset) {
 
-                            this.move_data.player_position.Y = masthead_offset;
+                        if (is_moving || !user_settings.miniPlayer.position.snapBottom) {
 
-                        } else if (this.move_data.player_position.Y + this.move_data.player_dimension.height > document.documentElement.clientHeight - player_margin) {
+                            if (this.move_data.player_position.Y < masthead_offset) {
 
-                            this.move_data.player_position.Y = document.documentElement.clientHeight - player_margin - this.move_data.player_dimension.height;
+                                this.move_data.player_position.Y = masthead_offset;
+
+                            } else if (this.move_data.player_position.Y + this.move_data.player_dimension.height > document.documentElement.clientHeight - player_margin) {
+
+                                this.move_data.player_position.snapBottom = true;
+
+                            }
 
                         }
 
                         if ((video_player = document.getElementById("movie_player"))) {
 
-                            video_player.setAttribute(
-                                "style",
-                                "left:" + this.move_data.player_position.X + "px;" +
-                                "top:" + this.move_data.player_position.Y + "px;"
-                            );
+                            style = "";
+
+                            if (!is_moving && user_settings.miniPlayer.position.snapRight || this.move_data.player_position.snapRight) {
+
+                                style += "right:" + player_margin + "px;";
+
+                            } else {
+
+                                style += "left:" + this.move_data.player_position.X + "px;";
+
+                            }
+
+                            if (!is_moving && user_settings.miniPlayer.position.snapBottom || this.move_data.player_position.snapBottom) {
+
+                                style += "bottom:" + player_margin + "px;";
+
+                            } else {
+
+                                style += "top:" + this.move_data.player_position.Y + "px;";
+
+                            }
+
+                            video_player.setAttribute("style", style);
+
+                        }
+
+                    },
+                    iniMoveData: function (clientX, clientY) {
+
+                        var video_rects;
+                        var video_player;
+
+                        if ((video_player = document.getElementById("movie_player"))) {
+
+                            video_rects = video_player.getBoundingClientRect();
+
+                            this.move_data.player_dimension.height = video_rects.height;
+                            this.move_data.player_dimension.width = video_rects.width;
+                            this.move_data.player_position.X = video_rects.left;
+                            this.move_data.player_position.Y = video_rects.top;
+                            this.move_data.mouse_offset.X = clientX - video_rects.left;
+                            this.move_data.mouse_offset.Y = clientY - video_rects.top;
 
                         }
 
                     },
                     movePlayer: function (event) {
 
-                        var video_rects;
-                        var video_player;
-
                         if (event.type === "mousemove") {
+
+                            document.documentElement.classList.add("iri-mini-player-moving");
 
                             this.move_data.player_position.X = event.clientX - this.move_data.mouse_offset.X;
                             this.move_data.player_position.Y = event.clientY - this.move_data.mouse_offset.Y;
 
-                            this.updatePlayerPosition();
+                            this.hasMoved = true;
+                            this.updatePlayerPosition(true);
 
                         } else if (event.type === "click" || event.type === "mouseup" || event.type === "mousedown") {
 
                             if (this.mouseListener) {
 
                                 window.removeEventListener("click", this.mouseListener, true);
-                                window.removeEventListener("mouseup", this.mouseListener, false);
-                                window.removeEventListener("mousemove", this.mouseListener, false);
+                                window.removeEventListener("mouseup", this.mouseListener, true);
+                                window.removeEventListener("mousemove", this.mouseListener, true);
 
                                 this.mouseListener = null;
 
                             }
 
-                            if (event.type === "mousedown") {
+                            switch (event.type) {
+                                case "mousedown":
 
-                                if ((video_player = document.getElementById("movie_player"))) {
+                                    this.iniMoveData(event.clientX, event.clientY);
 
-                                    video_rects = video_player.getBoundingClientRect();
+                                    this.mouseListener = this.movePlayer.bind(this);
 
-                                    this.move_data.player_dimension.height = video_rects.height;
-                                    this.move_data.player_dimension.width = video_rects.width;
-                                    this.move_data.player_position.X = video_rects.left;
-                                    this.move_data.player_position.Y = video_rects.top;
-                                    this.move_data.mouse_offset.X = event.clientX - video_rects.left;
-                                    this.move_data.mouse_offset.Y = event.clientY - video_rects.top;
+                                    window.addEventListener("click", this.mouseListener, true);
+                                    window.addEventListener("mouseup", this.mouseListener, true);
+                                    window.addEventListener("mousemove", this.mouseListener, true);
 
-                                }
+                                    break;
+                                case "mouseup":
+                                case "click":
 
-                                this.mouseListener = this.movePlayer.bind(this);
+                                    document.documentElement.classList.remove("iri-mini-player-moving");
 
-                                window.addEventListener("click", this.mouseListener, true);
-                                window.addEventListener("mouseup", this.mouseListener, false);
-                                window.addEventListener("mousemove", this.mouseListener, false);
+                                    user_settings.miniPlayer = {
+                                        position: {
+                                            X: this.move_data.player_position.X,
+                                            Y: this.move_data.player_position.Y,
+                                            snapRight: this.move_data.player_position.snapRight,
+                                            snapBottom: this.move_data.player_position.snapBottom
+                                        },
+                                        size: 352
+                                    };
+
+                                    break;
+                            }
+
+                            if (this.hasMoved) {
+
+                                iridium_api.saveSettings("miniPlayer");
+                                this.hasMoved = false;
 
                             }
 
-                            event.preventDefault();
-                            return false;
-
                         }
+
+                        event.preventDefault();
+                        event.stopPropagation();
+                        return false;
 
                     },
                     restorePlayer: function () {
@@ -3081,6 +3154,24 @@
                     },
                     setMiniPlayerSize: function (player_api, event) {
 
+                        if (event) {
+
+                            if ("fullscreen" in event) {
+
+                                if (event.fullscreen) {
+
+                                    player_api.removeAttribute("style");
+
+                                } else {
+
+                                    this.updatePlayerPosition();
+
+                                }
+
+                            }
+
+                        }
+
                         player_api.setSizeStyle(false, true);
 
                     },
@@ -3088,6 +3179,8 @@
 
                         var player_api;
                         var is_in_theater_mode;
+
+                        this.move_data.is_mini = false;
 
                         document.documentElement.classList.remove(class_name);
 
@@ -3105,12 +3198,21 @@
 
                             }
 
+                            if (this.setMiniPlayerSizeResizeListener) {
+
+                                window.removeEventListener("resize", this.setMiniPlayerSizeResizeListener, false);
+                                this.setMiniPlayerSizeResizeListener = null;
+
+                            }
+
                         }
 
                     },
                     iniMiniPlayer: function (class_name) {
 
                         var player_api;
+
+                        this.move_data.is_mini = true;
 
                         document.documentElement.classList.add(class_name);
 
@@ -3125,8 +3227,19 @@
 
                             this.iniMiniPlayerControls(player_api);
                             this.setMiniPlayerSize(player_api);
+
+                            this.iniMoveData(0, 0);
+
+                            this.move_data.player_position.X = user_settings.miniPlayer.position.X;
+                            this.move_data.player_position.Y = user_settings.miniPlayer.position.Y;
+
+                            this.updatePlayerPosition();
+
                             this.setMiniPlayerSizeListener = this.setMiniPlayerSize.bind(this, player_api);
                             player_api.addEventListener("onFullscreenChange", this.setMiniPlayerSizeListener, false);
+
+                            this.setMiniPlayerSizeResizeListener = this.updatePlayerPosition.bind(this);
+                            window.addEventListener("resize", this.setMiniPlayerSizeResizeListener, false);
 
                         }
 
@@ -3204,28 +3317,9 @@
                             mini_player_controls = document.createElement("div");
                             mini_player_controls.id = "iri-mini-player-controls";
 
-                            move_area = document.createElement("template");
-                            move_area.innerHTML =
-                                "<div id='iri-mini-player-move'>" +
-                                "    <style>" +
-                                "        .paused-mode #iri-mini-player-controls," +
-                                "        .ended-mode #iri-mini-player-controls," +
-                                "        #movie_player:not(.ytp-fullscreen):hover #iri-mini-player-controls {" +
-                                "            opacity: 1;" +
-                                "            pointer-events: initial;" +
-                                "        }" +
-                                "        #iri-mini-player-move {" +
-                                "            cursor: move;" +
-                                "            height: 42px;" +
-                                "            left: -12px;" +
-                                "            right: -12px;" +
-                                "            top: -6px;" +
-                                "            position: absolute;" +
-                                "        }" +
-                                "    </style>" +
-                                "</div>";
-                            move_area = move_area.content;
-                            move_area.firstChild.addEventListener("mousedown", this.movePlayer.bind(this), false);
+                            move_area = document.createElement("div");
+                            move_area.id = "iri-mini-player-move";
+                            move_area.addEventListener("mousedown", this.movePlayer.bind(this), true);
 
                             restore_page = document.createElement("template");
                             restore_page.innerHTML =
@@ -4438,6 +4532,7 @@
 
             allowed_pages = [
                 "/",
+                "/index",
                 "/feed",
                 "/results",
                 "/shared",

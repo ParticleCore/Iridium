@@ -189,7 +189,6 @@ html:not(.iri-always-playing) #iri-mini-player-controls {
     top: -6px;
     z-index: -1;
 }
-/*.iri-always-visible #movie_player:hover #iri-mini-player-controls,*/
 .iri-always-playing .paused-mode #iri-mini-player-controls,
 .iri-always-playing .ended-mode #iri-mini-player-controls,
 .iri-always-playing #movie_player:not(.ytp-fullscreen):hover #iri-mini-player-controls {
@@ -283,6 +282,24 @@ html:not(.iri-always-playing) #iri-mini-player-controls {
     opacity: 0.9;
 }
 /* end | mini player */
+
+
+/* ini | mini player move */
+.paused-mode #iri-mini-player-controls,
+.ended-mode #iri-mini-player-controls,
+#movie_player:not(.ytp-fullscreen):hover #iri-mini-player-controls {
+    opacity: 1;
+    pointer-events: initial;
+}
+#iri-mini-player-move {
+    cursor: move;
+    height: 42px;
+    left: -12px;
+    right: -12px;
+    top: -6px;
+    position: absolute;
+}
+/* end | mini player move */
 
 
 /* ini | blacklist */

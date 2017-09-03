@@ -284,6 +284,9 @@ html:not(.iri-always-visible):not(.iri-always-playing) #iri-mini-player-controls
 
 
 /* ini | mini player move */
+.iri-mini-player-moving #movie_player {
+    pointer-events: none;
+}
 .paused-mode #iri-mini-player-controls,
 .ended-mode #iri-mini-player-controls,
 #movie_player:not(.ytp-fullscreen):hover #iri-mini-player-controls {

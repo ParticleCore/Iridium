@@ -160,8 +160,7 @@ html.iri-always-playing ytd-watch[hidden] {
 
 
 /* ini | mini player */
-html:not(.iri-always-visible) #iri-mini-player-controls,
-html:not(.iri-always-playing) #iri-mini-player-controls {
+html:not(.iri-always-visible):not(.iri-always-playing) #iri-mini-player-controls {
     display: none;
 }
 #iri-mini-player-controls {

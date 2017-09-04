@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.2.1b
+// @version         0.2.2b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.1b
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.2b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -2643,17 +2643,31 @@
                                 },
                                 get: function isMobileGetter() {
 
+                                    var i;
                                     var matching;
+                                    var keys_list;
                                     var function_string;
 
-                                    if (context.isChannel() ? !user_settings.channel_trailer_auto_play : (!user_settings.player_auto_play && window.location.pathname === "/watch")) {
+                                    keys_list = Object.keys(this);
 
-                                        function_string = isMobileGetter["caller"].toString();
-                                        matching = function_string.match(/this\.([a-z0-9$_]{1,3})=[^;]+\.autoplay/i);
+                                    for (i = 0; i < keys_list.length; i++) {
 
-                                        if (matching && matching[1]) {
+                                        if (this[keys_list[i]] && this[keys_list[i]].eventid) {
 
-                                            this[matching[1]] = false;
+                                            if (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
+
+                                                function_string = isMobileGetter["caller"].toString();
+                                                matching = function_string.match(/this\.([a-z0-9$_]{1,3})=[^;]+\.autoplay/i);
+
+                                                if (matching && matching[1]) {
+
+                                                    this[matching[1]] = false;
+
+                                                }
+
+                                            }
+
+                                            break;
 
                                         }
 

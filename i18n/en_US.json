@@ -42,6 +42,9 @@
     "square_avatars": {
         "label": "Make user images squared"
     },
+    "improved_logo": {
+        "label": "Improve the YouTube logo"
+    },
     "thumbnail_preview": {
         "label": "Play videos by hovering the thumbnails"
     },
@@ -119,6 +122,19 @@
     "player_memorize_volume": {
         "label": "Memorize player volume"
     },
+    "player_quick_controls": {
+        "label": "Enable quick controls",
+        "button_auto_play": "Autoplay",
+        "button_full_browser": "Full Browser",
+        "button_screen_shot": "Screen Shot",
+        "button_thumbnails": "Thumbnails",
+        "thumbnails_title": "Click to download\nRight click for options",
+        "screen_shot_title": "Right click for options",
+        "full_browser_info": "Press \"Esc\" to exit"
+    },
+    "player_max_res_thumbnail": {
+        "label": "Force high quality player thumbnail"
+    },
     "shortcuts_always_active": {
         "label": "Player shortcuts always active"
     },
@@ -132,6 +148,9 @@
         "label": "Video keeps playing when changing pages",
         "button_restore": "Restore",
         "button_close": "Close"
+    },
+    "player_hide_end_screen": {
+        "label": "Hide end screen cards on mouse hover"
     },
     "iridium_dark_mode": {
         "label": "Use dark theme"

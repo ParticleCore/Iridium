@@ -42,6 +42,9 @@
     "square_avatars": {
         "label": "Κάνε τα avatars των χρηστών τετράγωνα"
     },
+    "improved_logo": {
+        "label": "Βελτίωση του λογοτύπου του YouTube"
+    },
     "thumbnail_preview": {
         "label": "Αναπαραγωγή βίντεο περνώντας πάνω από τις μικρογραφίες"
     },
@@ -119,6 +122,19 @@
     "player_memorize_volume": {
         "label": "Απομνημόνευση της έντασης ήχου αναπαραγωγής"
     },
+    "player_quick_controls": {
+        "label": "Ενεργοποίηση των γρήγορων λειτουργιών",
+        "button_auto_play": "Αυτ. Αναπαραγωγή",
+        "button_full_browser": "Πλήρες Παράθυρο",
+        "button_screen_shot": "Στιγμιότυπο",
+        "button_thumbnails": "Μικρογραφίες",
+        "thumbnails_title": "Κλίκ για κατέβασμα\nΔεξί κλικ για επιλογές",
+        "screen_shot_title": "Δεξί κλικ για επιλογές",
+        "full_browser_info": "Πατήστε \"Esc\" για έξοδο"
+    },
+    "player_max_res_thumbnail": {
+        "label": "Επιλογή της πιο υψηλής ποιότητας στην μικρογραφία αναπαραγωγής"
+    },
     "shortcuts_always_active": {
         "label": "Εμφάνιση πάντα των συντομεύσεων αναπαραγωγής"
     },
@@ -132,6 +148,9 @@
         "label": "Το βίντεο να συνεχίζει να παίζει ενώ αλλάζω σελίδες",
         "button_restore": "Επαναφορά",
         "button_close": "Κλείσιμο"
+    },
+    "player_hide_end_screen": {
+        "label": "Απόκρυψη καρτών τελικής οθόνης με το πέρασμα του κέρσορα"
     },
     "iridium_dark_mode": {
         "label": "Χρήση σκούρου θέματος"

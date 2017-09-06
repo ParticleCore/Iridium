@@ -1,7 +1,7 @@
 {
     "language": "Polski",
     "section_titles": {
-        "about": "Informacje i przydatne linki",
+        "about": "Informacje i użyteczne linki",
         "general": "Ustawienia ogólne",
         "video": "Ustawienia wideo",
         "settings": "Ustawienia Iridium"
@@ -11,17 +11,17 @@
         "blacklist": "Czarna lista",
         "general": "Ogólne",
         "language": "Język",
-        "layout": "Wygląd",
+        "layout": "Układ",
         "player": "Odtwarzacz",
         "settings": "Ustawienia",
         "thumbnails": "Miniatury"
     },
     "iridium_api": {
         "settings_button": "Iridium",
-        "feature_link": "Dowiedz się więcej"
+        "feature_link": "Dowiedz się, do czego służy"
     },
     "default_logo_page": {
-        "label": "Strona po kliknięciu logo YouTube:",
+        "label": "Domyślna strona po wciśnięciu loga Youtube:",
         "options": [
             "Główna",
             "Na czasie",
@@ -29,27 +29,27 @@
         ]
     },
     "default_channel_tab": {
-        "label": "Domyślna zakładka kanału:",
+        "label": "Domyślna strona kanału:",
         "options": [
             "Główna",
             "Wideo",
             "Playlisty",
             "Kanały",
-            "Dyskusja",
+            "Dyskusje",
             "Informacje"
         ]
     },
     "square_avatars": {
-        "label": "Kwadratowe avatary"
+        "label": "Zmień kształt awatarów na kwadratowy"
     },
     "improved_logo": {
         "label": "Ulepszone logo YouTube"
     },
     "thumbnail_preview": {
-        "label": "Podgląd wideo po najechaniu na miniaturę"
+        "label": "Odtwarzaj filmy przez najechanie na miniaturę"
     },
     "thumbnail_preview_mute": {
-        "label": "Shift włącza dźwięk w podglądzie miniatury"
+        "label": "Shift włącza dźwięk przy odtwarzaniu miniatury"
     },
     "enable_blacklist": {
         "label": "Włącz czarną listę"
@@ -59,27 +59,27 @@
         "button_edit": "Edytuj",
         "button_import": "Importuj",
         "button_export": "Eksportuj",
-        "button_reset": "Resetuj",
+        "button_reset": "Przywróć ustawienia domyślne",
         "button_save": "Zapisz",
         "button_close": "Zamknij",
         "button_remove": "Usuń z czarnej listy",
-        "placeholder": "Tutaj wklej nową czarną listę",
-        "confirm_reset": "Resetujesz swoją czarną listę. Zalecamy zrobienie kopii zapasowej zanim to zrobisz.\n\nCzy chcesz kontynuować?\n\n",
-        "reset_success": "Czarna lista zresetowana.\n\nZmiany będą widoczne po odświeżeniu strony.\n\n",
-        "confirm_import": "Nadpisujesz swoją czarną listę. Zalecamy zrobienie kopii zapasowej zanim to zrobisz.\n\nCzy chcesz kontynuować?\n\n",
-        "import_success": "Importowanie czarnej listy zakończone sukcesem.\n\nZmiany będą widoczne po odświeżeniu strony.\n\n",
-        "import_error": "Importowanie czarnej listy niepomyślne. Lista nieprawidłowa.\n\n"
+        "placeholder": "Wklej nową czarną listę tutaj",
+        "confirm_reset": "Chcesz zresetować swoją czarną listę. Radzimy utworzyć kopię zapasową swojej czarnej listy przed kontynuowaniem.\n\nCzy chcesz kontynuować?\n\n",
+        "reset_success": "Czarna lista została zresetowana.\n\nZmiany zostaną wprowadzone po odświeżeniu strony.\n\n",
+        "confirm_import": "Chcesz nadpisać swoją aktualną czarną listę. Radzimy utworzyć kopię zapasową swojej czarnej listy przed kontynuowaniem.\n\nCzy chcesz kontynuować?\n\n",
+        "import_success": "Zaimportowano czarną listę.\n\nZmiany zostaną wprowadzone po odświeżeniu strony.\n\n",
+        "import_error": "Twoja czarna lista nie mogła zostać zaimportowana, wygląda na to, że jest nieprawidłowa.\n\n"
     },
     "channel_video_count": {
-        "label": "Wyświetl liczbę opublikowanych"
+        "label": "Wyświetl ilość wysłanych filmów"
     },
     "channel_video_time": {
-        "label": "Wyświetl kiedy wideo zostało opublikowane"
+        "label": "Wyświetl od jak dawna film został wysłany"
     },
     "player_quality": {
-        "label": "Domyślna jakość wideo:",
+        "label": "Domyślna jakość filmu:",
         "options": [
-            "Auto",
+            "Automatyczna",
             "4320p (8k)",
             "2880p (5k)",
             "2160p (4k)",
@@ -93,34 +93,34 @@
         ]
     },
     "player_auto_play": {
-        "label": "Autoodtwarzanie"
+        "label": "Odtwarzaj filmy automatycznie"
     },
     "channel_trailer_auto_play": {
-        "label": "Automatycznie odtwarzaj trailery kanałów"
+        "label": "Odtwarzaj zwiastuny kanałów automatycznie"
     },
     "player_annotations": {
-        "label": "Zezwól na wyświetlanie adnotacji"
+        "label": "Zezwalaj na adnotacje w filmach"
     },
     "player_subtitles": {
-        "label": "Zezwól na wyświetlanie napisów"
+        "label": "Zezwalaj na napisy w filmach"
     },
     "player_loudness": {
-        "label": "Zezwól na normalizację głośności"
+        "label": "Zezwalaj na normalizacje głośności"
     },
     "player_ads": {
-        "label": "Zezwól na reklamy"
+        "label": "Zezwalaj na reklamy w filmach"
     },
     "subscribed_channel_player_ads": {
-        "label": "Zezwól na reklamy jedynie przy oglądaniu zasubskrybowanych kanałów"
+        "label": "Zezwalaj na reklamy tylko w filmach z kanałów które subskrybuje"
     },
     "player_hfr": {
-        "label": "Zezwól na HFR (60fps)"
+        "label": "Zezwalaj na streamowanie filmów HFR (60fps)"
     },
     "player_memorize_size": {
-        "label": "Zapamiętaj rozmiar odtwarzacza"
+        "label": "Zapamiętuj rozmiar odtwarzacza"
     },
     "player_memorize_volume": {
-        "label": "Zapamiętaj głośność odtwarzacza"
+        "label": "Zapamiętuj głośność odtwarzacza"
     },
     "player_quick_controls": {
         "label": "Włącz szybkie ustawienia",
@@ -136,43 +136,43 @@
         "label": "Wymuś miniatury wysokiej jakości"
     },
     "shortcuts_always_active": {
-        "label": "Skróty klawiszowe zawsze aktywne"
+        "label": "Skróty odtwarzacza zawsze aktywne"
     },
     "player_volume_wheel": {
-        "label": "Zmień głośność kółkiem myszy"
+        "label": "Zmieniaj głośność kółkiem myszy"
     },
     "player_always_visible": {
-        "label": "Wideo widoczne podczas scrollowania"
+        "label": "Podczas przewijania film jest zawsze widoczny"
     },
     "player_always_playing": {
-        "label": "Wideo jest odtwarzane podczas zmiany strony",
-        "button_restore": "Przywróć",
+        "label": "Film jest odtwarzany nawet po zmianie strony",
+        "button_restore": "Przywróć ustawienia domyślne",
         "button_close": "Zamknij"
     },
     "player_hide_end_screen": {
         "label": "Ukryj polecane miniatury na końcu filmu"
     },
     "iridium_dark_mode": {
-        "label": "Użyj ciemnego motywu"
+        "label": "Użyj czarnej skórki"
     },
     "iridium_user_settings": {
         "button_save": "Zapisz",
         "button_close": "Zamknij",
         "button_export": "Eksportuj",
         "button_import": "Importuj",
-        "button_reset": "Resetuj",
-        "placeholder": "Tutaj wklej nowe ustawienia",
-        "confirm_reset": "Resetujesz swoje ustawienia. Zalecamy zrobienie kopii zapasowej zanim to zrobisz.\n\nCzy chcesz kontynuować?\n\n",
-        "reset_success": "Ustawienia zresetowane.\n\nZmiany będą widoczne po odświeżeniu strony.\n\n",
-        "confirm_import": "Nadpisujesz swoje ustawienia. Zalecamy zrobienie kopii zapasowej zanim to zrobisz.\n\nCzy chcesz kontynuować?\n\n",
-        "import_success": "Importowanie ustawień zakończone sukcesem.\n\nZmiany będą widoczne po odświeżeniu strony.\n\n",
-        "import_error": "Importowanie ustawień niepomyślne. Ustawienia nieprawidłowe.\n\n"
+        "button_reset": "Przywróć ustawienia domyślne",
+        "placeholder": "Wklej swoje nowe ustawienia tutaj",
+        "confirm_reset": "Chcesz zresetować swoje ustawienia. Radzimy utworzyć kopię zapasową przed kontynuowaniem.\n\nCzy chcesz kontynuować?\n\n",
+        "reset_success": "Ustawienia zostały zresetowane.\n\nZmiany zostaną wprowadzone po odświeżeniu strony.\n\n",
+        "confirm_import": "Chcesz nadpisać swoje aktualne ustawienia. Radzimy utworzyć kopię zapasową przed kontynuowaniem.\n\nCzy chcesz kontynuować?\n\n",
+        "import_success": "Zaimportowano ustawienia.\n\nZmiany zostaną wprowadzone po odświeżeniu strony.\n\n",
+        "import_error": "Twoje ustawienia nie mogły zostać zaimportowane, wygląda na to ze są nieprawidłowe.\n\n"
     },
     "iridium_language": {
         "button_save": "Zapisz",
         "button_close": "Zamknij",
-        "confirm_save": "Zmieniasz ustawienia języka rozszerzenia.\n\nCzy chcesz kontynuować?\n\n",
-        "save_success": "Ustawienia języka zapisane pomyślnie.\n\nZmiany będą widoczne po odświeżeniu strony.\n\n",
-        "save_error": "Ustawienia języka nie mogły zostać zmienione. Ustawienia nieprawidłowe.\n\n"
+        "confirm_save": "Chcesz nadpisać ustawienia językowe swojego rozszerzenia.\n\nCzy chcesz kontynuować?\n\n",
+        "save_success": "Nowy język zapisany.\n\nZmiany zostaną wprowadzone po odświeżeniu strony.\n\n",
+        "save_error": "Nowy język nie mogł zostać zapisany, wygląda na to ze nie jest prawidłowy.\n\n"
     }
 }

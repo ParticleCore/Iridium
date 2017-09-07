@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.2.2b
+// @version         0.2.3b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.2b
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.3b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -1710,6 +1710,12 @@
                         var key_type;
                         var player_response;
 
+                        if (args.fflags) {
+
+                            args.fflags = args.fflags.replace("new_pause_state3=true" , "new_pause_state3=false");
+
+                        }
+
                         if (user_settings.player_max_res_thumbnail && args.thumbnail_url) {
 
                             args.iurlmaxres = args.thumbnail_url.replace(/\/[^\/]+$/, "/maxresdefault.jpg");
@@ -2534,6 +2540,7 @@
                         window.addEventListener("yt-page-data-updated", this.loadStartListener, true);
                         window.addEventListener("yt-navigate-start", this.loadStartListener, false);
                         window.addEventListener("yt-navigate-finish", this.loadStartListener, false);
+
                         window.matchMedia = this.modMatchMedia(window.matchMedia);
                         window.onYouTubePlayerReady = this.shareApi(window.onYouTubePlayerReady);
                         JSON.parse = this.modJSONParse(JSON.parse);
@@ -2601,23 +2608,6 @@
 
                                 }
                             },
-                            loaded: {
-                                set: function (data) {
-                                    this._loaded = data;
-                                },
-                                get: function () {
-
-                                    if (this.args && (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
-
-                                        return false;
-
-                                    }
-
-                                    return this._loaded;
-
-                                }
-
-                            },
                             load: {
                                 set: function (data) {
                                     this._load = data;
@@ -2633,6 +2623,23 @@
                                     }
 
                                     return this._load;
+
+                                }
+
+                            },
+                            playVideo: {
+                                set: function (data) {
+                                    this._playVideo = data;
+                                },
+                                get: function () {
+
+                                    if (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
+
+                                        return function () {};
+
+                                    }
+
+                                    return this._playVideo;
 
                                 }
 
@@ -3202,7 +3209,12 @@
 
                             is_in_theater_mode = document.querySelector("ytd-watch[theater]");
 
-                            player_api.removeAttribute("style");
+                            if (!document.querySelector(".iri-always-visible,.iri-always-playing")) {
+
+                                player_api.removeAttribute("style");
+
+                            }
+
                             player_api.setSizeStyle(true, is_in_theater_mode);
 
                             if (this.setMiniPlayerSizeListener) {

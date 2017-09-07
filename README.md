@@ -40,10 +40,13 @@ Each item on the lists below can be removed or moved to the a different version 
 
 ### TODO - beta version [current]
 
-- [ ] Core: create Firefox add-on
-- [ ] Core: create Chrome extension?
 - [ ] Feature: control comment section visiblity
 - [ ] Feature: ability to open the player in a pop-out window
 - [x] Feature: fullbrowser video mode
 - [ ] Feature: reverse playlist
 - [x] Feature: advanced options / quick shortcuts below player
+
+### TODO - release version
+
+- [ ] Core: create Firefox add-on
+- [ ] Core: create Chrome extension

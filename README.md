@@ -1,4 +1,4 @@
-# Iridium [![current version](https://img.shields.io/github/release/ParticleCore/Iridium/all.svg)](https://github.com/ParticleCore/Iridium/releases/latest) [![Analytics](https://ga-beacon.appspot.com/UA-106143414-1/readme)](https://github.com/ParticleCore/Iridium)
+# Iridium [![current version](https://img.shields.io/github/release/ParticleCore/Iridium/all.svg)](https://github.com/ParticleCore/Iridium/releases/latest) [![](https://www.google-analytics.com/collect?v=1&tid=UA-106143414-1&cid=000000&t=event&ec=page&ea=open&el=000000&cs=readme&cm=repo&cn=repository)](https://github.com/ParticleCore/Iridium)
 
 **[Download](https://github.com/ParticleCore/Iridium/wiki/Download) | [Features](https://github.com/ParticleCore/Iridium/wiki/Features) | [Report a problem](https://github.com/ParticleCore/Iridium/wiki/Report-a-bug) | [Donate](https://github.com/ParticleCore/Iridium/wiki/Donate)**
 

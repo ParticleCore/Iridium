@@ -8,7 +8,7 @@
     },
     "sub_section_titles": {
         "channel": "Chaîne",
-        "blacklist": "List noire",
+        "blacklist": "Liste noire",
         "general": "Général",
         "language": "Langue",
         "layout": "Disposition",
@@ -21,7 +21,7 @@
         "feature_link": "Découvrez les fonctionnalités"
     },
     "default_logo_page": {
-        "label": "Page par défaut du logo YouTube:",
+        "label": "Page par défaut du logo YouTube :",
         "options": [
             "Accueil",
             "Tendances",
@@ -29,7 +29,7 @@
         ]
     },
     "default_channel_tab": {
-        "label": "Onglet par défaut des chaînes:",
+        "label": "Onglet par défaut des chaînes :",
         "options": [
             "Accueil",
             "Vidéos",
@@ -46,7 +46,7 @@
         "label": "Prévisualiser les vidéos en passant la souris sur les miniatures"
     },
     "thumbnail_preview_mute": {
-        "label": "La touche shift active ou désactive le son des prévisualisations"
+        "label": "La touche maj active ou désactive le son des prévisualisations"
     },
     "enable_blacklist": {
         "label": "Activer la liste noire"
@@ -61,9 +61,9 @@
         "button_close": "Fermer",
         "button_remove": "Retirer de la liste noire",
         "placeholder": "Copiez votre nouvelle liste noire ici",
-        "confirm_reset": "Vous êtes sur le point de réinitialiser votre liste noire. Il est conseillé de sauvegarder votre liste noire actuelle avant de continuer.\n\nVoulez-vous continuer ?\n\n",
+        "confirm_reset": "Vous êtes sur le point de réinitialiser votre liste noire. Il est conseillé de sauvegarder votre liste noire actuelle avant de continuer.\n\nVoulez-vous continuer ?\n\n",
         "reset_success": "La liste noire a été réinitialisée.\n\nLes changements seront pris en compte après le rechargement de la page.\n\n",
-        "confirm_import": "Vous êtes sur le point d'écraser votre liste noire actuelle. Il est conseillé de sauvegarder votre liste noire actuelle avant de continuer.\n\nVoulez-vous continuer ?\n\n",
+        "confirm_import": "Vous êtes sur le point d'écraser votre liste noire actuelle. Il est conseillé de sauvegarder votre liste noire actuelle avant de continuer.\n\nVoulez-vous continuer ?\n\n",
         "import_success": "Votre liste noire a été importée avec succès.\n\nLes changements seront pris en compte après le rechargement de la page.\n\n",
         "import_error": "Votre liste noire n'a pas pu être importée car elle semble incorrecte.\n\n"
     },
@@ -71,10 +71,10 @@
         "label": "Afficher le nombre de vidéos mises en ligne"
     },
     "channel_video_time": {
-        "label": "Afficher la durée de mise en ligne de la vidéo"
+        "label": "Afficher la durée depuis mise en ligne de la vidéo"
     },
     "player_quality": {
-        "label": "Qualité vidéo par défaut:",
+        "label": "Qualité vidéo par défaut :",
         "options": [
             "Auto",
             "4320p (8k)",
@@ -96,7 +96,7 @@
         "label": "Jouer les bandes annonces de chaînes automatiquement"
     },
     "player_annotations": {
-        "label": "Autoriser les annotations sur le vidéos"
+        "label": "Autoriser les annotations sur les vidéos"
     },
     "player_subtitles": {
         "label": "Autoriser les sous-titres sur les vidéos"
@@ -143,16 +143,16 @@
         "button_import": "Importer",
         "button_reset": "Réinitialiser",
         "placeholder": "Collez vos nouveaux paramètres ici",
-        "confirm_reset": "Vous êtes sur le point de réinitialiser vos paramètres. Il est conseillé sauvegarder vos paramètres actuels avant de continuer.\n\nVoulez-vous continuer ?\n\n",
+        "confirm_reset": "Vous êtes sur le point de réinitialiser vos paramètres. Il est conseillé sauvegarder vos paramètres actuels avant de continuer.\n\nVoulez-vous continuer ?\n\n",
         "reset_success": "Les paramètres ont été réinitialisés.\n\nLes changements seront appliqués après le rechargement de la page.\n\n",
-        "confirm_import": "Vous êtes sur le point de réinitialiser vos paramètres. Il est conseillé sauvegarder vos paramètres actuels avant de continuer.\n\nVoulez-vous continuer ?\n\n",
-        "import_success": "Your settings have been imported with success.\n\nChanges will be applied after a page refresh.\n\n",
-        "import_error": "Vos paramètres n'ont pas pu être importés car ils sembles incorrects.\n\n"
+        "confirm_import": "Vous êtes sur le point de réinitialiser vos paramètres. Il est conseillé sauvegarder vos paramètres actuels avant de continuer.\n\nVoulez-vous continuer ?\n\n",
+        "import_success": "Vos paramètres ont été importés avec succès.\n\nLes changements seront pris en compte après le rechargement de la page.\n\n",
+        "import_error": "Vos paramètres n'ont pas pu être importés car ils semblent incorrects.\n\n"
     },
     "iridium_language": {
         "button_save": "Sauvegarder",
         "button_close": "Fermer",
-        "confirm_save": "Vous êtes sur le point de changer le langage de l'extension.\n\nVoulez-vous continuer ?\n\n",
+        "confirm_save": "Vous êtes sur le point de changer le langage de l'extension.\n\nVoulez-vous continuer ?\n\n",
         "save_success": "Nouveau langage sauvegardé.\n\nLes changements seront appliqués après le rechargement de la page.\n\n",
         "save_error": "Le nouveau langage n'a pas pu être appliqué car il semble incorrect.\n\n"
     }

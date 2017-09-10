@@ -367,6 +367,20 @@ yt-img-shadow:not(.ytd-channel-renderer) .iri-add-to-blacklist {
 /* end | hide end screen cards */
 
 
+/* ini | comments */
+#iri-show-comments {
+    color: var(--yt-expand-color);
+    cursor: pointer;
+    font-size: 1.3rem;
+    font-weight: 500;
+    letter-spacing: .007px;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 8px;
+}
+/* end | comments */
+
+
 /* ini | quick controls */
 #iri-quick-controls {
     font-size: 0;

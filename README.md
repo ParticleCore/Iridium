@@ -14,7 +14,7 @@ The initial phase will be focused on the userscript version only and bugs are ex
 
 Each item on the lists below can be removed or moved to the a different version at any time
 
-### TODO - alpha version [complete]
+### TODO - [alpha version](https://github.com/ParticleCore/Iridium/tree/alpha) [complete]
 
 - [x] Core: minimally working alpha version
 - [x] Core: create settings menu on its own local page
@@ -38,7 +38,7 @@ Each item on the lists below can be removed or moved to the a different version 
 - [x] Feature: youtube logo redirects to subscription or trending
 - [x] Feature: blacklist videos from specific channels
 
-### TODO - beta version [current]
+### TODO - [beta version](https://github.com/ParticleCore/Iridium/tree/beta) [current]
 
 - [ ] Feature: control comment section visiblity
 - [ ] Feature: ability to open the player in a pop-out window
@@ -46,7 +46,7 @@ Each item on the lists below can be removed or moved to the a different version 
 - [ ] Feature: reverse playlist
 - [x] Feature: advanced options / quick shortcuts below player
 
-### TODO - release version
+### TODO - [release version](https://github.com/ParticleCore/Iridium/tree/master)
 
 - [ ] Core: create Firefox add-on
 - [ ] Core: create Chrome extension

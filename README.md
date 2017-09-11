@@ -40,7 +40,7 @@ Each item on the lists below can be removed or moved to the a different version 
 
 ### TODO - [beta version](https://github.com/ParticleCore/Iridium/tree/beta) [current]
 
-- [ ] Feature: control comment section visiblity
+- [x] Feature: control comment section visiblity
 - [ ] Feature: ability to open the player in a pop-out window
 - [x] Feature: fullbrowser video mode
 - [ ] Feature: reverse playlist

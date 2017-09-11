@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.2.3b
+// @version         0.2.4b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.3b
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css#v=0.2.4b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -1700,6 +1700,16 @@
                                 screen_shot_title: "Right click for options",
                                 full_browser_info: "Press \"Esc\" to exit"
                             }
+                        },
+                        player_max_res_thumbnail: {
+                            id: "player_max_res_thumbnail",
+                            section: "video",
+                            sub_section: "player",
+                            type: "checkbox",
+                            value: true,
+                            i18n: {
+                                label: "Force high quality player thumbnail"
+                            }
                         }
                     },
                     modArgs: function (args) {
@@ -2450,13 +2460,6 @@
 
                         }
 
-                        if (this.quickControlsStateListener) {
-
-                            iridium_api.broadcast_channel.removeEventListener("message", this.quickControlsStateListener);
-                            this.quickControlsStateListener = null;
-
-                        }
-
                         quick_controls = document.querySelector("#iri-quick-controls");
 
                         if (user_settings.player_quick_controls && document.querySelector("ytd-watch:not([hidden])") && (meta_section = document.querySelector("ytd-watch #meta"))) {
@@ -2504,8 +2507,6 @@
                             }
 
                             this.quickControlsState();
-                            this.quickControlsStateListener = this.quickControlsState.bind(this);
-                            iridium_api.broadcast_channel.addEventListener("message", this.quickControlsStateListener);
 
                             this.quickControlsListener = this.quickControls.bind(this);
                             document.addEventListener("click", this.quickControlsListener, false);
@@ -2517,13 +2518,34 @@
                         }
 
                     },
+                    onSettingsUpdated: function () {
+
+                        this.quickControlsState();
+
+                    },
                     ini: function () {
 
                         var context;
+                        var timestamp;
 
                         if (iridium_api.initializeOption.call(this)) {
 
                             return;
+
+                        }
+
+                        if (user_settings.player_quality !== "auto") {
+
+                            timestamp = Date.now();
+
+                            window.localStorage.setItem(
+                                "yt-player-quality",
+                                JSON.stringify({
+                                    data: user_settings.player_quality,
+                                    creation: timestamp,
+                                    expiration: timestamp + 2592E6
+                                })
+                            );
 
                         }
 
@@ -2614,9 +2636,9 @@
                                 },
                                 get: function () {
 
-                                    var temp = this._load && this._load.toString();
+                                    var temp;
 
-                                    if (temp && temp.match(/Application.create/)) {
+                                    if ((temp = this._load && this._load.toString()) && temp.match(/Application.create/)) {
 
                                         window.yt.player.Application.create = context.modPlayerLoad(window.yt.player.Application.create);
 
@@ -2625,7 +2647,6 @@
                                     return this._load;
 
                                 }
-
                             },
                             playVideo: {
                                 set: function (data) {
@@ -2642,7 +2663,6 @@
                                     return this._playVideo;
 
                                 }
-
                             },
                             isMobile: {
                                 set: function (data) {
@@ -2683,7 +2703,6 @@
                                     return this._isMobile;
 
                                 }
-
                             }
                         });
 
@@ -2691,20 +2710,130 @@
                 },
                 {
                     options: {
-                        player_max_res_thumbnail: {
-                            id: "player_max_res_thumbnail",
+                        comments_visibility: {
+                            id: "comments_visibility",
                             section: "video",
-                            sub_section: "player",
-                            type: "checkbox",
-                            value: true,
+                            sub_section: "general",
+                            type: "dropdown",
+                            value: 1,
                             i18n: {
-                                label: "Force high quality player thumbnail"
-                            }
+                                label: "Comment section:",
+                                button_show_comments: "Show comments",
+                                options: [
+                                    "Show",
+                                    "Hide",
+                                    "Remove"
+                                ]
+                            },
+                            options: [
+                                0,
+                                1,
+                                2
+                            ]
                         }
+                    },
+                    modOnShow: function (original) {
+
+                        return function (bypass) {
+
+                            var comments_loaded;
+                            var comment_contents;
+
+                            if (user_settings.comments_visibility > 1) {
+
+                                return function () {};
+
+                            }
+
+                            comments_loaded = (comment_contents = document.querySelector("ytd-comments #contents")) && !!comment_contents.firstElementChild;
+
+                            if (bypass || comments_loaded || user_settings.comments_visibility < 1) {
+
+                                return original.apply(this, arguments);
+
+                            }
+
+                            return function () {};
+
+                        };
+
+                    },
+                    iniLoadComments: function (event) {
+
+                        var comment_section = document.querySelector("ytd-comments yt-next-continuation");
+
+                        event.target.remove();
+
+                        if (comment_section) {
+
+                            comment_section.onShow(true);
+
+                        }
+
+                    },
+                    iniLoadCommentsButton: function () {
+
+                        var button;
+                        var comment_section;
+
+                        button = document.getElementById("iri-show-comments");
+
+                        if (!button && (comment_section = document.querySelector("ytd-comments"))) {
+
+                            button = document.createElement("div");
+                            button.id = "iri-show-comments";
+                            button.textContent = i18n.comments_visibility.button_show_comments;
+                            button.addEventListener("click", this.iniLoadComments.bind(this), false);
+
+                            comment_section.insertBefore(button, comment_section.firstChild);
+
+                        }
+
+                    },
+                    iniLoadStartListener: function () {
+
+                        var button;
+                        var comment_section;
+                        var comment_contents;
+
+                        if (user_settings.comments_visibility > 0) {
+
+                            if (!((comment_contents = document.querySelector("ytd-comments #contents")) && comment_contents.firstElementChild)) {
+
+                                if ((comment_section = document.querySelector("ytd-comments yt-next-continuation"))) {
+
+                                    if (comment_section.onShow) {
+
+                                        comment_section.onShow = this.modOnShow(comment_section.onShow);
+
+                                    }
+
+                                    if (user_settings.comments_visibility < 2) {
+
+                                        this.iniLoadCommentsButton();
+
+                                    }
+
+                                }
+
+                            } else if (comment_contents.firstElementChild && (button = document.getElementById("iri-show-comments"))) {
+
+                                button.remove();
+
+                            }
+
+                        }
+
                     },
                     ini: function () {
 
-                        iridium_api.initializeOption.call(this);
+                        if (iridium_api.initializeOption.call(this)) {
+
+                            return;
+
+                        }
+
+                        window.addEventListener("yt-visibility-refresh", this.iniLoadStartListener.bind(this), true);
 
                     }
                 },
@@ -3324,7 +3453,7 @@
 
                             this.endMiniPlayer("iri-always-playing");
 
-                        } else if (document.querySelector(".paused-mode,.playing-mode")) {
+                        } else if (document.querySelector(".playing-mode")) {
 
                             this.iniMiniPlayer("iri-always-playing");
 
@@ -3397,6 +3526,14 @@
                         };
 
                     },
+                    onSettingsUpdated: function () {
+
+                        this.move_data.player_position.X = user_settings.miniPlayer.position.X;
+                        this.move_data.player_position.Y = user_settings.miniPlayer.position.Y;
+
+                        this.updatePlayerPosition();
+
+                    },
                     ini: function () {
 
                         var context;
@@ -3414,9 +3551,7 @@
 
                         window.addEventListener("scroll", always_visible_listener, false);
                         window.addEventListener("popstate", always_playing_listener, true);
-                        window.addEventListener("yt-navigate-start", always_visible_listener, false);
                         window.addEventListener("yt-navigate-finish", always_visible_listener, false);
-                        window.addEventListener("yt-navigate-start", always_playing_listener, false);
                         window.addEventListener("yt-navigate-finish", always_playing_listener, false);
 
                         context = this;
@@ -3458,6 +3593,11 @@
                         }
 
                     },
+                    onSettingsUpdated: function () {
+
+                        this.toggleHideCards();
+
+                    },
                     ini: function () {
 
                         if (iridium_api.initializeOption.call(this)) {
@@ -3467,16 +3607,6 @@
                         }
 
                         this.toggleHideCards();
-
-                        if (this.toggleHideCardsListener) {
-
-                            iridium_api.broadcast_channel.removeEventListener("message", this.toggleHideCardsListener);
-                            this.toggleHideCardsListener = null;
-
-                        }
-
-                        this.toggleHideCardsListener = this.toggleHideCards.bind(this);
-                        iridium_api.broadcast_channel.addEventListener("message", this.toggleHideCardsListener);
 
                     }
                 },
@@ -4020,7 +4150,7 @@
                                     options.value = option.options[j];
                                     options.textContent = i18n[option.id].options[j];
 
-                                    if (user_settings[option.id] === options.value) {
+                                    if (user_settings[option.id] === option.options[j]) {
 
                                         options.setAttribute("selected", "true");
 
@@ -4440,10 +4570,24 @@
                     }
 
                 },
+                initializeModulesUpdate: function () {
+
+                    var i;
+
+                    for (i = 0; i < modules.length; i++) {
+
+                        if (modules[i].onSettingsUpdated) {
+
+                            modules[i].onSettingsUpdated();
+
+                        }
+
+                    }
+
+                },
                 initializeModules: function () {
 
                     var i;
-                    var timestamp;
 
                     for (i = 0; i < modules.length; i++) {
 
@@ -4452,21 +4596,6 @@
                             modules[i].ini();
 
                         }
-
-                    }
-
-                    if (user_settings.player_quality !== "auto") {
-
-                        timestamp = Date.now();
-
-                        window.localStorage.setItem(
-                            "yt-player-quality",
-                            JSON.stringify({
-                                data: user_settings.player_quality,
-                                creation: timestamp,
-                                expiration: timestamp + 2592E6
-                            })
-                        );
 
                     }
 
@@ -4505,6 +4634,7 @@
                     if (event.data && event.data.broadcast_id === this.broadcast_channel.name) {
 
                         this.initializeSettings(event.data);
+                        this.initializeModulesUpdate();
 
                     }
 

@@ -135,6 +135,15 @@
     "player_max_res_thumbnail": {
         "label": "Force high quality player thumbnail"
     },
+    "comments_visibility": {
+        "label": "Comment section:",
+        "button_show_comments": "Show comments",
+        "options": [
+            "Show",
+            "Hide",
+            "Remove"
+        ]
+    },
     "shortcuts_always_active": {
         "label": "Player shortcuts always active"
     },

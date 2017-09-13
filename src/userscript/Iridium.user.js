@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.2.4b
+// @version         0.2.5b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css#v=0.2.4b
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.5b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -844,37 +844,15 @@
                         }
 
                     },
-                    checkParse: function (original) {
+                    modOnDone: function (original) {
 
                         var context = this;
 
-                        return function (text, reviver, bypass) {
+                        return function(data) {
 
-                            var temp;
+                            context.clearList(data);
 
-                            try {
-
-                                temp = original.apply(this, arguments);
-
-                                if (!user_settings.enable_blacklist) {
-
-                                    return temp;
-
-                                }
-
-                                if (!bypass && context.allowedBlacklistPage()) {
-
-                                    context.clearList(temp);
-
-                                }
-
-                                return temp;
-
-                            } catch (e) {
-
-                                return e;
-
-                            }
+                            return original.apply(this, arguments);
 
                         };
 
@@ -1209,25 +1187,42 @@
                         document.addEventListener("yt-page-data-fetched", this.iniBlacklist.bind(this), false);
                         document.addEventListener("click", this.addToBlacklist.bind(this), true);
 
-                        JSON.parse = this.checkParse(JSON.parse);
                         HTMLDocument.prototype.importNode = this.modImportNode(HTMLDocument.prototype.importNode);
 
                         context = this;
 
-                        Object.defineProperty(Object.prototype, "ytInitialData", {
-                            set: function (data) {
-                                this._ytInitialData = data;
-                            },
-                            get: function () {
+                        Object.defineProperties(Object.prototype, {
+                            ytInitialData: {
+                                set: function (data) {
+                                    this._ytInitialData = data;
+                                },
+                                get: function () {
 
-                                if (user_settings.enable_blacklist && context.allowedBlacklistPage()) {
+                                    if (user_settings.enable_blacklist && context.allowedBlacklistPage()) {
 
-                                    context.clearList(this._ytInitialData);
+                                        context.clearList(this._ytInitialData);
+
+                                    }
+
+                                    return this._ytInitialData;
 
                                 }
+                            },
+                            onDone: {
+                                set: function (data) {
+                                    this._onDone = data;
+                                },
+                                get: function () {
 
-                                return this._ytInitialData;
+                                    if (user_settings.enable_blacklist && context.allowedBlacklistPage()) {
 
+                                        return context.modOnDone(this._onDone);
+
+                                    }
+
+                                    return this._onDone;
+
+                                }
                             }
                         });
 
@@ -1771,7 +1766,7 @@
 
                         if (!user_settings.player_subtitles) {
 
-                            window.localStorage.setItem(
+                            iridium_api.setStorage(
                                 "yt-html5-player-modules::subtitlesModuleData::module-enabled",
                                 "false"
                             );
@@ -1937,7 +1932,7 @@
                             for (i = 0; i < temp.length; i++) {
 
                                 key_value = temp[i].split("=");
-                                temp_list[key_value[0]] = key_value[1] || "";
+                                temp_list[key_value[0]] = window.decodeURIComponent(key_value[1]) || "";
 
                             }
 
@@ -1950,7 +1945,7 @@
 
                             for (i = 0; i < temp.length; i++) {
 
-                                event.target.responseText += temp[i] + "=" + temp_list[temp[i]];
+                                event.target.responseText += temp[i] + "=" + window.encodeURIComponent(temp_list[temp[i]]);
 
                                 if (i + 1 < temp.length) {
 
@@ -2098,7 +2093,7 @@
 
                                 timestamp = Date.now();
 
-                                window.localStorage.setItem(
+                                iridium_api.setStorage(
                                     "yt-player-volume",
                                     JSON.stringify({
                                         data: JSON.stringify({
@@ -2538,7 +2533,7 @@
 
                             timestamp = Date.now();
 
-                            window.localStorage.setItem(
+                            iridium_api.setStorage(
                                 "yt-player-quality",
                                 JSON.stringify({
                                     data: user_settings.player_quality,
@@ -3000,7 +2995,7 @@
 
                                 timestamp = Date.now();
 
-                                window.localStorage.setItem(
+                                iridium_api.setStorage(
                                     "yt-player-volume",
                                     JSON.stringify({
                                         data: JSON.stringify({
@@ -3927,6 +3922,11 @@
             iridium_api = {
 
                 videoIdPattern: /v=([\w-_]+)/,
+                setStorage: function (id, value) {
+
+                    try {window.localStorage.setItem(id, value);} catch (ignore) {}
+
+                },
                 checkIfExists: function (path, host) {
 
                     var i;

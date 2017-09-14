@@ -135,6 +135,15 @@
     "player_max_res_thumbnail": {
         "label": "Wymuś miniatury wysokiej jakości"
     },
+	"comments_visibility": {
+        "label": "Komentarze:",
+        "button_show_comments": "Pokaż komentarze",
+        "options": [
+            "Pokaż",
+            "Ukryj",
+            "Usuń"
+        ]
+    },
     "shortcuts_always_active": {
         "label": "Skróty odtwarzacza zawsze aktywne"
     },

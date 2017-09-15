@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.2.5b
+// @version         0.2.6b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.5b
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.6b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -115,13 +115,40 @@
 
                         var url;
                         var data;
+                        var parent;
+                        var target;
 
-                        if ((data = event.target.data) && (url = data.webNavigationEndpointData && data.webNavigationEndpointData.url)) {
+                        target = event.target;
+
+                        if (!(data = target.data)) {
+
+                            parent = target.parentNode;
+
+                            while (parent) {
+
+                                if (parent.data) {
+                                    target = parent;
+                                    data = target.data;
+                                    break;
+                                }
+
+                                parent = parent.parentNode;
+
+                            }
+
+                        }
+
+                        if (data && (url = data.webNavigationEndpointData && data.webNavigationEndpointData.url)) {
 
                             if (user_settings.default_channel_tab !== "home" && url.match(/^\/(?:channel|user)\/(?:[^\/])+$/)) {
 
                                 data.webNavigationEndpointData.url += "/" + user_settings.default_channel_tab;
-                                event.target.href = data.webNavigationEndpointData.url;
+
+                                if (target.href) {
+
+                                    target.href = data.webNavigationEndpointData.url;
+
+                                }
 
                             }
 
@@ -1715,6 +1742,12 @@
                         var key_type;
                         var player_response;
 
+                        if (this.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
+
+                            args.autoplay = "0";
+
+                        }
+
                         if (args.fflags) {
 
                             args.fflags = args.fflags.replace("new_pause_state3=true" , "new_pause_state3=false");
@@ -1731,12 +1764,16 @@
 
                             delete args.ad3_module;
 
-                            player_response = JSON.parse(args.player_response);
+                            if (args.player_response) {
 
-                            if (player_response && player_response.adPlacements) {
+                                player_response = JSON.parse(args.player_response);
 
-                                delete player_response.adPlacements;
-                                args.player_response = JSON.stringify(player_response);
+                                if (player_response && player_response.adPlacements) {
+
+                                    delete player_response.adPlacements;
+                                    args.player_response = JSON.stringify(player_response);
+
+                                }
 
                             }
 
@@ -2625,22 +2662,21 @@
 
                                 }
                             },
-                            load: {
+                            create: {
                                 set: function (data) {
-                                    this._load = data;
-                                },
-                                get: function () {
 
-                                    var temp;
+                                    if (data.toString && data.toString().match(/:"player"+/)) {
 
-                                    if ((temp = this._load && this._load.toString()) && temp.match(/Application.create/)) {
+                                        this._create = context.modPlayerLoad(data);
 
-                                        window.yt.player.Application.create = context.modPlayerLoad(window.yt.player.Application.create);
+                                    } else {
+
+                                        this._create = data;
 
                                     }
-
-                                    return this._load;
-
+                                },
+                                get: function () {
+                                    return this._create;
                                 }
                             },
                             playVideo: {
@@ -3415,7 +3451,7 @@
 
                         } else if (window.location.pathname === "/watch") {
 
-                            if ((player_container = document.getElementById("player-container")) && (player_bounds = player_container.getBoundingClientRect())) {
+                            if ((player_container = document.querySelector("#player #player-container")) && (player_bounds = player_container.getBoundingClientRect())) {
 
                                 is_out_of_sight = player_bounds.bottom < ((player_bounds.height / 2) + 50);
 

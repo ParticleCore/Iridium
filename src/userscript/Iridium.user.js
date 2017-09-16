@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.2.6b
+// @version         0.2.7b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.6b
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.7b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -1859,6 +1859,8 @@
 
                             if (current_config && current_config.args) {
 
+                                context.updatePlayerLayout = !!current_config.args.list !== !!args.list;
+
                                 if ((current_config.args.eventid === args.eventid || current_config.args.loaderUrl === args.loaderUrl)) {
 
                                     if (!document.querySelector(".ended-mode") && (current_video_id = window.location.href.match(iridium_api.videoIdPattern))) {
@@ -2052,6 +2054,19 @@
                             return original.apply(this, arguments);
 
                         };
+
+                    },
+                    interceptHooks: function () {
+
+                        if (iridium_api.checkIfExists("yt.player.Application.create")) {
+
+                            window.yt.player.Application.create = this.modPlayerLoad(window.yt.player.Application.create);
+
+                            document.documentElement.removeEventListener("load", this.fileLoadListener, true);
+
+                            this.fileLoadListener = null;
+
+                        }
 
                     },
                     handleCustoms: function (event) {
@@ -2480,10 +2495,13 @@
                         }
 
                     },
-                    loadStart: function () {
+                    loadStart: function (event) {
 
+                        var is_watch;
+                        var is_playlist;
                         var meta_section;
                         var quick_controls;
+                        var yt_player_manager;
 
                         if (this.quickControlsListener) {
 
@@ -2541,11 +2559,41 @@
                             this.quickControlsState();
 
                             this.quickControlsListener = this.quickControls.bind(this);
+
                             document.addEventListener("click", this.quickControlsListener, false);
 
                         } else if (quick_controls && !user_settings.player_quick_controls) {
 
                             quick_controls.remove();
+
+                        }
+
+                        if (event) {
+
+                            is_watch = window.location.pathname === "/watch";
+                            is_playlist = !!window.location.search.match(/list=[A-Z]{2}/);
+
+                            switch (event.type) {
+
+                                case "popstate":
+                                case "yt-navigate-start":
+
+                                    if (!user_settings.player_auto_play && (is_watch !== this.was_watch || is_playlist !== this.was_playlist)) {
+
+                                        if ((yt_player_manager = document.querySelector("yt-player-manager")) && yt_player_manager["playerContainer_"]) {
+
+                                            yt_player_manager["playerContainer_"] = undefined;
+
+                                        }
+
+                                    }
+
+                                    break;
+
+                            }
+
+                            this.was_watch = is_watch;
+                            this.was_playlist = is_playlist;
 
                         }
 
@@ -2586,20 +2634,34 @@
                             window.removeEventListener("yt-page-data-updated", this.loadStartListener, true);
                             window.removeEventListener("yt-navigate-start", this.loadStartListener, false);
                             window.removeEventListener("yt-navigate-finish", this.loadStartListener, false);
-                            this.loadStartListener = null;
+                            window.removeEventListener("popstate", this.loadStartListener, true);
 
                         }
 
                         this.loadStartListener = this.loadStart.bind(this);
+
                         window.addEventListener("yt-page-data-updated", this.loadStartListener, true);
                         window.addEventListener("yt-navigate-start", this.loadStartListener, false);
                         window.addEventListener("yt-navigate-finish", this.loadStartListener, false);
+                        window.addEventListener("popstate", this.loadStartListener, true);
+
+                        if (this.fileLoadListener) {
+
+                            document.documentElement.removeEventListener("load", this.fileLoadListener, true);
+
+                        }
+
+                        this.fileLoadListener = this.interceptHooks.bind(this);
+
+                        document.documentElement.addEventListener("load", this.fileLoadListener, true);
 
                         window.matchMedia = this.modMatchMedia(window.matchMedia);
                         window.onYouTubePlayerReady = this.shareApi(window.onYouTubePlayerReady);
                         JSON.parse = this.modJSONParse(JSON.parse);
                         XMLHttpRequest.prototype.open = this.modOpen(XMLHttpRequest.prototype.open);
                         DOMParser.prototype.parseFromString = this.modParseFromString(DOMParser.prototype.parseFromString);
+
+                        this.interceptHooks();
 
                         context = this;
 
@@ -2660,23 +2722,6 @@
 
                                     return this._TIMING_AFT_KEYS;
 
-                                }
-                            },
-                            create: {
-                                set: function (data) {
-
-                                    if (data.toString && data.toString().match(/:"player"+/)) {
-
-                                        this._create = context.modPlayerLoad(data);
-
-                                    } else {
-
-                                        this._create = data;
-
-                                    }
-                                },
-                                get: function () {
-                                    return this._create;
                                 }
                             },
                             playVideo: {

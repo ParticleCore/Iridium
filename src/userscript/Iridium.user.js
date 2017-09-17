@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.2.7b
+// @version         0.2.8b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.7b
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.8b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -1748,12 +1748,6 @@
 
                         }
 
-                        if (args.fflags) {
-
-                            args.fflags = args.fflags.replace("new_pause_state3=true" , "new_pause_state3=false");
-
-                        }
-
                         if (user_settings.player_max_res_thumbnail && args.thumbnail_url) {
 
                             args.iurlmaxres = args.thumbnail_url.replace(/\/[^\/]+$/, "/maxresdefault.jpg");
@@ -1863,7 +1857,7 @@
 
                                 if ((current_config.args.eventid === args.eventid || current_config.args.loaderUrl === args.loaderUrl)) {
 
-                                    if (!document.querySelector(".ended-mode") && (current_video_id = window.location.href.match(iridium_api.videoIdPattern))) {
+                                    if (!document.querySelector(".ended-mode,.unstarted-mode") && (current_video_id = window.location.href.match(iridium_api.videoIdPattern))) {
 
                                         if (current_video_id[1] === current_config.args.video_id) {
 
@@ -2159,7 +2153,7 @@
 
                             }
 
-                            if (user_settings.player_memorize_size && (watch_page_api = document.querySelector("ytd-watch"))) {
+                            if (user_settings.player_memorize_size && window.location.pathname === "/watch" && (watch_page_api = document.querySelector("ytd-watch"))) {
 
                                 try {
 
@@ -2578,11 +2572,15 @@
                                 case "popstate":
                                 case "yt-navigate-start":
 
-                                    if (!user_settings.player_auto_play && (is_watch !== this.was_watch || is_playlist !== this.was_playlist)) {
+                                    if (!user_settings.player_auto_play) {
 
-                                        if ((yt_player_manager = document.querySelector("yt-player-manager")) && yt_player_manager["playerContainer_"]) {
+                                        if (is_watch && this.previous_url !== window.location.href && (is_watch !== this.was_watch || is_playlist !== this.was_playlist)) {
 
-                                            yt_player_manager["playerContainer_"] = undefined;
+                                            if ((yt_player_manager = document.querySelector("yt-player-manager")) && yt_player_manager["playerContainer_"]) {
+
+                                                yt_player_manager["playerContainer_"] = undefined;
+
+                                            }
 
                                         }
 
@@ -2592,6 +2590,7 @@
 
                             }
 
+                            this.previous_url = is_watch ? window.location.href : this.previous_url;
                             this.was_watch = is_watch;
                             this.was_playlist = is_playlist;
 
@@ -3640,6 +3639,7 @@
                                 return context.modStopVideo(this._stopVideo);
                             }
                         });
+
 
                     }
                 },

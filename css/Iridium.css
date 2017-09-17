@@ -107,6 +107,9 @@ a.yt-simple-endpoint span {
 ytd-watch:not([hidden]) .ytp-thumbnail-overlay {
     transition: none !important;
 }
+.ytp-cued-thumbnail-overlay {
+    transition-delay: 0s !important;
+}
 /* end | general layout */
 
 

@@ -110,6 +110,9 @@ ytd-watch:not([hidden]) .ytp-thumbnail-overlay {
 .ytp-cued-thumbnail-overlay {
     transition-delay: 0s !important;
 }
+.ytp-cued-thumbnail-overlay-image {
+    transition: background 1.5s linear;
+}
 /* end | general layout */
 
 

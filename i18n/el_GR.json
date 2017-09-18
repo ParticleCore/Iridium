@@ -135,6 +135,15 @@
     "player_max_res_thumbnail": {
         "label": "Επιλογή της πιο υψηλής ποιότητας στην μικρογραφία αναπαραγωγής"
     },
+    "comments_visibility": {
+        "label": "Σχόλια:",
+        "button_show_comments": "Εμφάνιση σχολίων",
+        "options": [
+            "Εμφάνιση",
+            "Απόκρυψη",
+            "Αφαίρεση"
+        ]
+    },
     "shortcuts_always_active": {
         "label": "Εμφάνιση πάντα των συντομεύσεων αναπαραγωγής"
     },

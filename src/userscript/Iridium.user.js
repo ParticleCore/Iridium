@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.2.8b
+// @version         0.2.9b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.8b
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.9b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -1741,6 +1741,7 @@
                         var list;
                         var key_type;
                         var player_response;
+                        var thumbnail_image;
 
                         if (this.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
 
@@ -1751,6 +1752,11 @@
                         if (user_settings.player_max_res_thumbnail && args.thumbnail_url) {
 
                             args.iurlmaxres = args.thumbnail_url.replace(/\/[^\/]+$/, "/maxresdefault.jpg");
+
+                            thumbnail_image = new Image();
+                            thumbnail_image.addEventListener("load", this.checkHighQualityThumbnail.bind(this, args.iurlmaxres), false);
+                            thumbnail_image.src = args.iurlmaxres;
+                            thumbnail_image = null;
 
                         }
 
@@ -1949,54 +1955,6 @@
                         };
 
                     },
-                    patchXHR: function (event) {
-
-                        var i;
-                        var temp;
-                        var temp_list;
-                        var key_value;
-                        var player_api;
-
-                        if (event.target.readyState === 4 && event.target.responseText.match(/eventid=/)) {
-
-                            temp_list = {};
-                            temp = event.target.responseText.split("&");
-
-                            for (i = 0; i < temp.length; i++) {
-
-                                key_value = temp[i].split("=");
-                                temp_list[key_value[0]] = window.decodeURIComponent(key_value[1]) || "";
-
-                            }
-
-                            this.modArgs(temp_list);
-
-                            Object.defineProperty(event.target, "responseText", {writable: true});
-
-                            event.target.responseText = "";
-                            temp = Object.keys(temp_list);
-
-                            for (i = 0; i < temp.length; i++) {
-
-                                event.target.responseText += temp[i] + "=" + window.encodeURIComponent(temp_list[temp[i]]);
-
-                                if (i + 1 < temp.length) {
-
-                                    event.target.responseText += "&";
-
-                                }
-
-                            }
-
-                            if (user_settings.player_quality !== "auto" && (player_api = document.getElementById("movie_player"))) {
-
-                                player_api.setPlaybackQuality(user_settings.player_quality);
-
-                            }
-
-                        }
-
-                    },
                     modOpen: function (original) {
 
                         var context = this;
@@ -2050,7 +2008,83 @@
                         };
 
                     },
-                    interceptHooks: function () {
+                    checkHighQualityThumbnail: function (thumbnail_url, event) {
+
+                        var style_element;
+                        var thumbnail_container;
+
+                        if (event.target.width < 121 && (thumbnail_container = document.querySelector(".ytp-cued-thumbnail-overlay-image"))) {
+
+                            if (!(style_element = document.getElementById("style-thumbnail"))) {
+
+                                style_element = document.createElement("style");
+                                style_element.id = "style-thumbnail";
+
+                                thumbnail_container.parentNode.insertBefore(style_element, thumbnail_container);
+
+                            }
+
+                            style_element.textContent =
+                                ".ytp-cued-thumbnail-overlay-image {" +
+                                "    background-image:url('" + thumbnail_url.replace("maxresdefault", "sddefault") + "') !important;" +
+                                "}";
+
+                        } else if ((style_element = document.getElementById("style-thumbnail"))) {
+
+                            style_element.textContent = "";
+
+                        }
+
+                    },
+                    patchXHR: function (event) {
+
+                        var i;
+                        var temp;
+                        var temp_list;
+                        var key_value;
+                        var player_api;
+
+                        if (event.target.readyState === 4 && event.target.responseText.match(/eventid=/)) {
+
+                            temp_list = {};
+                            temp = event.target.responseText.split("&");
+
+                            for (i = 0; i < temp.length; i++) {
+
+                                key_value = temp[i].split("=");
+                                temp_list[key_value[0]] = window.decodeURIComponent(key_value[1]) || "";
+
+                            }
+
+                            this.modArgs(temp_list);
+
+                            Object.defineProperty(event.target, "responseText", {writable: true});
+
+                            event.target.responseText = "";
+                            temp = Object.keys(temp_list);
+
+                            for (i = 0; i < temp.length; i++) {
+
+                                event.target.responseText += temp[i] + "=" + window.encodeURIComponent(temp_list[temp[i]]);
+
+                                if (i + 1 < temp.length) {
+
+                                    event.target.responseText += "&";
+
+                                }
+
+                            }
+
+                            if (user_settings.player_quality !== "auto" && (player_api = document.getElementById("movie_player"))) {
+
+                                player_api.setPlaybackQuality(user_settings.player_quality);
+
+                            }
+
+                        }
+
+                    },
+                    interceptHooks: function (event) {
 
                         if (iridium_api.checkIfExists("yt.player.Application.create")) {
 

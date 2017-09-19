@@ -4,7 +4,7 @@
         "about": "Informations et liens utiles",
         "general": "Paramètres généraux",
         "video": "Paramètres vidéos",
-        "settings": "Paramètres audios"
+        "settings": "Paramètres d'Iridium"
     },
     "sub_section_titles": {
         "channel": "Chaîne",
@@ -14,7 +14,7 @@
         "layout": "Disposition",
         "player": "Lecteur",
         "settings": "Paramètres",
-        "thumbnails": "Miniature"
+        "thumbnails": "Miniatures"
     },
     "iridium_api": {
         "settings_button": "Iridium",
@@ -41,6 +41,9 @@
     },
     "square_avatars": {
         "label": "Rendre les avatars carrés"
+    },
+   "improved_logo": {
+        "label": "Améliorer le logo YouTube"
     },
     "thumbnail_preview": {
         "label": "Prévisualiser les vidéos en passant la souris sur les miniatures"
@@ -71,7 +74,7 @@
         "label": "Afficher le nombre de vidéos mises en ligne"
     },
     "channel_video_time": {
-        "label": "Afficher la durée depuis mise en ligne de la vidéo"
+        "label": "Afficher depuis combien de temps la vidéo est en ligne"
     },
     "player_quality": {
         "label": "Qualité vidéo par défaut :",
@@ -119,6 +122,28 @@
     "player_memorize_volume": {
         "label": "Enregistrer le volume du lecteur"
     },
+    "player_quick_controls": {
+        "label": "Activer les contrôles rapides",
+        "button_auto_play": "Lecture automatique",
+        "button_full_browser": "Navigateur plein",
+        "button_screen_shot": "Capture d'écran",
+        "button_thumbnails": "Miniatures",
+        "thumbnails_title": "Cliquer pour télécharger\nClic droit pour les options",
+        "screen_shot_title": "Clic droit pour les options",
+        "full_browser_info": "Appuyer sur \"Esc\" pour quitter"
+    },
+    "player_max_res_thumbnail": {
+        "label": "Forcer le lecteur de la miniature à jouer en haute qualité"
+    },
+    "comments_visibility": {
+        "label": "Section des commentaires:",
+        "button_show_comments": "Afficher les commentaires",
+        "options": [
+            "Afficher",
+            "Masquer",
+            "Supprimer"
+        ]
+    },
     "shortcuts_always_active": {
         "label": "Raccourcis du lecteur toujours actifs"
     },
@@ -132,6 +157,9 @@
         "label": "La vidéo continue lors du changement de page",
         "button_restore": "Restaurer",
         "button_close": "Fermer"
+    },
+    "player_hide_end_screen": {
+        "label": "Cacher les écrans de fin en passant la souris dessus"
     },
     "iridium_dark_mode": {
         "label": "Utiliser le thème foncé"

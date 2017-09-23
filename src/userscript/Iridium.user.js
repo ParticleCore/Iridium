@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.2.9b
+// @version         0.3.0b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.2.9b
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.3.0b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -1324,7 +1324,7 @@
 
                         delete this.addVideoCount.fetching;
 
-                        script_list = event.target.response.querySelectorAll("script");
+                        script_list = event.target ? event.target.response.querySelectorAll("script") : [];
 
                         for (i = 0; i < script_list.length; i++) {
 
@@ -1579,7 +1579,6 @@
                             i18n: {
                                 label: "Default video quality:",
                                 options: [
-                                    "Auto",
                                     "4320p (8k)",
                                     "2880p (5k)",
                                     "2160p (4k)",
@@ -1589,11 +1588,11 @@
                                     "480p",
                                     "360p",
                                     "240p",
-                                    "144p"
+                                    "144p",
+                                    "Auto"
                                 ]
                             },
                             options: [
-                                "auto",
                                 "highres",
                                 "hd2880",
                                 "hd2160",
@@ -1603,7 +1602,8 @@
                                 "large",
                                 "medium",
                                 "small",
-                                "tiny"
+                                "tiny",
+                                "auto"
                             ]
                         },
                         player_auto_play: {
@@ -1785,12 +1785,6 @@
 
                         }
 
-                        if (user_settings.player_memorize_size) {
-
-                            args.player_wide = user_settings.theaterMode ? "1" : "0";
-
-                        }
-
                         if (!user_settings.player_loudness) {
 
                             args.loudness = null;
@@ -1883,9 +1877,11 @@
 
                             if (user_settings.player_quality !== "auto") {
 
-                                this.setPlaybackQuality(user_settings.player_quality);
+                                context.markedForQuality = true;
 
                             }
+
+                            context.setPlayerResize();
 
                             return temp;
 
@@ -1899,17 +1895,18 @@
                         return function (api_name, config) {
 
                             var temp;
-                            var player;
 
                             context.modArgs(config.args);
 
                             temp = original.apply(this, arguments);
 
-                            if (user_settings.player_quality !== "auto" && (player = document.getElementById("movie_player"))) {
+                            if (user_settings.player_quality !== "auto") {
 
-                                player.setPlaybackQuality(user_settings.player_quality);
+                                context.markedForQuality = true;
 
                             }
+
+                            context.setPlayerResize();
 
                             return temp;
 
@@ -2008,6 +2005,56 @@
                         };
 
                     },
+                    setPlayerResize: function () {
+
+                        var watch_page_api;
+
+                        if (user_settings.player_memorize_size && window.location.pathname === "/watch" && (watch_page_api = document.querySelector("ytd-watch"))) {
+
+                            try {
+
+                                watch_page_api["theaterModeChanged_"](user_settings.theaterMode);
+
+                            } catch (ignore) {}
+
+                        }
+
+                    },
+                    setQuality: function (player_api, quality) {
+
+                        var position;
+                        var max_position;
+                        var available_qualities;
+
+                        if (player_api.getAvailableQualityLevels && (available_qualities = player_api.getAvailableQualityLevels())) {
+
+                            if (available_qualities.indexOf(quality) > -1) {
+
+                                player_api.setPlaybackQuality(quality);
+
+                            } else {
+
+                                if ((position = this.options.player_quality.options.indexOf(quality)) > -1) {
+
+                                    max_position = this.options.player_quality.options.indexOf(available_qualities[0]);
+
+                                    if (position <= max_position) {
+
+                                        player_api.setPlaybackQuality(available_qualities[0]);
+
+                                    } else {
+
+                                        player_api.setPlaybackQuality(available_qualities[available_qualities.length - 2]);
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                    },
                     checkHighQualityThumbnail: function (thumbnail_url, event) {
 
                         var style_element;
@@ -2026,7 +2073,7 @@
 
                             style_element.textContent =
                                 ".ytp-cued-thumbnail-overlay-image {" +
-                                "    background-image:url('" + thumbnail_url.replace("maxresdefault", "sddefault") + "') !important;" +
+                                "    background-image:url('" + thumbnail_url.replace("maxresdefault", "mqdefault") + "') !important;" +
                                 "}";
 
                         } else if ((style_element = document.getElementById("style-thumbnail"))) {
@@ -2042,7 +2089,6 @@
                         var temp;
                         var temp_list;
                         var key_value;
-                        var player_api;
 
                         if (event.target.readyState === 4 && event.target.responseText.match(/eventid=/)) {
 
@@ -2075,11 +2121,13 @@
 
                             }
 
-                            if (user_settings.player_quality !== "auto" && (player_api = document.getElementById("movie_player"))) {
+                            if (user_settings.player_quality !== "auto") {
 
-                                player_api.setPlaybackQuality(user_settings.player_quality);
+                                this.markedForQuality = true;
 
                             }
+
+                            this.setPlayerResize();
 
                         }
 
@@ -2124,6 +2172,16 @@
                     },
                     onStateChange: function (event) {
 
+                        var player;
+
+                        if (this.markedForQuality && (event === 1 || event === 3) && user_settings.player_quality !== "auto" && (player = document.getElementById("movie_player"))) {
+
+                            this.markedForQuality = false;
+
+                            this.setQuality(player, user_settings.player_quality);
+
+                        }
+
                         document.documentElement.classList.remove("video_unstarted", "video_active", "video_ended", "video_playing", "video_paused", "video_buffering", "video_cued");
 
                         switch (event) {
@@ -2159,13 +2217,12 @@
                     playerReady: function (api) {
 
                         var timestamp;
-                        var watch_page_api;
 
                         if (api) {
 
                             api.addEventListener("SIZE_CLICKED", this.handleCustoms);
                             api.addEventListener("onVolumeChange", this.handleCustoms);
-                            api.addEventListener("onStateChange", this.onStateChange);
+                            api.addEventListener("onStateChange", this.onStateChange.bind(this));
 
                             if (user_settings.player_memorize_volume) {
 
@@ -2184,16 +2241,6 @@
                                         expiration: timestamp + 2592E6
                                     })
                                 );
-
-                            }
-
-                            if (user_settings.player_memorize_size && window.location.pathname === "/watch" && (watch_page_api = document.querySelector("ytd-watch"))) {
-
-                                try {
-
-                                    watch_page_api.theaterModeChanged_(user_settings.theaterMode);
-
-                                } catch (ignore) {}
 
                             }
 
@@ -2677,6 +2724,8 @@
                         window.addEventListener("yt-navigate-start", this.loadStartListener, false);
                         window.addEventListener("yt-navigate-finish", this.loadStartListener, false);
                         window.addEventListener("popstate", this.loadStartListener, true);
+
+                        window.addEventListener("yt-navigate-finish", this.setPlayerResize, false);
 
                         if (this.fileLoadListener) {
 
@@ -3637,8 +3686,12 @@
                     },
                     onSettingsUpdated: function () {
 
-                        this.move_data.player_position.X = user_settings.miniPlayer.position.X;
-                        this.move_data.player_position.Y = user_settings.miniPlayer.position.Y;
+                        if (user_settings.miniPlayer) {
+
+                            this.move_data.player_position.X = user_settings.miniPlayer.position.X;
+                            this.move_data.player_position.Y = user_settings.miniPlayer.position.Y;
+
+                        }
 
                         this.updatePlayerPosition();
 
@@ -4317,6 +4370,7 @@
                 },
                 loadSelectedSection: function () {
 
+                    var i;
                     var name;
                     var option;
                     var active_id;

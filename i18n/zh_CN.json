@@ -1,0 +1,187 @@
+{
+    "language": "Chinese (Simplified)",
+    "section_titles": {
+        "about": "信息及相关链接",
+        "general": "常规设置",
+        "video": "视频设置",
+        "settings": "Iridium 设置"
+    },
+    "sub_section_titles": {
+        "channel": "频道",
+        "blacklist": "黑名单",
+        "general": "常规",
+        "language": "语言",
+        "layout": "布局",
+        "player": "播放器",
+        "settings": "设置",
+        "thumbnails": "缩略图"
+    },
+    "iridium_api": {
+        "settings_button": "Iridium",
+        "feature_link": "了解这是什么"
+    },
+    "default_logo_page": {
+        "label": "点击 YouTube 徽标到达：",
+        "options": [
+            "首页",
+            "趋势",
+            "订阅"
+        ]
+    },
+    "default_channel_tab": {
+        "label": "默认频道标签：",
+        "options": [
+            "首页",
+            "视频",
+            "播放列表",
+            "频道",
+            "讨论",
+            "关于"
+        ]
+    },
+    "square_avatars": {
+        "label": "用户图像正方化"
+    },
+    "improved_logo": {
+        "label": "改善 YouTube 徽标"
+    },
+    "thumbnail_preview": {
+        "label": "悬停缩略图时播放视频"
+    },
+    "thumbnail_preview_mute": {
+        "label": "Shift 键切换悬停视频缩略图播放时的声音"
+    },
+    "enable_blacklist": {
+        "label": "启用黑名单"
+    },
+    "blacklist_settings": {
+        "button_add_title": "屏蔽",
+        "button_edit": "编辑",
+        "button_import": "导入",
+        "button_export": "导出",
+        "button_reset": "重置",
+        "button_save": "保存",
+        "button_close": "关闭",
+        "button_remove": "移出黑名单",
+        "placeholder": "在这里粘贴你的新黑名单",
+        "confirm_reset": "您即将重置您当前的黑名单。建议在继续前备份您当前的黑名单。\n\n要继续吗？\n\n",
+        "reset_success": "黑名单已重置。\n\n更改将在页面刷新后应用。\n\n",
+        "confirm_import": "您即将覆盖您当前的黑名单。建议在继续前备份您当前的黑名单。\n\n要继续吗？\n\n",
+        "import_success": "您的黑名单导入成功。\n\n更改将在页面刷新后应用。\n\n",
+        "import_error": "您的黑名单未导入，它看上去无效。\n\n"
+    },
+    "channel_video_count": {
+        "label": "显示已上传视频数量"
+    },
+    "channel_video_time": {
+        "label": "显示视频已上传多久"
+    },
+    "player_quality": {
+        "label": "默认视频质量：",
+        "options": [
+            "自动",
+            "4320p (8k)",
+            "2880p (5k)",
+            "2160p (4k)",
+            "1440p",
+            "1080p",
+            "720p",
+            "480p",
+            "360p",
+            "240p",
+            "144p"
+        ]
+    },
+    "player_auto_play": {
+        "label": "自动播放视频"
+    },
+    "channel_trailer_auto_play": {
+        "label": "自动播放频道预告片"
+    },
+    "player_annotations": {
+        "label": "允许视频上的注释"
+    },
+    "player_subtitles": {
+        "label": "允许视频上的字幕"
+    },
+    "player_loudness": {
+        "label": "允许响度归一化"
+    },
+    "player_ads": {
+        "label": "允许视频上的广告"
+    },
+    "subscribed_channel_player_ads": {
+        "label": "只允许已订阅频道上的视频广告"
+    },
+    "player_hfr": {
+        "label": "允许 HFR (60fps) 流"
+    },
+    "player_memorize_size": {
+        "label": "记住播放器大小"
+    },
+    "player_memorize_volume": {
+        "label": "记住播放器音量"
+    },
+    "player_quick_controls": {
+        "label": "启用快速控件",
+        "button_auto_play": "自动播放",
+        "button_full_browser": "填满浏览器",
+        "button_screen_shot": "截图",
+        "button_thumbnails": "缩略图",
+        "thumbnails_title": "单击下载\n右击查看选项",
+        "screen_shot_title": "右击查看选项",
+        "full_browser_info": "按“Esc”键退出"
+    },
+    "player_max_res_thumbnail": {
+        "label": "强制高质量播放器缩略图"
+    },
+    "comments_visibility": {
+        "label": "评论部分:",
+        "button_show_comments": "显示评论",
+        "options": [
+            "显示",
+            "隐藏",
+            "移除"
+        ]
+    },
+    "shortcuts_always_active": {
+        "label": "播放器快捷键始终激活"
+    },
+    "player_volume_wheel": {
+        "label": "使用鼠标滚轮变更音量"
+    },
+    "player_always_visible": {
+        "label": "视频在滚动时始终可见"
+    },
+    "player_always_playing": {
+        "label": "变更页面时保持视频播放",
+        "button_restore": "恢复",
+        "button_close": "关闭"
+    },
+    "player_hide_end_screen": {
+        "label": "隐藏鼠标悬停时的终端屏幕卡"
+    },
+    "iridium_dark_mode": {
+        "label": "使用黑夜主题"
+    },
+    "iridium_user_settings": {
+        "button_save": "保存",
+        "button_close": "关闭",
+        "button_export": "导出",
+        "button_import": "导入",
+        "button_reset": "重置",
+        "placeholder": "在这里粘贴你的新设置",
+        "confirm_reset": "您即将重置您的设置。建议在继续前备份您的当前设置。\n\n要继续吗？\n\n",
+        "reset_success": "设置已重置。\n\n更改将在页面刷新后应用。\n\n",
+        "confirm_import": "您即将覆盖您的设置。建议在继续前备份您的当前设置。\n\n要继续吗？\n\n",
+        "import_success": "您的设置导入成功。\n\n更改将在页面刷新后应用。\n\n",
+        "import_error": "您的设置未能导入，它看上去无效。\n\n"
+    },
+    "iridium_language": {
+        "button_save": "保存",
+        "button_close": "关闭",
+        "confirm_save": "您即将替换您的扩展语言设置。\n\n要继续吗？\n\n",
+        "save_success": "新语言已保存。\n\n更改将在页面刷新后应用。\n\n",
+        "save_error": "新语言未保存，它看上去无效。\n\n"
+    }
+}

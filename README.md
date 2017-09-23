@@ -4,6 +4,8 @@
 
 Iridium (former [YouTube Plus](https://github.com/ParticleCore/Particle)) is an extension built to improve the user experience on the new YouTube Material layout.  
 
+**Before opening a new issue [read the rules](https://github.com/ParticleCore/Iridium/blob/master/CONTRIBUTING.md).**
+
 Current bug support is being provided only for:  
 
 [![Firefox 54+](https://img.shields.io/badge/Firefox-54%2B-orange.svg)](https://www.mozilla.org/firefox)  [![Greasemonkey 3.1 to 3.12](https://img.shields.io/badge/Greasemonkey-3.1%20to%203.12-yellow.svg)](http://www.greasespot.net/)  

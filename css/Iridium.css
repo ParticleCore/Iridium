@@ -678,6 +678,10 @@ body {
     user-select: none;
     white-space: pre;
 }
+a.setting {
+    color: #167AC6;
+    font-weight: 700;
+}
 .feature-link {
     font-size: 14px;
     font-weight: 700;

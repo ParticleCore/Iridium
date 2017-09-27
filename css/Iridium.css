@@ -679,8 +679,11 @@ body {
     white-space: pre;
 }
 a.setting {
-    color: #167AC6;
-    font-weight: 700;
+    text-decoration: none !important;
+}
+a.setting:hover {
+    color: #167AC6 !important;
+    text-decoration: underline !important;
 }
 .feature-link {
     font-size: 14px;

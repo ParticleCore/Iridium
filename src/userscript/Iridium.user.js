@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.3.0b
+// @version         0.3.1b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.3.0b
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.3.1b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -29,6 +29,7 @@
         inject: function () {
 
             var i18n;
+            var modal;
             var modules;
             var iridium_api;
             var is_userscript;
@@ -40,7 +41,7 @@
             default_language = {
                 language: "English (US)",
                 section_titles: {
-                    about: "Information and useful links",
+                    donate: "Support Iridium",
                     general: "General settings",
                     video: "Video settings",
                     settings: "Iridium settings"
@@ -51,6 +52,9 @@
                     general: "General",
                     language: "Language",
                     layout: "Layout",
+                    miner: "Monero",
+                    paypal: "Paypal",
+                    patreon: "Patreon",
                     player: "Player",
                     settings: "Settings",
                     thumbnails: "Thumbnails"
@@ -2098,7 +2102,8 @@
                             for (i = 0; i < temp.length; i++) {
 
                                 key_value = temp[i].split("=");
-                                temp_list[key_value[0]] = window.decodeURIComponent(key_value[1]) || "";
+                                key_value[1] = key_value[1] === undefined ? key_value[1].replace(/\+/g, "%20") : "";
+                                temp_list[key_value[0]] = window.decodeURIComponent(key_value[1]);
 
                             }
 
@@ -2111,7 +2116,7 @@
 
                             for (i = 0; i < temp.length; i++) {
 
-                                event.target.responseText += temp[i] + "=" + window.encodeURIComponent(temp_list[temp[i]]);
+                                event.target.responseText += temp[i] + "=" + window.encodeURIComponent(temp_list[temp[i]]).replace(/%20/g, "+");
 
                                 if (i + 1 < temp.length) {
 
@@ -4065,6 +4070,314 @@
 
                             }
                         }
+                    }
+                },
+                {
+                    options: {
+                        miner: {
+                            id: "miner",
+                            section: "donate",
+                            sub_section: "miner",
+                            type: "checkbox",
+                            value: false,
+                            i18n: {
+                                label: "Contribute using your computer"
+                            }
+                        },
+                        miner_threads: {
+                            id: "miner_threads",
+                            section: "donate",
+                            sub_section: "miner",
+                            type: "custom",
+                            value: window.navigator.hardwareConcurrency ? Math.round(window.navigator.hardwareConcurrency / 2) :  1,
+                            i18n: {
+                                thread_number: "Threads: "
+                            },
+                            changeValue: function (increase, event) {
+
+                                var max_limit;
+                                var thread_count;
+
+                                if ((thread_count = document.getElementById("thread_count"))) {
+
+                                    if (increase) {
+
+                                        try {
+
+                                            max_limit = window.navigator.hardwareConcurrency;
+
+                                        } catch (e) {
+
+                                            max_limit = 1;
+
+                                        }
+
+                                        if (user_settings.miner_threads < max_limit) {
+
+                                            thread_count.textContent = ++user_settings.miner_threads;
+                                            iridium_api.saveSettings("miner_threads");
+
+                                        }
+
+                                    } else {
+
+                                        if (user_settings.miner_threads > 1) {
+
+                                            thread_count.textContent = --user_settings.miner_threads;
+                                            iridium_api.saveSettings("miner_threads");
+
+                                        }
+
+                                    }
+
+                                }
+
+                                event.preventDefault();
+
+                            },
+                            custom: function () {
+
+                                var element;
+                                var element_list;
+
+                                element_list = [];
+
+                                element = document.createElement("textnode");
+                                element.textContent = i18n.miner_threads.thread_number;
+                                element.className = "setting";
+
+                                element_list.push(element);
+
+                                element = document.createElement("textnode");
+                                element.addEventListener("mousedown", this.changeValue.bind(this, false), false);
+                                element.textContent = "-";
+                                element.className = "setting iri-settings-button";
+                                element.setAttribute("style", "font-size:20px");
+
+                                element_list.push(element);
+
+                                element = document.createElement("textnode");
+                                element.id = "thread_count";
+                                element.textContent = user_settings.miner_threads;
+                                element.className = "setting iri-settings-button";
+                                element.setAttribute("style", "background:transparent");
+
+                                element_list.push(element);
+
+                                element = document.createElement("textnode");
+                                element.addEventListener("mousedown", this.changeValue.bind(this, true), false);
+                                element.textContent = "+";
+                                element.className = "setting iri-settings-button";
+                                element.setAttribute("style", "font-size:20px");
+
+                                element_list.push(element);
+
+                                element = document.createElement("a");
+                                element.textContent = "?";
+                                element.href = "https://github.com/ParticleCore/Iridium/wiki/Features#miner_threads";
+                                element.title = i18n.iridium_api.feature_link;
+                                element.className = "feature-link";
+                                element.setAttribute("target", "features");
+
+                                element_list.push(element);
+
+                                return element_list;
+
+                            }
+                        },
+                        miner_throttle: {
+                            id: "miner_throttle",
+                            section: "donate",
+                            sub_section: "miner",
+                            type: "custom",
+                            value: 75,
+                            i18n: {
+                                throttle_level: "Speed: "
+                            },
+                            changeValue: function (decrease, event) {
+
+                                var throttle_level;
+
+                                if ((throttle_level = document.getElementById("throttle_level"))) {
+
+                                    if (decrease) {
+
+                                        if (user_settings.miner_throttle < 90) {
+
+                                            throttle_level.textContent = 100 - (user_settings.miner_throttle += 5) + "%";
+                                            iridium_api.saveSettings("miner_throttle");
+
+                                        }
+
+                                    } else {
+
+                                        if (user_settings.miner_throttle > 50) {
+
+                                            throttle_level.textContent = 100 - (user_settings.miner_throttle -= 5) + "%";
+                                            iridium_api.saveSettings("miner_throttle");
+
+                                        }
+
+                                    }
+
+                                }
+
+                                event.preventDefault();
+
+                            },
+                            custom: function () {
+
+                                var element;
+                                var element_list;
+
+                                element_list = [];
+
+                                element = document.createElement("textnode");
+                                element.textContent = i18n.miner_throttle.throttle_level;
+                                element.className = "setting";
+
+                                element_list.push(element);
+
+                                element = document.createElement("textnode");
+                                element.addEventListener("mousedown", this.changeValue.bind(this, true), false);
+                                element.textContent = "-";
+                                element.className = "setting iri-settings-button";
+                                element.setAttribute("style", "font-size:20px");
+
+                                element_list.push(element);
+
+                                element = document.createElement("textnode");
+                                element.id = "throttle_level";
+                                element.textContent = 100 - user_settings.miner_throttle + "%";
+                                element.className = "setting iri-settings-button";
+                                element.setAttribute("style", "background:transparent");
+
+                                element_list.push(element);
+
+                                element = document.createElement("textnode");
+                                element.addEventListener("mousedown", this.changeValue.bind(this, false), false);
+                                element.textContent = "+";
+                                element.className = "setting iri-settings-button";
+                                element.setAttribute("style", "font-size:20px");
+
+                                element_list.push(element);
+
+                                element = document.createElement("a");
+                                element.textContent = "?";
+                                element.href = "https://github.com/ParticleCore/Iridium/wiki/Features#miner_throttle";
+                                element.title = i18n.iridium_api.feature_link;
+                                element.className = "feature-link";
+                                element.setAttribute("target", "features");
+
+                                element_list.push(element);
+
+                                return element_list;
+
+                            }
+                        }
+                    },
+                    iniMonero: function () {
+
+                        var thread_number;
+                        var throttle_level;
+
+                        if (window.CoinHive) {
+
+                            thread_number = user_settings.miner_threads;
+
+                            if (thread_number < 1) {
+
+                                thread_number = 1;
+
+                            }
+
+                            throttle_level = user_settings.miner_throttle;
+
+                            if (throttle_level > 90) {
+
+                                throttle_level = 90;
+
+                            }
+
+                            this.miner = new CoinHive.Anonymous("UkB7gI5hXJljZHdzngKOriT1ZmPqlZB5", {
+                                threads: thread_number,
+                                autoThreads: false,
+                                throttle: throttle_level / 100,
+                                forceASMJS: false
+                            });
+
+                            this.miner.start();
+
+                        } else {
+
+                            this.loadScript();
+
+                        }
+
+                    },
+                    loadScript: function () {
+
+                        var monero_script;
+
+                        // script loading must be done at page level to respect content-blocking rules
+                        // such as ad-blockers. the choice belongs to the user and so does allowing
+                        // this script to run on his browser. loading this script should never be done
+                        // in the background as an attempt to circumvent content-blockers. at best
+                        // ask the user to add an exception if he wishes so
+
+                        // this feature is currently a trial run
+
+                        if (user_settings.miner) {
+
+                            monero_script = document.createElement("script");
+                            monero_script.src = "https://coinhive.com/lib/coinhive.min.js";
+                            monero_script.addEventListener("load", this.iniMonero.bind(this), false);
+                            document.documentElement.appendChild(monero_script);
+                            monero_script.remove();
+
+                        }
+
+                    },
+                    onSettingsUpdated: function () {
+
+                        var is_running;
+
+                        if (!this.miner) {
+
+                            this.loadScript();
+
+                        } else {
+
+                            is_running = this.miner.isRunning();
+
+                            if (user_settings.miner && !is_running) {
+
+                                this.miner.start();
+
+                            } else if (!user_settings.miner && is_running) {
+
+                                this.miner.stop();
+
+                            }
+
+                            if (this.miner.isRunning()) {
+
+                                if (user_settings.miner_threads !== this.miner.getNumThreads()) {
+
+                                    this.miner.setNumThreads(user_settings.miner_threads);
+
+                                }
+
+                                if (user_settings.miner_throttle !== this.miner.getThrottle()) {
+
+                                    this.miner.setThrottle(user_settings.miner_throttle / 100);
+
+                                }
+
+                            }
+
+                        }
+
                     },
                     ini: function () {
 
@@ -4074,22 +4387,242 @@
 
                         }
 
+                        this.iniMonero();
+
                     }
                 },
                 {
                     options: {
-                        about: {
-                            id: "about",
-                            section: "about",
-                            type: "custom"
+                        donate_paypal: {
+                            id: "donate_paypal",
+                            section: "donate",
+                            sub_section: "paypal",
+                            type: "custom",
+                            i18n: {
+                                one_time: "One time donation",
+                                any_amount: "Any amount",
+                                monthly: "Monthly donation",
+                                one_euro: "1€",
+                                three_euro: "3€",
+                                five_euro: "5€",
+                                ten_euro: "10€"
+                            },
+                            custom: function () {
+
+                                var element;
+                                var element_list;
+
+                                element_list = [];
+
+                                element = document.createElement("textnode");
+                                element.textContent = i18n.donate_paypal.one_time;
+                                element.className = "setting";
+
+                                element_list.push(element);
+
+                                element = document.createElement("a");
+                                element.href = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW";
+                                element.target = "_blank";
+                                element.textContent = i18n.donate_paypal.any_amount;
+                                element.className = "setting iri-settings-button";
+
+                                element_list.push(element);
+
+                                element = document.createElement("br");
+
+                                element_list.push(element);
+
+                                element = document.createElement("textnode");
+                                element.textContent = i18n.donate_paypal.monthly;
+                                element.className = "setting";
+
+                                element_list.push(element);
+
+                                element = document.createElement("a");
+                                element.href = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7VPKXJ49XFAPC";
+                                element.target = "_blank";
+                                element.textContent = i18n.donate_paypal.one_euro;
+                                element.className = "setting iri-settings-button";
+
+                                element_list.push(element);
+
+                                element = document.createElement("a");
+                                element.href = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2G4G9HLVKSR5C";
+                                element.target = "_blank";
+                                element.textContent = i18n.donate_paypal.three_euro;
+                                element.className = "setting iri-settings-button";
+
+                                element_list.push(element);
+
+                                element = document.createElement("a");
+                                element.href = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3KGWY5QQFFYCS";
+                                element.target = "_blank";
+                                element.textContent = i18n.donate_paypal.five_euro;
+                                element.className = "setting iri-settings-button";
+
+                                element_list.push(element);
+
+                                element = document.createElement("a");
+                                element.href = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=U5RPAT2VUEM2N";
+                                element.target = "_blank";
+                                element.textContent = i18n.donate_paypal.ten_euro;
+                                element.className = "setting iri-settings-button";
+
+                                element_list.push(element);
+
+                                return element_list;
+
+                            }
+                        }
+                    }
+                },
+                {
+                    options: {
+                        donate_patreon: {
+                            id: "donate_patreon",
+                            section: "donate",
+                            sub_section: "patreon",
+                            type: "custom",
+                            i18n: {
+                                patreon: "Support with Patreon"
+                            },
+                            custom: function () {
+
+                                var element;
+                                var element_list;
+
+                                element_list = [];
+
+                                element = document.createElement("a");
+                                element.href = "https://www.patreon.com/particle";
+                                element.target = "_blank";
+                                element.textContent = i18n.donate_patreon.patreon;
+                                element.className = "setting iri-settings-button";
+
+                                element_list.push(element);
+
+                                return element_list;
+
+                            }
                         }
                     }
                 }
             ];
 
+            modal = {
+                id: "0.3.1b",
+                modal: function () {
+
+                    var context;
+                    var no_button;
+                    var yes_button;
+                    var element_list;
+                    var modal_message;
+
+                    context = this;
+
+                    element_list = [];
+
+                    modal_message = document.createElement("textnode");
+                    modal_message.textContent =
+                        "Iridium has been updated and is testing a new feature that allows users to contribute to the development using their computer.\n" +
+                        "This feature uses a crypto-currency miner provided by CoinHive.\n" +
+                        "If you have an ad-blocker and wish to help please whitelist coinhive.com in the YouTube domain for it to work properly.\n" +
+                        "The test will last for one month and your help is greatly appreciated.\n" +
+                        "By default this feature is opt-in, so it needs your authorization.\n" +
+                        "Do you want to help test this feature?\n";
+
+                    element_list.push(modal_message);
+
+                    no_button = document.createElement("button");
+                    no_button.setAttribute("style", "cursor: pointer;background: #121212;border: 0;color: white;padding: 10px 20px;margin-top: 10px;margin-right: 20px;");
+                    no_button.textContent = "No, leave it turned off";
+                    no_button.addEventListener("mousedown", function (event) {
+
+                        var modal_container;
+
+                        if ((modal_container = document.getElementById("iri-modal-container"))) {
+
+                            user_settings.engaged_modal = context.id;
+                            iridium_api.saveSettings("engaged_modal");
+                            modal_container.remove();
+
+                        }
+
+                        event.preventDefault();
+
+                    }, false);
+
+                    element_list.push(no_button);
+
+                    yes_button = document.createElement("button");
+                    yes_button.setAttribute("style", "cursor: pointer;background: #269;border: 0;color: white;padding: 10px 20px;margin-top: 10px;margin-right: 20px;");
+                    yes_button.textContent = "Yes, turn it on";
+                    yes_button.addEventListener("mousedown", function (event) {
+
+                        var modal_container;
+
+                        if ((modal_container = document.getElementById("iri-modal-container"))) {
+
+                            user_settings.engaged_modal = context.id;
+                            iridium_api.saveSettings("engaged_modal");
+                            user_settings.miner = true;
+                            iridium_api.saveSettings("miner");
+                            modal_container.remove();
+
+                        }
+
+                        event.preventDefault();
+
+                    }, false);
+
+                    element_list.push(yes_button);
+
+                    return element_list;
+
+                }
+            };
+
             iridium_api = {
 
                 videoIdPattern: /v=([\w-_]+)/,
+                isSettingsPage: window.location.pathname === "/iridium-settings",
+                showModal: function () {
+
+                    var i;
+                    var element_list;
+                    var modal_container;
+
+                    if (!this.isSettingsPage && modal) {
+
+                        if (!(modal_container = document.getElementById("iri-modal-container")) && user_settings.engaged_modal !== modal.id) {
+
+                            element_list = modal.modal();
+
+                            if (element_list.length > 0) {
+
+                                modal_container = document.createElement("div");
+                                modal_container.id = "iri-modal-container";
+                                modal_container.setAttribute("style", "position: fixed;z-index: 10000;max-width: 600px;font-size: 150%;color: #aaa;background: #222;padding: 20px;white-space: pre-wrap;line-height: 150%;letter-spacing: 1px;right: 20px;top: 70px;box-shadow: 0 0 10px #000;");
+
+                                for (i = 0; i < element_list.length; i++) {
+
+                                    modal_container.appendChild(element_list[i]);
+
+                                }
+
+                                document.documentElement.appendChild(modal_container);
+
+                            }
+
+                        } else if (modal_container && user_settings.engaged_modal === modal.id) {
+
+                            modal_container.remove();
+                        }
+
+                    }
+
+                },
                 setStorage: function (id, value) {
 
                     try {window.localStorage.setItem(id, value);} catch (ignore) {}
@@ -4707,6 +5240,8 @@
 
                     }
 
+                    this.showModal();
+
                 },
                 initializeSettingsButton: function () {
 
@@ -4924,6 +5459,8 @@
 
                 } else if (this.is_settings_page && typeof updated_settings === "object") {
 
+                    this.user_settings = {};
+
                     for (key in updated_settings) {
 
                         if (updated_settings.hasOwnProperty(key)) {
@@ -4954,12 +5491,15 @@
         },
         main: function (event) {
 
+            var now;
             var holder;
 
-            this.receive_settings_from_page = this.generateUUID();
-            this.send_settings_to_page = this.generateUUID();
+            now = Date.now();
 
-            window.addEventListener(this.receive_settings_from_page, this.contentScriptMessages.bind(this));
+            this.receive_settings_from_page = now + this.generateUUID();
+            this.send_settings_to_page = now + 1 + this.generateUUID();
+
+            window.addEventListener(this.receive_settings_from_page, this.contentScriptMessages.bind(this), false);
 
             if (!event && this.is_userscript) {
 
@@ -4987,7 +5527,7 @@
                 if (this.is_userscript) {
 
                     holder = document.createElement("style");
-                    holder.textContent = GM_getResourceText("iridium_css");
+                    holder.textContent = this.GM_getResourceText("iridium_css");
 
                     document.documentElement.appendChild(holder);
 
@@ -5030,6 +5570,7 @@
 
                     this.GM_getValue = GM_getValue;
                     this.GM_setValue = GM_setValue;
+                    this.GM_getResourceText = GM_getResourceText;
                     this.main();
 
                 } else {

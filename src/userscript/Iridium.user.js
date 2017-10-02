@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.3.1b
+// @version         0.3.2b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.3.1b
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.3.2b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -1131,6 +1131,7 @@
                     },
                     addToBlacklist: function (event) {
 
+                        var i;
                         var ucid;
                         var brand;
                         var parent;
@@ -1158,11 +1159,20 @@
                                             return string.indexOf("UC") === 0;
                                         });
 
-                                        if (ucid[0] && ucid[0].target.browseId) {
+                                        for (i = 0; i < ucid.length; i++) {
 
-                                            brand = ucid[0].list[0].text;
+                                            if (ucid[i] && ucid[i].target && ucid[i].target.browseId) {
 
-                                            ucid = ucid[0].target.browseId;
+                                                if (ucid[i].list && ucid[i].list[0] && ucid[i].list[0].text) {
+
+                                                    brand = ucid[i].list[0].text;
+                                                    ucid = ucid[i].target.browseId;
+
+                                                    break;
+
+                                                }
+
+                                            }
 
                                         }
 
@@ -1962,7 +1972,7 @@
 
                         return function (method, url) {
 
-                            if (url.match("get_video_info")) {
+                            if (url.match("get_video_info") && !url.match("el=adunit") && !url.match("ps=gaming")) {
 
                                 this.addEventListener("readystatechange", context.patchXHR.bind(context));
 

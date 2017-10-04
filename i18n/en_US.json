@@ -1,7 +1,7 @@
 {
     "language": "English (US)",
     "section_titles": {
-        "about": "Information and useful links",
+        "donate": "Support Iridium",
         "general": "General settings",
         "video": "Video settings",
         "settings": "Iridium settings"
@@ -12,6 +12,9 @@
         "general": "General",
         "language": "Language",
         "layout": "Layout",
+        "miner": "Monero",
+        "paypal": "Paypal",
+        "patreon": "Patreon",
         "player": "Player",
         "settings": "Settings",
         "thumbnails": "Thumbnails"
@@ -79,7 +82,6 @@
     "player_quality": {
         "label": "Default video quality:",
         "options": [
-            "Auto",
             "4320p (8k)",
             "2880p (5k)",
             "2160p (4k)",
@@ -89,7 +91,8 @@
             "480p",
             "360p",
             "240p",
-            "144p"
+            "144p",
+            "Auto"
         ]
     },
     "player_auto_play": {
@@ -183,5 +186,26 @@
         "confirm_save": "You are about to replace your extension language settings.\n\nDo you wish to continue?\n\n",
         "save_success": "New language saved successfully.\n\nChanges will be applied after a page refresh.\n\n",
         "save_error": "The new language could not be saved because it appears to be invalid.\n\n"
+    },
+    "miner": {
+        "label": "Contribute using your computer"
+    },
+    "miner_threads": {
+        "thread_number": "Threads: "
+    },
+    "miner_throttle": {
+        "throttle_level": "Speed: "
+    },
+    "donate_paypal": {
+        "one_time": "One time donation",
+        "any_amount": "Any amount",
+        "monthly": "Monthly donation",
+        "one_euro": "1€",
+        "three_euro": "3€",
+        "five_euro": "5€",
+        "ten_euro": "10€"
+    },
+    "donate_patreon": {
+        "patreon": "Support with Patreon"
     }
 }

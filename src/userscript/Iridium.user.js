@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.3.3b
+// @version         0.3.4b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.3.3b
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.3.4b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -2112,7 +2112,7 @@
                             for (i = 0; i < temp.length; i++) {
 
                                 key_value = temp[i].split("=");
-                                key_value[1] = key_value[1] === undefined ? key_value[1].replace(/\+/g, "%20") : "";
+                                key_value[1] = key_value[1] === undefined ? "" : key_value[1].replace(/\+/g, "%20");
                                 temp_list[key_value[0]] = window.decodeURIComponent(key_value[1]);
 
                             }

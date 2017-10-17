@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version         0.3.4b
+// @version         0.3.5b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.3.4b
+// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.3.5b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -156,11 +156,11 @@
 
                             }
 
-                            if (user_settings.default_logo_page !== "home" && url === "/" && event.target.tagName === "A" && event.target.id === "logo") {
+                            if (user_settings.default_logo_page !== "home" && url === "/" && target.tagName === "A" && target.id === "logo") {
 
                                 data.browseEndpoint.browseId = "FE" + user_settings.default_logo_page;
                                 data.webNavigationEndpointData.url += "feed/" + user_settings.default_logo_page;
-                                event.target.href = data.webNavigationEndpointData.url;
+                                target.href = data.webNavigationEndpointData.url;
 
                             }
 

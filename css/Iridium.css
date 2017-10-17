@@ -64,12 +64,10 @@ a.yt-simple-endpoint span {
 .iri-square-avatars yt-img-shadow {
     border-radius: 0 !important;
 }
-.iri-improved-logo #lozenge-path,
-.iri-improved-logo polygon.yt-icon[fill="#FFFFFF"] {
+.iri-improved-logo polygon[fill="#FFFFFF"] {
     fill: var(--yt-swatch-primary, #FFFFFF);
 }
-.iri-improved-logo #play-polygon,
-.iri-improved-logo path.yt-icon[fill="#FF0000"] {
+.iri-improved-logo path[fill="#FF0000"] {
     fill: var(--yt-swatch-logo-override, #232323);
 }
 .iri-video-count {

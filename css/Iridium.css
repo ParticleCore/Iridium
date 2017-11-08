@@ -379,7 +379,6 @@ yt-img-shadow:not(.ytd-channel-renderer) .iri-add-to-blacklist {
 /* ini | quick controls */
 #iri-quick-controls {
     font-size: 0;
-    margin-bottom: -16px;
     position: relative;
     text-align: right;
 }

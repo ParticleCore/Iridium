@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.3.6b
+// @version         0.3.7b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -5599,7 +5599,7 @@
 
                 this.id = "iridiumSettings";
 
-                if (typeof (GM || GM_info) === "object") {
+                if (typeof GM === "object" || typeof GM_info === "object") {
 
                     this.is_userscript = true;
 
@@ -5608,32 +5608,20 @@
 
                     if (typeof GM === "undefined") {
 
-                        this.GM = {};
-
-                        Object.entries({
-                            'GM_getValue': 'getValue',
-                            'GM_info': 'info',
-                            'GM_setValue': 'setValue'
-                        }).forEach(([oldKey, newKey]) => {
-
-                            var old = this[oldKey];
-
-                            if (old) {
-
-                                this.GM[newKey] = function () {
-
-                                    new Promise((resolve, reject) => {
-                                        try {
-                                            resolve(old.apply(this, arguments));
-                                        } catch (e) {
-                                            reject(e);
-                                        }
-                                    });
-
-                                };
+                        this.GM = {
+                            setValue: GM_setValue,
+                            info: GM_info,
+                            getValue: function () {
+                                return new Promise((resolve, reject) => {
+                                    try {
+                                        resolve(GM_getValue.apply(this, arguments));
+                                    } catch (e) {
+                                        reject(e);
+                                    }
+                                });
 
                             }
-                        });
+                        };
 
                     } else {
 

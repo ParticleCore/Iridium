@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.3.7b
+// @version         0.3.8b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -2277,6 +2277,8 @@
                     },
                     exitFullBrowser: function (event) {
 
+                        var video_player;
+
                         if (!user_settings.fullBrowser || (event.keyCode === 27 || event.key === "Escape")) {
 
                             window.removeEventListener("keydown", this.exitFullBrowserlistener, false);
@@ -2285,6 +2287,16 @@
                             user_settings.fullBrowser = false;
                             iridium_api.saveSettings("fullBrowser");
                             window.dispatchEvent(new Event("resize"));
+
+                            if ((video_player = document.getElementById("movie_player"))) {
+
+                                if (!document.querySelector("[theater]")) {
+
+                                    video_player.setSizeStyle(true, false);
+
+                                }
+
+                            }
 
                             this.quickControlsState();
 
@@ -2450,16 +2462,32 @@
 
                                 }
 
+                                if (!document.querySelector("[theater]")) {
+
+                                    video_player.setSizeStyle(true, true);
+
+                                }
+
                                 this.exitFullBrowserlistener = this.exitFullBrowser.bind(this);
                                 window.addEventListener("keydown", this.exitFullBrowserlistener, false);
                                 window.dispatchEvent(new Event("resize"));
 
                             }
 
-                        } else if (!user_settings.fullBrowser) {
+                        } else if (!user_settings.fullBrowser && document.documentElement.classList.contains("iri-full-browser")) {
 
                             document.documentElement.classList.remove("iri-full-browser");
                             window.dispatchEvent(new Event("resize"));
+
+                            if ((video_player = document.getElementById("movie_player"))) {
+
+                                if (!document.querySelector("[theater]")) {
+
+                                    video_player.setSizeStyle(true, false);
+
+                                }
+
+                            }
 
                         }
 

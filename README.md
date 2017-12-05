@@ -48,6 +48,7 @@ Each item on the lists below can be removed or moved to the a different version 
 - [x] Feature: fullbrowser video mode
 - [ ] Feature: reverse playlist
 - [x] Feature: advanced options / quick shortcuts below player
+- [ ] Core: automatic locale handling
 - [ ] Core: welcome box with minimal instructions
 
 ### TODO - [release version](https://github.com/ParticleCore/Iridium/tree/master)

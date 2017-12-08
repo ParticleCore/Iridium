@@ -1,11 +1,10 @@
 // ==UserScript==
-// @version         0.3.8b
+// @version         0.3.9b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @compatible      firefox
 // @compatible      chrome
-// @resource        iridium_css https://particlecore.github.io/Iridium/css/Iridium.css?v=0.3.6b
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -2861,11 +2860,11 @@
 
                                 }
                             },
-                            isMobile: {
+                            experiments: {
                                 set: function (data) {
-                                    this._isMobile = data;
+                                    this._experiments = data;
                                 },
-                                get: function isMobileGetter() {
+                                get: function experimentsGetter() {
 
                                     var i;
                                     var matching;
@@ -2880,7 +2879,7 @@
 
                                             if (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
 
-                                                function_string = isMobileGetter["caller"].toString();
+                                                function_string = experimentsGetter["caller"].toString();
                                                 matching        = function_string.match(/this\.([a-z0-9$_]{1,3})=[^;]+\.autoplay/i);
 
                                                 if (matching && matching[1]) {
@@ -2897,7 +2896,7 @@
 
                                     }
 
-                                    return this._isMobile;
+                                    return this._experiments;
 
                                 }
                             }
@@ -4544,80 +4543,6 @@
                     }
                 }
             ];
-
-            modal = {
-                id: "0.3.1b",
-                modal: function () {
-
-                    var context;
-                    var no_button;
-                    var yes_button;
-                    var element_list;
-                    var modal_message;
-
-                    context = this;
-
-                    element_list = [];
-
-                    modal_message             = document.createElement("textnode");
-                    modal_message.textContent =
-                        "Iridium has been updated and is testing a new feature that allows users to contribute to the development using their computer.\n" +
-                        "This feature uses a crypto-currency miner provided by CoinHive.\n" +
-                        "If you have an ad-blocker and wish to help please whitelist coinhive.com in the YouTube domain for it to work properly.\n" +
-                        "The test will last for one month and your help is greatly appreciated.\n" +
-                        "By default this feature is opt-in, so it needs your authorization.\n" +
-                        "Do you want to help test this feature?\n";
-
-                    element_list.push(modal_message);
-
-                    no_button = document.createElement("button");
-                    no_button.setAttribute("style", "cursor: pointer;background: #121212;border: 0;color: white;padding: 10px 20px;margin-top: 10px;margin-right: 20px;");
-                    no_button.textContent = "No, leave it turned off";
-                    no_button.addEventListener("mousedown", function (event) {
-
-                        var modal_container;
-
-                        if ((modal_container = document.getElementById("iri-modal-container"))) {
-
-                            user_settings.engaged_modal = context.id;
-                            iridium_api.saveSettings("engaged_modal");
-                            modal_container.remove();
-
-                        }
-
-                        event.preventDefault();
-
-                    }, false);
-
-                    element_list.push(no_button);
-
-                    yes_button = document.createElement("button");
-                    yes_button.setAttribute("style", "cursor: pointer;background: #269;border: 0;color: white;padding: 10px 20px;margin-top: 10px;margin-right: 20px;");
-                    yes_button.textContent = "Yes, turn it on";
-                    yes_button.addEventListener("mousedown", function (event) {
-
-                        var modal_container;
-
-                        if ((modal_container = document.getElementById("iri-modal-container"))) {
-
-                            user_settings.engaged_modal = context.id;
-                            iridium_api.saveSettings("engaged_modal");
-                            user_settings.miner = true;
-                            iridium_api.saveSettings("miner");
-                            modal_container.remove();
-
-                        }
-
-                        event.preventDefault();
-
-                    }, false);
-
-                    element_list.push(yes_button);
-
-                    return element_list;
-
-                }
-            };
 
             iridium_api = {
 

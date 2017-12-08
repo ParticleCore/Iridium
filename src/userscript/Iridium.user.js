@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.3.9b
+// @version         0.4.0b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -2036,6 +2036,7 @@
                             if (available_qualities.indexOf(quality) > -1) {
 
                                 player_api.setPlaybackQuality(quality);
+                                player_api.setPlaybackQualityRange(quality);
 
                             } else {
 
@@ -2046,10 +2047,12 @@
                                     if (position <= max_position) {
 
                                         player_api.setPlaybackQuality(available_qualities[0]);
+                                        player_api.setPlaybackQualityRange(available_qualities[0]);
 
                                     } else {
 
                                         player_api.setPlaybackQuality(available_qualities[available_qualities.length - 2]);
+                                        player_api.setPlaybackQualityRange(available_qualities[available_qualities.length - 2]);
 
                                     }
 

@@ -222,7 +222,7 @@ html:not(.iri-always-visible):not(.iri-always-playing) #iri-mini-player-controls
 .iri-always-playing #iri-mini-player-restore {
     display: flex;
 }
-.iri-always-visible #movie_player:not(.ytp-fullscreen),
+.iri-always-visible:not(.iri-full-browser) #movie_player:not(.ytp-fullscreen),
 .iri-always-playing #movie_player:not(.ytp-fullscreen):not(.unstarted-mode) {
     background-color: transparent;
     bottom: 10px;
@@ -236,7 +236,7 @@ html:not(.iri-always-visible):not(.iri-always-playing) #iri-mini-player-controls
     width: 352px;
     z-index: 10;
 }
-.iri-always-visible #movie_player:not(.ytp-fullscreen):before,
+.iri-always-visible:not(.iri-full-browser) #movie_player:not(.ytp-fullscreen):before,
 .iri-always-playing #movie_player:not(.ytp-fullscreen):not(.unstarted-mode):before {
     background-color: #000;
     bottom: 0;

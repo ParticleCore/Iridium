@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.4.0b
+// @version         0.4.1b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -424,6 +424,7 @@
                     iniPreviewContainer: function (event) {
 
                         var xhr;
+                        var link;
                         var timer;
                         var context;
                         var video_id;
@@ -438,67 +439,70 @@
 
                         }
 
-                        event.stopPropagation();
-
                         container = event.target;
-                        video_id  = container.dataHost && container.dataHost.data && container.dataHost.data.videoId;
 
-                        if (container.tagName === "YT-IMG-SHADOW" && video_id && !container.querySelector("#iri-preview-player")) {
+                        if (container.tagName === "YTD-THUMBNAIL" && (container = event.target.querySelector("yt-img-shadow"))) {
 
-                            context = this;
+                            if ((video_id = iridium_api.checkIfExists("dataHost.data.videoId", container)) && !container.querySelector("#iri-preview-player")) {
 
-                            if (!(video_container = document.getElementById("iri-video-preview"))) {
+                                event.stopPropagation();
 
-                                video_container           = document.createElement("iri-video-preview");
-                                video_container.id        = "iri-video-preview";
-                                video_container.className = "ytp-small-mode";
+                                context = this;
 
-                            }
+                                if (!(video_container = document.getElementById("iri-video-preview"))) {
 
-                            if (video_container.parentNode !== container) {
-
-                                container.appendChild(video_container);
-
-                            }
-
-                            if (iridium_api.checkIfExists("window.yt.player.Application.create")) {
-
-                                xhr = this.getPreviewArgs(video_id);
-
-                            } else {
-
-                                if ((player_manager_api = document.querySelector("yt-player-manager")) && (player_container = document.getElementById("player-container")) && iridium_api.checkIfExists("yt.config_.FILLER_DATA.player")) {
-
-                                    player_manager_api.acquireApi(player_container, window.yt.config_.FILLER_DATA.player);
+                                    video_container           = document.createElement("iri-video-preview");
+                                    video_container.id        = "iri-video-preview";
+                                    video_container.className = "ytp-small-mode";
 
                                 }
 
-                                timer = window.setInterval(function () {
+                                if (video_container.parentNode !== container) {
 
-                                    if (window.yt && window.yt.player && window.yt.player.Application && window.yt.player.Application.create) {
+                                    container.appendChild(video_container);
 
-                                        window.clearInterval(timer);
-                                        xhr = context.getPreviewArgs(video_id);
+                                }
+
+                                if (iridium_api.checkIfExists("window.yt.player.Application.create")) {
+
+                                    xhr = this.getPreviewArgs(video_id);
+
+                                } else {
+
+                                    if ((player_manager_api = document.querySelector("yt-player-manager")) && (player_container = document.getElementById("player-container")) && iridium_api.checkIfExists("yt.config_.FILLER_DATA.player")) {
+
+                                        player_manager_api["acquireApi"](player_container, window.yt.config_.FILLER_DATA.player);
 
                                     }
 
-                                });
+                                    timer = window.setInterval(function () {
+
+                                        if (window.yt && window.yt.player && window.yt.player.Application && window.yt.player.Application.create) {
+
+                                            window.clearInterval(timer);
+                                            xhr = context.getPreviewArgs(video_id);
+
+                                        }
+
+                                    });
+
+                                }
+
+                                document.addEventListener("keydown", this.togglePreviewMute.bind(this), false);
+
+                                container.parentNode.addEventListener("click", function listener(event) {
+
+                                    context.endPreviewContainer(event, container, listener, xhr, timer, context, video_container, true);
+
+                                }, false);
+
+                                container.parentNode.addEventListener("mouseleave", function listener(event) {
+
+                                    context.endPreviewContainer(event, container, listener, xhr, timer, context);
+
+                                }, false);
 
                             }
-
-                            document.addEventListener("keydown", this.togglePreviewMute, false);
-
-                            container.parentNode.addEventListener("click", function listener(event) {
-
-                                context.endPreviewContainer(event, container, listener, xhr, timer, context, video_container, true);
-
-                            }, false);
-
-                            container.parentNode.addEventListener("mouseleave", function listener(event) {
-
-                                context.endPreviewContainer(event, container, listener, xhr, timer, context);
-
-                            }, false);
 
                         }
 
@@ -1095,14 +1099,17 @@
 
                             node = externalNode.firstElementChild;
 
-                            if (node && (node.id === "thumbnail" || node.id === "img")) {
+                            if (node) {
 
-                                container = node.id === "img" ? node.parentNode : node;
+                                if ((node.id === "thumbnail" || node.id === "img")) {
 
-                                if (!container.querySelector(".iri-add-to-blacklist")) {
+                                    container = node.id === "img" ? node.parentNode : node;
 
-                                    container.appendChild(blacklist_button.cloneNode(true));
+                                    if (!container.querySelector(".iri-add-to-blacklist")) {
 
+                                        container.appendChild(blacklist_button.cloneNode(true));
+
+                                    }
                                 }
                             }
 
@@ -1226,6 +1233,7 @@
                     ini: function () {
 
                         var context;
+                        var iniBlacklistListener;
 
                         if (iridium_api.initializeOption.call(this)) {
 
@@ -1233,8 +1241,10 @@
 
                         }
 
-                        document.addEventListener("readystatechange", this.iniBlacklist.bind(this), false);
-                        document.addEventListener("yt-page-data-fetched", this.iniBlacklist.bind(this), false);
+                        iniBlacklistListener = this.iniBlacklist.bind(this);
+
+                        document.addEventListener("readystatechange", iniBlacklistListener, false);
+                        document.addEventListener("yt-page-data-fetched", iniBlacklistListener, false);
                         document.addEventListener("click", this.addToBlacklist.bind(this), true);
 
                         HTMLDocument.prototype.importNode = this.modImportNode(HTMLDocument.prototype.importNode);
@@ -2264,6 +2274,12 @@
 
                             context.playerReady(api);
 
+                            if (window["ytSignalsInstance"] && window["ytSignalsInstance"]["processSignal"]) {
+
+                                window["ytSignalsInstance"]["processSignal"]("eocs");
+
+                            }
+
                             if (original) {
 
                                 return original.apply(this, arguments);
@@ -2279,6 +2295,8 @@
                     },
                     exitFullBrowser: function (event) {
 
+                        var i;
+                        var ytd_watch;
                         var video_player;
 
                         if (!user_settings.fullBrowser || (event.keyCode === 27 || event.key === "Escape")) {
@@ -2289,6 +2307,22 @@
                             user_settings.fullBrowser = false;
                             iridium_api.saveSettings("fullBrowser");
                             window.dispatchEvent(new Event("resize"));
+
+                            if (this.ironMediaQueryList) {
+
+                                if ((ytd_watch = document.querySelector("ytd-watch"))) {
+
+                                    for (i = 0; i < this.ironMediaQueryList.childElementCount; i++) {
+
+                                        ytd_watch.appendChild(this.ironMediaQueryList.firstElementChild);
+
+                                    }
+
+                                }
+
+                                this.ironMediaQueryList = null;
+
+                            }
 
                             if ((video_player = document.getElementById("movie_player"))) {
 
@@ -2427,7 +2461,10 @@
                     },
                     quickControlFullBrowser: function (event) {
 
+                        var i;
+                        var ytd_watch;
                         var video_player;
+                        var media_query_list;
                         var full_browser_info;
 
                         if (this.exitFullBrowserlistener) {
@@ -2447,6 +2484,20 @@
                         if (user_settings.fullBrowser) {
 
                             document.documentElement.classList.add("iri-full-browser");
+
+                            if (!this.ironMediaQueryList) {
+
+                                this.ironMediaQueryList = document.createDocumentFragment();
+
+                                media_query_list = document.querySelectorAll("ytd-watch iron-media-query");
+
+                                for (i = 0; i < media_query_list.length; i++) {
+
+                                    this.ironMediaQueryList.appendChild(media_query_list[i]);
+
+                                }
+
+                            }
 
                             if ((video_player = document.getElementById("movie_player"))) {
 
@@ -2480,6 +2531,22 @@
 
                             document.documentElement.classList.remove("iri-full-browser");
                             window.dispatchEvent(new Event("resize"));
+
+                            if (this.ironMediaQueryList) {
+
+                                if ((ytd_watch = document.querySelector("ytd-watch"))) {
+
+                                    for (i = 0; i < this.ironMediaQueryList.childElementCount; i++) {
+
+                                        ytd_watch.appendChild(this.ironMediaQueryList.firstElementChild);
+
+                                    }
+
+                                }
+
+                                this.ironMediaQueryList = null;
+
+                            }
 
                             if ((video_player = document.getElementById("movie_player"))) {
 
@@ -2755,14 +2822,11 @@
 
                         }
 
-                        this.loadStartListener = this.loadStart.bind(this);
+                        if (this.setPlayerResizeListener) {
 
-                        window.addEventListener("yt-page-data-updated", this.loadStartListener, true);
-                        window.addEventListener("yt-navigate-start", this.loadStartListener, false);
-                        window.addEventListener("yt-navigate-finish", this.loadStartListener, false);
-                        window.addEventListener("popstate", this.loadStartListener, true);
+                            window.removeEventListener("yt-navigate-finish", this.setPlayerResizeListener, false);
 
-                        window.addEventListener("yt-navigate-finish", this.setPlayerResize, false);
+                        }
 
                         if (this.fileLoadListener) {
 
@@ -2770,7 +2834,15 @@
 
                         }
 
-                        this.fileLoadListener = this.interceptHooks.bind(this);
+                        this.loadStartListener       = this.loadStart.bind(this);
+                        this.setPlayerResizeListener = this.setPlayerResize.bind(this);
+                        this.fileLoadListener        = this.interceptHooks.bind(this);
+
+                        window.addEventListener("yt-page-data-updated", this.loadStartListener, true);
+                        window.addEventListener("yt-navigate-start", this.loadStartListener, false);
+                        window.addEventListener("yt-navigate-finish", this.loadStartListener, false);
+                        window.addEventListener("popstate", this.loadStartListener, true);
+                        window.addEventListener("yt-navigate-finish", this.setPlayerResizeListener, false);
 
                         document.documentElement.addEventListener("load", this.fileLoadListener, true);
 
@@ -2805,40 +2877,6 @@
                                     }
 
                                     return context.modVideoByPlayerVars(this._loadVideoByPlayerVars);
-
-                                }
-                            },
-                            TIMING_AFT_KEYS: {
-                                set: function (data) {
-                                    this._TIMING_AFT_KEYS = data;
-                                },
-                                get: function () {
-
-                                    var key;
-
-                                    if (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
-
-                                        if (iridium_api.checkIfExists("ytcsi.data_.tick")) {
-
-                                            for (key in window.ytcsi.data_.tick) {
-
-                                                if (window.ytcsi.data_.tick.hasOwnProperty(key)) {
-
-                                                    return [key];
-
-                                                }
-
-                                            }
-
-                                        } else {
-
-                                            return ["srt"];
-
-                                        }
-
-                                    }
-
-                                    return this._TIMING_AFT_KEYS;
 
                                 }
                             },

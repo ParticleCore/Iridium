@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.4.1b
+// @version         0.4.2b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -54,6 +54,7 @@
                     miner: "Monero",
                     paypal: "Paypal",
                     patreon: "Patreon",
+                    playlist: "Playlist",
                     player: "Player",
                     settings: "Settings",
                     thumbnails: "Thumbnails"
@@ -424,7 +425,6 @@
                     iniPreviewContainer: function (event) {
 
                         var xhr;
-                        var link;
                         var timer;
                         var context;
                         var video_id;
@@ -1603,6 +1603,318 @@
                 },
                 {
                     options: {
+                        playlist_reverse_control: {
+                            id: "playlist_reverse_control",
+                            section: "video",
+                            sub_section: "playlist",
+                            type: "checkbox",
+                            value: true,
+                            i18n: {
+                                label: "Enable reverse playlist control",
+                                button_label: "Reverse playlist",
+                                toggle_on: "Reverse is on",
+                                toggle_off: "Reverse is off"
+                            }
+                        }
+                    },
+                    reversePlaylist: function () {
+
+                        var i;
+                        var autoplay;
+                        var playlist;
+                        var ytd_watch;
+                        var yt_navigation_manager;
+                        var twoColumnWatchNextResults;
+
+                        if ((ytd_watch = document.querySelector("ytd-watch"))) {
+
+                            if (ytd_watch.data) {
+
+                                if ((twoColumnWatchNextResults = iridium_api.getSingleObjectByKey(ytd_watch.data, ["twoColumnWatchNextResults"]))) {
+
+                                    if ("playlist" in twoColumnWatchNextResults && "playlist" in (playlist = twoColumnWatchNextResults["playlist"])) {
+
+                                        if ("contents" in (playlist = playlist["playlist"])) {
+
+                                            playlist["contents"].reverse();
+
+                                            if ("currentIndex" in playlist) {
+
+                                                playlist["currentIndex"] = playlist["contents"].length - playlist["currentIndex"] - 1;
+
+                                            }
+
+                                            if ("localCurrentIndex" in playlist) {
+
+                                                playlist["localCurrentIndex"] = playlist["contents"].length - playlist["localCurrentIndex"] - 1;
+
+                                            }
+
+                                            if ("autoplay" in twoColumnWatchNextResults && "autoplay" in (autoplay = twoColumnWatchNextResults["autoplay"])) {
+
+                                                if ("sets" in (autoplay = autoplay["autoplay"])) {
+
+                                                    for (i = 0; i < autoplay["sets"].length; i++) {
+
+                                                        if (autoplay["sets"][i]["previousButtonVideo"] && autoplay["sets"][i]["nextButtonVideo"]) {
+
+                                                            autoplay["sets"][i]["autoplayVideo"]       = autoplay["sets"][i]["previousButtonVideo"];
+                                                            autoplay["sets"][i]["previousButtonVideo"] = autoplay["sets"][i]["nextButtonVideo"];
+                                                            autoplay["sets"][i]["nextButtonVideo"]     = autoplay["sets"][i]["autoplayVideo"];
+
+                                                        }
+
+                                                    }
+
+                                                }
+
+                                            }
+
+                                            if ("updatePageData_" in ytd_watch) {
+
+                                                ytd_watch["updatePageData_"](JSON.parse(JSON.stringify(ytd_watch.data)));
+
+                                            }
+
+                                            // timeout temporary workaround for playlist buttons ui not updating after first video changes
+                                            window.setTimeout(() => {
+
+                                                if ((yt_navigation_manager = document.querySelector("yt-navigation-manager"))) {
+
+                                                    if ("updatePlayerComponents_" in yt_navigation_manager) {
+
+                                                        yt_navigation_manager["updatePlayerComponents_"](null, autoplay, null, playlist);
+
+                                                    }
+
+                                                }
+
+                                            }, 500);
+
+                                        }
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                    },
+                    reverseButtonToggled: function (event) {
+
+                        if (event.target.data.isReverseButton) {
+
+                            user_settings.playlist_reverse = event.target.data.isToggled;
+                            iridium_api.saveSettings("playlist_reverse");
+                            this.reversePlaylist();
+
+                        }
+
+                    },
+                    setReverseButtonData: function () {
+
+                        var defaultLabel;
+                        var toggledLabel;
+
+                        this["defaultIcon"].iconType = "REVERSE";
+                        this["accessibility"].label  = i18n.playlist_reverse_control.button_label;
+                        this.defaultTooltip          = i18n.playlist_reverse_control.button_label;
+                        this.toggledTooltip          = i18n.playlist_reverse_control.button_label;
+                        this.isToggled               = user_settings.playlist_reverse;
+                        this.isReverseButton         = true;
+
+                        if ((defaultLabel = iridium_api.getObjectByKey(this["defaultServiceEndpoint"], ["text"]))) {
+
+                            if (defaultLabel.length) {
+
+                                defaultLabel[0].target.text = i18n.playlist_reverse_control.toggle_on;
+
+                            }
+
+
+                        }
+
+                        if ((toggledLabel = iridium_api.getObjectByKey(this["toggledServiceEndpoint"], ["text"]))) {
+
+                            if (toggledLabel.length) {
+
+                                toggledLabel[0].target.text = i18n.playlist_reverse_control.toggle_off;
+
+                            }
+
+                        }
+
+                    },
+                    buildReverseButton: function (data) {
+
+                        var i;
+                        var reversePlaylistButton;
+
+                        for (i = 0; i < data.length; i++) {
+
+                            if ("toggleButtonRenderer" in data[i] && data[i]["toggleButtonRenderer"].isReverseButton) {
+
+                                return;
+
+                            }
+
+                        }
+
+                        reversePlaylistButton = JSON.parse(JSON.stringify(data[0]));
+
+                        data.push(reversePlaylistButton);
+                        this.setReverseButtonData.apply(reversePlaylistButton["toggleButtonRenderer"]);
+
+                        if (!this.reverseButtonToggledListener) {
+
+                            this.reverseButtonToggledListener = this.reverseButtonToggled.bind(this);
+
+                            window.addEventListener("yt-toggle-button", this.reverseButtonToggledListener, false);
+
+                        }
+
+                        if (user_settings.playlist_reverse) {
+
+                            this.reversePlaylist();
+
+                        }
+
+                    },
+                    createReverseButton: function () {
+
+                        var path;
+
+                        this.id = "reverse";
+
+                        if ((path = this.querySelector("path"))) {
+
+                            path.setAttribute("d", "M6 21l-4-4h3V5h2v12h3L6 21z M19 7v12h-2V7h-3l4-4l4 4H19z");
+
+                        }
+
+                    },
+                    modSetMenuData: function (original) {
+
+                        var context = this;
+
+                        return function (data) {
+
+                            var playlistButtons;
+                            var topLevelButtons;
+
+                            if (!data || !data["playlistButtons"]) {
+
+                                return original.apply(this, arguments);
+
+                            }
+
+                            if ((playlistButtons = iridium_api.getSingleObjectByKey(data, ["playlistButtons"]))) {
+
+                                if ((topLevelButtons = iridium_api.getSingleObjectByKey(playlistButtons, ["topLevelButtons"]))) {
+
+                                    context.buildReverseButton(topLevelButtons);
+
+                                }
+
+                            }
+
+                            return original.apply(this, arguments);
+
+                        };
+
+                    },
+                    interceptYtIcons: function () {
+
+                        var loopIcon;
+                        var reverseIcon;
+
+                        if ((loopIcon = document.querySelector("g#loop"))) {
+
+                            reverseIcon = loopIcon.cloneNode(true);
+
+                            this.createReverseButton.apply(reverseIcon);
+                            loopIcon.parentNode.appendChild(reverseIcon);
+
+                            document.removeEventListener("readystatechange", this.interceptListener, true);
+
+                        }
+
+                    },
+                    interceptImport: function (data) {
+
+                        var iconSet;
+                        var reverseIcon;
+
+                        if (data.target.tagName === "LINK" && data.target.rel === "import" && data.target.getAttribute("name")) {
+
+                            if ((reverseIcon = data.target.import.querySelector("#loop"))) {
+
+                                iconSet     = reverseIcon.parentElement;
+                                reverseIcon = reverseIcon.cloneNode(true);
+
+                                this.createReverseButton.apply(reverseIcon);
+                                iconSet.appendChild(reverseIcon);
+
+                                document.documentElement.removeEventListener("load", this.interceptListener, true);
+
+                                this.interceptListener = null;
+
+                            }
+
+                        }
+
+                    },
+                    ini: function () {
+
+                        var context;
+
+                        if (iridium_api.initializeOption.call(this)) {
+
+                            return;
+
+                        }
+
+                        if ("import" in document.createElement("link")) {
+
+                            this.interceptListener = this.interceptImport.bind(this);
+
+                            document.documentElement.addEventListener("load", this.interceptListener, true);
+
+                        } else {
+
+                            this.interceptListener = this.interceptYtIcons.bind(this);
+
+                            document.addEventListener("readystatechange", this.interceptListener, true);
+                            this.interceptYtIcons();
+
+                        }
+
+                        context = this;
+
+                        Object.defineProperties(Object.prototype, {
+                            setMenuData_: {
+                                set: function (data) {
+                                    this._setMenuData_ = data;
+                                },
+                                get: function () {
+
+                                    if (this._setMenuData_) {
+
+                                        return context.modSetMenuData(this._setMenuData_);
+
+                                    }
+
+                                    return this._setMenuData_;
+                                }
+                            }
+                        });
+
+                    }
+                },
+                {
+                    options: {
                         player_quality: {
                             id: "player_quality",
                             section: "video",
@@ -1753,7 +2065,7 @@
                                 button_thumbnails: "Thumbnails",
                                 thumbnails_title: "Click to download\nRight click for options",
                                 screen_shot_title: "Right click for options",
-                                full_browser_info: "Press \"Esc\" to exit"
+                                full_browser_info: "Click here or\npress \"Esc\" to exit"
                             }
                         },
                         player_max_res_thumbnail: {
@@ -1776,9 +2088,14 @@
                         var player_response;
                         var thumbnail_image;
 
-                        if (this.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
+                        if (args.controls !== "0") {
 
-                            args.autoplay = "0";
+                            if (this.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
+
+                                args.autoplay                   = "0";
+                                args.suppress_autoplay_on_watch = true;
+
+                            }
 
                         }
 
@@ -2299,7 +2616,7 @@
                         var ytd_watch;
                         var video_player;
 
-                        if (!user_settings.fullBrowser || (event.keyCode === 27 || event.key === "Escape")) {
+                        if (!user_settings.fullBrowser || (event.type === "click" || event.keyCode === 27 || event.key === "Escape")) {
 
                             window.removeEventListener("keydown", this.exitFullBrowserlistener, false);
                             this.exitFullBrowserlistener = null;
@@ -2501,6 +2818,10 @@
 
                             if ((video_player = document.getElementById("movie_player"))) {
 
+                                this.exitFullBrowserlistener = this.exitFullBrowser.bind(this);
+                                window.addEventListener("keydown", this.exitFullBrowserlistener, false);
+                                window.dispatchEvent(new Event("resize"));
+
                                 if (!document.getElementById("iri-full-browser-info")) {
 
                                     full_browser_info           = document.createElement("template");
@@ -2513,6 +2834,8 @@
                                     iridium_api.applyText(full_browser_info, i18n.player_quick_controls);
                                     video_player.insertBefore(full_browser_info.firstChild, video_player.firstChild);
 
+                                    video_player.querySelector("#iri-full-browser-info-message").addEventListener("click", this.exitFullBrowserlistener, false);
+
                                 }
 
                                 if (!document.querySelector("[theater]")) {
@@ -2520,10 +2843,6 @@
                                     video_player.setSizeStyle(true, true);
 
                                 }
-
-                                this.exitFullBrowserlistener = this.exitFullBrowser.bind(this);
-                                window.addEventListener("keydown", this.exitFullBrowserlistener, false);
-                                window.dispatchEvent(new Event("resize"));
 
                             }
 
@@ -2898,46 +3217,6 @@
                                     }
 
                                     return this._playVideo;
-
-                                }
-                            },
-                            experiments: {
-                                set: function (data) {
-                                    this._experiments = data;
-                                },
-                                get: function experimentsGetter() {
-
-                                    var i;
-                                    var matching;
-                                    var keys_list;
-                                    var function_string;
-
-                                    keys_list = Object.keys(this);
-
-                                    for (i = 0; i < keys_list.length; i++) {
-
-                                        if (this[keys_list[i]] && this[keys_list[i]].eventid) {
-
-                                            if (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
-
-                                                function_string = experimentsGetter["caller"].toString();
-                                                matching        = function_string.match(/this\.([a-z0-9$_]{1,3})=[^;]+\.autoplay/i);
-
-                                                if (matching && matching[1]) {
-
-                                                    this[matching[1]] = false;
-
-                                                }
-
-                                            }
-
-                                            break;
-
-                                        }
-
-                                    }
-
-                                    return this._experiments;
 
                                 }
                             }
@@ -4691,9 +4970,54 @@
                     }
 
                 },
+                getSingleObjectByKey: function (obj, keys, match) {
+
+                    var i;
+                    var hasKey;
+                    var result;
+                    var property;
+
+                    for (property in obj) {
+
+                        if (obj.hasOwnProperty(property) && obj[property] !== null) {
+
+                            hasKey = keys.constructor.name === "String" ? keys === property : keys.indexOf(property) > -1;
+
+                            if (hasKey && (!match || obj[property].constructor.name !== "Object" && match(obj[property], obj))) {
+
+                                return obj[property];
+
+                            } else if (obj[property].constructor.name === "Object") {
+
+                                if ((result = this.getSingleObjectByKey(obj[property], keys, match))) {
+
+                                    return result;
+
+                                }
+
+                            } else if (obj[property].constructor.name === "Array") {
+
+                                for (i = 0; i < obj[property].length; i++) {
+
+                                    if ((result = this.getSingleObjectByKey(obj[property][i], keys, match))) {
+
+                                        return result;
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                },
                 getObjectByKey: function (obj, keys, match, list, pos) {
 
                     var i;
+                    var hasKey;
                     var results;
                     var property;
 
@@ -4703,7 +5027,9 @@
 
                         if (obj.hasOwnProperty(property) && obj[property] !== null) {
 
-                            if (keys.indexOf(property) > -1 && (!match || typeof obj[property] !== "object" && match(obj[property], obj))) {
+                            hasKey = keys.constructor.name === "String" ? keys === property : keys.indexOf(property) > -1;
+
+                            if (hasKey && (!match || typeof obj[property] !== "object" && match(obj[property], obj))) {
 
                                 results.push({
                                     target: obj,

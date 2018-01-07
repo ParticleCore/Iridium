@@ -525,6 +525,7 @@ button:hover > .iri-quick-controls-tooltip {
 }
 #iri-full-browser-info-message {
     display: inline-block;
+    cursor: pointer;
     border: 1px solid;
     padding: 10px;
     border-radius: 5px;

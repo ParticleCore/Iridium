@@ -497,6 +497,9 @@ button:hover > .iri-quick-controls-tooltip {
 
 
 /* end | quick control full browser */
+.iri-full-browser .ytp-popup.ytp-contextmenu {
+    z-index: 10000;
+}
 .iri-full-browser.video_active {
     overflow: hidden
 }

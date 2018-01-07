@@ -530,6 +530,7 @@ button:hover > .iri-quick-controls-tooltip {
     border-radius: 5px;
     background: rgba(0, 0, 0, 0.6);
     box-shadow: 0 0 10px #000000;
+    pointer-events: all;
     white-space: pre-wrap;
 }
 .iri-full-browser .ended-mode #iri-full-browser-info,

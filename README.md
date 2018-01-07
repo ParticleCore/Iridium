@@ -46,7 +46,7 @@ Each item on the lists below can be removed or moved to the a different version 
 - [x] Feature: control comment section visiblity
 - [ ] Feature: ability to open the player in a pop-out window
 - [x] Feature: fullbrowser video mode
-- [ ] Feature: reverse playlist
+- [x] Feature: reverse playlist
 - [x] Feature: advanced options / quick shortcuts below player
 - [ ] Core: automatic locale handling
 - [ ] Core: welcome box with minimal instructions

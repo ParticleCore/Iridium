@@ -32,7 +32,7 @@
         ]
     },
     "default_channel_tab": {
-        "label": "Kanavoiden oletusnäkymä:",
+        "label": "Kanavien oletusnäkymä:",
         "options": [
             "Etusivu",
             "Videot",

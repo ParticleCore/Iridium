@@ -343,9 +343,6 @@ html:not(.iri-blacklist-allowed) .iri-add-to-blacklist {
 #thumbnail {
     position: relative;
 }
-#avatar .iri-add-to-blacklist {
-    /*top: 32px*/
-}
 yt-img-shadow.ytd-channel-renderer {
     border-radius: 0;
     position: relative;
@@ -354,6 +351,60 @@ yt-img-shadow:not(.ytd-channel-renderer) .iri-add-to-blacklist {
     display: none;
 }
 /* end | blacklist */
+
+
+/* ini | pop-up */
+.iri-pop-up-player {
+    background-color: #111;
+    border-radius: 2px;
+    color: #fff;
+    cursor: pointer;
+    height: 0;
+    left: 0;
+    margin: 4px;
+    opacity: 0;
+    padding: 14px;
+    pointer-events: none;
+    position: absolute;
+    bottom: 0;
+    transition: opacity .3s;
+    width: 0;
+    z-index: 1;
+}
+#avatar:hover .iri-pop-up-player,
+#thumbnail:not([href*="list=RD"]):hover .iri-pop-up-player,
+.ytd-thumbnail-0:hover .iri-pop-up-player,
+.ytd-playlist-thumbnail-0:hover .iri-pop-up-player {
+    opacity: .8;
+    pointer-events: all;
+}
+.iri-pop-up-player svg {
+    fill: #fff;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    user-select: none;
+    width: 16px;
+}
+.iri-pop-up-player .iri-tooltip {
+    left: 32px;
+    bottom: -2px;
+}
+.iri-pop-up-player:hover .iri-tooltip {
+    opacity: .9;
+    transition: opacity .3s ease-out .5s;
+}
+#avatar,
+#thumbnail {
+    position: relative;
+}
+yt-img-shadow.ytd-channel-renderer {
+    border-radius: 0;
+    position: relative;
+}
+yt-img-shadow:not(.ytd-channel-renderer) .iri-pop-up-player {
+    display: none;
+}
+/* end | pop-up */
 
 
 /* ini | hide end screen cards */

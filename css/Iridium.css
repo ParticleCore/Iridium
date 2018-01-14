@@ -584,7 +584,9 @@ button:hover > .iri-quick-controls-tooltip {
     box-shadow: 0 0 10px #000000;
     pointer-events: all;
     white-space: pre-wrap;
+    user-select: none;
 }
+.iri-full-browser .ytp-fullscreen #iri-full-browser-info,
 .iri-full-browser .ended-mode #iri-full-browser-info,
 .iri-full-browser .ytp-autohide #iri-full-browser-info,
 .iri-full-browser .ytp-hide-controls #iri-full-browser-info {

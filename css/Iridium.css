@@ -434,6 +434,7 @@ yt-img-shadow:not(.ytd-channel-renderer) .iri-pop-up-player {
     left: 0 !important;
     top: 0 !important;
     right: 0 !important;
+    z-index: 1;
 }
 .iri-pop-up-player-window .ytp-hide-info-bar .ytp-chrome-top,
 .iri-pop-up-player-window .ytp-hide-info-bar .ytp-gradient-top {

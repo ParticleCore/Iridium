@@ -421,13 +421,13 @@ yt-img-shadow:not(.ytd-channel-renderer) .iri-pop-up-player {
     right: 0;
     background: black;
 }
-.iri-pop-out-player-window #masthead-positioner,
+.iri-pop-out-player-window #masthead-container,
 .iri-pop-out-player-window #masthead-positioner-height-offset,
-.iri-pop-out-player-window .ytp-size-button{
+.iri-pop-out-player-window .ytp-size-button {
     display: none;
 }
-.iri-pop-out-player-window #player-api,
-.iri-pop-out-player-window #player-api #movie_player{
+.iri-pop-out-player-window #player-container,
+.iri-pop-out-player-window #player-container #movie_player {
     margin: 0 !important;
     position: fixed !important;
     bottom: 0 !important;
@@ -436,7 +436,7 @@ yt-img-shadow:not(.ytd-channel-renderer) .iri-pop-up-player {
     right: 0 !important;
 }
 .iri-pop-out-player-window .ytp-hide-info-bar .ytp-chrome-top,
-.iri-pop-out-player-window .ytp-hide-info-bar .ytp-gradient-top{
+.iri-pop-out-player-window .ytp-hide-info-bar .ytp-gradient-top {
     display: initial;
 }
 /* end | pop-up window */

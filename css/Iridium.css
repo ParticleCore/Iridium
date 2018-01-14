@@ -426,9 +426,10 @@ yt-img-shadow:not(.ytd-channel-renderer) .iri-pop-up-player {
 .iri-pop-up-player-window .ytp-size-button {
     display: none;
 }
+.iri-pop-up-player-window #player-api,
+.iri-pop-up-player-window #player-api #movie_player,
 .iri-pop-up-player-window #player-container,
-.iri-pop-up-player-window #player-container #movie_player,
-.iri-pop-up-player-window #player-container ytd-player {
+.iri-pop-up-player-window #player-container #movie_player {
     margin: 0 !important;
     position: fixed !important;
     bottom: 0 !important;

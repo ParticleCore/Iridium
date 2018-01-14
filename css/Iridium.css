@@ -407,6 +407,41 @@ yt-img-shadow:not(.ytd-channel-renderer) .iri-pop-up-player {
 /* end | pop-up */
 
 
+/* ini | pop-up window */
+.iri-pop-out-player-window {
+    overflow: hidden;
+}
+.iri-pop-out-player-window body:after {
+    content: "";
+    display: block;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: black;
+}
+.iri-pop-out-player-window #masthead-positioner,
+.iri-pop-out-player-window #masthead-positioner-height-offset,
+.iri-pop-out-player-window .ytp-size-button{
+    display: none;
+}
+.iri-pop-out-player-window #player-api,
+.iri-pop-out-player-window #player-api #movie_player{
+    margin: 0 !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    top: 0 !important;
+    right: 0 !important;
+}
+.iri-pop-out-player-window .ytp-hide-info-bar .ytp-chrome-top,
+.iri-pop-out-player-window .ytp-hide-info-bar .ytp-gradient-top{
+    display: initial;
+}
+/* end | pop-up window */
+
+
 /* ini | hide end screen cards */
 .iri-hide-end-screen-cards #movie_player:hover .ytp-ce-element:not(:hover) {
     opacity: 0;

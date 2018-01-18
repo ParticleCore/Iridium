@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.4.2b
+// @version         0.4.3b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -516,6 +516,240 @@
                         }
 
                         document.addEventListener("mouseenter", this.iniPreviewContainer.bind(this), true);
+
+                    }
+                },
+                {
+                    options: {
+                        popup_player: {
+                            id: "popup_player",
+                            section: "general",
+                            sub_section: "thumbnails",
+                            type: "checkbox",
+                            value: true,
+                            i18n: {
+                                label: "Enable player pop-up",
+                                button_add_title: "Pop-up"
+                            }
+                        }
+                    },
+                    modImportNode: function (original) {
+
+                        var pop_out_button;
+
+                        pop_out_button           = document.createElement("template");
+                        pop_out_button.innerHTML =
+                            "<div class='iri-pop-up-player' style='opacity:0'>" +
+                            "    <svg viewBox='0 0 24 24' height='16' width='16'>" +
+                            "        <path d='M6 0v6H0v18h18v-6h6V0H6z M15 21H3V9h3v9h9V21z M21 15h-3h-3H9V9V6V3h12V15z'/>" +
+                            "    </svg>" +
+                            "    <div class='iri-tooltip' data-locale='text|button_add_title'></div>" +
+                            "</div>";
+                        pop_out_button           = pop_out_button.content;
+                        iridium_api.applyText(pop_out_button, i18n.popup_player);
+
+                        return function (externalNode, deep) {
+
+                            var node;
+                            var container;
+
+                            if (!user_settings.popup_player) {
+
+                                return original.apply(this, arguments);
+
+                            }
+
+                            node = externalNode.firstElementChild;
+
+                            if (node) {
+
+                                if ((node.id === "thumbnail" || node.id === "img")) {
+
+                                    container = node.id === "img" ? node.parentNode : node;
+
+                                    if (!container.querySelector(".iri-pop-up-player")) {
+
+                                        container.appendChild(pop_out_button.cloneNode(true));
+
+                                    }
+                                }
+                            }
+
+                            return original.apply(this, arguments);
+
+                        };
+
+                    },
+                    resumePlayback: function () {
+
+                        var temp;
+
+                        temp = this.document.querySelector("video");
+
+                        if (temp && !isNaN(temp.duration) && temp.currentTime < temp.duration) {
+
+                            temp = temp.currentTime;
+                            window.setTimeout(function () {
+                                window.location.hash = "t=" + temp;
+                            }, 0);
+
+                        }
+
+                    },
+                    popUpPlayer: function (url) {
+
+                        var popUp;
+                        var video;
+                        var width;
+                        var height;
+                        var popUpUrl;
+
+                        width    = 533; // TODO allow user to define window size by resizing it
+                        height   = Math.round(width / (16 / 9));
+                        video    = document.querySelector("video");
+                        popUpUrl = (!url.target && url) || window.location.href.split(/&t=[0-9]+|#t=[0-9]+|&time=[0-9]+/).join("");
+
+                        // TODO allow video to resume on pop-up window
+                        // if (url.target && video && video.currentTime && video.currentTime < video.duration) {
+                        //
+                        //     popUpUrl += "#t=" + video.currentTime;
+                        //     window.ytplayer.config.args.start = video.currentTime;
+                        //     api.cueVideoByPlayerVars(window.ytplayer.config.args);
+                        //
+                        // }
+
+                        popUp = window.open(popUpUrl, "popUpPlayer", "width=" + width + ",height=" + height);
+
+                        if (url.target) {
+
+                            popUp.addEventListener("beforeunload", this.resumePlayback.bind(this), false);
+
+                        }
+
+                        popUp.focus();
+
+                    },
+                    startPopUpPlayer: function (event) {
+
+                        var url;
+                        var parent;
+
+                        if (!user_settings.popup_player) {
+
+                            return;
+
+                        }
+
+                        if (event.target.className === "iri-pop-up-player") {
+
+                            event.preventDefault();
+                            event.stopPropagation();
+
+                            parent = event.target.parentNode;
+
+                            while (parent) {
+
+                                if (parent.data) {
+
+                                    if ("webNavigationEndpointData" in parent.data) {
+
+                                        if ((url = iridium_api.getSingleObjectByKey(parent.data["webNavigationEndpointData"], ["url"]))) {
+
+                                            this.popUpPlayer(url);
+
+                                        }
+
+                                    }
+
+                                    break;
+
+                                }
+
+                                parent = parent.parentNode;
+
+                            }
+
+                            return false;
+
+                        }
+
+                    },
+                    iniPopUpPlayer: function () {
+
+                        if (user_settings.popup_player) {
+
+                            document.documentElement.classList.add("iri-blacklist-allowed");
+
+                        } else {
+
+                            document.documentElement.classList.remove("iri-blacklist-allowed");
+
+                        }
+
+                    },
+                    updatePlayerStyle: function (api) {
+
+                        api.setSizeStyle(true, true);
+
+                    },
+                    playerReady: function (api) {
+
+                        if (api) {
+
+                            api.addEventListener("onStateChange", this.updatePlayerStyle.bind(this, api));
+
+                        }
+
+                    },
+                    shareApi: function (original) {
+
+                        var context = this;
+
+                        return function (api) {
+
+                            context.playerReady(api);
+
+                            if (original) {
+
+                                return original.apply(this, arguments);
+
+                            }
+
+                        };
+                    },
+                    ini: function () {
+
+                        var width;
+                        var height;
+                        var iniPopOutListener;
+
+                        if (iridium_api.initializeOption.call(this)) {
+
+                            return;
+
+                        }
+
+                        iniPopOutListener = this.iniPopUpPlayer.bind(this);
+
+                        document.addEventListener("readystatechange", iniPopOutListener, false);
+                        document.addEventListener("yt-page-data-fetched", iniPopOutListener, false);
+                        document.addEventListener("click", this.startPopUpPlayer.bind(this), true);
+
+                        HTMLDocument.prototype.importNode = this.modImportNode(HTMLDocument.prototype.importNode);
+
+                        if (window.name === "popUpPlayer") {
+
+                            window.onYouTubePlayerReady = this.shareApi(window.onYouTubePlayerReady);
+
+                            document.documentElement.classList.add("iri-pop-up-player-window");
+                            width  = 533; // TODO allow user to define window size by resizing it
+                            height = Math.round(width / (16 / 9));
+                            window.resizeTo(
+                                width + (window.outerWidth - window.innerWidth),
+                                height + (window.outerHeight - window.innerHeight)
+                            );
+
+                        }
 
                     }
                 },
@@ -1077,7 +1311,7 @@
 
                         blacklist_button           = document.createElement("template");
                         blacklist_button.innerHTML =
-                            "<div class='iri-add-to-blacklist'>" +
+                            "<div class='iri-add-to-blacklist' style='opacity:0'>" +
                             "    <svg viewBox='0 0 24 24' height='16' width='16'>" +
                             "        <polygon points='24 2.1 21.9 0 12 9.9 2.1 0 0 2.1 9.9 12 0 21.9 2.1 24 12 14.1 21.9 24 24 21.9 14.1 12'/>" +
                             "    </svg>" +
@@ -2553,11 +2787,14 @@
                     playerReady: function (api) {
 
                         var timestamp;
+                        var handleCustomsListener;
 
                         if (api) {
 
-                            api.addEventListener("SIZE_CLICKED", this.handleCustoms);
-                            api.addEventListener("onVolumeChange", this.handleCustoms);
+                            handleCustomsListener = this.handleCustoms.bind(this);
+
+                            api.addEventListener("SIZE_CLICKED", handleCustomsListener);
+                            api.addEventListener("onVolumeChange", handleCustomsListener);
                             api.addEventListener("onStateChange", this.onStateChange.bind(this));
 
                             if (user_settings.player_memorize_volume) {
@@ -2801,6 +3038,7 @@
                         if (user_settings.fullBrowser) {
 
                             document.documentElement.classList.add("iri-full-browser");
+                            document.documentElement.scrollTop = 0;
 
                             if (!this.ironMediaQueryList) {
 
@@ -3852,7 +4090,7 @@
 
                         document.documentElement.classList.remove(class_name);
 
-                        if ((player_api = document.getElementById("movie_player"))) {
+                        if (!window.name && (player_api = document.getElementById("movie_player"))) {
 
                             is_in_theater_mode = document.querySelector("ytd-watch[theater]");
 
@@ -3909,7 +4147,7 @@
                             this.updatePlayerPosition();
 
                             this.setMiniPlayerSizeListener = this.setMiniPlayerSize.bind(this, player_api);
-                            player_api.addEventListener("onFullscreenChange", this.setMiniPlayerSizeListener, false);
+                            player_api.addEventListener("onFullscreenChange", this.setMiniPlayerSizeListener);
 
                             this.setMiniPlayerSizeResizeListener = this.updatePlayerPosition.bind(this);
                             window.addEventListener("resize", this.setMiniPlayerSizeResizeListener, false);

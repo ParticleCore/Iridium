@@ -472,9 +472,6 @@ yt-img-shadow:not(.ytd-channel-renderer) .iri-pop-up-player {
     position: relative;
     text-align: right;
 }
-ytd-watch[theater] #iri-quick-controls {
-    margin-right: 24px;
-}
 #iri-quick-controls-container {
     position: relative;
 }

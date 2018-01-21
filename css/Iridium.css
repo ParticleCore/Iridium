@@ -479,8 +479,8 @@ ytd-watch[theater] #iri-quick-controls {
     position: relative;
 }
 #iri-quick-controls-container button {
-    height: 40px;
-    width: 40px;
+    height: 36px;
+    width: 36px;
 }
 #iri-quick-controls-container button svg {
     margin: 10px;
@@ -489,7 +489,7 @@ ytd-watch[theater] #iri-quick-controls {
     border: 0;
     cursor: pointer;
     background: transparent;
-    margin: 0;
+    margin: 4px 6px 0 0;
     padding: 0;
     outline: 0;
     font-size: 0;

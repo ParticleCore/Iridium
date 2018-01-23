@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.4.3b
+// @version         0.4.4b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -31,8 +31,8 @@
             var modal;
             var modules;
             var iridium_api;
-            var is_userscript;
             var user_settings;
+            var is_user_script;
             var default_language;
             var send_settings_to_page;
             var receive_settings_from_page;
@@ -352,6 +352,20 @@
 
                         }
 
+                        if (document.documentElement.classList.contains("iri-always-visible")) {
+
+                            if ((player_api = document.getElementById("movie_player"))) {
+
+                                if (player_api.setSizeStyle) {
+
+                                    player_api.setSizeStyle(false, true);
+
+                                }
+
+                            }
+
+                        }
+
                     },
                     getPreviewArgs: function (video_id) {
 
@@ -533,6 +547,7 @@
                             }
                         }
                     },
+                    popUpPlayerMinWidth: 533,
                     modImportNode: function (original) {
 
                         var pop_out_button;
@@ -583,50 +598,67 @@
                     resumePlayback: function () {
 
                         var temp;
+                        var player_api;
 
-                        temp = this.document.querySelector("video");
+                        if ((player_api = document.getElementById("movie_player"))) {
 
-                        if (temp && !isNaN(temp.duration) && temp.currentTime < temp.duration) {
+                            if ((temp = this.document.querySelector("video"))) {
 
-                            temp = temp.currentTime;
-                            window.setTimeout(function () {
-                                window.location.hash = "t=" + temp;
-                            }, 0);
+                                if (!isNaN(temp.duration) && temp.currentTime < temp.duration) {
+
+                                    temp = temp.currentTime;
+                                    player_api.seekTo(temp);
+
+                                }
+
+                            }
 
                         }
 
                     },
-                    popUpPlayer: function (url) {
+                    popUpPlayer: function (event, url) {
 
-                        var popUp;
+                        var top;
+                        var left;
                         var video;
                         var width;
                         var height;
-                        var popUpUrl;
+                        var pop_up;
+                        var pop_up_url;
+                        var player_api;
+                        var current_config;
 
-                        width    = 533; // TODO allow user to define window size by resizing it
-                        height   = Math.round(width / (16 / 9));
-                        video    = document.querySelector("video");
-                        popUpUrl = (!url.target && url) || window.location.href.split(/&t=[0-9]+|#t=[0-9]+|&time=[0-9]+/).join("");
+                        width      = user_settings.popup_player_size || this.popUpPlayerMinWidth;
+                        height     = Math.round(width / (16 / 9));
+                        left       = event.screenX - (width / 2);
+                        top        = event.screenY - 15;
+                        video      = document.querySelector("video");
+                        pop_up_url = url || window.location.href.split(/&t=[0-9]+|#t=[0-9]+|&time=[0-9]+/).join("");
 
-                        // TODO allow video to resume on pop-up window
-                        // if (url.target && video && video.currentTime && video.currentTime < video.duration) {
-                        //
-                        //     popUpUrl += "#t=" + video.currentTime;
-                        //     window.ytplayer.config.args.start = video.currentTime;
-                        //     api.cueVideoByPlayerVars(window.ytplayer.config.args);
-                        //
-                        // }
+                        if (!url && video && video.currentTime && video.currentTime < video.duration) {
 
-                        popUp = window.open(popUpUrl, "popUpPlayer", "width=" + width + ",height=" + height);
+                            if ((player_api = document.getElementById("movie_player"))) {
 
-                        if (url.target) {
+                                current_config               = player_api.getUpdatedConfigurationData();
+                                pop_up_url                   = pop_up_url + "#t=" + video.currentTime;
+                                current_config.args.start    = video.currentTime;
+                                current_config.pop_up_player = true;
 
-                            popUp.addEventListener("beforeunload", this.resumePlayback.bind(this), false);
+                                player_api.cueVideoByPlayerVars(current_config.args);
+
+                            }
 
                         }
 
-                        popUp.focus();
+                        pop_up = window.open(pop_up_url, "popUpPlayer", "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top);
+
+                        if (!url) {
+
+                            pop_up.addEventListener("beforeunload", this.resumePlayback.bind(pop_up), false);
+
+                        }
+
+                        pop_up.focus();
 
                     },
                     startPopUpPlayer: function (event) {
@@ -640,7 +672,18 @@
 
                         }
 
-                        if (event.target.className === "iri-pop-up-player") {
+                        if (event.type === "message") {
+
+                            if (event.data.id === user_settings.broadcast_id && event.data.action === "ini-pop-up-player") {
+
+                                event.screenX = event.data.screenX;
+                                event.screenY = event.data.screenY;
+
+                                this.popUpPlayer(event);
+
+                            }
+
+                        } else if (event.target.className === "iri-pop-up-player") {
 
                             event.preventDefault();
                             event.stopPropagation();
@@ -655,7 +698,7 @@
 
                                         if ((url = iridium_api.getSingleObjectByKey(parent.data["webNavigationEndpointData"], ["url"]))) {
 
-                                            this.popUpPlayer(url);
+                                            this.popUpPlayer(event, url);
 
                                         }
 
@@ -674,17 +717,32 @@
                         }
 
                     },
-                    iniPopUpPlayer: function () {
+                    saveNewSize: function () {
 
-                        if (user_settings.popup_player) {
+                        this.popUpPlayerResizeTimer = null;
 
-                            document.documentElement.classList.add("iri-blacklist-allowed");
+                        if (window.innerWidth > this.popUpPlayerMinWidth) {
+
+                            user_settings.popup_player_size = window.innerWidth;
 
                         } else {
 
-                            document.documentElement.classList.remove("iri-blacklist-allowed");
+                            user_settings.popup_player_size = this.popUpPlayerMinWidth;
 
                         }
+
+                        iridium_api.saveSettings("popup_player_size");
+
+                    },
+                    popUpPlayerResize: function (event) {
+
+                        if (this.popUpPlayerResizeTimer) {
+
+                            window.clearTimeout(this.popUpPlayerResizeTimer);
+
+                        }
+
+                        this.popUpPlayerResizeTimer = window.setTimeout(this.saveNewSize.bind(this), 1000);
 
                     },
                     updatePlayerStyle: function (api) {
@@ -719,35 +777,25 @@
                     },
                     ini: function () {
 
-                        var width;
-                        var height;
-                        var iniPopOutListener;
-
                         if (iridium_api.initializeOption.call(this)) {
 
                             return;
 
                         }
 
-                        iniPopOutListener = this.iniPopUpPlayer.bind(this);
-
-                        document.addEventListener("readystatechange", iniPopOutListener, false);
-                        document.addEventListener("yt-page-data-fetched", iniPopOutListener, false);
-                        document.addEventListener("click", this.startPopUpPlayer.bind(this), true);
-
-                        HTMLDocument.prototype.importNode = this.modImportNode(HTMLDocument.prototype.importNode);
-
                         if (window.name === "popUpPlayer") {
 
                             window.onYouTubePlayerReady = this.shareApi(window.onYouTubePlayerReady);
 
+                            window.addEventListener("resize", this.popUpPlayerResize.bind(this), false);
                             document.documentElement.classList.add("iri-pop-up-player-window");
-                            width  = 533; // TODO allow user to define window size by resizing it
-                            height = Math.round(width / (16 / 9));
-                            window.resizeTo(
-                                width + (window.outerWidth - window.innerWidth),
-                                height + (window.outerHeight - window.innerHeight)
-                            );
+
+                        } else {
+
+                            document.addEventListener("click", this.startPopUpPlayer.bind(this), true);
+                            window.addEventListener("message", this.startPopUpPlayer.bind(this), false);
+
+                            HTMLDocument.prototype.importNode = this.modImportNode(HTMLDocument.prototype.importNode);
 
                         }
 
@@ -781,9 +829,9 @@
                                 button_close: "Close",
                                 button_remove: "Remove from blacklist",
                                 placeholder: "Paste your new blacklist here",
-                                confirm_reset: "You are about to reset your blacklist. It is advised to backup your current blacklist before continuing.\n\nDo you wish to contiue?\n\n",
+                                confirm_reset: "You are about to reset your blacklist. It is advised to backup your current blacklist before continuing.\n\nDo you wish to continue?\n\n",
                                 reset_success: "Blacklist has been reset.\n\nChanges will be applied after a page refresh.\n\n",
-                                confirm_import: "You are about to override your current blacklist. It is advised to backup your current blacklist before continuing.\n\nDo you wish to contiue?\n\n",
+                                confirm_import: "You are about to override your current blacklist. It is advised to backup your current blacklist before continuing.\n\nDo you wish to continue?\n\n",
                                 import_success: "Your blacklist has been imported with success.\n\nChanges will be applied after a page refresh.\n\n",
                                 import_error: "Your blacklist could not be imported because it appears to be invalid.\n\n"
                             },
@@ -2285,23 +2333,6 @@
                                 label: "Memorize player volume"
                             }
                         },
-                        player_quick_controls: {
-                            id: "player_quick_controls",
-                            section: "video",
-                            sub_section: "general",
-                            type: "checkbox",
-                            value: true,
-                            i18n: {
-                                label: "Enable quick controls",
-                                button_auto_play: "Autoplay",
-                                button_full_browser: "Full Browser",
-                                button_screen_shot: "Screen Shot",
-                                button_thumbnails: "Thumbnails",
-                                thumbnails_title: "Click to download\nRight click for options",
-                                screen_shot_title: "Right click for options",
-                                full_browser_info: "Click here or\npress \"Esc\" to exit"
-                            }
-                        },
                         player_max_res_thumbnail: {
                             id: "player_max_res_thumbnail",
                             section: "video",
@@ -2333,14 +2364,20 @@
 
                         }
 
-                        if (user_settings.player_max_res_thumbnail && args.thumbnail_url) {
+                        if (user_settings.player_max_res_thumbnail) {
 
-                            args.iurlmaxres = args.thumbnail_url.replace(/\/[^\/]+$/, "/maxresdefault.jpg");
+                            if (args.eventid && args.thumbnail_url) {
 
-                            thumbnail_image = new Image();
-                            thumbnail_image.addEventListener("load", this.checkHighQualityThumbnail.bind(this, args.iurlmaxres), false);
-                            thumbnail_image.src = args.iurlmaxres;
-                            thumbnail_image     = null;
+                                args.iurlmaxres = args.thumbnail_url.replace(/\/[^\/]+$/, "/maxresdefault.jpg");
+
+                                thumbnail_image = new Image();
+
+                                thumbnail_image.addEventListener("load", this.checkHighQualityThumbnail.bind(this, args.iurlmaxres), false);
+
+                                thumbnail_image.src = args.iurlmaxres;
+                                thumbnail_image     = null;
+
+                            }
 
                         }
 
@@ -2416,6 +2453,12 @@
 
                         }
 
+                        if (window.name === "popUpPlayer") {
+
+                            args.el = "embedded";
+
+                        }
+
                     },
                     modVideoByPlayerVars: function (original) {
 
@@ -2435,7 +2478,7 @@
 
                             current_config = this.getUpdatedConfigurationData();
 
-                            if (current_config && current_config.args) {
+                            if (current_config && current_config.args && current_config.pop_up_player) {
 
                                 context.updatePlayerLayout = !!current_config.args.list !== !!args.list;
 
@@ -2847,6 +2890,242 @@
                         return /^\/(user|channel)\//.test(window.location.pathname);
 
                     },
+                    loadStart: function (event) {
+
+                        var is_watch;
+                        var is_playlist;
+                        var yt_player_manager;
+
+                        if (event) {
+
+                            is_watch    = window.location.pathname === "/watch";
+                            is_playlist = !!window.location.search.match(/list=[A-Z]{2}/);
+
+                            switch (event.type) {
+
+                                case "popstate":
+                                case "yt-navigate-start":
+
+                                    if (!user_settings.player_auto_play) {
+
+                                        if (is_watch && this.previous_url !== window.location.href && (is_watch !== this.was_watch || is_playlist !== this.was_playlist)) {
+
+                                            if ((yt_player_manager = document.querySelector("yt-player-manager")) && yt_player_manager["playerContainer_"]) {
+
+                                                yt_player_manager["playerContainer_"] = undefined;
+
+                                            }
+
+                                        }
+
+                                    }
+
+                                    break;
+
+                            }
+
+                            this.previous_url = is_watch ? window.location.href : this.previous_url;
+                            this.was_watch    = is_watch;
+                            this.was_playlist = is_playlist;
+
+                        }
+
+                    },
+                    ini: function () {
+
+                        var context;
+                        var timestamp;
+
+                        if (iridium_api.initializeOption.call(this)) {
+
+                            return;
+
+                        }
+
+                        if (user_settings.player_quality !== "auto") {
+
+                            timestamp = Date.now();
+
+                            iridium_api.setStorage(
+                                "yt-player-quality",
+                                JSON.stringify({
+                                    data: user_settings.player_quality,
+                                    creation: timestamp,
+                                    expiration: timestamp + 2592E6
+                                })
+                            );
+
+                        }
+
+                        if (this.loadStartListener) {
+
+                            window.removeEventListener("yt-page-data-updated", this.loadStartListener, true);
+                            window.removeEventListener("yt-navigate-start", this.loadStartListener, false);
+                            window.removeEventListener("yt-navigate-finish", this.loadStartListener, false);
+                            window.removeEventListener("popstate", this.loadStartListener, true);
+
+                        }
+
+                        if (this.setPlayerResizeListener) {
+
+                            window.removeEventListener("yt-navigate-finish", this.setPlayerResizeListener, false);
+
+                        }
+
+                        if (this.fileLoadListener) {
+
+                            document.documentElement.removeEventListener("load", this.fileLoadListener, true);
+
+                        }
+
+                        this.loadStartListener       = this.loadStart.bind(this);
+                        this.setPlayerResizeListener = this.setPlayerResize.bind(this);
+                        this.fileLoadListener        = this.interceptHooks.bind(this);
+
+                        window.addEventListener("yt-page-data-updated", this.loadStartListener, true);
+                        window.addEventListener("yt-navigate-start", this.loadStartListener, false);
+                        window.addEventListener("yt-navigate-finish", this.loadStartListener, false);
+                        window.addEventListener("popstate", this.loadStartListener, true);
+                        window.addEventListener("yt-navigate-finish", this.setPlayerResizeListener, false);
+
+                        document.documentElement.addEventListener("load", this.fileLoadListener, true);
+
+                        window.onYouTubePlayerReady         = this.shareApi(window.onYouTubePlayerReady);
+                        JSON.parse                          = this.modJSONParse(JSON.parse);
+                        XMLHttpRequest.prototype.open       = this.modOpen(XMLHttpRequest.prototype.open);
+                        DOMParser.prototype.parseFromString = this.modParseFromString(DOMParser.prototype.parseFromString);
+
+                        this.interceptHooks();
+
+                        context = this;
+
+                        Object.defineProperties(Object.prototype, {
+                            cueVideoByPlayerVars: {
+                                set: function (data) {
+                                    this._cueVideoByPlayerVars = data;
+                                },
+                                get: function () {
+                                    return context.modVideoByPlayerVars(this._cueVideoByPlayerVars);
+                                }
+                            },
+                            loadVideoByPlayerVars: {
+                                set: function (data) {
+                                    this._loadVideoByPlayerVars = data;
+                                },
+                                get: function () {
+
+                                    if (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
+
+                                        return this.cueVideoByPlayerVars;
+
+                                    }
+
+                                    return context.modVideoByPlayerVars(this._loadVideoByPlayerVars);
+
+                                }
+                            },
+                            playVideo: {
+                                set: function (data) {
+                                    this._playVideo = data;
+                                },
+                                get: function () {
+
+                                    if (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
+
+                                        if (!document.querySelector(".ad-showing,.ad-interrupting")) {
+
+                                            return function () {
+                                            };
+
+                                        }
+
+                                    }
+
+                                    return this._playVideo;
+
+                                }
+                            }
+                        });
+
+                    }
+                },
+                {
+                    options: {
+                        player_quick_controls: {
+                            id: "player_quick_controls",
+                            section: "video",
+                            sub_section: "general",
+                            type: "checkbox",
+                            value: true,
+                            i18n: {
+                                label: "Enable quick controls",
+                                button_auto_play: "Autoplay",
+                                button_pop_up_player: "Pop-up Video",
+                                button_full_browser: "Full Browser",
+                                button_screen_shot: "Screen Shot",
+                                button_thumbnails: "Thumbnails",
+                                thumbnails_title: "Click to download\nRight click for options",
+                                screen_shot_title: "Right click for options",
+                                full_browser_info: "Click here or\npress \"Esc\" to exit"
+                            }
+                        }
+                    },
+                    container: {
+                        html:
+                        "<div id='iri-quick-controls' class='closed-mode'>" +
+                        "    <div id='iri-quick-controls-container'></div>" +
+                        "</div>"
+                    },
+                    buttons: [
+                        {
+                            html:
+                            "<button id='iri-quick-control-auto-play'>" +
+                            "    <svg viewBox='0 0 20 20' height='20' width='20'>" +
+                            "        <polygon points='3 2 16.9 10 3 18'/>" +
+                            "    </svg>" +
+                            "    <div class='iri-quick-controls-tooltip' data-locale='text|button_auto_play'></div>" +
+                            "</button>"
+                        },
+                        {
+                            html:
+                            "<button id='iri-quick-control-full-browser'>" +
+                            "    <svg viewBox='0 0 20 20' height='20' width='20'>" +
+                            "        <path d='M0 4v12h20V4H0z M12 12H2V6h10V12'/>" +
+                            "    </svg>" +
+                            "    <div class='iri-quick-controls-tooltip' data-locale='text|button_full_browser'></div>" +
+                            "</button>"
+                        },
+                        {
+                            html:
+                            "<button id='iri-quick-control-screen-shot'>" +
+                            "    <svg viewBox='0 0 20 20' height='20' width='20'>" +
+                            "        <circle cx='13' cy='10' r='3.5'/>" +
+                            "        <path d='M0 4v12h20V4H0z M7 7H1V5h6V7z M13 15c-2.8 0-5-2.2-5-5s2.2-5 5-5s5 2.2 5 5S15.8 15 13 15z'/>" +
+                            "    </svg>" +
+                            "    <div class='iri-quick-controls-tooltip' data-locale='text|button_screen_shot'></div>" +
+                            "</button>"
+                        },
+                        {
+                            html:
+                            "<button id='iri-quick-control-thumbnail'>" +
+                            "    <svg viewBox='0 0 20 20' height='20' width='20'>" +
+                            "        <circle cx='8' cy='7.2' r='2'/>" +
+                            "        <path d='M0 2v16h20V2H0z M18 16H2V4h16V16z'/>" +
+                            "        <polygon points='17 10.9 14 7.9 9 12.9 6 9.9 3 12.9 3 15 17 15'/>" +
+                            "    </svg>" +
+                            "    <div class='iri-quick-controls-tooltip' data-locale='text|button_thumbnails'></div>" +
+                            "</button>"
+                        },
+                        {
+                            html:
+                            "<button id='iri-quick-control-pop-up-player'>" +
+                            "    <svg viewBox='0 0 20 20' height='20' width='20'>" +
+                            "        <path d='M18 2H6v4H2v12h12v-4h4V2z M12 16H4V8h2v6h6V16z M16 12h-2h-2H8V8V6V4h8V12z'/>" +
+                            "    </svg>" +
+                            "    <div class='iri-quick-controls-tooltip' data-locale='text|button_pop_up_player'></div>" +
+                            "</button>"
+                        }
+                    ],
                     exitFullBrowser: function (event) {
 
                         var i;
@@ -3173,6 +3452,16 @@
                         }
 
                     },
+                    quickControlPopUpPlayer: function (event) {
+
+                        window.postMessage({
+                            id: user_settings.broadcast_id,
+                            action: "ini-pop-up-player",
+                            screenX: event.screenX,
+                            screenY: event.screenY
+                        }, "*");
+
+                    },
                     quickControls: function (event) {
 
                         switch (event.target.id) {
@@ -3191,6 +3480,10 @@
 
                             case "iri-quick-control-screen-shot":
                                 this.quickControlScreenShot(event);
+                                break;
+
+                            case "iri-quick-control-pop-up-player":
+                                this.quickControlPopUpPlayer(event);
                                 break;
 
                         }
@@ -3233,11 +3526,10 @@
                     },
                     loadStart: function (event) {
 
-                        var is_watch;
-                        var is_playlist;
+                        var i;
+                        var controls;
                         var meta_section;
-                        var quick_controls;
-                        var yt_player_manager;
+                        var controls_container;
 
                         if (this.quickControlsListener) {
 
@@ -3246,49 +3538,28 @@
 
                         }
 
-                        quick_controls = document.querySelector("#iri-quick-controls");
+                        controls = document.querySelector("#iri-quick-controls");
 
                         if (user_settings.player_quick_controls && document.querySelector("ytd-watch:not([hidden])") && (meta_section = document.querySelector("#menu-container"))) {
 
-                            if (!quick_controls) {
+                            if (!controls) {
 
-                                quick_controls           = document.createElement("template");
-                                quick_controls.innerHTML =
-                                    "<div id='iri-quick-controls' class='closed-mode'>" +
-                                    "    <div id='iri-quick-controls-container'>" +
-                                    "        <button id='iri-quick-control-auto-play'>" +
-                                    "            <svg viewBox='0 0 20 20' height='20' width='20'>" +
-                                    "                <polygon points='3 2 16.9 10 3 18'/>" +
-                                    "            </svg>" +
-                                    "            <div class='iri-quick-controls-tooltip' data-locale='text|button_auto_play'></div>" +
-                                    "        </button>" +
-                                    "        <button id='iri-quick-control-thumbnail'>" +
-                                    "            <svg viewBox='0 0 20 20' height='20' width='20'>" +
-                                    "                <circle cx='8' cy='7.2' r='2'/>" +
-                                    "                <path d='M0 2v16h20V2H0z M18 16H2V4h16V16z'/>" +
-                                    "                <polygon points='17 10.9 14 7.9 9 12.9 6 9.9 3 12.9 3 15 17 15'/>" +
-                                    "            </svg>" +
-                                    "            <div class='iri-quick-controls-tooltip' data-locale='text|button_thumbnails'></div>" +
-                                    "        </button>" +
-                                    "        <button id='iri-quick-control-full-browser'>" +
-                                    "            <svg viewBox='0 0 20 20' height='20' width='20'>" +
-                                    "                <path d='M0 4v12h20V4H0z M12 12H2V6h10V12'/>" +
-                                    "            </svg>" +
-                                    "            <div class='iri-quick-controls-tooltip' data-locale='text|button_full_browser'></div>" +
-                                    "        </button>" +
-                                    "        <button id='iri-quick-control-screen-shot'>" +
-                                    "            <svg viewBox='0 0 20 20' height='20' width='20'>" +
-                                    "                <circle cx='13' cy='10' r='3.5'/>" +
-                                    "                <path d='M0 4v12h20V4H0z M7 7H1V5h6V7z M13 15c-2.8 0-5-2.2-5-5s2.2-5 5-5s5 2.2 5 5S15.8 15 13 15z'/>" +
-                                    "            </svg>" +
-                                    "            <div class='iri-quick-controls-tooltip' data-locale='text|button_screen_shot'></div>" +
-                                    "        </button>" +
-                                    "    </div>" +
-                                    "</div>";
-                                quick_controls           = quick_controls.content;
+                                controls           = document.createElement("template");
+                                controls.innerHTML = this.container.html;
+                                controls           = controls.content;
 
-                                iridium_api.applyText(quick_controls, i18n.player_quick_controls);
-                                meta_section.parentNode.insertBefore(quick_controls, meta_section);
+                                if ((controls_container = controls.querySelector("#iri-quick-controls-container"))) {
+
+                                    for (i = 0; i < this.buttons.length; i++) {
+
+                                        controls_container.innerHTML += this.buttons[i].html;
+
+                                    }
+
+                                }
+
+                                iridium_api.applyText(controls, i18n.player_quick_controls);
+                                meta_section.parentNode.insertBefore(controls, meta_section);
 
                             }
 
@@ -3298,43 +3569,9 @@
 
                             document.addEventListener("click", this.quickControlsListener, false);
 
-                        } else if (quick_controls && !user_settings.player_quick_controls) {
+                        } else if (controls && !user_settings.player_quick_controls) {
 
-                            quick_controls.remove();
-
-                        }
-
-                        if (event) {
-
-                            is_watch    = window.location.pathname === "/watch";
-                            is_playlist = !!window.location.search.match(/list=[A-Z]{2}/);
-
-                            switch (event.type) {
-
-                                case "popstate":
-                                case "yt-navigate-start":
-
-                                    if (!user_settings.player_auto_play) {
-
-                                        if (is_watch && this.previous_url !== window.location.href && (is_watch !== this.was_watch || is_playlist !== this.was_playlist)) {
-
-                                            if ((yt_player_manager = document.querySelector("yt-player-manager")) && yt_player_manager["playerContainer_"]) {
-
-                                                yt_player_manager["playerContainer_"] = undefined;
-
-                                            }
-
-                                        }
-
-                                    }
-
-                                    break;
-
-                            }
-
-                            this.previous_url = is_watch ? window.location.href : this.previous_url;
-                            this.was_watch    = is_watch;
-                            this.was_playlist = is_playlist;
+                            controls.remove();
 
                         }
 
@@ -3346,27 +3583,9 @@
                     },
                     ini: function () {
 
-                        var context;
-                        var timestamp;
-
                         if (iridium_api.initializeOption.call(this)) {
 
                             return;
-
-                        }
-
-                        if (user_settings.player_quality !== "auto") {
-
-                            timestamp = Date.now();
-
-                            iridium_api.setStorage(
-                                "yt-player-quality",
-                                JSON.stringify({
-                                    data: user_settings.player_quality,
-                                    creation: timestamp,
-                                    expiration: timestamp + 2592E6
-                                })
-                            );
 
                         }
 
@@ -3379,86 +3598,12 @@
 
                         }
 
-                        if (this.setPlayerResizeListener) {
-
-                            window.removeEventListener("yt-navigate-finish", this.setPlayerResizeListener, false);
-
-                        }
-
-                        if (this.fileLoadListener) {
-
-                            document.documentElement.removeEventListener("load", this.fileLoadListener, true);
-
-                        }
-
-                        this.loadStartListener       = this.loadStart.bind(this);
-                        this.setPlayerResizeListener = this.setPlayerResize.bind(this);
-                        this.fileLoadListener        = this.interceptHooks.bind(this);
+                        this.loadStartListener = this.loadStart.bind(this);
 
                         window.addEventListener("yt-page-data-updated", this.loadStartListener, true);
                         window.addEventListener("yt-navigate-start", this.loadStartListener, false);
                         window.addEventListener("yt-navigate-finish", this.loadStartListener, false);
                         window.addEventListener("popstate", this.loadStartListener, true);
-                        window.addEventListener("yt-navigate-finish", this.setPlayerResizeListener, false);
-
-                        document.documentElement.addEventListener("load", this.fileLoadListener, true);
-
-                        window.onYouTubePlayerReady         = this.shareApi(window.onYouTubePlayerReady);
-                        JSON.parse                          = this.modJSONParse(JSON.parse);
-                        XMLHttpRequest.prototype.open       = this.modOpen(XMLHttpRequest.prototype.open);
-                        DOMParser.prototype.parseFromString = this.modParseFromString(DOMParser.prototype.parseFromString);
-
-                        this.interceptHooks();
-
-                        context = this;
-
-                        Object.defineProperties(Object.prototype, {
-                            cueVideoByPlayerVars: {
-                                set: function (data) {
-                                    this._cueVideoByPlayerVars = data;
-                                },
-                                get: function () {
-                                    return context.modVideoByPlayerVars(this._cueVideoByPlayerVars);
-                                }
-                            },
-                            loadVideoByPlayerVars: {
-                                set: function (data) {
-                                    this._loadVideoByPlayerVars = data;
-                                },
-                                get: function () {
-
-                                    if (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
-
-                                        return this.cueVideoByPlayerVars;
-
-                                    }
-
-                                    return context.modVideoByPlayerVars(this._loadVideoByPlayerVars);
-
-                                }
-                            },
-                            playVideo: {
-                                set: function (data) {
-                                    this._playVideo = data;
-                                },
-                                get: function () {
-
-                                    if (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
-
-                                        if (!document.querySelector(".ad-showing,.ad-interrupting")) {
-
-                                            return function () {
-                                            };
-
-                                        }
-
-                                    }
-
-                                    return this._playVideo;
-
-                                }
-                            }
-                        });
 
                     }
                 },
@@ -4412,9 +4557,9 @@
                                 button_import: "Import",
                                 button_reset: "Reset",
                                 placeholder: "Paste your new settings here",
-                                confirm_reset: "You are about to reset your settings. It is advised to backup your current settings before continuing.\n\nDo you wish to contiue?\n\n",
+                                confirm_reset: "You are about to reset your settings. It is advised to backup your current settings before continuing.\n\nDo you wish to continue?\n\n",
                                 reset_success: "Settings have been reset.\n\nChanges will be applied after a page refresh.\n\n",
-                                confirm_import: "You are about to override your current settings. It is advised to backup your current settings before continuing.\n\nDo you wish to contiue?\n\n",
+                                confirm_import: "You are about to override your current settings. It is advised to backup your current settings before continuing.\n\nDo you wish to continue?\n\n",
                                 import_success: "Your settings have been imported with success.\n\nChanges will be applied after a page refresh.\n\n",
                                 import_error: "Your settings could not be imported because they appear to be invalid.\n\n"
                             },
@@ -5766,7 +5911,7 @@
                     if ((iridium_settings = document.getElementById("iridium-settings"))) {
 
                         loaded_settings            = JSON.parse(iridium_settings.textContent || "null");
-                        is_userscript              = !!iridium_settings.getAttribute("is-userscript");
+                        is_user_script             = !!iridium_settings.getAttribute("is-user-script");
                         receive_settings_from_page = iridium_settings.getAttribute("settings-beacon-from");
                         send_settings_to_page      = iridium_settings.getAttribute("settings-beacon-to");
 
@@ -5987,7 +6132,7 @@
         },
         saveSettings: function () {
 
-            if (this.is_userscript) {
+            if (this.is_user_script) {
 
                 this.GM.setValue(this.id, JSON.stringify(this.user_settings));
 
@@ -6077,7 +6222,7 @@
 
             event = JSON.stringify(this.user_settings);
 
-            if (this.is_userscript) {
+            if (this.is_user_script) {
 
                 holder      = document.createElement("link");
                 holder.rel  = "stylesheet";
@@ -6093,7 +6238,7 @@
             holder.textContent = event;
 
             holder.setAttribute("style", "display: none");
-            holder.setAttribute("is-userscript", this.is_userscript.toString());
+            holder.setAttribute("is-user-script", this.is_user_script.toString());
             holder.setAttribute("settings-beacon-from", this.receive_settings_from_page);
             holder.setAttribute("settings-beacon-to", this.send_settings_to_page);
 
@@ -6124,7 +6269,7 @@
 
             if (!event) {
 
-                if (this.is_userscript) {
+                if (this.is_user_script) {
 
                     context = this;
 
@@ -6159,7 +6304,7 @@
 
                 if (typeof GM === "object" || typeof GM_info === "object") {
 
-                    this.is_userscript = true;
+                    this.is_user_script = true;
 
                     // GreaseMonkey 4 polly fill
                     // https://arantius.com/misc/greasemonkey/imports/greasemonkey4-polyfill.js

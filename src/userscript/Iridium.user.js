@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.4.4b
+// @version         0.4.5b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -147,6 +147,7 @@
                             if (user_settings.default_channel_tab !== "home" && url.match(/^\/(?:channel|user)\/(?:[^\/])+$/)) {
 
                                 data.webNavigationEndpointData.url += "/" + user_settings.default_channel_tab;
+                                data.commandMetadata.webCommandMetadata.url += "/" + user_settings.default_channel_tab;
 
                                 if (target.href) {
 
@@ -160,6 +161,7 @@
 
                                 data.browseEndpoint.browseId = "FE" + user_settings.default_logo_page;
                                 data.webNavigationEndpointData.url += "feed/" + user_settings.default_logo_page;
+                                data.commandMetadata.webCommandMetadata.url += "feed/" + user_settings.default_logo_page;
                                 target.href                  = data.webNavigationEndpointData.url;
 
                             }

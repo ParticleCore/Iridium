@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.4.5b
+// @version         0.4.6b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -479,7 +479,7 @@
 
                                 }
 
-                                if (iridium_api.checkIfExists("window.yt.player.Application.create")) {
+                                if (iridium_api.checkIfExists("yt.player.Application.create")) {
 
                                     xhr = this.getPreviewArgs(video_id);
 
@@ -4700,6 +4700,16 @@
 
                             }
                         },
+                        iridium_custom_language: {
+                            id: "iridium_custom_language",
+                            section: "settings",
+                            sub_section: "language",
+                            type: "checkbox",
+                            value: false,
+                            i18n: {
+                                label: "Use modified locale"
+                            }
+                        },
                         iridium_language: {
                             id: "iridium_language",
                             section: "settings",
@@ -4810,6 +4820,124 @@
 
                             }
                         }
+                    },
+                    google_api_locale: "",
+                    fetchingLocale: false,
+                    locale_base_url: "https://api.github.com/repos/ParticleCore/Iridium/contents/i18n/",
+                    getLanguage: function (data) {
+
+                        var locale_updated;
+
+                        this.fetchingLocale = false;
+
+                        if (data.target.readyState === 4) {
+
+                            if (data.target.status === 200) {
+
+                                try {
+
+                                    user_settings.i18n_locale = JSON.parse(data.target.response);
+                                    locale_updated            = true;
+
+                                } catch (ignore) {
+                                }
+
+                                user_settings.iridium_language_data.last_modified = new Date(data.target.getResponseHeader("Last-Modified")).getTime();
+                            }
+
+                        }
+
+                        user_settings.iridium_language_data.next_check = new Date().getTime() + 6048E5;
+
+                        if (locale_updated) {
+
+                            iridium_api.saveSettings("i18n_locale");
+                            iridium_api.saveSettings("iridium_language_data");
+
+                        }
+
+                    },
+                    checkModified: function (data) {
+
+                        this.fetchingLocale = false;
+
+                        if (data.target.readyState === 4) {
+
+                            if (data.target.status === 200) {
+
+                                this.fetchingLocale = true;
+                                iridium_api.localXMLHttpRequest(
+                                    "GET",
+                                    this.getLanguage.bind(this),
+                                    this.locale_base_url + this.google_api_locale + ".json",
+                                    ["Accept", "application/vnd.github.raw"]
+                                );
+
+                            }
+
+                        }
+
+                    },
+                    checkLocale: function () {
+
+                        if ((this.google_api_locale = iridium_api.checkIfExists("yt.config_.GAPI_LOCALE"))) {
+
+                            if (this.google_api_locale !== "en_US") {
+
+                                if (!this.fetchingLocale) {
+
+                                    this.fetchingLocale = true;
+
+                                    if (is_user_script) {
+
+                                        iridium_api.localXMLHttpRequest(
+                                            "HEAD",
+                                            this.checkModified.bind(this),
+                                            this.locale_base_url + this.google_api_locale + ".json",
+                                            [
+                                                "If-Modified-Since",
+                                                new Date(user_settings.iridium_language_data.last_modified).toUTCString()
+                                            ]
+                                        );
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                    },
+                    ini: function () {
+
+                        var current_time;
+
+                        if (iridium_api.initializeOption.call(this)) {
+
+                            return;
+
+                        }
+
+                        if (!user_settings.iridium_custom_language) {
+
+                            if (!user_settings.iridium_language_data) {
+
+                                current_time = new Date().getTime();
+
+                                user_settings.iridium_language_data = {
+                                    last_modified: current_time,
+                                    next_check: current_time + 6048E5
+                                };
+
+                                iridium_api.saveSettings("iridium_language_data");
+
+                            }
+
+                            document.addEventListener("readystatechange", this.checkLocale.bind(this), false);
+
+                        }
+
                     }
                 },
                 {
@@ -5250,9 +5378,29 @@
             ];
 
             iridium_api = {
-
                 videoIdPattern: /v=([\w-_]+)/,
                 isSettingsPage: window.location.pathname === "/iridium-settings",
+                localXMLHttpRequest: function (method, call, url, head) {
+
+                    var request;
+
+                    request = new XMLHttpRequest();
+                    request.addEventListener("load", call);
+                    request.open(method, url, true);
+
+                    if (head && head !== "doc") {
+
+                        request.setRequestHeader(head[0], head[1]);
+
+                    } else {
+
+                        request.responseType = "document";
+
+                    }
+
+                    request.send();
+
+                },
                 showModal: function () {
 
                     var i;
@@ -5451,21 +5599,36 @@
                     var key;
                     var sub_key;
 
-                    key = Object.keys(custom_language);
+                    try {
+
+                        i18n = JSON.parse(JSON.stringify(custom_language));
+
+                    } catch (error) {
+
+                        i18n = default_language;
+                        return;
+
+                    }
+
+                    key = Object.keys(default_language);
 
                     for (i = 0; i < key.length; i++) {
 
-                        sub_key = Object.keys(custom_language[key[i]]);
-
                         if (!(key[i] in i18n)) {
 
-                            i18n[key[i]] = custom_language[key[i]];
+                            i18n[key[i]] = default_language[key[i]];
 
-                        } else {
+                        } else if (default_language[key[i]].constructor.name === "Object") {
+
+                            sub_key = Object.keys(default_language[key[i]]);
 
                             for (j = 0; j < sub_key.length; j++) {
 
-                                i18n[key[i]][sub_key[j]] = custom_language[key[i]][sub_key[j]];
+                                if (!(sub_key[j] in i18n[key[i]])) {
+
+                                    i18n[key[i]][sub_key[j]] = default_language[key[i]][sub_key[j]];
+
+                                }
 
                             }
 
@@ -5905,8 +6068,10 @@
                 initializeSettings: function (new_settings) {
 
                     var i;
+                    var j;
                     var option;
                     var options;
+                    var i18n_entry;
                     var loaded_settings;
                     var iridium_settings;
 
@@ -5924,9 +6089,17 @@
                     user_settings = new_settings || loaded_settings || {};
                     i18n          = default_language;
 
-                    if (user_settings.custom_language) {
+                    if (user_settings.iridium_custom_language) {
 
-                        iridium_api.setCustomLanguage(user_settings.custom_language);
+                        if (user_settings.custom_language) {
+
+                            iridium_api.setCustomLanguage(user_settings.custom_language);
+
+                        }
+
+                    } else if (user_settings.i18n_locale) {
+
+                        iridium_api.setCustomLanguage(user_settings.i18n_locale);
 
                     }
 
@@ -5946,7 +6119,25 @@
 
                                 if (option.i18n) {
 
-                                    i18n[option.id] = option.i18n;
+                                    if (!(option.id in i18n)) {
+
+                                        i18n[option.id] = option.i18n;
+
+                                    } else if (option.i18n.constructor.name === "Object") {
+
+                                        i18n_entry = Object.keys(option.i18n);
+
+                                        for (j = 0; j < i18n_entry.length; j++) {
+
+                                            if (!(i18n_entry[j] in i18n[option.id])) {
+
+                                                i18n[option.id][i18n_entry[j]] = option.i18n[i18n_entry[j]];
+
+                                            }
+
+                                        }
+
+                                    }
 
                                 }
 
@@ -6085,7 +6276,6 @@
                     }
 
                 }
-
             };
 
             iridium_api.ini();

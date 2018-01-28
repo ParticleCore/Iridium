@@ -10,30 +10,35 @@ svg {
 /* ini | welcome box */
 #iri-welcome-box {
     display: block !important;
-    background: white;
+    background: #00000090;
     position: fixed;
     z-index: 10000;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 20px;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
     font-size: 1.4rem;
-    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12), 0 2px 4px -1px rgba(0, 0, 0, .4);
-    border-radius: 3px;
     text-shadow: -1px -1px 1px #eee;
     line-height: 2rem;
-    max-width: 600px;
-    min-width: 500px;
     letter-spacing: 0.05rem;
     color: #444;
     user-select: none;
 }
+#iri-welcome-box-content {
+    background: white;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12), 0 2px 4px -1px rgba(0, 0, 0, .4);
+    border-radius: 3px;
+    position: absolute;
+    max-width: 600px;
+    min-width: 500px;
+}
 #iri-welcome-box a {
     color: #08c;
     font-weight: 500;
-}
-#iri-welcome-box > div {
-    white-space: pre-wrap;
 }
 #iri-welcome-box .iri-button {
     background: #08c;

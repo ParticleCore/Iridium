@@ -28,8 +28,28 @@ svg {
     color: #444;
     user-select: none;
 }
+#iri-welcome-box a {
+    color: #08c;
+    font-weight: 500;
+}
 #iri-welcome-box > div {
     white-space: pre-wrap;
+}
+#iri-welcome-box .iri-button {
+    background: #08c;
+    padding: 6px 10px;
+    color: #fff;
+    border: 0;
+    border-radius: 3px;
+    margin-right: 5px;
+    font-weight: 700;
+    text-decoration: none;
+    text-shadow: none;
+    font-family: Arial;
+    opacity: 0.8;
+}
+#iri-welcome-box .iri-button:hover {
+    opacity: 1;
 }
 #iri-welcome-icon {
     display: block;

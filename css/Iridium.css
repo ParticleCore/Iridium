@@ -2,10 +2,52 @@ html {
     --iri-checkbox-bkg: 7px;
 }
 svg {
-    /* workaround for Firefox 7 years old
+    /* workaround for Firefox 8 years old
     half-pixel svg blur @ bugzilla#608812 */
     transform: scale(1);
 }
+
+/* ini | welcome box */
+#iri-welcome-icon {
+    display: block;
+    margin: 20px auto;
+}
+#iri-welcome-icon polygon {
+    opacity: .5;
+}
+#iri-welcome-icon path,
+#iri-welcome-icon polygon {
+    fill: url(#iri-welcome-gradient);
+}
+#iri-welcome-icon .iri-start-gradient {
+    animation: breatheStartEffect 5s linear infinite;
+}
+#iri-welcome-icon .iri-stop-gradient {
+    animation: breatheStopEffect 5s linear infinite;
+}
+@keyframes breatheStartEffect {
+    0% {
+      stop-color: #0FF;
+    }
+    50% {
+      stop-color: var(--yt-swatch-important-text, var(--yt-swatch-icon-color, #888));
+    }
+    100% {
+      stop-color: #0FF;
+    }
+}
+@keyframes breatheStopEffect {
+    0% {
+      stop-color: #F0F;
+    }
+    50% {
+      stop-color: var(--yt-swatch-important-text, var(--yt-swatch-icon-color, #888));
+    }
+    100% {
+      stop-color: #F0F;
+    }
+}
+/* end | welcome box */
 
 
 /* ini | settings button */

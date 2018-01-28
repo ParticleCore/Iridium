@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.4.6b
+// @version         0.4.7b
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -62,6 +62,21 @@
                 iridium_api: {
                     settings_button: "Iridium",
                     feature_link: "Find out what this does"
+                },
+                welcome_box: {
+                    thank_you: "Thank you for installing Iridium!",
+                    settings_instruction: "You can open your settings by clicking the triangle located on the top right corner of this page.",
+                    features_instruction: "For a complete list of features visit the following link:",
+                    features_link: "Feature list",
+                    donate_instruction: "If you wish to help the development of this extension you can use the following options:",
+                    paypal_one_time: "One time donation",
+                    paypal_any_amount: "Any amount",
+                    paypal_monthly: "Monthly donation",
+                    patreon_support: "Support with Patreon",
+                    monero_instruction: "Contribute using your computer. This option can be turned on in the settings and is only available on the userscript version.",
+                    monero_feature_instruction: "You can learn more by visiting the following link:",
+                    monero_feature_link: "Monero details",
+                    button_close: "close"
                 }
             };
 
@@ -847,28 +862,28 @@
                                 element             = document.createElement("button");
                                 element.textContent = i18n.blacklist_settings.button_edit;
                                 element.className   = "setting iri-settings-button";
-                                element.addEventListener("click", this.textEditor.bind(this, "edit"));
+                                element.addEventListener("click", this.textEditor.bind(this, "edit"), false);
 
                                 element_list.push(element);
 
                                 element             = document.createElement("button");
                                 element.textContent = i18n.blacklist_settings.button_import;
                                 element.className   = "setting iri-settings-button";
-                                element.addEventListener("click", this.textEditor.bind(this, "import"));
+                                element.addEventListener("click", this.textEditor.bind(this, "import"), false);
 
                                 element_list.push(element);
 
                                 element             = document.createElement("button");
                                 element.textContent = i18n.blacklist_settings.button_export;
                                 element.className   = "setting iri-settings-button";
-                                element.addEventListener("click", this.textEditor.bind(this, "export"));
+                                element.addEventListener("click", this.textEditor.bind(this, "export"), false);
 
                                 element_list.push(element);
 
                                 element             = document.createElement("button");
                                 element.textContent = i18n.blacklist_settings.button_reset;
                                 element.className   = "setting iri-settings-button danger";
-                                element.addEventListener("click", this.resetBlacklist.bind(this));
+                                element.addEventListener("click", this.resetBlacklist.bind(this), false);
 
                                 element_list.push(element);
 
@@ -1035,7 +1050,7 @@
 
                                             iridium_api.saveSettings("blacklist_settings");
 
-                                        });
+                                        }, false);
 
                                         blocked_list.appendChild(channel);
 
@@ -1048,7 +1063,7 @@
                                 button             = document.createElement("button");
                                 button.textContent = i18n.blacklist_settings.button_close;
                                 button.className   = "iri-settings-button";
-                                button.addEventListener("click", this.closeEditor.bind(this, editor));
+                                button.addEventListener("click", this.closeEditor.bind(this, editor), false);
 
                                 buttons_section.appendChild(button);
 
@@ -3804,7 +3819,7 @@
 
                         }
 
-                        document.addEventListener("keydown", this.alwaysActive.bind(this));
+                        document.addEventListener("keydown", this.alwaysActive.bind(this), false);
 
                     }
                 },
@@ -4575,21 +4590,21 @@
                                 element             = document.createElement("button");
                                 element.textContent = i18n.iridium_user_settings.button_import;
                                 element.className   = "setting iri-settings-button";
-                                element.addEventListener("click", this.textEditor.bind(this, "import"));
+                                element.addEventListener("click", this.textEditor.bind(this, "import"), false);
 
                                 element_list.push(element);
 
                                 element             = document.createElement("button");
                                 element.textContent = i18n.iridium_user_settings.button_export;
                                 element.className   = "setting iri-settings-button";
-                                element.addEventListener("click", this.textEditor.bind(this, "export"));
+                                element.addEventListener("click", this.textEditor.bind(this, "export"), false);
 
                                 element_list.push(element);
 
                                 element             = document.createElement("button");
                                 element.textContent = i18n.iridium_user_settings.button_reset;
                                 element.className   = "setting iri-settings-button danger";
-                                element.addEventListener("click", this.resetSettings.bind(this));
+                                element.addEventListener("click", this.resetSettings.bind(this), false);
 
                                 element_list.push(element);
 
@@ -4676,7 +4691,7 @@
                                     button             = document.createElement("button");
                                     button.textContent = i18n.iridium_user_settings.button_save;
                                     button.className   = "iri-settings-button";
-                                    button.addEventListener("click", this.importSettings.bind(this));
+                                    button.addEventListener("click", this.importSettings.bind(this), false);
 
                                     buttons_section.appendChild(button);
 
@@ -4685,7 +4700,7 @@
                                 button             = document.createElement("button");
                                 button.textContent = i18n.iridium_user_settings.button_close;
                                 button.className   = "iri-settings-button";
-                                button.addEventListener("click", this.closeEditor.bind(this, editor));
+                                button.addEventListener("click", this.closeEditor.bind(this, editor), false);
 
                                 buttons_section.appendChild(button);
 
@@ -4732,7 +4747,7 @@
                                 element             = document.createElement("button");
                                 element.textContent = i18n.language;
                                 element.className   = "setting iri-settings-button";
-                                element.addEventListener("click", this.textEditor.bind(this));
+                                element.addEventListener("click", this.textEditor.bind(this), false);
 
                                 element_list.push(element);
 
@@ -4799,14 +4814,14 @@
                                 button             = document.createElement("button");
                                 button.textContent = i18n.iridium_language.button_save;
                                 button.className   = "iri-settings-button";
-                                button.addEventListener("click", this.saveLanguage.bind(this));
+                                button.addEventListener("click", this.saveLanguage.bind(this), false);
 
                                 buttons_section.appendChild(button);
 
                                 button             = document.createElement("button");
                                 button.textContent = i18n.iridium_language.button_close;
                                 button.className   = "iri-settings-button";
-                                button.addEventListener("click", this.closeEditor.bind(this, editor));
+                                button.addEventListener("click", this.closeEditor.bind(this, editor), false);
 
                                 buttons_section.appendChild(button);
 
@@ -4903,6 +4918,13 @@
                                     }
 
                                 }
+
+                            } else {
+
+                                user_settings.i18n_locale = {};
+
+                                iridium_api.saveSettings("i18n_locale");
+                                iridium_api.initializeSettings();
 
                             }
 
@@ -5401,38 +5423,86 @@
                     request.send();
 
                 },
-                showModal: function () {
+                closeWelcomeBox: function (event) {
 
-                    var i;
-                    var element_list;
-                    var modal_container;
+                    var welcome_box;
 
-                    if (!this.isSettingsPage && modal) {
+                    if (event.target.tagName === "BUTTON" || event.target.id === "iri-welcome-box") {
 
-                        if (!(modal_container = document.getElementById("iri-modal-container")) && user_settings.engaged_modal !== modal.id) {
+                        if ((welcome_box = document.getElementById("iri-welcome-box"))) {
 
-                            element_list = modal.modal();
+                            welcome_box.remove();
+                            user_settings.welcome_closed = true;
+                            iridium_api.saveSettings("welcome_closed");
 
-                            if (element_list.length > 0) {
-
-                                modal_container    = document.createElement("div");
-                                modal_container.id = "iri-modal-container";
-                                modal_container.setAttribute("style", "position: fixed;z-index: 10000;max-width: 600px;font-size: 150%;color: #aaa;background: #222;padding: 20px;white-space: pre-wrap;line-height: 150%;letter-spacing: 1px;right: 20px;top: 70px;box-shadow: 0 0 10px #000;");
-
-                                for (i = 0; i < element_list.length; i++) {
-
-                                    modal_container.appendChild(element_list[i]);
-
-                                }
-
-                                document.documentElement.appendChild(modal_container);
-
-                            }
-
-                        } else if (modal_container && user_settings.engaged_modal === modal.id) {
-
-                            modal_container.remove();
                         }
+
+                    }
+
+                },
+                showWelcomeBox: function () {
+
+                    var welcome_box;
+
+                    if (!user_settings.welcome_closed && !this.isSettingsPage) {
+
+                        if (!document.getElementById("iri-welcome-box")) {
+
+                            welcome_box           = document.createElement("template");
+                            welcome_box.innerHTML =
+                                "<div id='iri-welcome-box' style='display:none;'>" +
+                                "    <div id='iri-welcome-box-content'>" +
+                                "        <div style='text-align:center;' data-locale='text|thank_you'></div>" +
+                                "        <div style='text-align:center;font-weight:bold;'>The beta is now over, please switch the release channel.</div>" +
+                                "        <svg id='iri-welcome-icon' viewBox='0 0 24 24' style='height:48px;'>" +
+                                "            <radialGradient id='iri-welcome-gradient' gradientUnits='userSpaceOnUse' cx='6' cy='22' r='18.5'>" +
+                                "                <stop class='iri-start-gradient' offset='0'/>" +
+                                "                <stop class='iri-stop-gradient' offset='1'/>" +
+                                "            </radialGradient>" +
+                                "            <polygon points='21 12 3,1.8 3 22.2''/>" +
+                                "            <path d='M3 1.8v20.4L21 12L3 1.8z M6 7l9 5.1l-9 5.1V7z''/>" +
+                                "        </svg>" +
+                                "        <div data-locale='text|settings_instruction'></div>" +
+                                "        <hr style='opacity:0;'/>" +
+                                "        <div style='display:inline;' data-locale='text|features_instruction'></div>" +
+                                "        <a href='https://github.com/ParticleCore/Iridium/wiki/Features' target='_blank' data-locale='text|features_link'></a>" +
+                                "        <hr style='opacity:0;'/>" +
+                                "        <div data-locale='text|donate_instruction'></div>" +
+                                "        <hr style='opacity:0;'/>" +
+                                "        <h3 style='font-weight:500;'>PayPal</h3>" +
+                                "        <div style='display:inline;' data-locale='text|paypal_one_time'></div>" +
+                                "        <a href='https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW' target='_blank' class='iri-button' data-locale='text|paypal_any_amount'></a>" +
+                                "        <hr style='opacity:0;'/>" +
+                                "        <div style='display:inline;' data-locale='text|paypal_monthly'></div>" +
+                                "        <a href='https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7VPKXJ49XFAPC' target='_blank' class='iri-button'>1€</a>" +
+                                "        <a href='https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2G4G9HLVKSR5C' target='_blank' class='iri-button'>3€</a>" +
+                                "        <a href='https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3KGWY5QQFFYCS' target='_blank' class='iri-button'>5€</a>" +
+                                "        <a href='https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=U5RPAT2VUEM2N' target='_blank' class='iri-button'>10€</a>" +
+                                "        <hr style='opacity:0;'/>" +
+                                "        <h3 style='font-weight:500;'>Patreon</h3>" +
+                                "        <a href='https://www.patreon.com/particle' target='_blank' class='iri-button' data-locale='text|patreon_support'></a>" +
+                                "        <hr style='opacity:0;'/>" +
+                                "        <h3 style='font-weight:500;'>Monero</h3>" +
+                                "        <div data-locale='text|monero_instruction'></div>" +
+                                "        <div style='display:inline;' data-locale='text|monero_feature_instruction'></div>" +
+                                "        <a href='https://github.com/ParticleCore/Iridium/wiki/Features#miner' target='_blank' data-locale='text|monero_feature_link'></a>" +
+                                "        <div style='text-align:right;white-space: normal'>" +
+                                "            <button style='padding:5px 10px;' data-locale='text|button_close'></button>" +
+                                "        </div>" +
+                                "    </div>" +
+                                "</div>";
+                            welcome_box           = welcome_box.content;
+                            iridium_api.applyText(welcome_box, i18n.welcome_box);
+
+                            document.documentElement.addEventListener("click", this.closeWelcomeBox.bind(this), false);
+
+                            document.documentElement.appendChild(welcome_box);
+
+                        }
+
+                    } else if ((welcome_box = document.getElementById("iri-welcome-box"))) {
+
+                        welcome_box.remove();
 
                     }
 
@@ -5597,13 +5667,24 @@
                     var i;
                     var j;
                     var key;
+                    var parsed;
                     var sub_key;
 
                     try {
 
-                        i18n = JSON.parse(JSON.stringify(custom_language));
+                        i18n = JSON.stringify(custom_language);
+
+                        if (i18n !== "{}") {
+
+                            i18n   = JSON.parse(i18n);
+                            parsed = true;
+
+                        }
 
                     } catch (error) {
+                    }
+
+                    if (!parsed) {
 
                         i18n = default_language;
                         return;
@@ -5624,9 +5705,13 @@
 
                             for (j = 0; j < sub_key.length; j++) {
 
-                                if (!(sub_key[j] in i18n[key[i]])) {
+                                if (i18n[key[i]].constructor.name === "Object") {
 
-                                    i18n[key[i]][sub_key[j]] = default_language[key[i]][sub_key[j]];
+                                    if (!(sub_key[j] in i18n[key[i]])) {
+
+                                        i18n[key[i]][sub_key[j]] = default_language[key[i]][sub_key[j]];
+
+                                    }
 
                                 }
 
@@ -5994,8 +6079,8 @@
 
                     }
 
-                    document.removeEventListener("click", iridium_api.updateSidebarSelection);
-                    document.addEventListener("click", iridium_api.updateSidebarSelection);
+                    document.removeEventListener("click", iridium_api.updateSidebarSelection, false);
+                    document.addEventListener("click", iridium_api.updateSidebarSelection, false);
 
                     if (is_refresh) {
 
@@ -6086,7 +6171,7 @@
 
                     }
 
-                    user_settings = new_settings || loaded_settings || {};
+                    user_settings = new_settings || loaded_settings || user_settings || {};
                     i18n          = default_language;
 
                     if (user_settings.iridium_custom_language) {
@@ -6129,9 +6214,13 @@
 
                                         for (j = 0; j < i18n_entry.length; j++) {
 
-                                            if (!(i18n_entry[j] in i18n[option.id])) {
+                                            if (i18n[option.id].constructor.name === "Object") {
 
-                                                i18n[option.id][i18n_entry[j]] = option.i18n[i18n_entry[j]];
+                                                if (!(i18n_entry[j] in i18n[option.id])) {
+
+                                                    i18n[option.id][i18n_entry[j]] = option.i18n[i18n_entry[j]];
+
+                                                }
 
                                             }
 
@@ -6147,7 +6236,7 @@
 
                     }
 
-                    this.showModal();
+                    this.showWelcomeBox();
 
                 },
                 initializeSettingsButton: function () {

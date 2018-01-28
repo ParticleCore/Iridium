@@ -41,7 +41,7 @@ Each item on the lists below can be removed or moved to the a different version 
 - [x] Feature: youtube logo redirects to subscription or trending
 - [x] Feature: blacklist videos from specific channels
 
-### TODO - [beta version](https://github.com/ParticleCore/Iridium/tree/beta) [current]
+### TODO - [beta version](https://github.com/ParticleCore/Iridium/tree/beta) [complete]
 
 - [x] Feature: control comment section visiblity
 - [x] Feature: ability to open the player in a pop-out window
@@ -49,9 +49,9 @@ Each item on the lists below can be removed or moved to the a different version 
 - [x] Feature: reverse playlist
 - [x] Feature: advanced options / quick shortcuts below player
 - [x] Core: automatic locale handling
-- [ ] Core: welcome box with minimal instructions
+- [x] Core: welcome box with minimal instructions
 
-### TODO - [release version](https://github.com/ParticleCore/Iridium/tree/master)
+### TODO - [release version](https://github.com/ParticleCore/Iridium/tree/master) [current]
 
 - [ ] Core: create Firefox add-on
 - [ ] Core: create Chrome extension

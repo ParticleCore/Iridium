@@ -43,16 +43,16 @@
         ]
     },
     "square_avatars": {
-        "label": "Zmień kształt awatarów na kwadratowy"
+        "label": "Zmień awatary na kwadratowe"
     },
     "improved_logo": {
         "label": "Ulepszone logo YouTube"
     },
     "thumbnail_preview": {
-        "label": "Odtwarzaj filmy przez najechanie na miniaturę"
+        "label": "Odtwarzaj filmy po najechaniu na miniaturę"
     },
     "thumbnail_preview_mute": {
-        "label": "Shift włącza dźwięk przy odtwarzaniu miniatury"
+        "label": "Shift włącza dźwięk po odtwarzaniu miniatury"
     },
     "enable_blacklist": {
         "label": "Włącz czarną listę"
@@ -67,17 +67,17 @@
         "button_close": "Zamknij",
         "button_remove": "Usuń z czarnej listy",
         "placeholder": "Wklej nową czarną listę tutaj",
-        "confirm_reset": "Chcesz zresetować swoją czarną listę. Radzimy utworzyć kopię zapasową swojej czarnej listy przed kontynuowaniem.\n\nCzy chcesz kontynuować?\n\n",
-        "reset_success": "Czarna lista została zresetowana.\n\nZmiany zostaną wprowadzone po odświeżeniu strony.\n\n",
-        "confirm_import": "Chcesz nadpisać swoją aktualną czarną listę. Radzimy utworzyć kopię zapasową swojej czarnej listy przed kontynuowaniem.\n\nCzy chcesz kontynuować?\n\n",
+        "confirm_reset": "Za chwilę nastąpi wyczyszczenie czarnej listy. Zalecane jest utworzyć kopię zapasową czarnej listy przed zresetowaniem.\n\nCzy chcesz kontynuować?\n\n",
+        "reset_success": "Czarna lista została wyczyszczona.\n\nZmiany zostaną wprowadzone po odświeżeniu strony.\n\n",
+        "confirm_import": "Za chwilę zostanie nadpisana czarna lista. Zalecane jest utworzyć kopię zapasową czarnej listy przed zresetowaniem.\n\nCzy chcesz kontynuować?\n\n",
         "import_success": "Zaimportowano czarną listę.\n\nZmiany zostaną wprowadzone po odświeżeniu strony.\n\n",
-        "import_error": "Twoja czarna lista nie mogła zostać zaimportowana, wygląda na to, że jest nieprawidłowa.\n\n"
+        "import_error": "Twoja czarna lista nie mogła zostać importowana, wygląda na to, że jest nieprawidłowa.\n\n"
     },
     "channel_video_count": {
-        "label": "Wyświetl ilość wysłanych filmów"
+        "label": "Pokaż licznik wysłanych filmów"
     },
     "channel_video_time": {
-        "label": "Wyświetl od jak dawna film został wysłany"
+        "label": "Pokaż datę wysłania filmu"
     },
     "player_quality": {
         "label": "Domyślna jakość filmu:",
@@ -114,16 +114,16 @@
         "label": "Zezwalaj na reklamy w filmach"
     },
     "subscribed_channel_player_ads": {
-        "label": "Zezwalaj na reklamy tylko w filmach z kanałów które subskrybuje"
+        "label": "Zezwalaj na reklamy w filmach, tylko z kanałów, które subskrybuję"
     },
     "player_hfr": {
         "label": "Zezwalaj na streamowanie filmów HFR (60fps)"
     },
     "player_memorize_size": {
-        "label": "Zapamiętuj rozmiar odtwarzacza"
+        "label": "Pamiętaj rozmiar odtwarzacza"
     },
     "player_memorize_volume": {
-        "label": "Zapamiętuj głośność odtwarzacza"
+        "label": "Pamiętaj głośność odtwarzacza"
     },
     "player_quick_controls": {
         "label": "Włącz szybkie ustawienia",
@@ -133,7 +133,7 @@
         "button_thumbnails": "Miniatury",
         "thumbnails_title": "Kliknij, żeby ściągnąć\nPrawy przycisk - opcje",
         "screen_shot_title": "Prawy przycisk - opcje",
-        "full_browser_info": "Wciśnij \"Esc\", żeby wyjść"
+        "full_browser_info": "Wciśnij „Esc”, żeby wyjść"
     },
     "player_max_res_thumbnail": {
         "label": "Wymuś miniatury wysokiej jakości"
@@ -157,7 +157,7 @@
         "label": "Podczas przewijania film jest zawsze widoczny"
     },
     "player_always_playing": {
-        "label": "Film jest odtwarzany nawet po zmianie strony",
+        "label": "Odtwarzaj film nawet po zmianie strony",
         "button_restore": "Przywróć ustawienia domyślne",
         "button_close": "Zamknij"
     },
@@ -165,7 +165,7 @@
         "label": "Ukryj polecane miniatury na końcu filmu"
     },
     "iridium_dark_mode": {
-        "label": "Użyj czarnej skórki"
+        "label": "Użyj ciemnego motywu"
     },
     "iridium_user_settings": {
         "button_save": "Zapisz",
@@ -174,18 +174,18 @@
         "button_import": "Importuj",
         "button_reset": "Przywróć ustawienia domyślne",
         "placeholder": "Wklej swoje nowe ustawienia tutaj",
-        "confirm_reset": "Chcesz zresetować swoje ustawienia. Radzimy utworzyć kopię zapasową przed kontynuowaniem.\n\nCzy chcesz kontynuować?\n\n",
-        "reset_success": "Ustawienia zostały zresetowane.\n\nZmiany zostaną wprowadzone po odświeżeniu strony.\n\n",
-        "confirm_import": "Chcesz nadpisać swoje aktualne ustawienia. Radzimy utworzyć kopię zapasową przed kontynuowaniem.\n\nCzy chcesz kontynuować?\n\n",
+        "confirm_reset": "Za chwilę nastąpi przywrócenie ustawień domyślnych. Zalecane jest utworzyć kopię zapasową przed zresetowaniem.\n\nCzy chcesz kontynuować?\n\n",
+        "reset_success": "Przywrócono ustawienia domyślne.\n\nZmiany zostaną wprowadzone po odświeżeniu strony.\n\n",
+        "confirm_import": "Za chwilę nastąpi nadpisanie ustawień. Zalecane jest utworzyć kopię zapasową przed nadpisaniem.\n\nCzy chcesz kontynuować?\n\n",
         "import_success": "Zaimportowano ustawienia.\n\nZmiany zostaną wprowadzone po odświeżeniu strony.\n\n",
-        "import_error": "Twoje ustawienia nie mogły zostać zaimportowane, wygląda na to ze są nieprawidłowe.\n\n"
+        "import_error": "Twoje ustawienia nie mogły zostać importowane, wygląda na to, że są nieprawidłowe.\n\n"
     },
     "iridium_language": {
         "button_save": "Zapisz",
         "button_close": "Zamknij",
-        "confirm_save": "Chcesz nadpisać ustawienia językowe swojego rozszerzenia.\n\nCzy chcesz kontynuować?\n\n",
+        "confirm_save": "Za chwilę nastąpi nadpisanie ustawień językowych rozszerzenia.\n\nCzy chcesz kontynuować?\n\n",
         "save_success": "Nowy język zapisany.\n\nZmiany zostaną wprowadzone po odświeżeniu strony.\n\n",
-        "save_error": "Nowy język nie mogł zostać zapisany, wygląda na to ze nie jest prawidłowy.\n\n"
+        "save_error": "Nowy język nie mogł zostać zapisany, wygląda na to, że nie jest prawidłowy.\n\n"
     },
     "miner": {
         "label": "Wspomóż Iridium używając swojego komputera"

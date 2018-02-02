@@ -1,5 +1,11 @@
 {
     "language": "English (US)",
+    "section_list": {
+        "donate": "donate",
+        "general": "general",
+        "video": "video",
+        "settings": "settings"
+    },
     "section_titles": {
         "donate": "Support Iridium",
         "general": "General settings",

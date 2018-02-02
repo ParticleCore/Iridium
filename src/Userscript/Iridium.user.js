@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.0.1
+// @version         0.0.2
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -13,7 +13,7 @@
 // @run-at          document-start
 // @homepageURL     https://github.com/ParticleCore/Iridium
 // @supportURL      https://github.com/ParticleCore/Iridium/wiki
-// @contributionURL https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW
+// @contributionURL https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW&lc=US
 // @grant           GM.getValue
 // @grant           GM.setValue
 // @grant           GM_getValue
@@ -38,6 +38,12 @@
 
             default_language = {
                 language: "English (US)",
+                section_list: {
+                    donate: "donate",
+                    general: "general",
+                    video: "video",
+                    settings: "settings"
+                },
                 section_titles: {
                     donate: "Support Iridium",
                     general: "General settings",
@@ -315,9 +321,8 @@
                         args.vq             = "small";
 
                         args.ad3_module                   = null;
-                        // args.player_response = null;
                         args.baseUrl                      = null;
-                        args.eventid                      = null; // excludes from watch history
+                        args.eventid                      = null;
                         args.iv_endscreen_url             = null;
                         args.ppv_remarketing_url          = null;
                         args.probe_url                    = null;
@@ -442,12 +447,6 @@
                                     video_container.firstChild.destroy();
 
                                 }
-                            }
-
-                            if (clicked && video_container) {
-
-                                // video_container.remove();
-
                             }
                         }
 
@@ -1357,11 +1356,7 @@
 
                             }
 
-                            if (this.hasContainers()) {
-
-                                // ignore.containers = [];
-
-                            } else {
+                            if (!this.hasContainers()) {
 
                                 window.dispatchEvent(new Event("resize"));
                             }
@@ -1975,7 +1970,7 @@
                                             }
 
                                             // timeout temporary workaround for playlist buttons ui not updating after first video changes
-                                            window.setTimeout(() => {
+                                            window.setTimeout(function () {
 
                                                 if ((yt_navigation_manager = document.querySelector("yt-navigation-manager"))) {
 
@@ -2375,6 +2370,7 @@
 
                                 args.autoplay                   = "0";
                                 args.suppress_autoplay_on_watch = true;
+                                args.fflags                     = args.fflags.replace(/html5_new_autoplay_redux=true/g, "html5_new_autoplay_redux=false");
 
                             }
 
@@ -4838,6 +4834,37 @@
                     google_api_locale: "",
                     fetchingLocale: false,
                     locale_base_url: "https://api.github.com/repos/ParticleCore/Iridium/contents/i18n/",
+                    saveLanguage: function (data) {
+
+                        var locale_updated;
+
+                        this.fetchingLocale = false;
+
+                        window.removeEventListener(send_settings_to_page, this.saveLanguageListener, false);
+
+                        if (data.detail.locale !== "") {
+
+                            try {
+
+                                user_settings.i18n_locale      = JSON.parse(data.detail.locale);
+                                user_settings.i18n_locale.code = this.google_api_locale;
+                                locale_updated                 = true;
+
+                            } catch (ignore) {
+                            }
+
+                            user_settings.iridium_language_data.next_check = new Date().getTime() + 6048E5;
+
+                            if (locale_updated) {
+
+                                iridium_api.saveSettings("i18n_locale");
+                                iridium_api.saveSettings("iridium_language_data");
+
+                            }
+
+                        }
+
+                    },
                     getLanguage: function (data) {
 
                         var locale_updated;
@@ -4850,8 +4877,9 @@
 
                                 try {
 
-                                    user_settings.i18n_locale = JSON.parse(data.target.response);
-                                    locale_updated            = true;
+                                    user_settings.i18n_locale      = JSON.parse(data.target.response);
+                                    user_settings.i18n_locale.code = this.google_api_locale;
+                                    locale_updated                 = true;
 
                                 } catch (ignore) {
                                 }
@@ -4871,6 +4899,18 @@
                         }
 
                     },
+                    getLocale: function () {
+
+                        this.fetchingLocale = true;
+
+                        iridium_api.localXMLHttpRequest(
+                            "GET",
+                            this.getLanguage.bind(this),
+                            this.locale_base_url + this.google_api_locale + ".json",
+                            ["Accept", "application/vnd.github.raw"]
+                        );
+
+                    },
                     checkModified: function (data) {
 
                         this.fetchingLocale = false;
@@ -4879,13 +4919,7 @@
 
                             if (data.target.status === 200) {
 
-                                this.fetchingLocale = true;
-                                iridium_api.localXMLHttpRequest(
-                                    "GET",
-                                    this.getLanguage.bind(this),
-                                    this.locale_base_url + this.google_api_locale + ".json",
-                                    ["Accept", "application/vnd.github.raw"]
-                                );
+                                this.getLocale();
 
                             }
 
@@ -4893,6 +4927,8 @@
 
                     },
                     checkLocale: function () {
+
+                        var current_time;
 
                         if ((this.google_api_locale = iridium_api.checkIfExists("yt.config_.GAPI_LOCALE"))) {
 
@@ -4902,27 +4938,66 @@
 
                                     this.fetchingLocale = true;
 
+                                    if (!user_settings.iridium_language_data) {
+
+                                        current_time = new Date().getTime();
+
+                                        user_settings.iridium_language_data = {
+                                            last_modified: current_time,
+                                            next_check: current_time + 6048E5
+                                        };
+
+                                        iridium_api.saveSettings("iridium_language_data");
+
+                                    }
+
                                     if (is_user_script) {
 
-                                        iridium_api.localXMLHttpRequest(
-                                            "HEAD",
-                                            this.checkModified.bind(this),
-                                            this.locale_base_url + this.google_api_locale + ".json",
-                                            [
-                                                "If-Modified-Since",
-                                                new Date(user_settings.iridium_language_data.last_modified).toUTCString()
-                                            ]
-                                        );
+                                        if (!user_settings.i18n_locale || user_settings.i18n_locale.code !== this.google_api_locale) {
+
+                                            this.getLocale();
+
+                                        } else if (current_time || user_settings.iridium_language_data.next_check < new Date().getTime()) {
+
+                                            iridium_api.localXMLHttpRequest(
+                                                "HEAD",
+                                                this.checkModified.bind(this),
+                                                this.locale_base_url + this.google_api_locale + ".json",
+                                                [
+                                                    "If-Modified-Since",
+                                                    new Date(user_settings.iridium_language_data.last_modified).toUTCString()
+                                                ]
+                                            );
+
+                                        }
+
+                                    } else if (
+                                        !user_settings.i18n_locale ||
+                                        user_settings.i18n_locale.code !== this.google_api_locale ||
+                                        user_settings.iridium_language_data.next_check < new Date().getTime()
+                                    ) {
+
+                                        this.saveLanguageListener = this.saveLanguage.bind(this);
+
+                                        window.addEventListener(send_settings_to_page, this.saveLanguageListener, false);
+
+                                        window.dispatchEvent(new CustomEvent(receive_settings_from_page, {
+                                            detail: {
+                                                locale: this.google_api_locale
+                                            }
+                                        }));
 
                                     }
 
                                 }
 
-                            } else {
+                            } else if (user_settings.i18n_locale || user_settings.iridium_language_data) {
 
-                                user_settings.i18n_locale = {};
+                                delete user_settings.i18n_locale;
+                                delete user_settings.iridium_language_data;
 
-                                iridium_api.saveSettings("i18n_locale");
+                                iridium_api.deleteSetting("i18n_locale");
+                                iridium_api.deleteSetting("iridium_language_data");
                                 iridium_api.initializeSettings();
 
                             }
@@ -4932,8 +5007,6 @@
                     },
                     ini: function () {
 
-                        var current_time;
-
                         if (iridium_api.initializeOption.call(this)) {
 
                             return;
@@ -4942,26 +5015,15 @@
 
                         if (!user_settings.iridium_custom_language) {
 
-                            if (!user_settings.iridium_language_data) {
-
-                                current_time = new Date().getTime();
-
-                                user_settings.iridium_language_data = {
-                                    last_modified: current_time,
-                                    next_check: current_time + 6048E5
-                                };
-
-                                iridium_api.saveSettings("iridium_language_data");
-
-                            }
-
                             document.addEventListener("readystatechange", this.checkLocale.bind(this), false);
 
                         }
 
                     }
                 },
-                {
+                // this option should only exist in userscript version
+                // report in the repository if this is still here
+                !is_user_script ? {} : {
                     options: {
                         miner: {
                             id: "miner",
@@ -5214,8 +5276,6 @@
                         // in the background as an attempt to circumvent content-blockers. at best
                         // ask the user to add an exception if he wishes so
 
-                        // this feature is currently a trial run
-
                         if (user_settings.miner) {
 
                             monero_script     = document.createElement("script");
@@ -5310,7 +5370,7 @@
                                 element_list.push(element);
 
                                 element             = document.createElement("a");
-                                element.href        = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW";
+                                element.href        = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW&lc=US";
                                 element.target      = "_blank";
                                 element.textContent = i18n.donate_paypal.any_amount;
                                 element.className   = "setting iri-settings-button";
@@ -5328,7 +5388,7 @@
                                 element_list.push(element);
 
                                 element             = document.createElement("a");
-                                element.href        = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7VPKXJ49XFAPC";
+                                element.href        = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7VPKXJ49XFAPC&lc=US";
                                 element.target      = "_blank";
                                 element.textContent = i18n.donate_paypal.one_euro;
                                 element.className   = "setting iri-settings-button";
@@ -5336,7 +5396,7 @@
                                 element_list.push(element);
 
                                 element             = document.createElement("a");
-                                element.href        = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2G4G9HLVKSR5C";
+                                element.href        = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2G4G9HLVKSR5C&lc=US";
                                 element.target      = "_blank";
                                 element.textContent = i18n.donate_paypal.three_euro;
                                 element.className   = "setting iri-settings-button";
@@ -5344,7 +5404,7 @@
                                 element_list.push(element);
 
                                 element             = document.createElement("a");
-                                element.href        = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3KGWY5QQFFYCS";
+                                element.href        = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3KGWY5QQFFYCS&lc=US";
                                 element.target      = "_blank";
                                 element.textContent = i18n.donate_paypal.five_euro;
                                 element.className   = "setting iri-settings-button";
@@ -5352,7 +5412,7 @@
                                 element_list.push(element);
 
                                 element             = document.createElement("a");
-                                element.href        = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=U5RPAT2VUEM2N";
+                                element.href        = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=U5RPAT2VUEM2N&lc=US";
                                 element.target      = "_blank";
                                 element.textContent = i18n.donate_paypal.ten_euro;
                                 element.className   = "setting iri-settings-button";
@@ -5469,13 +5529,13 @@
                                 "        <hr style='opacity:0;'/>" +
                                 "        <h3 style='font-weight:500;'>PayPal</h3>" +
                                 "        <div style='display:inline;' data-locale='text|paypal_one_time'></div>" +
-                                "        <a href='https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW' target='_blank' class='iri-button' data-locale='text|paypal_any_amount'></a>" +
+                                "        <a href='https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW&lc=US' target='_blank' class='iri-button' data-locale='text|paypal_any_amount'></a>" +
                                 "        <hr style='opacity:0;'/>" +
                                 "        <div style='display:inline;' data-locale='text|paypal_monthly'></div>" +
-                                "        <a href='https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7VPKXJ49XFAPC' target='_blank' class='iri-button'>1€</a>" +
-                                "        <a href='https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2G4G9HLVKSR5C' target='_blank' class='iri-button'>3€</a>" +
-                                "        <a href='https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3KGWY5QQFFYCS' target='_blank' class='iri-button'>5€</a>" +
-                                "        <a href='https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=U5RPAT2VUEM2N' target='_blank' class='iri-button'>10€</a>" +
+                                "        <a href='https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7VPKXJ49XFAPC&lc=US' target='_blank' class='iri-button'>1€</a>" +
+                                "        <a href='https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2G4G9HLVKSR5C&lc=US' target='_blank' class='iri-button'>3€</a>" +
+                                "        <a href='https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3KGWY5QQFFYCS&lc=US' target='_blank' class='iri-button'>5€</a>" +
+                                "        <a href='https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=U5RPAT2VUEM2N&lc=US' target='_blank' class='iri-button'>10€</a>" +
                                 "        <hr style='opacity:0;'/>" +
                                 "        <h3 style='font-weight:500;'>Patreon</h3>" +
                                 "        <a href='https://www.patreon.com/particle' target='_blank' class='iri-button' data-locale='text|patreon_support'></a>" +
@@ -5493,7 +5553,6 @@
                             iridium_api.applyText(welcome_box, i18n.welcome_box);
 
                             document.documentElement.addEventListener("click", this.closeWelcomeBox.bind(this), false);
-
                             document.documentElement.appendChild(welcome_box);
 
                         }
@@ -5959,7 +6018,7 @@
 
                         sidebar_section                 = document.createElement("div");
                         sidebar_section.id              = "sidebar_" + option.section;
-                        sidebar_section.textContent     = option.section;
+                        sidebar_section.textContent     = i18n.section_list[option.section];
                         sidebar_section.dataset.section = option.section;
 
                         sidebar_section.className = "sidebar_section";
@@ -6126,6 +6185,16 @@
                     iridium_api.saveSettings();
 
                 },
+                deleteSetting: function (setting) {
+
+                    window.dispatchEvent(new CustomEvent(receive_settings_from_page, {
+                        detail: {
+                            settings: setting,
+                            delete: true
+                        }
+                    }));
+
+                },
                 saveSettings: function (single_setting) {
 
                     var settings;
@@ -6161,7 +6230,7 @@
                     if ((iridium_settings = document.getElementById("iridium-settings"))) {
 
                         loaded_settings            = JSON.parse(iridium_settings.textContent || "null");
-                        is_user_script             = !!iridium_settings.getAttribute("is-user-script");
+                        is_user_script             = iridium_settings.getAttribute("is-user-script").toLowerCase() === "true";
                         receive_settings_from_page = iridium_settings.getAttribute("settings-beacon-from");
                         send_settings_to_page      = iridium_settings.getAttribute("settings-beacon-to");
 
@@ -6346,7 +6415,7 @@
 
                     document.documentElement.addEventListener("load", this.initializeSettingsButton, true);
 
-                    if (window.location.pathname === "/iridium-settings") {
+                    if (this.isSettingsPage) {
 
                         this.loadSettingsMenu();
 
@@ -6449,6 +6518,14 @@
                 if (custom_event.detail.single_setting) {
 
                     this.user_settings[custom_event.detail.single_setting] = custom_event.detail.settings;
+
+                } else if (custom_event.detail.delete) {
+
+                    if (custom_event.detail.settings in this.user_settings) {
+
+                        delete this.user_settings[custom_event.detail.settings];
+
+                    }
 
                 } else if (this.is_settings_page && typeof updated_settings === "object") {
 
@@ -6577,8 +6654,6 @@
 
                 this.is_settings_page = window.location.pathname === "/iridium-settings";
 
-                this.is_settings_page && window.stop();
-
                 this.id = "iridiumSettings";
 
                 if (typeof GM === "object" || typeof GM_info === "object") {
@@ -6615,7 +6690,9 @@
 
                 } else {
 
-                    chrome.storage.local.get(this.id, this.main);
+                    this.is_user_script = false;
+
+                    chrome.storage.local.get(this.id, this.main.bind(this));
 
                 }
 

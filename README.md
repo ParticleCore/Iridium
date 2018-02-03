@@ -45,7 +45,7 @@ Current bug support is being provided only for:
 - [x] Core: automatic locale handling
 - [x] Core: welcome box with minimal instructions
 
-### TODO - [release version](https://github.com/ParticleCore/Iridium/tree/master) [current]
+### TODO - [release version](https://github.com/ParticleCore/Iridium/tree/master) [complete]
 
-- [ ] Core: create Firefox add-on
-- [ ] Core: create Chrome extension
+- [X] Core: create Firefox add-on
+- [X] Core: create Chrome extension

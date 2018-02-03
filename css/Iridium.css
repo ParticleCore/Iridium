@@ -324,7 +324,7 @@ html:not(.iri-always-visible):not(.iri-always-playing) #iri-mini-player-controls
     position: fixed;
     right: 10px;
     width: 352px;
-    z-index: 10;
+    z-index: 201;
 }
 .iri-always-visible:not(.iri-full-browser) #movie_player:not(.ytp-fullscreen):before,
 .iri-always-playing #movie_player:not(.ytp-fullscreen):not(.unstarted-mode):before {
@@ -576,7 +576,7 @@ yt-img-shadow:not(.ytd-channel-renderer) .iri-pop-up-player {
     border: 0;
     cursor: pointer;
     background: transparent;
-    margin: 4px 8px 0 0;
+    margin-right: 8px;
     padding: 0;
     outline: 0;
     font-size: 0;

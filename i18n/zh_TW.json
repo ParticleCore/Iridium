@@ -237,5 +237,11 @@
     },
     "donate_patreon": {
         "patreon": "在 Patreon 上支援"
+    },
+    "section_list": {
+        "donate": "捐助",
+        "general": "一般",
+        "video": "影片",
+        "settings": "設置"
     }
 }

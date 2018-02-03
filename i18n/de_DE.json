@@ -1,5 +1,11 @@
 {
     "language": "Deutsch (DE)",
+    "section_list": {
+        "donate": "Spenden",
+        "general": "Allgemein",
+        "video": "Video",
+        "settings": "Einstellungen"
+    },
     "section_titles": {
         "donate": "Iridium unterstützen",
         "general": "Allgemeine Einstellungen",
@@ -13,8 +19,9 @@
         "language": "Sprache",
         "layout": "Aussehen",
         "miner": "Monero",
-        "player": "Paypal",
+        "paypal": "Paypal",
         "patreon": "Patreon",
+        "playlist": "Playlist",
         "player": "Player",
         "settings": "Einstellungen",
         "thumbnails": "Vorschaubilder"
@@ -22,6 +29,21 @@
     "iridium_api": {
         "settings_button": "Iridium",
         "feature_link": "Finde heraus was dies macht"
+    },
+    "welcome_box": {
+        "thank_you": "Danke für die Installation von Iridium!",
+        "settings_instruction": "Du kannst deine Einstellungen öffnen, indem du auf das sich oben rechts befindende Dreieck klickst.",
+        "features_instruction": "Für eine vollständige Liste von Funktionen, besuche den folgenden Link:",
+        "features_link": "Liste von Funktionen",
+        "donate_instruction": "Falls du zur Entwicklung dieser Erweiterung beitragen willst, kannst du die folgenden Möglichkeiten nutzen:",
+        "paypal_one_time": "Einmalige Spende",
+        "paypal_any_amount": "Beliebiger Betrag",
+        "paypal_monthly": "Monatliche Spende",
+        "patreon_support": "Mit Patreon unterstützen",
+        "monero_instruction": "Trage mithilfe deines Computers bei. Diese Option kann in den Einstellungen aktiviert werden und ist nur in der Userscript-Version verfügbar.",
+        "monero_feature_instruction": "Über folgenden Link kannst du mehr erfahren:",
+        "monero_feature_link": "Details zu Monero",
+        "button_close": "Schließen"
     },
     "default_logo_page": {
         "label": "Standard YouTube-Logo Seite:",
@@ -54,6 +76,10 @@
     "thumbnail_preview_mute": {
         "label": "Shift-Taste schaltet Audio bei Video-Thumbnail Playback um"
     },
+    "popup_player": {
+        "label": "Player-Popup aktivieren",
+        "button_add_title": "Popup"
+    },
     "enable_blacklist": {
         "label": "Blacklist aktivieren"
     },
@@ -78,6 +104,12 @@
     },
     "channel_video_time": {
         "label": "Zeige wann das Video hochgeladen wurde"
+    },
+    "playlist_reverse_control": {
+        "label": "Bedienelemente für umgekehrte Playlist aktivieren",
+        "button_label": "Playlist umkehren",
+        "toggle_on": "Umkehrfunktion ist ein",
+        "toggle_off": "Umkehrfunktion ist aus"
     },
     "player_quality": {
         "label": "Standard Videoqualität:",
@@ -125,18 +157,19 @@
     "player_memorize_volume": {
         "label": "Lautstärke merken"
     },
+    "player_max_res_thumbnail": {
+        "label": "Hohe Qualität des Player-Vorschaubildes erzwingen"
+    },
     "player_quick_controls": {
         "label": "Bedienelemente-Schnellzugriff aktivieren",
         "button_auto_play": "Autoplay",
+        "button_pop_up_player": "Popup-Video",
         "button_full_browser": "Vollbild",
         "button_screen_shot": "Screenshot",
         "button_thumbnails": "Vorschaubilder",
         "thumbnails_title": "Zum Herunterladen klicken\nRechtsklick für Optionen",
         "screen_shot_title": "Rechtsklick für Optionen",
-        "full_browser_info": "Drücke \"Esc\" zum Beenden"
-    },
-    "player_max_res_thumbnail": {
-        "label": "Hohe Qualität des Player-Vorschaubildes erzwingen"
+        "full_browser_info": "Klicke hier oder drücke \"Esc\" zum Beenden"
     },
     "comments_visibility": {
         "label": "Kommentarbereich:",
@@ -179,6 +212,9 @@
         "confirm_import": "Du bist dabei deine aktuellen Einstellungen zu überschreiben. Es ist ratsam deine jetzigen Einstellungen zu sichern bevor du fortfährst.\n\nMöchtest du fortfahren?\n\n",
         "import_success": "Deine Einstellungen wurden erfolgreich importiert.\n\nÄnderungen werden nach einem Neuladen der Seite wirksam.\n\n",
         "import_error": "Deine Einstellungen wurden nicht erfolgreich importiert da das Format ungültig zu sein scheint.\n\n"
+    },
+    "iridium_custom_language": {
+        "label": "Modifiziertes Gebietsschema verwenden"
     },
     "iridium_language": {
         "button_save": "Speichern",

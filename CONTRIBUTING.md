@@ -1,7 +1,7 @@
 ### Opening a new issue
 
 Any issue (bug report or feature request) that fails to follow these instructions will be automatically closed and marked as invalid.  
-If a user refuses to follow these instructions repeatedly will be permanently blocked from the repository.
+Users will be permanently blocked from the repository if they refuse to follow the instructions repeatedly.
 
 For any issue created it must be in English only.  
 For any issue created it must only refer to one issue only.  

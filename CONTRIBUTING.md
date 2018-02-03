@@ -1,19 +1,20 @@
 ### Opening a new issue
 
-Any issue that fails to follow these instructions will be automatically closed and marked as invalid:
+Any issue (bug report or feature request) that fails to follow these instructions will be automatically closed and marked as invalid.  
+If a user refuses to follow these instructions repeatedly will be permanently blocked from the repository.
 
 For any issue created it must be in English only.  
 For any issue created it must only refer to one issue only.  
 Do not include more than one subject (problem, request or both) in one issue.  
 
-#### Bug/problem report:
- - Follow the instructions for reporting a bug here: https://github.com/ParticleCore/Iridium/wiki/Report-a-bug
-
-#### Feature requests:
+#### Feature request:
  - There is currently no intention to accept feature requests, but they can be requested nonetheless for future consideration
  - Feature requests will be automatically closed and labeled as "Feature" for easier access and better organization
  - If a feature request is considered to be implemented it will be re-opened for the duration of the implementation
- - The one issue per issue applies as well, do not request more than one feature in the same issue
+ - The one issue per issue applies for features as well, do not request more than one feature in the same issue
+
+#### Bug/problem report:
+ - Follow the instructions for reporting a bug here: https://github.com/ParticleCore/Iridium/wiki/Report-a-bug
 
 ---
  

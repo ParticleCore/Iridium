@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.0.3
+// @version         0.0.4
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -25,13 +25,12 @@
 
     var iridium = {
 
-        inject: function () {
+        inject: function (is_user_script) {
 
             var i18n;
             var modules;
             var iridium_api;
             var user_settings;
-            var is_user_script;
             var default_language;
             var send_settings_to_page;
             var receive_settings_from_page;
@@ -6199,7 +6198,6 @@
                     if ((iridium_settings = document.getElementById("iridium-settings"))) {
 
                         loaded_settings            = JSON.parse(iridium_settings.textContent || "null");
-                        is_user_script             = iridium_settings.getAttribute("is-user-script").toLowerCase() === "true";
                         receive_settings_from_page = iridium_settings.getAttribute("settings-beacon-from");
                         send_settings_to_page      = iridium_settings.getAttribute("settings-beacon-to");
 
@@ -6563,7 +6561,6 @@
             holder.textContent = event;
 
             holder.setAttribute("style", "display: none");
-            holder.setAttribute("is-user-script", this.is_user_script.toString());
             holder.setAttribute("settings-beacon-from", this.receive_settings_from_page);
             holder.setAttribute("settings-beacon-to", this.send_settings_to_page);
 
@@ -6571,7 +6568,7 @@
 
             holder = document.createElement("script");
 
-            holder.textContent = "(" + this.inject + "())";
+            holder.textContent = "(" + this.inject + "(" + this.is_user_script.toString() + "))";
 
             document.documentElement.appendChild(holder);
 

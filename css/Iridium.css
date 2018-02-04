@@ -1,1122 +1,1246 @@
 html {
-    --iri-checkbox-bkg: 7px;
+    --iri-checkbox-bkg : 7px;
 }
+
 svg {
     /* workaround for Firefox 8 years old
     half-pixel svg blur @ bugzilla#608812 */
-    transform: scale(1);
+    transform : scale(1);
 }
 
 /* ini | welcome box */
 #iri-welcome-box {
-    display: block !important;
-    background: #00000090;
-    position: fixed;
-    z-index: 10000;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    font-size: 1.4rem;
-    text-shadow: -1px -1px 1px #eee;
-    line-height: 2rem;
-    letter-spacing: 0.05rem;
-    color: #444;
-    user-select: none;
+    display        : block !important;
+    background     : #00000090;
+    position       : fixed;
+    z-index        : 10000;
+    top            : 0;
+    left           : 0;
+    bottom         : 0;
+    right          : 0;
+    font-size      : 1.4rem;
+    text-shadow    : -1px -1px 1px #eee;
+    line-height    : 2rem;
+    letter-spacing : 0.05rem;
+    color          : #444;
+    user-select    : none;
 }
+
 #iri-welcome-box-content {
-    background: white;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 20px;
-    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12), 0 2px 4px -1px rgba(0, 0, 0, .4);
-    border-radius: 3px;
-    position: absolute;
-    max-width: 600px;
-    min-width: 500px;
+    background    : white;
+    top           : 50%;
+    left          : 50%;
+    transform     : translate(-50%, -50%);
+    padding       : 20px;
+    box-shadow    : 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12), 0 2px 4px -1px rgba(0, 0, 0, .4);
+    border-radius : 3px;
+    position      : absolute;
+    max-width     : 600px;
+    min-width     : 500px;
 }
+
 #iri-welcome-box a {
-    color: #08c;
-    font-weight: 500;
+    color       : #08c;
+    font-weight : 500;
 }
+
 #iri-welcome-box .iri-button {
-    background: #08c;
-    padding: 6px 10px;
-    color: #fff;
-    border: 0;
-    border-radius: 3px;
-    margin-right: 5px;
-    font-weight: 700;
-    text-decoration: none;
-    text-shadow: none;
-    font-family: Arial;
-    opacity: 0.8;
+    background      : #08c;
+    padding         : 6px 10px;
+    color           : #fff;
+    border          : 0;
+    border-radius   : 3px;
+    margin-right    : 5px;
+    font-weight     : 700;
+    text-decoration : none;
+    text-shadow     : none;
+    font-family     : Arial, sans-serif;
+    opacity         : 0.8;
 }
+
 #iri-welcome-box .iri-button:hover {
-    opacity: 1;
+    opacity : 1;
 }
+
 #iri-welcome-icon {
-    display: block;
-    margin: 20px auto;
+    display : block;
+    margin  : 20px auto;
 }
+
 #iri-welcome-icon polygon {
-    opacity: .5;
+    opacity : .5;
 }
+
 #iri-welcome-icon path,
 #iri-welcome-icon polygon {
-    fill: url(#iri-welcome-gradient);
+    fill : url(#iri-welcome-gradient);
 }
+
 #iri-welcome-icon .iri-start-gradient {
-    animation: breatheStartEffect 5s linear infinite;
+    animation : breatheStartEffect 5s linear infinite;
 }
+
 #iri-welcome-icon .iri-stop-gradient {
-    animation: breatheStopEffect 5s linear infinite;
+    animation : breatheStopEffect 5s linear infinite;
 }
+
 @keyframes breatheStartEffect {
     0% {
-      stop-color: #0FF;
+        stop-color : #0ff;
     }
     50% {
-      stop-color: var(--yt-swatch-important-text, var(--yt-swatch-icon-color, #888));
+        stop-color : var(--yt-swatch-important-text, var(--yt-swatch-icon-color, #888));
     }
     100% {
-      stop-color: #0FF;
+        stop-color : #0ff;
     }
 }
+
 @keyframes breatheStopEffect {
     0% {
-      stop-color: #F0F;
+        stop-color : #f0f;
     }
     50% {
-      stop-color: var(--yt-swatch-important-text, var(--yt-swatch-icon-color, #888));
+        stop-color : var(--yt-swatch-important-text, var(--yt-swatch-icon-color, #888));
     }
     100% {
-      stop-color: #F0F;
+        stop-color : #f0f;
     }
 }
-/* end | welcome box */
 
+/* end | welcome box */
 
 /* ini | settings button */
 #iridium_settings_button {
-    box-sizing: border-box;
-    height: 40px;
-    padding: 8px;
-    margin-right: 8px;
-    position: relative;
-    text-align: center;
-    width: 40px;
-    color: var(--yt-swatch-important-text, var(--yt-swatch-icon-color, #888));
+    box-sizing   : border-box;
+    height       : 40px;
+    padding      : 8px;
+    margin-right : 8px;
+    position     : relative;
+    text-align   : center;
+    width        : 40px;
+    color        : var(--yt-swatch-important-text, var(--yt-swatch-icon-color, #888));
 }
-@media (max-width: 656px) {
+
+@media (max-width : 656px) {
     #iridium_settings_button {
-        margin-right: 0;
+        margin-right : 0;
     }
 }
+
 #iridium_settings_button polygon {
-    opacity: .5;
+    opacity : .5;
 }
+
 #iridium_settings_button path,
 #iridium_settings_button polygon {
-    fill: url(#iri-gradient);
+    fill : url(#iri-gradient);
 }
+
 #iridium_settings_button .iri-start-gradient,
 #iridium_settings_button .iri-stop-gradient {
-    stop-color: var(--iron-icon-fill-color, currentcolor);
+    stop-color : var(--iron-icon-fill-color, currentcolor);
 }
-#iridium_settings_button:hover .iri-start-gradient {
-    transition: 1s;
-    stop-color: #0FF;
-}
-#iridium_settings_button:hover .iri-stop-gradient {
-    transition: 1s;
-    stop-color: #F0F;
-}
-#iridium_settings_button .iri-tooltip {
-    background-color: #616161;
-    right: 20px;
-    top: 56px;
-    transform: translateX(50%);
-}
-#iridium_settings_button:hover .iri-tooltip {
-    opacity: .9 !important;
-    transition: opacity .3s ease-out .5s;
-}
-/* end | settings button */
 
+#iridium_settings_button:hover .iri-start-gradient {
+    transition : 1s;
+    stop-color : #0ff;
+}
+
+#iridium_settings_button:hover .iri-stop-gradient {
+    transition : 1s;
+    stop-color : #f0f;
+}
+
+#iridium_settings_button .iri-tooltip {
+    background-color : #616161;
+    right            : 20px;
+    top              : 56px;
+    transform        : translateX(50%);
+}
+
+#iridium_settings_button:hover .iri-tooltip {
+    opacity    : .9 !important;
+    transition : opacity .3s ease-out .5s;
+}
+
+/* end | settings button */
 
 /* ini | general layout */
 a#logo yt-icon,
 a.yt-simple-endpoint span {
-    pointer-events: none;
+    pointer-events : none;
 }
-.iri-square-avatars yt-img-shadow {
-    border-radius: 0 !important;
-}
-.iri-improved-logo polygon[fill="#FFFFFF"] {
-    fill: var(--yt-swatch-primary, #FFFFFF);
-}
-.iri-improved-logo path[fill="#FF0000"] {
-    fill: var(--yt-swatch-logo-override, #232323);
-}
-.iri-video-count {
-    color: var(--yt-endpoint-color, #111111);
-    cursor: pointer;
-    display: inline-block;
-    line-height: 1.6rem;
-    font-size: 1.4rem;
-    font-weight: 500;
-    text-decoration: none;
-    white-space: pre;
-    --yt-endpoint-color: var(--yt-channel-owner) !important;
-}
-.iri-tooltip {
-    display: block;
-    outline: none;
-    font-family: 'Roboto', 'Noto', sans-serif;
-    -webkit-font-smoothing: antialiased;
-    font-size: 10px;
-    line-height: 1;
-    background-color: rgba(17, 17, 17, .8);
-    opacity: 0;
-    color: #FFF;
-    padding: 8px;
-    border-radius: 2px;
-    font-size: 1.3rem;
-    font-weight: 400;
-    line-height: 1.8rem;
-    text-transform: none;
-    position: absolute;
-    white-space: nowrap;
-    transition: opacity .3s ease-out 0s;
-    pointer-events: none;
-}
-ytd-watch:not([hidden]) .ytp-thumbnail-overlay {
-    transition: none !important;
-}
-.ytp-cued-thumbnail-overlay {
-    transition-delay: 0s !important;
-}
-.ytp-cued-thumbnail-overlay-image {
-    transition: background-image 0.5s linear;
-}
-/* end | general layout */
 
+.iri-square-avatars yt-img-shadow {
+    border-radius : 0 !important;
+}
+
+.iri-improved-logo polygon[fill="#FFFFFF"] {
+    fill : var(--yt-swatch-primary, #fff);
+}
+
+.iri-improved-logo path[fill="#FF0000"] {
+    fill : var(--yt-swatch-logo-override, #232323);
+}
+
+.iri-video-count {
+    color               : var(--yt-endpoint-color, #111);
+    cursor              : pointer;
+    display             : inline-block;
+    line-height         : 1.6rem;
+    font-size           : 1.4rem;
+    font-weight         : 500;
+    text-decoration     : none;
+    white-space         : pre;
+    --yt-endpoint-color : var(--yt-channel-owner) !important;
+}
+
+.iri-tooltip {
+    display                : block;
+    outline                : none;
+    font-family            : 'Roboto', 'Noto', sans-serif;
+    -webkit-font-smoothing : antialiased;
+    background-color       : rgba(17, 17, 17, .8);
+    opacity                : 0;
+    color                  : #fff;
+    padding                : 8px;
+    border-radius          : 2px;
+    font-size              : 1.3rem;
+    font-weight            : 400;
+    line-height            : 1.8rem;
+    text-transform         : none;
+    position               : absolute;
+    white-space            : nowrap;
+    transition             : opacity .3s ease-out 0s;
+    pointer-events         : none;
+}
+
+ytd-watch:not([hidden]) .ytp-thumbnail-overlay {
+    transition : none !important;
+}
+
+.ytp-cued-thumbnail-overlay {
+    transition-delay : 0s !important;
+}
+
+.ytp-cued-thumbnail-overlay-image {
+    transition : background-image 0.5s linear;
+}
+
+/* end | general layout */
 
 /* ini | thumbnail preview */
 #iri-video-preview {
-    background-color: transparent;
-    bottom: 0;
-    left: 0;
-    pointer-events: none;
-    position: absolute;
-    right: 0;
-    top: 0;
+    background-color : transparent;
+    bottom           : 0;
+    left             : 0;
+    pointer-events   : none;
+    position         : absolute;
+    right            : 0;
+    top              : 0;
 }
-yt-img-shadow:hover #iri-video-preview {
-    background-color: rgba(0, 0, 0, .5);
-}
-#iri-video-preview .html5-video-container {
-    height: 100%;
-}
-/* end | thumbnail preview */
 
+yt-img-shadow:hover #iri-video-preview {
+    background-color : rgba(0, 0, 0, .5);
+}
+
+#iri-video-preview .html5-video-container {
+    height : 100%;
+}
+
+/* end | thumbnail preview */
 
 /* ini | video always playing */
 html.iri-always-playing ytd-watch[hidden] {
-    display: block !important;
-    height: 0;
-    overflow: hidden;
-    position: absolute;
-    width: 0;
+    display  : block !important;
+    height   : 0;
+    overflow : hidden;
+    position : absolute;
+    width    : 0;
 }
+
 .iri-always-playing #movie_player:not(.ytp-fullscreen) .ytp-prev-button,
 .iri-always-playing #movie_player:not(.ytp-fullscreen) .ytp-next-button,
 .iri-always-playing #movie_player:not(.ytp-fullscreen).ended-mode .html5-endscreen {
-    display: none;
+    display : none;
 }
-/* end | video always playing */
 
+/* end | video always playing */
 
 /* ini | mini player */
 .ytp-fullscreen #iri-mini-player-controls,
 .iri-full-browser #iri-mini-player-controls,
 html:not(.iri-always-visible):not(.iri-always-playing) #iri-mini-player-controls {
-    display: none;
+    display : none;
 }
+
 #iri-mini-player-controls {
-    font-size: 0px;
-    height: 0px;
-    margin-top: 6px;
-    opacity: 0;
-    position: absolute;
-    text-align: center;
-    top: 0px;
-    left: 12px;
-    z-index: 50;
-    pointer-events: none;
-    right: 12px;
-    transition: opacity .25s cubic-bezier(0, 0, .2, 1);
+    font-size      : 0px;
+    height         : 0px;
+    margin-top     : 6px;
+    opacity        : 0;
+    position       : absolute;
+    text-align     : center;
+    top            : 0px;
+    left           : 12px;
+    z-index        : 50;
+    pointer-events : none;
+    right          : 12px;
+    transition     : opacity .25s cubic-bezier(0, 0, .2, 1);
 }
+
 #iri-mini-player-controls:after {
-    box-shadow: rgba(8, 8, 8, .8) 0 120px 90px -90px inset;
-    content: "";
-    height: 120px;
-    left: -12px;
-    pointer-events: none;
-    position: absolute;
-    right: -12px;
-    top: -6px;
-    z-index: -1;
+    box-shadow     : rgba(8, 8, 8, .8) 0 120px 90px -90px inset;
+    content        : "";
+    height         : 120px;
+    left           : -12px;
+    pointer-events : none;
+    position       : absolute;
+    right          : -12px;
+    top            : -6px;
+    z-index        : -1;
 }
+
 .iri-always-playing .paused-mode #iri-mini-player-controls,
 .iri-always-playing .ended-mode #iri-mini-player-controls,
 .iri-always-playing #movie_player:not(.ytp-fullscreen):hover #iri-mini-player-controls {
-    opacity: 1;
-    pointer-events: initial;
+    opacity        : 1;
+    pointer-events : initial;
 }
+
 #iri-mini-player-controls svg {
-    pointer-events: none;
+    pointer-events : none;
 }
 
 .iri-mini-player-control {
-    align-items: center;
-    cursor: pointer;
-    display: none;
-    height: 36px;
-    font-size: 11px;
-    justify-content: center;
-    top: 0;
-    opacity: .9;
-    position: absolute;
-    transition: opacity .1s cubic-bezier(.4, 0, 1, 1);
-    width: 36px;
+    align-items     : center;
+    cursor          : pointer;
+    display         : none;
+    height          : 36px;
+    font-size       : 11px;
+    justify-content : center;
+    top             : 0;
+    opacity         : .9;
+    position        : absolute;
+    transition      : opacity .1s cubic-bezier(.4, 0, 1, 1);
+    width           : 36px;
 }
+
 .iri-mini-player-control:hover {
-    opacity: 1;
+    opacity : 1;
 }
+
 .iri-mini-player-left-control {
-    left: 0;
+    left : 0;
 }
+
 .iri-mini-player-right-control {
-    right: 0;
+    right : 0;
 }
+
 .iri-svg-shadow {
-    fill: none;
-    stroke: #000;
-    stroke-opacity: .15;
-    stroke-width: 2px;
+    fill           : none;
+    stroke         : #000;
+    stroke-opacity : .15;
+    stroke-width   : 2px;
 }
+
 .iri-always-playing #iri-mini-player-close,
 .iri-always-playing #iri-mini-player-restore {
-    display: flex;
+    display : flex;
 }
+
 .iri-always-visible:not(.iri-full-browser) #movie_player:not(.ytp-fullscreen),
 .iri-always-playing #movie_player:not(.ytp-fullscreen):not(.unstarted-mode) {
-    background-color: transparent;
-    bottom: 10px;
-    border: 2px solid rgba(255, 255, 255, .2);
-    border: 1px solid rgba(255, 255, 255, .3);
-    box-shadow: 0 0 10px #000;
-    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12), 0 2px 4px -1px rgba(0, 0, 0, .4);
-    height: 198px;
-    position: fixed;
-    right: 10px;
-    width: 352px;
-    z-index: 201;
+    background-color : transparent;
+    bottom           : 10px;
+    border           : 1px solid rgba(255, 255, 255, .3);
+    box-shadow       : 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12), 0 2px 4px -1px rgba(0, 0, 0, .4);
+    height           : 198px;
+    position         : fixed;
+    right            : 10px;
+    width            : 352px;
+    z-index          : 201;
 }
+
 .iri-always-visible:not(.iri-full-browser) #movie_player:not(.ytp-fullscreen):before,
 .iri-always-playing #movie_player:not(.ytp-fullscreen):not(.unstarted-mode):before {
-    background-color: #000;
-    bottom: 0;
-    content: "";
-    display: block;
-    left: 0;
-    opacity: .8;
-    position: absolute;
-    right: 0;
-    top: 0;
+    background-color : #000;
+    bottom           : 0;
+    content          : "";
+    display          : block;
+    left             : 0;
+    opacity          : .8;
+    position         : absolute;
+    right            : 0;
+    top              : 0;
 }
-.iri-mini-player-tooltip {
-    background-color: rgba(28, 28, 28, .9);
-    border-radius: 2px;
-    padding: 5px 9px;
-    opacity: 0;
-    font-size: 118%;
-    pointer-events: none;
-    position: absolute;
-    top: 100%;
-    transition: opacity .1s cubic-bezier(.4, 0, 1, 1);
-    white-space: nowrap;
-    z-index: 1002;
-    font-weight: 500;
-    line-height: 15px;
-}
-.iri-mini-player-left-control .iri-mini-player-tooltip {
-    left: 0;
-}
-.iri-mini-player-right-control .iri-mini-player-tooltip {
-    right: 0;
-}
-.iri-mini-player-control:hover .iri-mini-player-tooltip {
-    opacity: 0.9;
-}
-/* end | mini player */
 
+.iri-mini-player-tooltip {
+    background-color : rgba(28, 28, 28, .9);
+    border-radius    : 2px;
+    padding          : 5px 9px;
+    opacity          : 0;
+    font-size        : 118%;
+    pointer-events   : none;
+    position         : absolute;
+    top              : 100%;
+    transition       : opacity .1s cubic-bezier(.4, 0, 1, 1);
+    white-space      : nowrap;
+    z-index          : 1002;
+    font-weight      : 500;
+    line-height      : 15px;
+}
+
+.iri-mini-player-left-control .iri-mini-player-tooltip {
+    left : 0;
+}
+
+.iri-mini-player-right-control .iri-mini-player-tooltip {
+    right : 0;
+}
+
+.iri-mini-player-control:hover .iri-mini-player-tooltip {
+    opacity : 0.9;
+}
+
+/* end | mini player */
 
 /* ini | mini player move */
 .iri-mini-player-moving {
-    pointer-events: none;
+    pointer-events : none;
 }
+
 .paused-mode #iri-mini-player-controls,
 .ended-mode #iri-mini-player-controls,
 #movie_player:not(.ytp-fullscreen):hover #iri-mini-player-controls {
-    opacity: 1;
-    pointer-events: initial;
+    opacity        : 1;
+    pointer-events : initial;
 }
-#iri-mini-player-move {
-    cursor: move;
-    height: 42px;
-    left: -12px;
-    right: -12px;
-    top: -6px;
-    position: absolute;
-}
-/* end | mini player move */
 
+#iri-mini-player-move {
+    cursor   : move;
+    height   : 42px;
+    left     : -12px;
+    right    : -12px;
+    top      : -6px;
+    position : absolute;
+}
+
+/* end | mini player move */
 
 /* ini | blacklist */
 .iri-add-to-blacklist {
-    background-color: #111;
-    border-radius: 2px;
-    color: #fff;
-    cursor: pointer;
-    height: 0;
-    left: 0;
-    margin: 4px;
-    opacity: 0;
-    padding: 14px;
-    pointer-events: none;
-    position: absolute;
-    top: 0;
-    transition: opacity .3s;
-    width: 0;
-    z-index: 1;
+    background-color : #111;
+    border-radius    : 2px;
+    color            : #fff;
+    cursor           : pointer;
+    height           : 0;
+    left             : 0;
+    margin           : 4px;
+    opacity          : 0;
+    padding          : 14px;
+    pointer-events   : none;
+    position         : absolute;
+    top              : 0;
+    transition       : opacity .3s;
+    width            : 0;
+    z-index          : 1;
 }
+
 html:not(.iri-blacklist-allowed) .iri-add-to-blacklist {
-    display: none;
+    display : none;
 }
+
 #avatar:hover .iri-add-to-blacklist,
 #thumbnail:not([href*="list=RD"]):hover .iri-add-to-blacklist,
 .ytd-thumbnail-0:hover .iri-add-to-blacklist,
 .ytd-playlist-thumbnail-0:hover .iri-add-to-blacklist {
-    opacity: .8 !important;
-    pointer-events: all;
+    opacity        : .8 !important;
+    pointer-events : all;
 }
+
 .iri-add-to-blacklist svg {
-    fill: #fff;
-    pointer-events: none;
-    transform: translate(-50%, -50%);
-    user-select: none;
-    width: 16px;
+    fill           : #fff;
+    pointer-events : none;
+    transform      : translate(-50%, -50%);
+    user-select    : none;
+    width          : 16px;
 }
+
 .iri-add-to-blacklist .iri-tooltip {
-    left: 32px;
-    top: -2px;
+    left : 32px;
+    top  : -2px;
 }
+
 .iri-add-to-blacklist:hover .iri-tooltip {
-    opacity: .9;
-    transition: opacity .3s ease-out .5s;
+    opacity    : .9;
+    transition : opacity .3s ease-out .5s;
 }
+
 #avatar,
 #thumbnail {
-    position: relative;
+    position : relative;
 }
-yt-img-shadow.ytd-channel-renderer {
-    border-radius: 0;
-    position: relative;
-}
-yt-img-shadow:not(.ytd-channel-renderer) .iri-add-to-blacklist {
-    display: none;
-}
-/* end | blacklist */
 
+yt-img-shadow.ytd-channel-renderer {
+    border-radius : 0;
+    position      : relative;
+}
+
+yt-img-shadow:not(.ytd-channel-renderer) .iri-add-to-blacklist {
+    display : none;
+}
+
+/* end | blacklist */
 
 /* ini | pop-up */
 .iri-pop-up-player {
-    background-color: #111;
-    border-radius: 2px;
-    color: #fff;
-    cursor: pointer;
-    height: 0;
-    left: 0;
-    margin: 4px;
-    opacity: 0;
-    padding: 14px;
-    pointer-events: none;
-    position: absolute;
-    bottom: 0;
-    transition: opacity .3s;
-    width: 0;
-    z-index: 1;
+    background-color : #111;
+    border-radius    : 2px;
+    color            : #fff;
+    cursor           : pointer;
+    height           : 0;
+    left             : 0;
+    margin           : 4px;
+    opacity          : 0;
+    padding          : 14px;
+    pointer-events   : none;
+    position         : absolute;
+    bottom           : 0;
+    transition       : opacity .3s;
+    width            : 0;
+    z-index          : 1;
 }
+
 #avatar:hover .iri-pop-up-player,
 #thumbnail:not([href*="list=RD"]):hover .iri-pop-up-player,
 .ytd-thumbnail-0:hover .iri-pop-up-player,
 .ytd-playlist-thumbnail-0:hover .iri-pop-up-player {
-    opacity: .8 !important;
-    pointer-events: all;
+    opacity        : .8 !important;
+    pointer-events : all;
 }
+
 .iri-pop-up-player svg {
-    fill: #fff;
-    pointer-events: none;
-    transform: translate(-50%, -50%);
-    user-select: none;
-    width: 16px;
+    fill           : #fff;
+    pointer-events : none;
+    transform      : translate(-50%, -50%);
+    user-select    : none;
+    width          : 16px;
 }
+
 .iri-pop-up-player .iri-tooltip {
-    left: 32px;
-    bottom: -2px;
+    left   : 32px;
+    bottom : -2px;
 }
+
 .iri-pop-up-player:hover .iri-tooltip {
-    opacity: .9;
-    transition: opacity .3s ease-out .5s;
+    opacity    : .9;
+    transition : opacity .3s ease-out .5s;
 }
+
 #avatar,
 #thumbnail {
-    position: relative;
+    position : relative;
 }
-yt-img-shadow.ytd-channel-renderer {
-    border-radius: 0;
-    position: relative;
-}
-yt-img-shadow:not(.ytd-channel-renderer) .iri-pop-up-player {
-    display: none;
-}
-/* end | pop-up */
 
+yt-img-shadow.ytd-channel-renderer {
+    border-radius : 0;
+    position      : relative;
+}
+
+yt-img-shadow:not(.ytd-channel-renderer) .iri-pop-up-player {
+    display : none;
+}
+
+/* end | pop-up */
 
 /* ini | pop-up window */
 .iri-pop-up-player-window {
-    overflow: hidden;
+    overflow : hidden;
 }
+
 .iri-pop-up-player-window body:after {
-    content: "";
-    display: block;
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: black;
+    content    : "";
+    display    : block;
+    position   : fixed;
+    top        : 0;
+    bottom     : 0;
+    left       : 0;
+    right      : 0;
+    background : black;
 }
+
 .iri-pop-up-player-window #masthead-container,
 .iri-pop-up-player-window #masthead-positioner-height-offset,
 .iri-pop-up-player-window .ytp-size-button {
-    display: none;
+    display : none;
 }
+
 .iri-pop-up-player-window #player-api,
 .iri-pop-up-player-window #player-api #movie_player,
 .iri-pop-up-player-window #player-container,
 .iri-pop-up-player-window #player-container #movie_player {
-    margin: 0 !important;
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    top: 0 !important;
-    right: 0 !important;
-    z-index: 2;
+    margin   : 0 !important;
+    position : fixed !important;
+    bottom   : 0 !important;
+    left     : 0 !important;
+    top      : 0 !important;
+    right    : 0 !important;
+    z-index  : 2;
 }
+
 .iri-pop-up-player-window .ytp-hide-info-bar .ytp-chrome-top,
 .iri-pop-up-player-window .ytp-hide-info-bar .ytp-gradient-top {
-    display: initial;
+    display : initial;
 }
-/* end | pop-up window */
 
+/* end | pop-up window */
 
 /* ini | hide end screen cards */
 .iri-hide-end-screen-cards #movie_player:hover .ytp-ce-element:not(:hover) {
-    opacity: 0;
+    opacity : 0;
 }
-/* end | hide end screen cards */
 
+/* end | hide end screen cards */
 
 /* ini | comments */
 #iri-show-comments {
-    color: var(--yt-expand-color);
-    cursor: pointer;
-    font-size: 1.3rem;
-    font-weight: 500;
-    letter-spacing: .007px;
-    text-transform: uppercase;
-    text-align: center;
-    padding: 8px;
+    color          : var(--yt-expand-color);
+    cursor         : pointer;
+    font-size      : 1.3rem;
+    font-weight    : 500;
+    letter-spacing : .007px;
+    text-transform : uppercase;
+    text-align     : center;
+    padding        : 8px;
 }
-/* end | comments */
 
+/* end | comments */
 
 /* ini | quick controls */
 #iri-quick-controls {
-    font-size: 0;
-    position: relative;
-    text-align: right;
+    font-size  : 0;
+    position   : relative;
+    text-align : right;
 }
-#iri-quick-controls-container {
-    position: relative;
-}
-#iri-quick-controls-container button {
-    height: 36px;
-    width: 36px;
-}
-#iri-quick-controls-container button svg {
-    margin: 10px;
-}
-#iri-quick-controls button {
-    border: 0;
-    cursor: pointer;
-    background: transparent;
-    margin-right: 8px;
-    padding: 0;
-    outline: 0;
-    font-size: 0;
-}
-#iri-quick-controls button svg {
-    fill: rgba(17, 17, 17, 0.4);
-    pointer-events: none;
-    display: block;
-}
-#iri-quick-controls button:hover svg {
-    fill: rgba(17, 17, 17, 0.8);
-}
-#iri-quick-controls button[enabled] svg {
-    fill: #111111;
-}
-[dark] #iri-quick-controls button svg {
-    fill: rgba(255, 255, 255, 0.5);
-    pointer-events: none;
-    display: block;
-}
-[dark] #iri-quick-controls button:hover svg {
-    fill: rgba(255, 255, 255, 0.75);
-}
-[dark] #iri-quick-controls button[enabled] svg {
-    fill: rgba(255, 255, 255, 0.90);
-}
-.iri-quick-controls-tooltip {
-    display: block;
-    outline: none;
-    font-family: 'Roboto', 'Noto', sans-serif;
-    background-color: var(--paper-tooltip-background, #616161);
-    opacity: 0;
-    color: white;
-    padding: 8px;
-    position: absolute;
-    border-radius: 2px;
-    pointer-events: none;
-    margin: 8px;
-    font-size: 1.3rem;
-    font-weight: 400;
-    line-height: 1.8rem;
-    text-transform: none;
-    transition: opacity .3s ease-out .5s;
-    white-space: pre;
-    z-index: 1;
-}
-button:hover > .iri-quick-controls-tooltip {
-    opacity: 0.9 !important;
-}
-/* end | quick controls */
 
+#iri-quick-controls-container {
+    position : relative;
+}
+
+#iri-quick-controls-container button {
+    height : 36px;
+    width  : 36px;
+}
+
+#iri-quick-controls-container button svg {
+    margin : 10px;
+}
+
+#iri-quick-controls button {
+    border       : 0;
+    cursor       : pointer;
+    background   : transparent;
+    margin-right : 8px;
+    padding      : 0;
+    outline      : 0;
+    font-size    : 0;
+}
+
+#iri-quick-controls button svg {
+    fill           : rgba(17, 17, 17, 0.4);
+    pointer-events : none;
+    display        : block;
+}
+
+#iri-quick-controls button:hover svg {
+    fill : rgba(17, 17, 17, 0.8);
+}
+
+#iri-quick-controls button[enabled] svg {
+    fill : #111;
+}
+
+[dark] #iri-quick-controls button svg {
+    fill           : rgba(255, 255, 255, 0.5);
+    pointer-events : none;
+    display        : block;
+}
+
+[dark] #iri-quick-controls button:hover svg {
+    fill : rgba(255, 255, 255, 0.75);
+}
+
+[dark] #iri-quick-controls button[enabled] svg {
+    fill : rgba(255, 255, 255, 0.90);
+}
+
+.iri-quick-controls-tooltip {
+    display          : block;
+    outline          : none;
+    font-family      : 'Roboto', 'Noto', sans-serif;
+    background-color : var(--paper-tooltip-background, #616161);
+    opacity          : 0;
+    color            : white;
+    padding          : 8px;
+    position         : absolute;
+    border-radius    : 2px;
+    pointer-events   : none;
+    margin           : 8px;
+    font-size        : 1.3rem;
+    font-weight      : 400;
+    line-height      : 1.8rem;
+    text-transform   : none;
+    transition       : opacity .3s ease-out .5s;
+    white-space      : pre;
+    z-index          : 1;
+}
+
+button:hover > .iri-quick-controls-tooltip {
+    opacity : 0.9 !important;
+}
+
+/* end | quick controls */
 
 /* ini | quick control thumbnails */
 #iri-thumbnail-gallery {
-    background: rgba(0, 0, 0, 0.85);
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    overflow: auto;
-    text-align: center;
-    z-index: 10000;
+    background : rgba(0, 0, 0, 0.85);
+    position   : fixed;
+    top        : 0;
+    right      : 0;
+    bottom     : 0;
+    left       : 0;
+    overflow   : auto;
+    text-align : center;
+    z-index    : 10000;
 }
+
 #iri-thumbnail-gallery img {
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-sizing: border-box;
-    margin: 10px;
-    vertical-align: top;
-    min-width: 250px;
-    width: calc(100% / 3 - 60px);
+    border         : 1px solid rgba(255, 255, 255, 0.5);
+    box-sizing     : border-box;
+    margin         : 10px;
+    vertical-align : top;
+    min-width      : 250px;
+    width          : calc(100% / 3 - 60px);
 }
+
 #iri-thumbnail-gallery-first-row,
 #iri-thumbnail-gallery-second-row {
-    font-size: 0;
-    margin: 0 auto;
-    max-width: 1024px;
-    padding-top: 50px;
+    font-size   : 0;
+    margin      : 0 auto;
+    max-width   : 1024px;
+    padding-top : 50px;
 }
-.iri-thumbnail-labels {
-    color: #FFFFFF;
-    user-select: none;
-    pointer-events: none;
-}
-.iri-thumbnail-labels div {
-    display: inline-block;
-    font-size: 10px;
-    height: 20px;
-    margin: 10px;
-    min-width: 250px;
-    width: calc(100% / 3 - 60px);
-}
-/* end | quick control thumbnails */
 
+.iri-thumbnail-labels {
+    color          : #fff;
+    user-select    : none;
+    pointer-events : none;
+}
+
+.iri-thumbnail-labels div {
+    display   : inline-block;
+    font-size : 10px;
+    height    : 20px;
+    margin    : 10px;
+    min-width : 250px;
+    width     : calc(100% / 3 - 60px);
+}
+
+/* end | quick control thumbnails */
 
 /* end | quick control full browser */
 .iri-full-browser .ytp-popup.ytp-contextmenu {
-    z-index: 10000;
+    z-index : 10000;
 }
+
 .iri-full-browser.video_active {
-    overflow: hidden
+    overflow : hidden
 }
+
 .iri-full-browser.video_active .ytp-size-button {
-    display: none;
+    display : none;
 }
+
 .iri-full-browser #iri-full-browser-info {
-    opacity: 1;
+    opacity : 1;
 }
+
 #iri-full-browser-info {
-    color: #EEEEEE;
-    text-align: center;
-    font-size: 100%;
-    letter-spacing: 1px;
-    opacity: 0;
-    padding: 20px;
-    pointer-events: none;
-    position: absolute;
-    transition: opacity 0.1s cubic-bezier(0.4, 0.0, 1, 1);
-    width: 100%;
-    box-sizing: border-box;
-    z-index: 100;
+    color          : #eee;
+    text-align     : center;
+    font-size      : 100%;
+    letter-spacing : 1px;
+    opacity        : 0;
+    padding        : 20px;
+    pointer-events : none;
+    position       : absolute;
+    transition     : opacity 0.1s cubic-bezier(0.4, 0.0, 1, 1);
+    width          : 100%;
+    box-sizing     : border-box;
+    z-index        : 100;
 }
+
 #iri-full-browser-info-message {
-    display: inline-block;
-    cursor: pointer;
-    border: 1px solid;
-    padding: 10px;
-    border-radius: 5px;
-    background: rgba(0, 0, 0, 0.6);
-    box-shadow: 0 0 10px #000000;
-    pointer-events: all;
-    white-space: pre-wrap;
-    user-select: none;
+    display        : inline-block;
+    cursor         : pointer;
+    border         : 1px solid;
+    padding        : 10px;
+    border-radius  : 5px;
+    background     : rgba(0, 0, 0, 0.6);
+    box-shadow     : 0 0 10px #000;
+    pointer-events : all;
+    white-space    : pre-wrap;
+    user-select    : none;
 }
+
 .iri-full-browser .ytp-fullscreen #iri-full-browser-info,
 .iri-full-browser .ended-mode #iri-full-browser-info,
 .iri-full-browser .ytp-autohide #iri-full-browser-info,
 .iri-full-browser .ytp-hide-controls #iri-full-browser-info {
-    opacity: 0;
+    opacity : 0;
 }
-.iri-full-browser.video_active #movie_player {
-    position: fixed;
-    top: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    width: auto;
-    height: auto;
-    z-index: 10000;
-}
-/* ini | quick control full browser */
 
+.iri-full-browser.video_active #movie_player {
+    position : fixed;
+    top      : 0 !important;
+    right    : 0 !important;
+    bottom   : 0 !important;
+    left     : 0 !important;
+    width    : auto;
+    height   : auto;
+    z-index  : 10000;
+}
+
+/* ini | quick control full browser */
 
 /* ini | quick control screen shot */
 #iri-screen-shot-container {
-    background: rgba(0, 0, 0, 0.85);
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    overflow: auto;
-    text-align: center;
-    z-index: 10000;
+    background : rgba(0, 0, 0, 0.85);
+    position   : fixed;
+    top        : 0;
+    right      : 0;
+    bottom     : 0;
+    left       : 0;
+    overflow   : auto;
+    text-align : center;
+    z-index    : 10000;
 }
-#iri-screen-shot-container canvas {
-    position: relative;
-    transform: translateY(-50%);
-    max-width: 80%;
-    max-height: 80%;
-    top: 50%;
-    border: 1px solid #FFFFFF;
-    padding: 10px;
-    box-sizing: border-box;
-    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.2) inset;
-}
-/* ini | quick control screen shot */
 
+#iri-screen-shot-container canvas {
+    position   : relative;
+    transform  : translateY(-50%);
+    max-width  : 80%;
+    max-height : 80%;
+    top        : 50%;
+    border     : 1px solid #fff;
+    padding    : 10px;
+    box-sizing : border-box;
+    box-shadow : 0 0 0 10px rgba(255, 255, 255, 0.2) inset;
+}
+
+/* ini | quick control screen shot */
 
 /* ini | Iridium settings */
 html,
 body {
-    box-sizing: border-box;
+    box-sizing : border-box;
 }
-html body iframe[src^="/error?"] {
-    display: none !important;
-}
+
 #iridium_settings {
-    background-color: #F1F1F1;
-    color: #666;
-    display: block !important;
-    font-family: "Segoe UI", sans-serif;
-    font-size: 13px;
-    margin: 0 auto;
-    max-width: 1024px;
-    padding: 10px;
-    position: relative;
+    background-color : #f1f1f1;
+    color            : #666;
+    display          : block !important;
+    font-family      : "Segoe UI", sans-serif;
+    font-size        : 13px;
+    margin           : 0 auto;
+    max-width        : 1024px;
+    padding          : 10px;
+    position         : relative;
 }
+
 #iridium_settings_sidebar {
-    /*background-color: #25272A !important;*/
-    /*bottom: 10px;*/
-    /*color: rgba(156, 174, 192, .3) !important;*/
-    /*left: 10px;*/
-    padding: 10px 0;
-    position: absolute;
-    top: 10px;
-    width: 200px;
-    z-index: 1;
+    padding  : 10px 0;
+    position : absolute;
+    top      : 10px;
+    width    : 200px;
+    z-index  : 1;
 }
+
 #iridium_settings_container {
-    box-sizing: border-box;
-    padding-left: 210px;
+    box-sizing   : border-box;
+    padding-left : 210px;
 }
-#iridium_settings_container:after {
-    /*content: "";
-    display: block;
-    margin-bottom: 100%;*/
-}
+
 #settings_section {
-    padding: 0 15px 15px 15px;
+    padding : 0 15px 15px 15px;
 }
+
 #iridium_settings_sidebar,
 #settings_section {
-    background-color: #FFF;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, .1);
-    box-sizing: border-box;
+    background-color : #fff;
+    box-shadow       : 0 1px 2px rgba(0, 0, 0, .1);
+    box-sizing       : border-box;
 }
+
 #settings_section h3 {
-    color: #555;
-    font-size: 14px;
-    margin: 30px 0 16px;
+    color     : #555;
+    font-size : 14px;
+    margin    : 30px 0 16px;
 }
+
 #settings_section h2 {
-    color: #333;
-    font-size: 18px;
-    line-height: 20px;
-    margin: 20px 0;
+    color       : #333;
+    font-size   : 18px;
+    line-height : 20px;
+    margin      : 20px 0;
 }
+
 #settings_section h2,
 #settings_section h3 {
-    display:inline-block;
-    font-weight: bold;
-    user-select: none;
+    display     : inline-block;
+    font-weight : bold;
+    user-select : none;
 }
+
 .sidebar_section {
-    color: #666;
-    cursor: pointer;
-    display: block;
-    font-size: 11px;
-    font-weight: bold;
-    text-transform: capitalize;
-    line-height: 25px;
-    overflow: hidden;
-    padding: 0 20px;
-    text-decoration: none;
-    user-select: none;
+    color           : #666;
+    cursor          : pointer;
+    display         : block;
+    font-size       : 11px;
+    font-weight     : bold;
+    text-transform  : capitalize;
+    line-height     : 25px;
+    overflow        : hidden;
+    padding         : 0 20px;
+    text-decoration : none;
+    user-select     : none;
 }
+
 .sidebar_section:hover:not(.active_sidebar) {
-    background-color: #F4F4F4;
-    color: #CC181E;
+    background-color : #f4f4f4;
+    color            : #cc181e;
 }
+
 .active_sidebar {
-    background-color: #CC181E;
-    color: #FFF;
+    background-color : #cc181e;
+    color            : #fff;
 }
+
 .settings_divider {
-    background-color: #E2E2E2;
-    height: 1px;
-    margin: 0 -15px;
+    background-color : #e2e2e2;
+    height           : 1px;
+    margin           : 0 -15px;
 }
+
 .settings_setting {
-    font-size: 0;
-    line-height: 26px;
+    font-size   : 0;
+    line-height : 26px;
 }
+
 .setting {
-    font-size: 14px;
-    display: inline-block;
-    /*left: 40px;*/
-    /*margin: 0 5px 0 0;*/
-    position: relative;
-    vertical-align: middle;
-    user-select: none;
-    white-space: pre;
+    font-size      : 14px;
+    display        : inline-block;
+    position       : relative;
+    vertical-align : middle;
+    user-select    : none;
+    white-space    : pre;
 }
+
 a.setting {
-    text-decoration: none !important;
+    text-decoration : none !important;
 }
+
 a.setting:hover {
-    color: #167AC6 !important;
-    text-decoration: underline !important;
+    color           : #167ac6 !important;
+    text-decoration : underline !important;
 }
+
 .feature-link {
-    font-size: 14px;
-    font-weight: 700;
-    color: #167AC6;
-    cursor: pointer;
-    margin-left: 5px;
-    opacity: 0;
-    overflow: hidden;
-    text-decoration: none;
-    vertical-align: middle;
+    font-size       : 14px;
+    font-weight     : 700;
+    color           : #167ac6;
+    cursor          : pointer;
+    margin-left     : 5px;
+    opacity         : 0;
+    overflow        : hidden;
+    text-decoration : none;
+    vertical-align  : middle;
 }
+
 .settings_setting:hover .feature-link {
-    opacity: 1;
+    opacity : 1;
 }
+
 .feature-link:hover {
-    text-decoration: underline;
+    text-decoration : underline;
 }
 
 #iridium-text-editor {
-    background: #FFF;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, .1);
-    box-sizing: border-box;
-    bottom: 10px;
-    left: 10px;
-    margin: 0 auto;
-    max-width: 1024px;
-    padding: 20px;
-    position: fixed;
-    right: 10px;
-    top: 10px;
-    z-index: 100;
+    background : #fff;
+    box-shadow : 0 1px 2px rgba(0, 0, 0, .1);
+    box-sizing : border-box;
+    bottom     : 10px;
+    left       : 10px;
+    margin     : 0 auto;
+    max-width  : 1024px;
+    padding    : 20px;
+    position   : fixed;
+    right      : 10px;
+    top        : 10px;
+    z-index    : 100;
 }
+
 #iridium-text-editor #buttons-section {
-    height: 50px;
-    text-align: right;
-    width: 100%;
+    height     : 50px;
+    text-align : right;
+    width      : 100%;
 }
+
 #iridium-text-editor .iri-settings-button {
-    margin: 0 0 0 20px !important;
+    margin : 0 0 0 20px !important;
 }
+
 #iridium-text-editor textarea {
-    box-sizing: border-box;
-    display: block;
-    height: calc(100% - 50px);
-    padding: 10px;
-    resize: none;
-    width: 100%;
+    box-sizing : border-box;
+    display    : block;
+    height     : calc(100% - 50px);
+    padding    : 10px;
+    resize     : none;
+    width      : 100%;
 }
 
 #iridium-blacklist {
-    border: 1px solid #A9A9A9;
-    color: rgba(255, 255, 255, .5);
-    box-sizing: border-box;
-    display: block;
-    height: calc(100% - 50px);
-    padding: 10px;
-    overflow: auto;
-    width: 100%;
-}
-.iri-blacklist-channel {
-    position: relative;
-    padding-left: 40px;
-    margin-left: -10px;
-    margin-right: -10px;
-}
-.iri-blacklist-channel:hover {
-    background: #F0F0F0;
-}
-.iri-blacklist-channel .close {
-    background-color: transparent;
-    color: #666;
-    cursor: pointer;
-    position: absolute;
-    left: 5px;
-    font-size: 0;
-    border: none;
-    padding: 5px;
-    margin: 5px;
-}
-.iri-blacklist-channel svg {
-    fill: #A9A9A9;
-    pointer-events: none;
-}
-.iri-blacklist-channel .close:hover svg {
-    fill: #444;
-}
-.iri-blacklist-channel a {
-    color: #444;
-    text-decoration: none;
-    display: block;
-    padding: 5px;
-    height: 20px;
-}
-.iri-blacklist-channel:hover a {
-    color: #27A6E5 !important;
+    border     : 1px solid #a9a9a9;
+    color      : rgba(255, 255, 255, .5);
+    box-sizing : border-box;
+    display    : block;
+    height     : calc(100% - 50px);
+    padding    : 10px;
+    overflow   : auto;
+    width      : 100%;
 }
 
+.iri-blacklist-channel {
+    position     : relative;
+    padding-left : 40px;
+    margin-left  : -10px;
+    margin-right : -10px;
+}
+
+.iri-blacklist-channel:hover {
+    background : #f0f0f0;
+}
+
+.iri-blacklist-channel .close {
+    background-color : transparent;
+    color            : #666;
+    cursor           : pointer;
+    position         : absolute;
+    left             : 5px;
+    font-size        : 0;
+    border           : none;
+    padding          : 5px;
+    margin           : 5px;
+}
+
+.iri-blacklist-channel svg {
+    fill           : #a9a9a9;
+    pointer-events : none;
+}
+
+.iri-blacklist-channel .close:hover svg {
+    fill : #444;
+}
+
+.iri-blacklist-channel a {
+    color           : #444;
+    text-decoration : none;
+    display         : block;
+    padding         : 5px;
+    height          : 20px;
+}
+
+.iri-blacklist-channel:hover a {
+    color : #27a6e5 !important;
+}
 
 #iridium_settings input[type=checkbox] {
-    display: none;
-    height: 0;
-    visibility: hidden;
-    width: 0;
+    display    : none;
+    height     : 0;
+    visibility : hidden;
+    width      : 0;
 }
+
 #iridium_settings input[type=checkbox] + label {
-    padding-left: 35px;
+    padding-left : 35px;
 }
+
 #iridium_settings input[type=checkbox] + label:before {
-    background: grey;
-    border-radius: 100px;
-    box-shadow: 0 0 2px 0 #333 inset;
-    box-sizing: border-box;
-    content: '';
-    cursor: pointer;
-    display: inline-block;
-    height: calc(100% - 2 * var(--iri-checkbox-bkg));
-    left: 0;
-    margin: var(--iri-checkbox-bkg) 0;
-    position: absolute;
-    transition: background .3s;
-    vertical-align: middle;
-    width: calc(40px - 2 * var(--iri-checkbox-bkg));
+    background     : grey;
+    border-radius  : 100px;
+    box-shadow     : 0 0 2px 0 #333 inset;
+    box-sizing     : border-box;
+    content        : '';
+    cursor         : pointer;
+    display        : inline-block;
+    height         : calc(100% - 2 * var(--iri-checkbox-bkg));
+    left           : 0;
+    margin         : var(--iri-checkbox-bkg) 0;
+    position       : absolute;
+    transition     : background .3s;
+    vertical-align : middle;
+    width          : calc(40px - 2 * var(--iri-checkbox-bkg));
 }
+
 #iridium_settings input[type=checkbox] + label:after {
-    background: #FFF;
-    border-radius: 90px;
-    box-shadow: 0 0 3px 0 #333;
-    content: '';
-    cursor: pointer;
-    display: inline-block;
-    height: 14px;
-    left: -7px;
-    margin: 6px;
-    position: absolute;
-    transition: .3s;
-    vertical-align: middle;
-    width: 14px;
+    background     : #fff;
+    border-radius  : 90px;
+    box-shadow     : 0 0 3px 0 #333;
+    content        : '';
+    cursor         : pointer;
+    display        : inline-block;
+    height         : 14px;
+    left           : -7px;
+    margin         : 6px;
+    position       : absolute;
+    transition     : .3s;
+    vertical-align : middle;
+    width          : 14px;
 }
+
 #iridium_settings input[type=checkbox]:checked + label:before {
-    background: #E52D27;
-    background: #27A6E5;
+    background : #27a6e5;
 }
+
 #iridium_settings input[type=checkbox]:checked + label:after {
-    left: 7px;
+    left : 7px;
 }
 
 #iridium_settings .iri-settings-button {
-    /*background-color: #167AC6;*/
-    border-color: #167AC6;
-    border-radius: 2px;
-    box-shadow: rgba(0, 0, 0, .05) 0 1px 0;
-    color: #666;
-    cursor: pointer;
-    font-size: 11px;
-    font-weight: bold;
-    height: 28px;
-    margin: 5px;
-    outline: none 0;
-    padding: 0 10px;
-    vertical-align: middle;
+    border-color   : #167ac6;
+    border-radius  : 2px;
+    box-shadow     : rgba(0, 0, 0, .05) 0 1px 0;
+    color          : #666;
+    cursor         : pointer;
+    font-size      : 11px;
+    font-weight    : bold;
+    height         : 28px;
+    margin         : 5px;
+    outline        : none 0;
+    padding        : 0 10px;
+    vertical-align : middle;
 }
+
 #iridium_settings .iri-settings-button {
-    background-color: #F8F8F8;
-    box-shadow: rgba(0, 0, 0, .05) 0 1px 0;
-    border: 1px solid #D3D3D3;
-    border-image: initial;
+    background-color : #f8f8f8;
+    box-shadow       : rgba(0, 0, 0, .05) 0 1px 0;
+    border           : 1px solid #d3d3d3;
+    border-image     : initial;
 }
+
 #iridium_settings .iri-settings-button:first-child {
-    margin-left: 0;
+    margin-left : 0;
 }
-#iridium_settings .iri-settings-button:hover {
-    background: #F0F0F0;
-    border-color: #C6C6C6;
-    color: #333;
-}
-#iridium_settings .iri-settings-button:active {
-    background: #E9E9E9;
-}
-#iridium_settings .iri-settings-button.danger {
-    background-color: #C51616 !important;
-    border-color: #C51616 !important;
-    color: #FFF !important;
-}
-#iridium_settings .iri-settings-button.danger:hover {
-    background: #B51212;
-}
-#iridium_settings .iri-settings-button.danger:active {
-    background: #9A0909;
-}
-/* end | Iridium settings */
 
+#iridium_settings .iri-settings-button:hover {
+    background   : #f0f0f0;
+    border-color : #c6c6c6;
+    color        : #333;
+}
+
+#iridium_settings .iri-settings-button:active {
+    background : #e9e9e9;
+}
+
+#iridium_settings .iri-settings-button.danger {
+    background-color : #c51616 !important;
+    border-color     : #c51616 !important;
+    color            : #fff !important;
+}
+
+#iridium_settings .iri-settings-button.danger:hover {
+    background : #b51212;
+}
+
+#iridium_settings .iri-settings-button.danger:active {
+    background : #9a0909;
+}
+
+/* end | Iridium settings */
 
 /* ini | Iridium settings dark mode */
 .iri-dark-mode-settings #iridium_settings {
-    color: rgba(255, 255, 255, .5);
+    color : rgba(255, 255, 255, .5);
 }
+
 .iri-dark-mode-settings #iridium_settings {
-    background-color: #131313;
+    background-color : #131313;
 }
+
 .iri-dark-mode-settings #iridium_settings_sidebar,
 .iri-dark-mode-settings #settings_section,
 .iri-dark-mode-settings #iridium-text-editor {
-    background-color: #1C1C1C;
+    background-color : #1c1c1c;
 }
+
 .iri-dark-mode-settings #iridium_settings .iri-settings-button,
 .iri-dark-mode-settings #iridium_settings .iri-settings-button:hover,
 .iri-dark-mode-settings #iridium_settings .iri-settings-button:active {
-    background-color: rgba(255, 255, 255, .08);
-    border-color: #303030;
-    color: #888;
+    background-color : rgba(255, 255, 255, .08);
+    border-color     : #303030;
+    color            : #888;
 }
+
 .iri-dark-mode-settings #settings_section h2 {
-    color: rgba(255, 255, 255, .8);
+    color : rgba(255, 255, 255, .8);
 }
+
 .iri-dark-mode-settings #settings_section h3 {
-    color: rgba(255, 255, 255, .5);
+    color : rgba(255, 255, 255, .5);
 }
+
 .iri-dark-mode-settings .settings_divider {
-    background-color: rgba(255, 255, 255, .14);
+    background-color : rgba(255, 255, 255, .14);
 }
+
 .iri-dark-mode-settings .sidebar_section:hover:not(.active_sidebar) {
-    background-color: #F4F4F4;
-    color: #444;
+    background-color : #f4f4f4;
+    color            : #444;
 }
+
 .iri-dark-mode-settings #iridium-text-editor textarea {
-    background-color: #131313;
-    border-color: #303030;
-    color: rgba(255, 255, 255, .5);
+    background-color : #131313;
+    border-color     : #303030;
+    color            : rgba(255, 255, 255, .5);
 }
 
 .iri-dark-mode-settings #iridium-blacklist {
-    background-color: #131313;
-    border: 1px solid #303030;
-    color: rgba(255, 255, 255, .5);
+    background-color : #131313;
+    border           : 1px solid #303030;
+    color            : rgba(255, 255, 255, .5);
 }
+
 .iri-dark-mode-settings .iri-blacklist-channel a {
-    color: #EEE;
+    color : #eee;
 }
+
 .iri-dark-mode-settings .iri-blacklist-channel:hover {
-    background: #1C1C1C;
+    background : #1c1c1c;
 }
+
 .iri-dark-mode-settings .iri-blacklist-channel svg {
-    fill: #303030;
+    fill : #303030;
 }
+
 .iri-dark-mode-settings .iri-blacklist-channel .close:hover svg {
-    fill: #FFF;
+    fill : #fff;
 }
 
 .iri-dark-mode-settings #iridium_settings input[type=checkbox] + label:before {
-    box-shadow: none;
+    box-shadow : none;
 }
+
 /* end | Iridium settings dark mode */

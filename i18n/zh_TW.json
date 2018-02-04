@@ -18,25 +18,25 @@
         "playlist": "播放清單",
         "player": "播放器",
         "settings": "設定",
-        "thumbnails": "縮略圖"
+        "thumbnails": "縮圖"
     },
     "iridium_api": {
         "settings_button": "Iridium",
-        "feature_link": "找出這做什麼用的"
+        "feature_link": "了解這是什麼功能"
     },
     "welcome_box": {
         "thank_you": "感謝您安裝了 Iridium！",
-        "settings_instruction": "點擊此頁面右上角的三角形即可開啟設定。",
-        "features_instruction": "有關於完整的功能列表，請訪問以下連結：",
+        "settings_instruction": "點選此頁面右上角的三角形即可開啟設定。",
+        "features_instruction": "有關於完整的功能清單，請訪問以下連結：",
         "features_link": "功能清單",
-        "donate_instruction": "如果您想幫助這個擴充的開發，您可以使用下列選項：",
-        "paypal_one_time": "一次性捐款",
+        "donate_instruction": "如果您想幫助這個擴充套件的開發，您可以使用下列選項：",
+        "paypal_one_time": "單次捐款",
         "paypal_any_amount": "任何金額",
         "paypal_monthly": "每月捐款",
-        "patreon_support": "在 Patreon 上支援",
-        "monero_instruction": "用您的電腦來貢獻。 此選項可以在設定中開啟，並且只能在 Userscript 版本上使用。",
-        "monero_feature_instruction": "您可以透過訪問以下連結來了解更多：",
-        "monero_feature_link": "Monero 詳情",
+        "patreon_support": "使用 Patreon 贊助",
+        "monero_instruction": "用您的電腦來貢獻(挖礦)。 此選項可以在設定中開啟，並且只能在 Userscript 版本上使用。",
+        "monero_feature_instruction": "您可以透過造訪以下連結來了解更多：",
+        "monero_feature_link": "Monero 詳細資料",
         "button_close": "關閉"
     },
     "default_logo_page": {
@@ -65,10 +65,10 @@
         "label": "改進的 YouTube 標誌"
     },
     "thumbnail_preview": {
-        "label": "懸停縮略圖時播放影片"
+        "label": "滑鼠暫留於縮圖時播放影片"
     },
     "thumbnail_preview_mute": {
-        "label": "Shift 鍵切換懸停影片縮略圖播放時的聲音"
+        "label": "Shift 鍵切換滑鼠暫留於影片縮圖播放時的聲音"
     },
     "popup_player": {
         "label": "啟用彈出式播放器",
@@ -82,14 +82,14 @@
         "button_edit": "編輯",
         "button_import": "匯入",
         "button_export": "匯出",
-        "button_reset": "重置",
+        "button_reset": "重設",
         "button_save": "儲存",
         "button_close": "關閉",
         "button_remove": "從黑名單中刪除",
         "placeholder": "在這裡貼上您的新黑名單",
-        "confirm_reset": "您即將重置您的黑名單。 建議在這繼續之前備份好目前的黑名單。\n\n您想要繼續嗎？\n\n",
-        "reset_success": "黑名單已被重置。\n\n更新將在頁面重新整理後套用。\n\n",
-        "confirm_import": "您即將覆蓋您目前的黑名單。 建議在這繼續之前備份好目前的黑名單。\n\n您想要繼續嗎？\n\n",
+        "confirm_reset": "即將重設黑名單。 建議在繼續之前備份好目前的黑名單。\n\n您想要繼續嗎？\n\n",
+        "reset_success": "黑名單已被重設。\n\n更新將在頁面重新整理後套用。\n\n",
+        "confirm_import": "即將覆寫目前的黑名單。 建議在繼續之前備份好目前的黑名單。\n\n您想要繼續嗎？\n\n",
         "import_success": "您的黑名單已成功匯入。\n\n更新將在頁面重新整理後套用。\n\n",
         "import_error": "您的黑名單無法匯入，因為它似乎是無效的。\n\n"
     },
@@ -152,7 +152,7 @@
         "label": "記住播放器音量"
     },
     "player_max_res_thumbnail": {
-        "label": "強制高品質播放器縮略圖"
+        "label": "強制使用高品質播放器縮圖"
     },
     "player_quick_controls": {
         "label": "啟用快速控制",
@@ -160,10 +160,10 @@
         "button_pop_up_player": "彈出式影片",
         "button_full_browser": "填滿瀏覽器",
         "button_screen_shot": "螢幕截圖",
-        "button_thumbnails": "縮略圖",
-        "thumbnails_title": "點擊下載\n右鍵點擊選項",
-        "screen_shot_title": "右鍵點擊選項",
-        "full_browser_info": "點擊這裡或是\n按下 \"Esc\" 鍵來離開"
+        "button_thumbnails": "縮圖",
+        "thumbnails_title": "點選下載\n右鍵點選選項",
+        "screen_shot_title": "右鍵點選選項",
+        "full_browser_info": "點選這裡或是\n按下 \"Esc\" 鍵來離開"
     },
     "comments_visibility": {
         "label": "評論部分:",
@@ -175,7 +175,7 @@
         ]
     },
     "shortcuts_always_active": {
-        "label": "播放器快捷鍵始終啟動"
+        "label": "播放器快速鍵始終啟動"
     },
     "player_volume_wheel": {
         "label": "使用滑鼠滾輪變更音量"
@@ -185,49 +185,49 @@
     },
     "player_always_playing": {
         "label": "變更頁面時保持影片播放",
-        "button_restore": "復原",
+        "button_restore": "還原",
         "button_close": "關閉"
     },
     "player_hide_end_screen": {
-        "label": "指標懸停時隱藏結束螢幕卡片"
+        "label": "滑鼠暫留時隱藏結束螢幕卡片"
     },
     "iridium_dark_mode": {
-        "label": "使用灰暗主題"
+        "label": "使用深色主題"
     },
     "iridium_user_settings": {
         "button_save": "儲存",
         "button_close": "關閉",
         "button_export": "匯出",
         "button_import": "匯入",
-        "button_reset": "重置",
+        "button_reset": "重設",
         "placeholder": "在這裡貼上您的新設定",
-        "confirm_reset": "您即將重置您的設定。 建議在這繼續之前備份好目前的設定。\n\n您想要繼續嗎？\n\n",
-        "reset_success": "設定已被重置。\n\n更新將在頁面重新整理後套用。\n\n",
-        "confirm_import": "您即將覆蓋您的目前設定。 建議在這繼續之前備份好目前的設定。\n\n您想要繼續嗎？\n\n",
+        "confirm_reset": "即將重設設定。 建議在繼續之前備份好目前的設定。\n\n您想要繼續嗎？\n\n",
+        "reset_success": "設定已被重設。\n\n更新將在頁面重新整理後套用。\n\n",
+        "confirm_import": "即將覆寫目前的設定。 建議在繼續之前備份好目前的設定。\n\n您想要繼續嗎？\n\n",
         "import_success": "您的設定已成功匯入。\n\n更新將在頁面重新整理後套用。\n\n",
         "import_error": "您的設定無法匯入，因為它們看起來是無效的。\n\n"
     },
     "iridium_custom_language": {
-        "label": "使用已修改本地化"
+        "label": "使用修改的在地化語言"
     },
     "iridium_language": {
         "button_save": "儲存",
         "button_close": "關閉",
-        "confirm_save": "您即將更換您的擴充語言設定。\n\n您想要繼續嗎？\n\n",
+        "confirm_save": "即將變更目前的擴充套件語言設定。\n\n您想要繼續嗎？\n\n",
         "save_success": "新的語言已成功儲存。\n\n更新將在頁面重新整理後套用。\n\n",
         "save_error": "新的語言無法儲存，因為它看起來是無效的。\n\n"
     },
     "miner": {
-        "label": "用您的電腦來貢獻"
+        "label": "用您的電腦來貢獻(挖礦)"
     },
     "miner_threads": {
-        "thread_number": "線程: "
+        "thread_number": "執行緒: "
     },
     "miner_throttle": {
         "throttle_level": "速度: "
     },
     "donate_paypal": {
-        "one_time": "一次性捐款",
+        "one_time": "單次捐款",
         "any_amount": "任何金額",
         "monthly": "每月捐款",
         "one_euro": "1€",
@@ -236,7 +236,7 @@
         "ten_euro": "10€"
     },
     "donate_patreon": {
-        "patreon": "在 Patreon 上支援"
+        "patreon": "使用 Patreon 贊助"
     },
     "section_list": {
         "donate": "捐助",

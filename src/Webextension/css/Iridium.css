@@ -849,6 +849,10 @@ body {
     box-sizing : border-box;
 }
 
+html body iframe[src^="/error?"] {
+    display : none !important;
+}
+
 #iridium_settings {
     background-color : #f1f1f1;
     color            : #666;

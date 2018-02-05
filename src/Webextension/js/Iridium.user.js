@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.0.4
+// @version         0.0.5
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom

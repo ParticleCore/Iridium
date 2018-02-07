@@ -162,9 +162,9 @@
     },
     "player_quick_controls": {
         "label": "Activer les contrôles rapides",
-        "button_auto_play": "Auto-Lecture",
-        "button_pop_up_player": "Vidéo Pop-up",
-        "button_full_browser": "Navigateur complet",
+        "button_auto_play": "Lecture-Auto",
+        "button_pop_up_player": "Lecteur vidéo Pop-up",
+        "button_full_browser": "Navigateur en pleine écran",
         "button_screen_shot": "Capture d'écran",
         "button_thumbnails": "Miniatures",
         "thumbnails_title": "Cliquez pour télécharger\nClic droit pour les options",
@@ -177,11 +177,11 @@
         "options": [
             "Montrer",
             "Masquer",
-            "Enlever"
+            "Désactivé"
         ]
     },
     "shortcuts_always_active": {
-        "label": "Raccourcis joueurs toujours actifs"
+        "label": "Raccourcis du lecteur toujours actifs"
     },
     "player_volume_wheel": {
         "label": "Modifier le volume à l'aide de la molette de la souris"
@@ -195,7 +195,7 @@
         "button_close": "Fermer"
     },
     "player_hide_end_screen": {
-        "label": "Masquer les fiches de fin d'écran en survolant la souris"
+        "label": "Masquer les fiches de fin de video en les survolant avec souris"
     },
     "iridium_dark_mode": {
         "label": "Utilisez le thème sombre"
@@ -214,7 +214,7 @@
         "import_error": "Vos paramètres n'ont pas pu être importés car ils semblent invalides.\n\n"
     },
     "iridium_custom_language": {
-        "label": "Utiliser des langages modifiés"
+        "label": "Utiliser un langage personnalisé"
     },
     "iridium_language": {
         "button_save": "Sauvegarder",

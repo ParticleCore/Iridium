@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.0.5
+// @version         0.0.6
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -653,10 +653,10 @@
 
                             if ((player_api = document.getElementById("movie_player"))) {
 
-                                current_config               = player_api.getUpdatedConfigurationData();
-                                pop_up_url                   = pop_up_url + "#t=" + video.currentTime;
-                                current_config.args.start    = video.currentTime;
-                                current_config.pop_up_player = true;
+                                current_config                 = player_api.getUpdatedConfigurationData();
+                                pop_up_url                     = pop_up_url + "#t=" + video.currentTime;
+                                current_config.args.start      = video.currentTime;
+                                current_config.args.cue_player = true;
 
                                 player_api.cueVideoByPlayerVars(current_config.args);
 
@@ -797,7 +797,7 @@
 
                         }
 
-                        if (window.name === "popUpPlayer") {
+                        if (iridium_api.isPopUpPlayer) {
 
                             window.onYouTubePlayerReady = this.shareApi(window.onYouTubePlayerReady);
 
@@ -2365,7 +2365,7 @@
 
                         if (args.controls !== "0") {
 
-                            if (this.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
+                            if (!iridium_api.isPopUpPlayer && this.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
 
                                 args.autoplay                   = "0";
                                 args.suppress_autoplay_on_watch = true;
@@ -2464,7 +2464,7 @@
 
                         }
 
-                        if (window.name === "popUpPlayer") {
+                        if (iridium_api.isPopUpPlayer) {
 
                             args.el = "embedded";
 
@@ -2481,7 +2481,7 @@
                             var current_config;
                             var current_video_id;
 
-                            if (!this.getUpdatedConfigurationData || !args.eventid) {
+                            if (!this.getUpdatedConfigurationData || !args.eventid || iridium_api.isPopUpPlayer) {
 
                                 return original.apply(this, arguments);
 
@@ -2489,7 +2489,7 @@
 
                             current_config = this.getUpdatedConfigurationData();
 
-                            if (current_config && current_config.args && current_config.pop_up_player) {
+                            if (current_config && current_config.args && current_config.args.cue_player) {
 
                                 context.updatePlayerLayout = !!current_config.args.list !== !!args.list;
 
@@ -4215,7 +4215,7 @@
 
                         document.documentElement.classList.remove(class_name);
 
-                        if (!window.name && (player_api = document.getElementById("movie_player"))) {
+                        if (!iridium_api.isPopUpPlayer && (player_api = document.getElementById("movie_player"))) {
 
                             is_in_theater_mode = document.querySelector("ytd-watch[theater]");
 
@@ -5429,6 +5429,7 @@
             iridium_api = {
                 videoIdPattern: /v=([\w-_]+)/,
                 isSettingsPage: window.location.pathname === "/iridium-settings",
+                isPopUpPlayer: window.name === "popUpPlayer",
                 localXMLHttpRequest: function (method, call, url, head) {
 
                     var request;

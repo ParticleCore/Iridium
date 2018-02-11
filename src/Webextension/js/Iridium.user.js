@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.0.6
+// @version         0.0.7
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -2489,7 +2489,7 @@
 
                             current_config = this.getUpdatedConfigurationData();
 
-                            if (current_config && current_config.args && current_config.args.cue_player) {
+                            if (current_config && current_config.args && !args.cue_player) {
 
                                 context.updatePlayerLayout = !!current_config.args.list !== !!args.list;
 

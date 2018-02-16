@@ -3,11 +3,11 @@
         "unlisted-iridium@particlecore.github.io" : {
             "updates" : [
                 {
-                    "version" : "0.0.7",
+                    "version" : "0.0.8",
                     "update_link" : "https://github.com/ParticleCore/Iridium/raw/master/dist/Iridium.xpi",
                     "applications" : {
                         "gecko" : {
-                            "strict_min_version" : "48.0"
+                            "strict_min_version" : "54.0"
                         }
                     }
                 }

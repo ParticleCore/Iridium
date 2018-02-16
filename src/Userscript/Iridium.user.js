@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.0.7
+// @version         0.0.8
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -3055,6 +3055,46 @@
                                     return this._playVideo;
 
                                 }
+                            },
+                            experiments: {
+                                set: function (data) {
+                                    this._experiments = data;
+                                },
+                                get: function experimentsGetter() {
+
+                                    var i;
+                                    var matching;
+                                    var keys_list;
+                                    var function_string;
+
+                                    keys_list = Object.keys(this);
+
+                                    for (i = 0; i < keys_list.length; i++) {
+
+                                        if (this[keys_list[i]] && this[keys_list[i]].eventid) {
+
+                                            if (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
+
+                                                function_string = experimentsGetter["caller"].toString();
+                                                matching        = function_string.match(/this\.([a-z0-9$_]{1,3})=[^;]+\.autoplay/i);
+
+                                                if (matching && matching[1]) {
+
+                                                    this[matching[1]] = false;
+
+                                                }
+
+                                            }
+
+                                            break;
+
+                                        }
+
+                                    }
+
+                                    return this._experiments;
+
+                                }
                             }
                         });
 
@@ -4396,7 +4436,7 @@
 
                         return function () {
 
-                            if (user_settings.player_always_playing) {
+                            if (user_settings.player_auto_play || user_settings.player_always_playing) {
 
                                 return;
 

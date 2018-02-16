@@ -1,7 +1,7 @@
 {
     "manifest_version" : 2,
     "name" : "Iridium",
-    "version" : "0.0.7",
+    "version" : "0.0.8",
     "description" : "YouTube with more freedom",
     "default_locale" : "en",
     "icons" : {
@@ -51,7 +51,7 @@
     "applications" : {
         "gecko" : {
             "id" : "unlisted-iridium@particlecore.github.io",
-            "strict_min_version" : "48.0",
+            "strict_min_version" : "54.0",
             "update_url" : "https://github.com/ParticleCore/Iridium/raw/master/bin/update.json"
         }
     }

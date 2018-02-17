@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.0.8
+// @version         0.0.9
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -4436,7 +4436,7 @@
 
                         return function () {
 
-                            if (user_settings.player_auto_play || user_settings.player_always_playing) {
+                            if (user_settings.player_always_playing || user_settings.player_auto_play && window.location.pathname === "/watch") {
 
                                 return;
 

@@ -18,11 +18,11 @@ Find out what others had to say about Iridium; the good and the bad!
 --- 
   
   
-### Iridium - Extenda as funções do seu Youtube!
+### [Iridium - Extenda as funções do seu Youtube!](https://www.youtube.com/watch?v=SloSxxlFlOA)
 [<img src="https://i.ytimg.com/vi/SloSxxlFlOA/maxresdefault.jpg" width="50%">](https://www.youtube.com/watch?v=SloSxxlFlOA)  
   
 ---  
 
-### Une nouvelle EXTENSION que j'utilise AU QUOTIDIEN !
+### [Une nouvelle EXTENSION que j'utilise AU QUOTIDIEN !](https://www.youtube.com/watch?v=SloSxxlFlOA)
 [<img src="https://i.ytimg.com/vi/aCsJz59XJ3M/maxresdefault.jpg" width="50%">](https://www.youtube.com/watch?v=SloSxxlFlOA)
 

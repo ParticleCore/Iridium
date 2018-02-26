@@ -1,0 +1,238 @@
+{
+    "language": "Latviešu (LV)",
+    "section_list": {
+        "donate": "ziedot",
+        "general": "vispārīgs",
+        "video": "video",
+        "settings": "iestatījumi"
+    },
+    "section_titles": {
+        "donate": "Atbalstiet Iridium",
+        "general": "Vispārīgi uzstādījumi",
+        "video": "Video uzstādījumi",
+        "settings": "Iridium uzstādījumi"
+    },
+    "sub_section_titles": {
+        "channel": "Kanāls",
+        "blacklist": "Melnais saraksts",
+        "general": "Vispārīgi",
+        "language": "Valoda",
+        "layout": "Izkārtojums",
+        "miner": "Monero",
+        "paypal": "PayPal",
+        "patreon": "Patreon",
+        "playlist": "Atskaņošanas saraksts",
+        "player": "Atskaņotājs",
+        "settings": "Uzstādījumi",
+        "thumbnails": "Sīktēli"
+    },
+    "iridium_api": {
+        "settings_button": "Iridium",
+        "feature_link": "Noskaidrot, ko tas dara"
+    },
+    "welcome_box": {
+        "thank_you": "Paldies par Iridium instalēšanu!",
+        "settings_instruction": "Jūs varat atvērt savus iestatījumus, noklikšķinot uz trijstūra, kas atrodas šīs lapas augšējā labajā stūrī.",
+        "features_instruction": "Lai iegūtu pilnu funkciju sarakstu, apmeklējiet šo saiti:",
+        "features_link": "Funkciju saraksts",
+        "donate_instruction": "Ja vēlaties palīdzēt izstrādāt šo paplašinājumu, varat izmantot šādas opcijas:",
+        "paypal_one_time": "Vienreizējs ziedojums",
+        "paypal_any_amount": "Jebkura summa",
+        "paypal_monthly": "Ikmēneša ziedojums",
+        "patreon_support": "Atbalstīt ar Patreon",
+        "monero_instruction": "Līdzdarboties, izmantojot datoru. Šo iespēju var ieslēgt iestatījumos un tas ir pieejams tikai lietotāja skripta versijā.",
+        "monero_feature_instruction": "Jūs varat uzzināt vairāk, apmeklējot šo saiti:",
+        "monero_feature_link": "Monero detaļas",
+        "button_close": "Aizvērt"
+    },
+    "default_logo_page": {
+        "label": "Noklusējuma YouTube logotipa lapa:",
+        "options": [
+            "Sākums",
+            "Tendences",
+            "Abonementi"
+        ]
+    },
+    "default_channel_tab": {
+        "label": "Default channel tab:",
+        "options": [
+            "Sākums",
+            "Videoklipi",
+            "Atskaņošanas saraksti",
+            "Kanāli",
+            "Apspriešana",
+            "Par"
+        ]
+    },
+    "square_avatars": {
+        "label": "Padarīt lietotāja attēlus kvadrātainus"
+    },
+    "improved_logo": {
+        "label": "Uzlabot YouTube logotipu"
+    },
+    "thumbnail_preview": {
+        "label": "Atskaņot videoklipus, ar kursoru uz sīktēliem"
+    },
+    "thumbnail_preview_mute": {
+        "label": "Shift taustiņš pārslēdz skaņu video sīktēlu atskaņošanas laikā"
+    },
+    "popup_player": {
+        "label": "Iespējot atskaņotāja uznirstošo logu",
+        "button_add_title": "Uznirstošais logs"
+    },
+    "enable_blacklist": {
+        "label": "Iespējot melno sarakstu"
+    },
+    "blacklist_settings": {
+        "button_add_title": "Bloķēt",
+        "button_edit": "Rediģēt",
+        "button_import": "Importēt",
+        "button_export": "Eksportēt",
+        "button_reset": "Atiestatīt",
+        "button_save": "Saglabāt",
+        "button_close": "Aizvērt",
+        "button_remove": "Noņemt no melnā saraksta",
+        "placeholder": "Ielīmējiet savu jauno melno sarakstu šeit",
+        "confirm_reset": "Jūs gatavojaties atiestatīt savu melno sarakstu. Pirms turpināt, ieteicams dublēt savu pašreizējo melno sarakstu.\n\nVai vēlaties turpināt?\n\n",
+        "reset_success": "Melnais saraksts ir atiestatīts.\n\nIzmaiņas tiks piemērotas pēc lapas atjaunošanas.\n\n",
+        "confirm_import": "Jūs gatavojaties pārrakstīt savu pašreizējo melno sarakstu. Pirms turpināt, ieteicams dublēt savu pašreizējo melno sarakstu.\n\nVai vēlaties turpināt?\n\n",
+        "import_success": "Jūsu melnais saraksts ir veiksmīgi importēts.\n\nIzmaiņas tiks piemērotas pēc lapas atjaunošanas.\n\n",
+        "import_error": "Jūsu melno sarakstu nevarēja importēt, jo tas šķiet ir nederīgs.\n\n"
+    },
+    "channel_video_count": {
+        "label": "Parādīt augšupielādēto videoklipu numuru"
+    },
+    "channel_video_time": {
+        "label": "Parādīt, cik ilgi videoklips tika augšupielādēts"
+    },
+    "playlist_reverse_control": {
+        "label": "Iespējot reverso atskaņošanas sarakstu pārvaldību",
+        "button_label": "Reversais atskaņošanas saraksts",
+        "toggle_on": "Reverss ir ieslēgts",
+        "toggle_off": "Reverss ir izslēgts"
+    },
+    "player_quality": {
+        "label": "Noklusējuma video kvalitāte:",
+        "options": [
+            "4320p (8k)",
+            "2880p (5k)",
+            "2160p (4k)",
+            "1440p",
+            "1080p",
+            "720p",
+            "480p",
+            "360p",
+            "240p",
+            "144p",
+            "Auto"
+        ]
+    },
+    "player_auto_play": {
+        "label": "Atskaņot videoklipu automātiski"
+    },
+    "channel_trailer_auto_play": {
+        "label": "Automātiski atskaņot kanālu treileri"
+    },
+    "player_annotations": {
+        "label": "Atļaut videoklipu anotācijas"
+    },
+    "player_subtitles": {
+        "label": "Atļaut videoklipiem subtitrus"
+    },
+    "player_loudness": {
+        "label": "Atļaut skaļuma normalizēšanu"
+    },
+    "player_ads": {
+        "label": "Atļaut reklāmas videoklipos"
+    },
+    "subscribed_channel_player_ads": {
+        "label": "Atļaut reklāmas tikai abonēto kanālu videoklipiem"
+    },
+    "player_hfr": {
+        "label": "Atļaut HFR (60fps) plūsmas"
+    },
+    "player_memorize_size": {
+        "label": "Iegaumēt atskaņotāja lielumu"
+    },
+    "player_memorize_volume": {
+        "label": "Iegaumēt atskaņotāja skaļumu"
+    },
+    "player_max_res_thumbnail": {
+        "label": "Attēlot augstas kvalitātes atskaņotāja sīktēlu"
+    },
+    "player_quick_controls": {
+        "label": "Iespējot ātrās pārvaldes",
+        "button_auto_play": "Automātiskā atskaņošana",
+        "button_pop_up_player": "Uznirstošais video",
+        "button_full_browser": "Pilns pārlūks",
+        "button_screen_shot": "Ekrāna fotouzņēmums",
+        "button_thumbnails": "Sīktēls",
+        "thumbnails_title": "Noklikšķiniet, lai lejupielādētu\nLabais klikšķis priekš opcijām",
+        "screen_shot_title": "Labais klikšķis priekš opcijām",
+        "full_browser_info": "Noklikšķiniet šeit vai\nnospiediet \"Esc\" lai ieziet"
+    },
+    "comments_visibility": {
+        "label": "Komentāru sadaļa:",
+        "button_show_comments": "Rādīt komentārus",
+        "options": [
+            "Rādīt",
+            "Slēpt",
+            "Noņemt"
+        ]
+    },
+    "shortcuts_always_active": {
+        "label": "Atskaņotāja īsceļi vienmēr aktīvi"
+    },
+    "player_volume_wheel": {
+        "label": "Mainīt skaļumu, izmantojot peles ritenīti"
+    },
+    "player_always_visible": {
+        "label": "Video vienmēr paliek redzams, ritināšanas laikā"
+    },
+    "player_always_playing": {
+        "label": "Mainot lapas video turpina atskaņoties",
+        "button_restore": "Atjaunot",
+        "button_close": "Aizvērt"
+    },
+    "player_hide_end_screen": {
+        "label": "Slēpt gala ekrāna kartes ar peles kursoru"
+    },
+    "iridium_dark_mode": {
+        "label": "Izmantot tumšo tēmu"
+    },
+    "iridium_user_settings": {
+        "button_save": "Saglabāt",
+        "button_close": "Aizvērt",
+        "button_export": "Eksportēt",
+        "button_import": "Importēt",
+        "button_reset": "Atiestatīt",
+        "placeholder": "Ielīmējiet jūsu jaunos iestatījumus šeit",
+        "confirm_reset": "Jūs gatavojaties atiestatīt iestatījumus. Pirms turpināt, ir ieteicams dublēt jūsu pašreizējos iestatījumus.\n\nVai vēlaties turpināt?\n\n",
+        "reset_success": "Iestatījumi ir atiestatīti.\n\nIzmaiņas tiks piemērotas pēc lapas atjaunošanas.\n\n",
+        "confirm_import": "Jūs gatavojaties pārrakstīt savus pašreizējos iestatījumus. Pirms turpināt, ir ieteicams dublēt jūsu pašreizējos iestatījumus.\n\nVai vēlaties turpināt?\n\n",
+        "import_success": "Jūsu iestatījumi ir veiksmīgi importēti.\n\nIzmaiņas tiks piemērotas pēc lapas atjaunošanas.\n\n",
+        "import_error": "Jūsu iestatījumus nevarēja importēt, jo tie šķiet ir nederīgi.\n\n"
+    },
+    "iridium_custom_language": {
+        "label": "Izmantot pārveidotu lokalizāciju"
+    },
+    "iridium_language": {
+        "button_save": "Saglabāt",
+        "button_close": "Aizvērt",
+        "confirm_save": "Jūs gatavojaties aizstāt paplašinājuma valodas iestatījumus.\n\nVai vēlaties turpināt?\n\n",
+        "save_success": "Jauna valoda ir veiksmīgi saglabāta.\n\nIzmaiņas tiks piemērotas pēc lapas atjaunošanas.\n\n",
+        "save_error": "Jauno valodu nevarēja saglabāt, jo šķiet, ka tā nav derīga.\n\n"
+    },
+    "donate_paypal": {
+        "one_time": "Vienreizēja ziedojums",
+        "any_amount": "Jebkura summa",
+        "monthly": "Ikmēneša ziedojums",
+        "one_euro": "1€",
+        "three_euro": "3€",
+        "five_euro": "5€",
+        "ten_euro": "10€"
+    },
+    "donate_patreon": {
+        "patreon": "Atbalstat ar Patreon"
+    }
+}

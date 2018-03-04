@@ -783,6 +783,10 @@ button:hover > .iri-quick-controls-tooltip {
     z-index        : 100;
 }
 
+html:not(.iri-full-browser) #iri-full-browser-info {
+    display: none;
+}
+
 #iri-full-browser-info-message {
     display        : inline-block;
     cursor         : pointer;

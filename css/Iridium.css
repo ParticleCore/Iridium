@@ -803,7 +803,7 @@ button:hover > .iri-quick-controls-tooltip {
     opacity : 0;
 }
 
-.iri-full-browser.video_active #movie_player {
+.iri-full-browser.video_active ytd-watch:not([hidden]) #movie_player {
     position : fixed;
     top      : 0 !important;
     right    : 0 !important;

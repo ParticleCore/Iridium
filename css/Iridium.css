@@ -361,7 +361,7 @@ html:not(.iri-always-visible):not(.iri-always-playing) #iri-mini-player-controls
     position         : fixed;
     right            : 10px;
     width            : 352px;
-    z-index          : 2001;
+    z-index          : 2006;
 }
 
 .iri-always-visible:not(.iri-full-browser) #movie_player:not(.ytp-fullscreen):before,

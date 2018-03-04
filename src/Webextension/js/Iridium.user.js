@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.0.9
+// @version         0.1.0
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -161,27 +161,32 @@
 
                         }
 
-                        if (data && (url = data.webNavigationEndpointData && data.webNavigationEndpointData.url)) {
+                        if (data && (url = iridium_api.getSingleObjectByKey(data, ["webCommandMetadata"])) && (url = url.url)) {
 
                             if (user_settings.default_channel_tab !== "home" && url.match(/^\/(?:channel|user)\/(?:[^\/])+$/)) {
+                                if (data.commandMetadata && data.commandMetadata.webCommandMetadata) {
 
-                                data.webNavigationEndpointData.url += "/" + user_settings.default_channel_tab;
-                                data.commandMetadata.webCommandMetadata.url += "/" + user_settings.default_channel_tab;
+                                    data.commandMetadata.webCommandMetadata.url += "/" + user_settings.default_channel_tab;
 
-                                if (target.href) {
-
-                                    target.href = data.webNavigationEndpointData.url;
+                                    if (target.href) {
+                                        target.href = data.commandMetadata.webCommandMetadata.url;
+                                    }
 
                                 }
-
                             }
 
                             if (user_settings.default_logo_page !== "home" && url === "/" && target.tagName === "A" && target.id === "logo") {
 
-                                data.browseEndpoint.browseId = "FE" + user_settings.default_logo_page;
-                                data.webNavigationEndpointData.url += "feed/" + user_settings.default_logo_page;
-                                data.commandMetadata.webCommandMetadata.url += "feed/" + user_settings.default_logo_page;
-                                target.href                  = data.webNavigationEndpointData.url;
+                                if (data.browseEndpoint) {
+                                    data.browseEndpoint.browseId = "FE" + user_settings.default_logo_page;
+                                }
+
+                                if (data.commandMetadata && data.commandMetadata.webCommandMetadata) {
+
+                                    data.commandMetadata.webCommandMetadata.url += "feed/" + user_settings.default_logo_page;
+                                    target.href = data.commandMetadata.webCommandMetadata.url;
+
+                                }
 
                             }
 
@@ -191,9 +196,7 @@
                     ini: function () {
 
                         if (iridium_api.initializeOption.call(this)) {
-
                             return;
-
                         }
 
                         window.addEventListener("mouseup", this.setDestination.bind(this), true);
@@ -216,19 +219,13 @@
                     ini: function () {
 
                         if (iridium_api.initializeOption.call(this)) {
-
                             return;
-
                         }
 
                         if (user_settings.square_avatars) {
-
                             document.documentElement.classList.add("iri-square-avatars");
-
                         } else {
-
                             document.documentElement.classList.remove("iri-square-avatars");
-
                         }
 
                     }
@@ -249,19 +246,13 @@
                     ini: function () {
 
                         if (iridium_api.initializeOption.call(this)) {
-
                             return;
-
                         }
 
                         if (user_settings.improved_logo) {
-
                             document.documentElement.classList.add("iri-improved-logo");
-
                         } else {
-
                             document.documentElement.classList.remove("iri-improved-logo");
-
                         }
 
                     }
@@ -294,15 +285,11 @@
                         var player_api;
 
                         if (!user_settings.thumbnail_preview_mute) {
-
                             return;
-
                         }
 
                         if (event.which === 16 && (player_api = document.getElementById("iri-preview-player"))) {
-
                             player_api.handleGlobalKeyDown(77, false);
-
                         }
 
                     },
@@ -359,31 +346,21 @@
                         if ((player_api = document.getElementById("iri-preview-player"))) {
 
                             if (player_api.setVolume) {
-
                                 player_api.setVolume(50);
-
                             }
 
                             if (player_api.setSizeStyle) {
-
                                 player_api.setSizeStyle(false, true);
-
                             }
 
                         }
 
                         if (document.documentElement.classList.contains("iri-always-visible")) {
-
                             if ((player_api = document.getElementById("movie_player"))) {
-
                                 if (player_api.setSizeStyle) {
-
                                     player_api.setSizeStyle(false, true);
-
                                 }
-
                             }
-
                         }
 
                     },
@@ -408,9 +385,7 @@
 
                         xhr = new XMLHttpRequest();
                         xhr.addEventListener("load", function (event) {
-
                             context.iniPreview(context, event);
-
                         });
                         xhr.open("GET", "/get_video_info?" + params, true);
                         xhr.send();
@@ -428,23 +403,17 @@
                             container.parentNode.removeEventListener("mouseleave", listener, false);
 
                             if (timer) {
-
                                 window.clearInterval(timer);
-
                             }
 
                             if ((video_container = document.getElementById("iri-video-preview"))) {
 
                                 if (xhr) {
-
                                     xhr.abort();
-
                                 }
 
                                 if (iridium_api.checkIfExists("firstChild.destroy", video_container)) {
-
                                     video_container.firstChild.destroy();
-
                                 }
                             }
                         }
@@ -458,10 +427,17 @@
                         var video_id;
                         var container;
                         var video_container;
+                        var moving_thumbnail;
                         var player_container;
                         var player_manager_api;
 
+                        moving_thumbnail = event.target.querySelector("#mouseover-overlay");
+
                         if (!user_settings.thumbnail_preview) {
+
+                            if (moving_thumbnail) {
+                                moving_thumbnail.removeAttribute("style");
+                            }
 
                             return;
 
@@ -470,12 +446,13 @@
                         container = event.target;
 
                         if (container.tagName === "YTD-THUMBNAIL" && (container = event.target.querySelector("yt-img-shadow"))) {
-
                             if ((video_id = iridium_api.checkIfExists("dataHost.data.videoId", container)) && !container.querySelector("#iri-preview-player")) {
 
-                                event.stopPropagation();
-
                                 context = this;
+
+                                if (moving_thumbnail) {
+                                    moving_thumbnail.setAttribute("style", "display:none");
+                                }
 
                                 if (!(video_container = document.getElementById("iri-video-preview"))) {
 
@@ -486,61 +463,50 @@
                                 }
 
                                 if (video_container.parentNode !== container) {
-
                                     container.appendChild(video_container);
-
                                 }
 
                                 if (iridium_api.checkIfExists("yt.player.Application.create")) {
-
                                     xhr = this.getPreviewArgs(video_id);
-
                                 } else {
 
-                                    if ((player_manager_api = document.querySelector("yt-player-manager")) && (player_container = document.getElementById("player-container")) && iridium_api.checkIfExists("yt.config_.FILLER_DATA.player")) {
-
-                                        player_manager_api["acquireApi"](player_container, window.yt.config_.FILLER_DATA.player);
-
+                                    if ((player_manager_api = document.querySelector("yt-player-manager"))) {
+                                        if ((player_container = document.getElementById("player-container"))) {
+                                            if (iridium_api.checkIfExists("yt.config_.FILLER_DATA.player")) {
+                                                player_manager_api["acquireApi"](player_container, window.yt.config_.FILLER_DATA.player);
+                                            }
+                                        }
                                     }
 
                                     timer = window.setInterval(function () {
-
-                                        if (window.yt && window.yt.player && window.yt.player.Application && window.yt.player.Application.create) {
+                                        if (iridium_api.checkIfExists("yt.player.Application.create")) {
 
                                             window.clearInterval(timer);
                                             xhr = context.getPreviewArgs(video_id);
 
                                         }
-
                                     });
 
                                 }
 
-                                document.addEventListener("keydown", this.togglePreviewMute.bind(this), false);
+                                document.addEventListener("keydown", this.togglePreviewMute, false);
 
                                 container.parentNode.addEventListener("click", function listener(event) {
-
                                     context.endPreviewContainer(event, container, listener, xhr, timer, context, video_container, true);
-
                                 }, false);
 
                                 container.parentNode.addEventListener("mouseleave", function listener(event) {
-
                                     context.endPreviewContainer(event, container, listener, xhr, timer, context);
-
                                 }, false);
 
                             }
-
                         }
 
                     },
                     ini: function () {
 
                         if (iridium_api.initializeOption.call(this)) {
-
                             return;
-
                         }
 
                         document.addEventListener("mouseenter", this.iniPreviewContainer.bind(this), true);
@@ -583,24 +549,20 @@
                             var container;
 
                             if (!user_settings.popup_player) {
-
                                 return original.apply(this, arguments);
-
                             }
 
                             node = externalNode.firstElementChild;
 
                             if (node) {
-
                                 if ((node.id === "thumbnail" || node.id === "img")) {
 
                                     container = node.id === "img" ? node.parentNode : node;
 
                                     if (!container.querySelector(".iri-pop-up-player")) {
-
                                         container.appendChild(pop_out_button.cloneNode(true));
-
                                     }
+
                                 }
                             }
 
@@ -615,7 +577,6 @@
                         var player_api;
 
                         if ((player_api = document.getElementById("movie_player"))) {
-
                             if ((temp = this.document.querySelector("video"))) {
 
                                 if (!isNaN(temp.duration) && temp.currentTime < temp.duration) {
@@ -626,7 +587,6 @@
                                 }
 
                             }
-
                         }
 
                     },
@@ -650,7 +610,6 @@
                         pop_up_url = url || window.location.href.split(/&t=[0-9]+|#t=[0-9]+|&time=[0-9]+/).join("");
 
                         if (!url && video && video.currentTime && video.currentTime < video.duration) {
-
                             if ((player_api = document.getElementById("movie_player"))) {
 
                                 current_config                 = player_api.getUpdatedConfigurationData();
@@ -661,15 +620,12 @@
                                 player_api.cueVideoByPlayerVars(current_config.args);
 
                             }
-
                         }
 
                         pop_up = window.open(pop_up_url, "popUpPlayer", "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top);
 
                         if (!url) {
-
                             pop_up.addEventListener("beforeunload", this.resumePlayback.bind(pop_up), false);
-
                         }
 
                         pop_up.focus();
@@ -681,13 +637,10 @@
                         var parent;
 
                         if (!user_settings.popup_player) {
-
                             return;
-
                         }
 
                         if (event.type === "message") {
-
                             if (event.data.id === user_settings.broadcast_id && event.data.action === "ini-pop-up-player") {
 
                                 event.screenX = event.data.screenX;
@@ -696,7 +649,6 @@
                                 this.popUpPlayer(event);
 
                             }
-
                         } else if (event.target.className === "iri-pop-up-player") {
 
                             event.preventDefault();
@@ -708,14 +660,10 @@
 
                                 if (parent.data) {
 
-                                    if ("webNavigationEndpointData" in parent.data) {
-
-                                        if ((url = iridium_api.getSingleObjectByKey(parent.data["webNavigationEndpointData"], ["url"]))) {
-
+                                    if ("commandMetadata" in parent.data) {
+                                        if ((url = iridium_api.getSingleObjectByKey(parent.data["commandMetadata"], ["url"]))) {
                                             this.popUpPlayer(event, url);
-
                                         }
-
                                     }
 
                                     break;
@@ -736,13 +684,9 @@
                         this.popUpPlayerResizeTimer = null;
 
                         if (window.innerWidth > this.popUpPlayerMinWidth) {
-
                             user_settings.popup_player_size = window.innerWidth;
-
                         } else {
-
                             user_settings.popup_player_size = this.popUpPlayerMinWidth;
-
                         }
 
                         iridium_api.saveSettings("popup_player_size");
@@ -751,27 +695,19 @@
                     popUpPlayerResize: function (event) {
 
                         if (this.popUpPlayerResizeTimer) {
-
                             window.clearTimeout(this.popUpPlayerResizeTimer);
-
                         }
 
                         this.popUpPlayerResizeTimer = window.setTimeout(this.saveNewSize.bind(this), 1000);
 
                     },
                     updatePlayerStyle: function (api) {
-
                         api.setSizeStyle(true, true);
-
                     },
                     playerReady: function (api) {
-
                         if (api) {
-
                             api.addEventListener("onStateChange", this.updatePlayerStyle.bind(this, api));
-
                         }
-
                     },
                     shareApi: function (original) {
 
@@ -782,9 +718,7 @@
                             context.playerReady(api);
 
                             if (original) {
-
                                 return original.apply(this, arguments);
-
                             }
 
                         };
@@ -792,9 +726,7 @@
                     ini: function () {
 
                         if (iridium_api.initializeOption.call(this)) {
-
                             return;
-
                         }
 
                         if (iridium_api.isPopUpPlayer) {
@@ -888,7 +820,6 @@
 
                             },
                             resetBlacklist: function () {
-
                                 if (window.confirm(i18n.blacklist_settings.confirm_reset)) {
 
                                     user_settings.blacklist_settings = [];
@@ -899,7 +830,6 @@
                                     window.alert(i18n.blacklist_settings.reset_success);
 
                                 }
-
                             },
                             importBlacklist: function () {
 
@@ -959,9 +889,7 @@
                                     document.body.appendChild(editor);
 
                                 } else {
-
                                     editor.textContent = "";
-
                                 }
 
                                 buttons_section    = document.createElement("div");
@@ -987,9 +915,7 @@
                                         buttons_section.appendChild(button);
 
                                     } else {
-
                                         textarea.value = JSON.stringify(user_settings.blacklist_settings, null, 4);
-
                                     }
 
                                     editor.appendChild(textarea);
@@ -1089,14 +1015,10 @@
                         "YTD-VIDEO-RENDERER"
                     ],
                     allowedBlacklistPage: function () {
-
                         return /^\/($|feed\/(?!subscriptions)|watch|results|shared)/.test(window.location.pathname);
-
                     },
                     hasContainers: function () {
-
                         return window.location.pathname.match(/^\/(?:(?:|results)$|feed\/)/);
-
                     },
                     clearList: function (obj) {
 
@@ -1146,9 +1068,7 @@
                             });
 
                             if (ids[0] && user_settings.blacklist_settings[ids[0].target["browseId"]]) {
-
                                 videos[i].list.splice(videos[i].list.indexOf(videos[i].target), 1);
-
                             }
 
                         }
@@ -1160,9 +1080,7 @@
                             videos = iridium_api.getObjectByKey(shelves[i].target, video_tag);
 
                             if (videos.length === 0) {
-
                                 shelves[i].list.splice(shelves[i].list.indexOf(shelves[i].target), 1);
-
                             }
 
                         }
@@ -1172,13 +1090,9 @@
                             sections = iridium_api.getObjectByKey(obj, section_tag);
 
                             for (i = 0; i < sections.length; i++) {
-
                                 if (sections[i].target[sections[i].property].contents.length === 0) {
-
                                     sections[i].list.splice(sections[i].list.indexOf(sections[i].target), 1);
-
                                 }
-
                             }
 
                         }
@@ -1213,17 +1127,13 @@
                             shelf = container[i].querySelector("yt-horizontal-list-renderer");
 
                             if (shelf && (shelf.hasAttribute("at-start") || shelf.hasAttribute("at-end"))) {
-
                                 shelf.fillRemainingListItems();
-
                             }
 
                             temp = container[i].querySelector(this.tag_list.join(","));
 
                             if (!temp) {
-
                                 container[i].remove();
-
                             }
 
                         }
@@ -1248,13 +1158,9 @@
                             });
 
                             if (ucid[0] && ucid.length === 1 && ucid[0].target.browseId) {
-
                                 if (user_settings.blacklist_settings[ucid]) {
-
                                     container[i].remove();
-
                                 }
-
                             }
 
                         }
@@ -1278,9 +1184,7 @@
                         for (i = 0; i < videos.length; i++) {
 
                             if (videos[i].data) {
-
                                 temp = videos[i];
-
                             }
 
                             if (temp && temp.data) {
@@ -1290,44 +1194,34 @@
                                 });
 
                                 if (ucid[0] && ucid[0].target.browseId) {
-
                                     ucid = ucid[0].target.browseId;
-
                                 }
 
                             }
 
                             if (ucid) {
-
                                 if (user_settings.blacklist_settings[ucid]) {
 
                                     if (up_next && up_next.contains(videos[i])) {
 
                                         if (up_next.tagName === "YTD-COMPACT-AUTOPLAY-RENDERER") {
-
                                             up_next.remove();
-
                                         } else {
 
                                             up_next.parentNode.remove();
                                             up_next = document.querySelector(".watch-sidebar-separation-line");
 
                                             if (up_next) {
-
                                                 up_next.remove();
-
                                             }
 
                                         }
 
                                     } else {
-
                                         remove.push(videos[i]);
-
                                     }
 
                                 }
-
                             }
 
                         }
@@ -1356,7 +1250,6 @@
                             }
 
                             if (!this.hasContainers()) {
-
                                 window.dispatchEvent(new Event("resize"));
                             }
 
@@ -1384,23 +1277,18 @@
                             var container;
 
                             if (!user_settings.enable_blacklist) {
-
                                 return original.apply(this, arguments);
-
                             }
 
                             node = externalNode.firstElementChild;
 
                             if (node) {
-
                                 if ((node.id === "thumbnail" || node.id === "img")) {
 
                                     container = node.id === "img" ? node.parentNode : node;
 
                                     if (!container.querySelector(".iri-add-to-blacklist")) {
-
                                         container.appendChild(blacklist_button.cloneNode(true));
-
                                     }
                                 }
                             }
@@ -1415,25 +1303,19 @@
                         var hasContainers;
 
                         if (!this.allowedBlacklistPage()) {
-
                             return;
-
                         }
 
                         hasContainers = this.hasContainers();
 
                         if (hasContainers) {
-
                             this.getContainers();
-
                         }
 
                         this.getVideos();
 
                         if (hasContainers) {
-
                             this.getEmptyContainers();
-
                         }
 
                     },
@@ -1445,9 +1327,7 @@
                         var parent;
 
                         if (!user_settings.enable_blacklist) {
-
                             return;
-
                         }
 
                         if (event.target.className === "iri-add-to-blacklist") {
@@ -1468,9 +1348,7 @@
                                         });
 
                                         for (i = 0; i < ucid.length; i++) {
-
                                             if (ucid[i] && ucid[i].target && ucid[i].target.browseId) {
-
                                                 if (ucid[i].list && ucid[i].list[0] && ucid[i].list[0].text) {
 
                                                     brand = ucid[i].list[0].text;
@@ -1479,9 +1357,7 @@
                                                     break;
 
                                                 }
-
                                             }
-
                                         }
 
                                     }
@@ -1512,13 +1388,9 @@
                     iniBlacklist: function () {
 
                         if (user_settings.enable_blacklist && this.allowedBlacklistPage()) {
-
                             document.documentElement.classList.add("iri-blacklist-allowed");
-
                         } else {
-
                             document.documentElement.classList.remove("iri-blacklist-allowed");
-
                         }
 
                     },
@@ -1528,9 +1400,7 @@
                         var iniBlacklistListener;
 
                         if (iridium_api.initializeOption.call(this)) {
-
                             return;
-
                         }
 
                         iniBlacklistListener = this.iniBlacklist.bind(this);
@@ -1551,9 +1421,7 @@
                                 get: function () {
 
                                     if (user_settings.enable_blacklist && context.allowedBlacklistPage()) {
-
                                         context.clearList(this._ytInitialData);
-
                                     }
 
                                     return this._ytInitialData;
@@ -1567,9 +1435,7 @@
                                 get: function () {
 
                                     if (user_settings.enable_blacklist && context.allowedBlacklistPage()) {
-
                                         return context.modOnDone(this._onDone);
-
                                     }
 
                                     return this._onDone;
@@ -1624,15 +1490,11 @@
                         }
 
                         if ((video_count_dot = document.querySelector("span.iri-video-count"))) {
-
                             video_count_dot.remove();
-
                         }
 
                         if ((video_count = document.getElementById("iri-video-count"))) {
-
                             video_count.remove();
-
                         }
 
                     },
@@ -1652,15 +1514,12 @@
                         script_list = event.target ? event.target.response.querySelectorAll("script") : [];
 
                         for (i = 0; i < script_list.length; i++) {
-
                             if ((page_data = script_list[i].textContent.match(/window\["ytInitialData"] = ({[\w\W]+});/))) {
-
                                 if ((page_data = JSON.parse(page_data[1], null, true))) {
 
                                     playlist_data = iridium_api.getObjectByKey(page_data.sidebar, ["playlistSidebarPrimaryInfoRenderer"]);
 
                                     for (i = 0; i < playlist_data.length; i++) {
-
                                         if (iridium_api.checkIfExists("target.playlistSidebarPrimaryInfoRenderer.stats", playlist_data[i])) {
 
                                             count_match = iridium_api.getObjectByKey(playlist_data[i].target.playlistSidebarPrimaryInfoRenderer.stats, ["text"]);
@@ -1695,15 +1554,12 @@
                                             break;
 
                                         }
-
                                     }
 
                                     break;
 
                                 }
-
                             }
-
                         }
 
                     },
@@ -1727,9 +1583,7 @@
                         }
 
                         if ((time_container = document.getElementById("iri-video-time"))) {
-
                             time_container.remove();
-
                         }
 
                     },
@@ -1746,9 +1600,7 @@
                         script_list = event.target.response.querySelectorAll("script");
 
                         for (i = 0; i < script_list.length; i++) {
-
                             if ((page_data = script_list[i].textContent.match(/window\["ytInitialData"] = ({[\w\W]+});/))) {
-
                                 if ((page_data = JSON.parse(page_data[1], null, true))) {
 
                                     video_data = iridium_api.getObjectByKey(page_data.contents, ["videoId"], function (video_id, obj) {
@@ -1756,23 +1608,16 @@
                                         var current_video_id;
 
                                         if (obj && obj.publishedTimeText) {
-
                                             if ((current_video_id = window.location.href.match(iridium_api.videoIdPattern))) {
-
                                                 if ((current_video_id = current_video_id[1])) {
-
                                                     return video_id === current_video_id;
-
                                                 }
-
                                             }
-
                                         }
 
                                     });
 
                                     for (i = 0; i < video_data.length; i++) {
-
                                         if (video_data[i].target.publishedTimeText && video_data[i].target.publishedTimeText.simpleText) {
 
                                             time_container             = document.createElement("span");
@@ -1784,15 +1629,12 @@
                                             break;
 
                                         }
-
                                     }
 
                                     break;
 
                                 }
-
                             }
-
                         }
 
                     },
@@ -1814,68 +1656,70 @@
                             channel_id  = channel_url.match(/UC([a-z0-9-_]{22})/i);
 
                             if (channel_id && (channel_id = channel_id[1])) {
+                                if (user_settings.channel_video_count) {
+                                    if (!this.addVideoCount.fetching) {
+                                        if (document.getElementById("owner-container")) {
+                                            if (!document.getElementById("iri-video-count")) {
+                                                if ((channel_url = document.querySelector("#owner-name a"))) {
 
-                                if (user_settings.channel_video_count && !this.addVideoCount.fetching && document.getElementById("owner-container") && !document.getElementById("iri-video-count") && (channel_url = document.querySelector("#owner-name a"))) {
+                                                    if (this.removeVideoCount.xhr) {
+                                                        this.removeVideoCount.xhr.abort();
+                                                    }
 
-                                    if (this.removeVideoCount.xhr) {
+                                                    this.addVideoCount.fetching = true;
+                                                    channel_url                 = channel_url.getAttribute("href");
 
-                                        this.removeVideoCount.xhr.abort();
+                                                    xhr = new XMLHttpRequest();
+                                                    xhr.addEventListener("load", this.addVideoCount.bind(this, channel_url));
+                                                    xhr.open("GET", "/playlist?list=UU" + channel_id, true);
+                                                    xhr.responseType = "document";
+                                                    xhr.send();
 
-                                    }
+                                                    this.removeVideoCount.xhr = xhr;
 
-                                    this.addVideoCount.fetching = true;
-                                    channel_url                 = channel_url.getAttribute("href");
+                                                    context = this;
 
-                                    xhr = new XMLHttpRequest();
-                                    xhr.addEventListener("load", this.addVideoCount.bind(this, channel_url));
-                                    xhr.open("GET", "/playlist?list=UU" + channel_id, true);
-                                    xhr.responseType = "document";
-                                    xhr.send();
+                                                    document.addEventListener("yt-navigate-finish", function listener() {
+                                                        context.removeVideoCount(listener);
+                                                    }, false);
 
-                                    this.removeVideoCount.xhr = xhr;
-
-                                    context = this;
-
-                                    document.addEventListener("yt-navigate-finish", function listener() {
-
-                                        context.removeVideoCount(listener);
-
-                                    }, false);
-
-                                }
-
-                                if (user_settings.channel_video_time && !this.addVideoTime.fetching && (upload_info = document.querySelector("#upload-info .date")) && upload_info.textContent.indexOf("·") === -1) {
-
-                                    if ((video_id = window.location.href.match(iridium_api.videoIdPattern)) && (video_id = video_id[1])) {
-
-                                        if (this.removeVideoTime.xhr) {
-
-                                            this.removeVideoTime.xhr.abort();
-
+                                                }
+                                            }
                                         }
-
-                                        this.addVideoTime.fetching = true;
-
-                                        xhr = new XMLHttpRequest();
-                                        xhr.addEventListener("load", this.addVideoTime.bind(this, upload_info));
-                                        xhr.open("GET", "/channel/UC" + channel_id + "/search?query=%22" + video_id + "%22", true);
-                                        xhr.responseType = "document";
-                                        xhr.send();
-
-                                        this.removeVideoTime.xhr = xhr;
-
-                                        context = this;
-
-                                        document.addEventListener("yt-navigate-finish", function listener() {
-
-                                            context.removeVideoTime(listener);
-
-                                        }, false);
-
                                     }
-
                                 }
 
+                                if (user_settings.channel_video_time) {
+                                    if (!this.addVideoTime.fetching) {
+                                        if ((upload_info = document.querySelector("#upload-info .date"))) {
+                                            if (upload_info.textContent.indexOf("·") === -1) {
+                                                if ((video_id = window.location.href.match(iridium_api.videoIdPattern)) && (video_id = video_id[1])) {
+
+                                                    if (this.removeVideoTime.xhr) {
+                                                        this.removeVideoTime.xhr.abort();
+                                                    }
+
+                                                    this.addVideoTime.fetching = true;
+
+                                                    xhr = new XMLHttpRequest();
+                                                    xhr.addEventListener("load", this.addVideoTime.bind(this, upload_info));
+                                                    xhr.open("GET", "/channel/UC" + channel_id + "/search?query=%22" + video_id + "%22", true);
+                                                    xhr.responseType = "document";
+                                                    xhr.send();
+
+                                                    this.removeVideoTime.xhr = xhr;
+
+                                                    context = this;
+
+                                                    document.addEventListener("yt-navigate-finish", function listener() {
+                                                        context.removeVideoTime(listener);
+                                                    }, false);
+
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
 
                         }
@@ -1884,9 +1728,7 @@
                     ini: function () {
 
                         if (iridium_api.initializeOption.call(this)) {
-
                             return;
-
                         }
 
                         window.addEventListener("yt-page-data-updated", this.loadStart.bind(this), true);
@@ -1919,35 +1761,24 @@
                         var twoColumnWatchNextResults;
 
                         if ((ytd_watch = document.querySelector("ytd-watch"))) {
-
                             if (ytd_watch.data) {
-
                                 if ((twoColumnWatchNextResults = iridium_api.getSingleObjectByKey(ytd_watch.data, ["twoColumnWatchNextResults"]))) {
-
                                     if ("playlist" in twoColumnWatchNextResults && "playlist" in (playlist = twoColumnWatchNextResults["playlist"])) {
-
                                         if ("contents" in (playlist = playlist["playlist"])) {
 
                                             playlist["contents"].reverse();
 
                                             if ("currentIndex" in playlist) {
-
                                                 playlist["currentIndex"] = playlist["contents"].length - playlist["currentIndex"] - 1;
-
                                             }
 
                                             if ("localCurrentIndex" in playlist) {
-
                                                 playlist["localCurrentIndex"] = playlist["contents"].length - playlist["localCurrentIndex"] - 1;
-
                                             }
 
                                             if ("autoplay" in twoColumnWatchNextResults && "autoplay" in (autoplay = twoColumnWatchNextResults["autoplay"])) {
-
                                                 if ("sets" in (autoplay = autoplay["autoplay"])) {
-
                                                     for (i = 0; i < autoplay["sets"].length; i++) {
-
                                                         if (autoplay["sets"][i]["previousButtonVideo"] && autoplay["sets"][i]["nextButtonVideo"]) {
 
                                                             autoplay["sets"][i]["autoplayVideo"]       = autoplay["sets"][i]["previousButtonVideo"];
@@ -1955,47 +1786,31 @@
                                                             autoplay["sets"][i]["nextButtonVideo"]     = autoplay["sets"][i]["autoplayVideo"];
 
                                                         }
-
                                                     }
-
                                                 }
-
                                             }
 
                                             if ("updatePageData_" in ytd_watch) {
-
                                                 ytd_watch["updatePageData_"](JSON.parse(JSON.stringify(ytd_watch.data)));
-
                                             }
 
                                             // timeout temporary workaround for playlist buttons ui not updating after first video changes
                                             window.setTimeout(function () {
-
                                                 if ((yt_navigation_manager = document.querySelector("yt-navigation-manager"))) {
-
                                                     if ("updatePlayerComponents_" in yt_navigation_manager) {
-
                                                         yt_navigation_manager["updatePlayerComponents_"](null, autoplay, null, playlist);
-
                                                     }
-
                                                 }
-
                                             }, 500);
 
                                         }
-
                                     }
-
                                 }
-
                             }
-
                         }
 
                     },
                     reverseButtonToggled: function (event) {
-
                         if (event.target.data.isReverseButton) {
 
                             user_settings.playlist_reverse = event.target.data.isToggled;
@@ -2003,7 +1818,6 @@
                             this.reversePlaylist();
 
                         }
-
                     },
                     setReverseButtonData: function () {
 
@@ -2018,24 +1832,15 @@
                         this.isReverseButton         = true;
 
                         if ((defaultLabel = iridium_api.getObjectByKey(this["defaultServiceEndpoint"], ["text"]))) {
-
                             if (defaultLabel.length) {
-
                                 defaultLabel[0].target.text = i18n.playlist_reverse_control.toggle_on;
-
                             }
-
-
                         }
 
                         if ((toggledLabel = iridium_api.getObjectByKey(this["toggledServiceEndpoint"], ["text"]))) {
-
                             if (toggledLabel.length) {
-
                                 toggledLabel[0].target.text = i18n.playlist_reverse_control.toggle_off;
-
                             }
-
                         }
 
                     },
@@ -2045,13 +1850,9 @@
                         var reversePlaylistButton;
 
                         for (i = 0; i < data.length; i++) {
-
                             if ("toggleButtonRenderer" in data[i] && data[i]["toggleButtonRenderer"].isReverseButton) {
-
                                 return;
-
                             }
-
                         }
 
                         reversePlaylistButton = JSON.parse(JSON.stringify(data[0]));
@@ -2068,9 +1869,7 @@
                         }
 
                         if (user_settings.playlist_reverse) {
-
                             this.reversePlaylist();
-
                         }
 
                     },
@@ -2081,9 +1880,7 @@
                         this.id = "reverse";
 
                         if ((path = this.querySelector("path"))) {
-
                             path.setAttribute("d", "M6 21l-4-4h3V5h2v12h3L6 21z M19 7v12h-2V7h-3l4-4l4 4H19z");
-
                         }
 
                     },
@@ -2097,19 +1894,13 @@
                             var topLevelButtons;
 
                             if (!data || !data["playlistButtons"]) {
-
                                 return original.apply(this, arguments);
-
                             }
 
                             if ((playlistButtons = iridium_api.getSingleObjectByKey(data, ["playlistButtons"]))) {
-
                                 if ((topLevelButtons = iridium_api.getSingleObjectByKey(playlistButtons, ["topLevelButtons"]))) {
-
                                     context.buildReverseButton(topLevelButtons);
-
                                 }
-
                             }
 
                             return original.apply(this, arguments);
@@ -2140,7 +1931,6 @@
                         var reverseIcon;
 
                         if (data.target.tagName === "LINK" && data.target.rel === "import" && data.target.getAttribute("name")) {
-
                             if ((reverseIcon = data.target.import.querySelector("#loop"))) {
 
                                 iconSet     = reverseIcon.parentElement;
@@ -2154,7 +1944,6 @@
                                 this.interceptListener = null;
 
                             }
-
                         }
 
                     },
@@ -2163,9 +1952,7 @@
                         var context;
 
                         if (iridium_api.initializeOption.call(this)) {
-
                             return;
-
                         }
 
                         if ("import" in document.createElement("link")) {
@@ -2193,9 +1980,7 @@
                                 get: function () {
 
                                     if (this._setMenuData_) {
-
                                         return context.modSetMenuData(this._setMenuData_);
-
                                     }
 
                                     return this._setMenuData_;
@@ -2376,7 +2161,6 @@
                         }
 
                         if (user_settings.player_max_res_thumbnail) {
-
                             if (args.eventid && args.thumbnail_url) {
 
                                 args.iurlmaxres = args.thumbnail_url.replace(/\/[^\/]+$/, "/maxresdefault.jpg");
@@ -2389,7 +2173,6 @@
                                 thumbnail_image     = null;
 
                             }
-
                         }
 
                         if (user_settings.subscribed_channel_player_ads ? args.subscribed !== "1" : !user_settings.player_ads) {
@@ -2412,9 +2195,7 @@
                         }
 
                         if (!user_settings.player_annotations) {
-
                             args.iv_load_policy = "3";
-
                         }
 
                         if (!user_settings.player_loudness) {
@@ -2435,9 +2216,7 @@
                             );
 
                             if (args.caption_audio_tracks) {
-
                                 args.caption_audio_tracks = args.caption_audio_tracks.split(/&d=[0-9]|d=[0-9]&/).join("");
-
                             }
 
                         }
@@ -2453,9 +2232,7 @@
                                 fps = fps && fps[1];
 
                                 if (fps > 30) {
-
                                     list.splice(i--, 1);
-
                                 }
 
                             }
@@ -2465,9 +2242,7 @@
                         }
 
                         if (iridium_api.isPopUpPlayer) {
-
                             args.el = "embedded";
-
                         }
 
                     },
@@ -2482,9 +2257,7 @@
                             var current_video_id;
 
                             if (!this.getUpdatedConfigurationData || !args.eventid || iridium_api.isPopUpPlayer) {
-
                                 return original.apply(this, arguments);
-
                             }
 
                             current_config = this.getUpdatedConfigurationData();
@@ -2494,18 +2267,12 @@
                                 context.updatePlayerLayout = !!current_config.args.list !== !!args.list;
 
                                 if ((current_config.args.eventid === args.eventid || current_config.args.loaderUrl === args.loaderUrl)) {
-
                                     if (!document.querySelector(".ended-mode,.unstarted-mode") && (current_video_id = window.location.href.match(iridium_api.videoIdPattern))) {
-
                                         if (current_video_id[1] === current_config.args.video_id) {
-
                                             return function () {
                                             };
-
                                         }
-
                                     }
-
                                 }
 
                             }
@@ -2515,9 +2282,7 @@
                             temp = original.apply(this, arguments);
 
                             if (user_settings.player_quality !== "auto") {
-
                                 context.markedForQuality = true;
-
                             }
 
                             context.setPlayerResize();
@@ -2540,9 +2305,7 @@
                             temp = original.apply(this, arguments);
 
                             if (user_settings.player_quality !== "auto") {
-
                                 context.markedForQuality = true;
-
                             }
 
                             context.setPlayerResize();
@@ -2561,9 +2324,7 @@
                             var temp = original.apply(this, arguments);
 
                             if (!bypass && temp && temp.player && temp.player.args) {
-
                                 context.modArgs(temp.player.args);
-
                             }
 
                             return temp;
@@ -2578,9 +2339,7 @@
                         return function (method, url) {
 
                             if (url.match("get_video_info") && !url.match("el=adunit") && !url.match("ps=gaming")) {
-
                                 this.addEventListener("readystatechange", context.patchXHR.bind(context));
-
                             }
 
                             return original.apply(this, arguments);
@@ -2608,9 +2367,7 @@
                                     fps = streams[i].getAttribute("frameRate");
 
                                     if (fps > 30) {
-
                                         streams[i].remove();
-
                                     }
 
                                 }
@@ -2629,14 +2386,10 @@
                         var watch_page_api;
 
                         if (user_settings.player_memorize_size && window.location.pathname === "/watch" && (watch_page_api = document.querySelector("ytd-watch"))) {
-
                             try {
-
                                 watch_page_api["theaterModeChanged_"](user_settings.theaterMode);
-
                             } catch (ignore) {
                             }
-
                         }
 
                     },
@@ -2700,9 +2453,7 @@
                                 "}";
 
                         } else if ((style_element = document.getElementById("style-thumbnail"))) {
-
                             style_element.textContent = "";
-
                         }
 
                     },
@@ -2738,17 +2489,13 @@
                                 event.target.responseText += temp[i] + "=" + window.encodeURIComponent(temp_list[temp[i]]).replace(/%20/g, "+");
 
                                 if (i + 1 < temp.length) {
-
                                     event.target.responseText += "&";
-
                                 }
 
                             }
 
                             if (user_settings.player_quality !== "auto") {
-
                                 this.markedForQuality = true;
-
                             }
 
                             this.setPlayerResize();
@@ -2772,7 +2519,6 @@
                     handleCustoms: function (event) {
 
                         if (typeof event === "object") {
-
                             if (user_settings.player_memorize_volume && user_settings.userVolume !== event.volume) {
 
                                 user_settings.userVolume = event.volume;
@@ -2780,9 +2526,7 @@
                                 iridium_api.saveSettings("userVolume");
 
                             }
-
                         } else {
-
                             if (user_settings.player_memorize_size && user_settings.theaterMode !== event) {
 
                                 user_settings.theaterMode = event;
@@ -2790,7 +2534,6 @@
                                 iridium_api.saveSettings("theaterMode");
 
                             }
-
                         }
 
                     },
@@ -2832,9 +2575,7 @@
                         }
 
                         if (user_settings.fullBrowser) {
-
                             window.dispatchEvent(new Event("resize"));
-
                         }
 
                     },
@@ -2883,23 +2624,17 @@
                             context.playerReady(api);
 
                             if (window["ytSignalsInstance"] && window["ytSignalsInstance"]["processSignal"]) {
-
                                 window["ytSignalsInstance"]["processSignal"]("eocs");
-
                             }
 
                             if (original) {
-
                                 return original.apply(this, arguments);
-
                             }
 
                         };
                     },
                     isChannel: function () {
-
                         return /^\/(user|channel)\//.test(window.location.pathname);
-
                     },
                     loadStart: function (event) {
 
@@ -2918,17 +2653,11 @@
                                 case "yt-navigate-start":
 
                                     if (!user_settings.player_auto_play) {
-
                                         if (is_watch && this.previous_url !== window.location.href && (is_watch !== this.was_watch || is_playlist !== this.was_playlist)) {
-
                                             if ((yt_player_manager = document.querySelector("yt-player-manager")) && yt_player_manager["playerContainer_"]) {
-
                                                 yt_player_manager["playerContainer_"] = undefined;
-
                                             }
-
                                         }
-
                                     }
 
                                     break;
@@ -2948,9 +2677,7 @@
                         var timestamp;
 
                         if (iridium_api.initializeOption.call(this)) {
-
                             return;
-
                         }
 
                         if (user_settings.player_quality !== "auto") {
@@ -2978,15 +2705,11 @@
                         }
 
                         if (this.setPlayerResizeListener) {
-
                             window.removeEventListener("yt-navigate-finish", this.setPlayerResizeListener, false);
-
                         }
 
                         if (this.fileLoadListener) {
-
                             document.documentElement.removeEventListener("load", this.fileLoadListener, true);
-
                         }
 
                         this.loadStartListener       = this.loadStart.bind(this);
@@ -3026,9 +2749,7 @@
                                 get: function () {
 
                                     if (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
-
                                         return this.cueVideoByPlayerVars;
-
                                     }
 
                                     return context.modVideoByPlayerVars(this._loadVideoByPlayerVars);
@@ -3042,14 +2763,10 @@
                                 get: function () {
 
                                     if (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
-
                                         if (!document.querySelector(".ad-showing,.ad-interrupting")) {
-
                                             return function () {
                                             };
-
                                         }
-
                                     }
 
                                     return this._playVideo;
@@ -3070,7 +2787,6 @@
                                     keys_list = Object.keys(this);
 
                                     for (i = 0; i < keys_list.length; i++) {
-
                                         if (this[keys_list[i]] && this[keys_list[i]].eventid) {
 
                                             if (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
@@ -3079,9 +2795,7 @@
                                                 matching        = function_string.match(/this\.([a-z0-9$_]{1,3})=[^;]+\.autoplay/i);
 
                                                 if (matching && matching[1]) {
-
                                                     this[matching[1]] = false;
-
                                                 }
 
                                             }
@@ -3089,7 +2803,6 @@
                                             break;
 
                                         }
-
                                     }
 
                                     return this._experiments;
@@ -3139,13 +2852,9 @@
                             if (this.ironMediaQueryList) {
 
                                 if ((ytd_watch = document.querySelector("ytd-watch"))) {
-
                                     for (i = 0; i < this.ironMediaQueryList.childElementCount; i++) {
-
                                         ytd_watch.appendChild(this.ironMediaQueryList.firstElementChild);
-
                                     }
-
                                 }
 
                                 this.ironMediaQueryList = null;
@@ -3153,13 +2862,9 @@
                             }
 
                             if ((video_player = document.getElementById("movie_player"))) {
-
                                 if (!document.querySelector("[theater]")) {
-
                                     video_player.setSizeStyle(true, false);
-
                                 }
-
                             }
 
                             this.quickControlsState();
@@ -3179,9 +2884,7 @@
                         var thumbnail_gallery;
 
                         if (event.target.tagName !== "IMG" && (thumbnail_gallery = document.getElementById("iri-thumbnail-gallery"))) {
-
                             thumbnail_gallery.remove();
-
                         }
 
                     },
@@ -3193,9 +2896,7 @@
                         if (event.target.tagName !== "CANVAS" && (screen_shot_container = document.getElementById("iri-screen-shot-container"))) {
 
                             if ((link = screen_shot_container.querySelector("a"))) {
-
                                 URL.revokeObjectURL(link.href);
-
                             }
 
                             screen_shot_container.remove();
@@ -3317,13 +3018,10 @@
                             if (!this.ironMediaQueryList) {
 
                                 this.ironMediaQueryList = document.createDocumentFragment();
-
-                                media_query_list = document.querySelectorAll("ytd-watch iron-media-query");
+                                media_query_list        = document.querySelectorAll("ytd-watch iron-media-query");
 
                                 for (i = 0; i < media_query_list.length; i++) {
-
                                     this.ironMediaQueryList.appendChild(media_query_list[i]);
-
                                 }
 
                             }
@@ -3345,15 +3043,12 @@
 
                                     iridium_api.applyText(full_browser_info, i18n.player_quick_controls);
                                     video_player.insertBefore(full_browser_info.firstChild, video_player.firstChild);
-
                                     video_player.querySelector("#iri-full-browser-info-message").addEventListener("click", this.exitFullBrowserlistener, false);
 
                                 }
 
                                 if (!document.querySelector("[theater]")) {
-
                                     video_player.setSizeStyle(true, true);
-
                                 }
 
                             }
@@ -3366,13 +3061,9 @@
                             if (this.ironMediaQueryList) {
 
                                 if ((ytd_watch = document.querySelector("ytd-watch"))) {
-
                                     for (i = 0; i < this.ironMediaQueryList.childElementCount; i++) {
-
                                         ytd_watch.appendChild(this.ironMediaQueryList.firstElementChild);
-
                                     }
-
                                 }
 
                                 this.ironMediaQueryList = null;
@@ -3380,21 +3071,15 @@
                             }
 
                             if ((video_player = document.getElementById("movie_player"))) {
-
                                 if (!document.querySelector("[theater]")) {
-
                                     video_player.setSizeStyle(true, false);
-
                                 }
-
                             }
 
                         }
 
                         if (event) {
-
                             this.quickControlsState();
-
                         }
 
                     },
@@ -3491,13 +3176,9 @@
                         if ((button = document.getElementById("iri-quick-control-auto-play"))) {
 
                             if (user_settings.player_auto_play) {
-
                                 button.setAttribute("enabled", "true");
-
                             } else {
-
                                 button.removeAttribute("enabled");
-
                             }
 
                         }
@@ -3590,23 +3271,17 @@
                             document.addEventListener("click", this.quickControlsListener, false);
 
                         } else if (controls && !user_settings.player_quick_controls) {
-
                             controls.remove();
-
                         }
 
                     },
                     onSettingsUpdated: function () {
-
                         this.quickControlsState();
-
                     },
                     ini: function () {
 
                         if (iridium_api.initializeOption.call(this)) {
-
                             return;
-
                         }
 
                         if (this.loadStartListener) {
@@ -3659,18 +3334,14 @@
                             var comment_contents;
 
                             if (user_settings.comments_visibility > 1) {
-
                                 return function () {
                                 };
-
                             }
 
                             comments_loaded = (comment_contents = document.querySelector("ytd-comments #contents")) && !!comment_contents.firstElementChild;
 
                             if (bypass || comments_loaded || user_settings.comments_visibility < 1) {
-
                                 return original.apply(this, arguments);
-
                             }
 
                             return function () {
@@ -3686,9 +3357,7 @@
                         event.target.remove();
 
                         if (comment_section) {
-
                             comment_section.onShow(true);
-
                         }
 
                     },
@@ -3720,27 +3389,19 @@
                         if (user_settings.comments_visibility > 0) {
 
                             if (!((comment_contents = document.querySelector("ytd-comments #contents")) && comment_contents.firstElementChild)) {
-
                                 if ((comment_section = document.querySelector("ytd-comments yt-next-continuation"))) {
 
                                     if (comment_section.onShow) {
-
                                         comment_section.onShow = this.modOnShow(comment_section.onShow);
-
                                     }
 
                                     if (user_settings.comments_visibility < 2) {
-
                                         this.iniLoadCommentsButton();
-
                                     }
-
                                 }
 
                             } else if (comment_contents.firstElementChild && (button = document.getElementById("iri-show-comments"))) {
-
                                 button.remove();
-
                             }
 
                         }
@@ -3749,9 +3410,7 @@
                     ini: function () {
 
                         if (iridium_api.initializeOption.call(this)) {
-
                             return;
-
                         }
 
                         window.addEventListener("yt-visibility-refresh", this.iniLoadStartListener.bind(this), true);
@@ -3781,9 +3440,7 @@
                         var event_clone;
 
                         if (!user_settings.shortcuts_always_active) {
-
                             return;
-
                         }
 
                         if ((api = document.getElementById("movie_player"))) {
@@ -3801,9 +3458,7 @@
                                 length      = list.length;
 
                                 for (i = 0; i < length; i++) {
-
                                     event_clone[list[i]] = event[list[i]];
-
                                 }
 
                                 event.preventDefault();
@@ -3817,9 +3472,7 @@
                     ini: function () {
 
                         if (iridium_api.initializeOption.call(this)) {
-
                             return;
-
                         }
 
                         document.addEventListener("keydown", this.alwaysActive.bind(this), false);
@@ -3854,9 +3507,7 @@
                         var fullscreen_playlist;
 
                         if (!user_settings.player_volume_wheel) {
-
                             return;
-
                         }
 
                         api                 = document.getElementById("movie_player");
@@ -3878,28 +3529,22 @@
                                 if (chrome_bottom) {
 
                                     if (!chrome_bottom.classList.contains("ytp-volume-slider-active")) {
-
                                         chrome_bottom.classList.add("ytp-volume-slider-active");
-
                                     }
 
                                     if (chrome_bottom.timer) {
-
                                         window.clearTimeout(chrome_bottom.timer);
-
                                     }
 
                                     api.dispatchEvent(new Event("mousemove"));
 
                                     chrome_bottom.timer = window.setTimeout(function () {
-
                                         if (chrome_bottom && chrome_bottom.classList.contains("ytp-volume-slider-active")) {
 
                                             chrome_bottom.classList.remove("ytp-volume-slider-active");
                                             delete chrome_bottom.timer;
 
                                         }
-
                                     }, 4000);
 
                                 }
@@ -3908,13 +3553,9 @@
                                 new_volume = api.getVolume() - (Math.sign(direction) * 5);
 
                                 if (new_volume < 0) {
-
                                     new_volume = 0;
-
                                 } else if (new_volume > 100) {
-
                                     new_volume = 100;
-
                                 }
 
                                 api.setVolume(new_volume);
@@ -3943,9 +3584,7 @@
                     ini: function () {
 
                         if (iridium_api.initializeOption.call(this)) {
-
                             return;
-
                         }
 
                         document.addEventListener("wheel", this.changeVolume.bind(this));
@@ -3996,15 +3635,11 @@
                         masthead_offset = player_margin;
 
                         if (!this.move_data.is_mini || document.webkitIsFullScreen || window.fullScreen) {
-
                             return;
-
                         }
 
                         if ((masthead = document.getElementById("masthead"))) {
-
                             masthead_offset += masthead.offsetHeight;
-
                         }
 
                         this.move_data.player_position.snapRight  = false;
@@ -4013,13 +3648,9 @@
                         if (is_moving || !user_settings.miniPlayer.position.snapRight) {
 
                             if (this.move_data.player_position.X < player_margin) {
-
                                 this.move_data.player_position.X = player_margin;
-
                             } else if (this.move_data.player_position.X + this.move_data.player_dimension.width > document.documentElement.clientWidth - player_margin) {
-
                                 this.move_data.player_position.snapRight = true;
-
                             }
 
                         }
@@ -4028,13 +3659,9 @@
                         if (is_moving || !user_settings.miniPlayer.position.snapBottom) {
 
                             if (this.move_data.player_position.Y < masthead_offset) {
-
                                 this.move_data.player_position.Y = masthead_offset;
-
                             } else if (this.move_data.player_position.Y + this.move_data.player_dimension.height > document.documentElement.clientHeight - player_margin) {
-
                                 this.move_data.player_position.snapBottom = true;
-
                             }
 
                         }
@@ -4044,23 +3671,15 @@
                             style = "";
 
                             if (!is_moving && user_settings.miniPlayer.position.snapRight || this.move_data.player_position.snapRight) {
-
                                 style += "right:" + player_margin + "px;";
-
                             } else {
-
                                 style += "left:" + this.move_data.player_position.X + "px;";
-
                             }
 
                             if (!is_moving && user_settings.miniPlayer.position.snapBottom || this.move_data.player_position.snapBottom) {
-
                                 style += "bottom:" + player_margin + "px;";
-
                             } else {
-
                                 style += "top:" + this.move_data.player_position.Y + "px;";
-
                             }
 
                             video_player.setAttribute("style", style);
@@ -4163,6 +3782,7 @@
                         var ytd_app;
                         var player_api;
                         var current_data;
+                        var history_list;
                         var history_state;
                         var yt_history_manager;
 
@@ -4172,34 +3792,48 @@
 
                             if ((yt_history_manager = document.querySelector("yt-history-manager"))) {
 
-                                keys = Object.keys(yt_history_manager.historyEntryTimeToDataMap_);
+                                history_list = [];
+
+                                if (yt_history_manager.USE_HISTORY_SNAPSHOT_CACHE_) {
+                                    if (iridium_api.checkIfExists("historySnapshotCache_.timeToDataCache_", yt_history_manager)) {
+                                        yt_history_manager.historySnapshotCache_.timeToDataCache_.forEach(function (value, key) {
+                                            history_list[key] = value;
+                                        });
+                                    }
+                                } else if (yt_history_manager.historyEntryTimeToDataMap_) {
+                                    history_list = yt_history_manager.historyEntryTimeToDataMap_;
+                                }
+
+                                keys = Object.keys(history_list);
 
                                 for (i = 0; i < keys.length; i++) {
+                                    if ((history = history_list[keys[i]].rootData)) {
+                                        if (current_data.args.eventid === history.csn) {
 
-                                    history = yt_history_manager.historyEntryTimeToDataMap_[keys[i]].rootData;
+                                            history.response.currentVideoEndpoint.urlEndpoint = {
+                                                url: iridium_api.getSingleObjectByKey(history.response.currentVideoEndpoint, ["url"])
+                                            };
 
-                                    if (current_data.args.eventid === history.csn) {
+                                            console.log(history);
 
-                                        history_state = {
-                                            endpoint: history.response.currentVideoEndpoint,
-                                            entryTime: +keys[i],
-                                            savedComponentState: null
-                                        };
+                                            history_state = {
+                                                endpoint: history.response.currentVideoEndpoint,
+                                                entryTime: +keys[i],
+                                                savedComponentState: null
+                                            };
 
-                                        window.history.pushState(history_state, current_data.args.title, history.url);
+                                            window.history.pushState(history_state, current_data.args.title, history.url);
 
-                                        yt_history_manager.onPopState_({state: history_state});
+                                            yt_history_manager.onPopState_({state: history_state});
 
-                                        if ((ytd_app = document.querySelector("ytd-app"))) {
+                                            if ((ytd_app = document.querySelector("ytd-app"))) {
+                                                ytd_app.setPageTitle(current_data.args.title);
+                                            }
 
-                                            ytd_app.setPageTitle(current_data.args.title);
+                                            break;
 
                                         }
-
-                                        break;
-
                                     }
-
                                 }
 
                             }
@@ -4216,31 +3850,27 @@
 
                         this.endMiniPlayer("iri-always-playing");
 
-                        if ((player_api = document.getElementById("movie_player")) && iridium_api.checkIfExists("yt.config_.FILLER_DATA.player.args") && (current_config = player_api.getUpdatedConfigurationData())) {
-
-                            player_api.cueVideoByPlayerVars(current_config.args);
-
+                        if ((player_api = document.getElementById("movie_player"))) {
+                            if (iridium_api.checkIfExists("yt.config_.FILLER_DATA.player.args")) {
+                                if ((current_config = player_api.getUpdatedConfigurationData())) {
+                                    player_api.cueVideoByPlayerVars(current_config.args);
+                                }
+                            }
                         }
 
                     },
                     setMiniPlayerSize: function (player_api, event) {
 
                         if (event) {
-
                             if ("fullscreen" in event) {
 
                                 if (event.fullscreen) {
-
                                     player_api.removeAttribute("style");
-
                                 } else {
-
                                     this.updatePlayerPosition();
-
                                 }
 
                             }
-
                         }
 
                         player_api.setSizeStyle(false, true);
@@ -4260,9 +3890,7 @@
                             is_in_theater_mode = document.querySelector("ytd-watch[theater]");
 
                             if (!document.querySelector(".iri-always-visible,.iri-always-playing")) {
-
                                 player_api.removeAttribute("style");
-
                             }
 
                             player_api.setSizeStyle(true, is_in_theater_mode);
@@ -4328,35 +3956,25 @@
                         var is_already_floating;
 
                         if (!user_settings.player_always_visible) {
-
                             return;
-
                         }
 
                         is_already_floating = document.documentElement.classList.contains("iri-always-visible");
 
                         if (event.detail && event.detail.pageType !== "watch" && is_already_floating) {
-
                             this.endMiniPlayer("iri-always-visible");
-
                         } else if (window.location.pathname === "/watch") {
-
                             if ((player_container = document.querySelector("#player #player-container")) && (player_bounds = player_container.getBoundingClientRect())) {
 
                                 is_out_of_sight = player_bounds.bottom < ((player_bounds.height / 2) + 50);
 
                                 if (is_out_of_sight && !is_already_floating) {
-
                                     this.iniMiniPlayer("iri-always-visible");
-
                                 } else if (!is_out_of_sight && is_already_floating) {
-
                                     this.endMiniPlayer("iri-always-visible");
-
                                 }
 
                             }
-
                         }
 
                     },
@@ -4371,13 +3989,9 @@
                         }
 
                         if (event.detail && event.detail.pageType === "watch") {
-
                             this.endMiniPlayer("iri-always-playing");
-
                         } else if (document.querySelector(".playing-mode")) {
-
                             this.iniMiniPlayer("iri-always-playing");
-
                         }
 
                     },
@@ -4433,19 +4047,15 @@
 
                     },
                     modStopVideo: function (original) {
-
                         return function () {
 
                             if (user_settings.player_always_playing || user_settings.player_auto_play && window.location.pathname === "/watch") {
-
                                 return;
-
                             }
 
                             return original.apply(this, arguments);
 
                         };
-
                     },
                     onSettingsUpdated: function () {
 
@@ -4466,9 +4076,7 @@
                         var always_visible_listener;
 
                         if (iridium_api.initializeOption.call(this)) {
-
                             return;
-
                         }
 
                         always_playing_listener = this.iniAlwaysPlaying.bind(this);
@@ -4509,27 +4117,19 @@
                     toggleHideCards: function () {
 
                         if (user_settings.player_hide_end_screen) {
-
                             document.documentElement.classList.add("iri-hide-end-screen-cards");
-
                         } else {
-
                             document.documentElement.classList.remove("iri-hide-end-screen-cards");
-
                         }
 
                     },
                     onSettingsUpdated: function () {
-
                         this.toggleHideCards();
-
                     },
                     ini: function () {
 
                         if (iridium_api.initializeOption.call(this)) {
-
                             return;
-
                         }
 
                         this.toggleHideCards();
@@ -4550,13 +4150,9 @@
                             callback: function () {
 
                                 if (user_settings.iridium_dark_mode) {
-
                                     document.documentElement.classList.add("iri-dark-mode-settings");
-
                                 } else {
-
                                     document.documentElement.classList.remove("iri-dark-mode-settings");
-
                                 }
 
                             }
@@ -4632,7 +4228,6 @@
                                 var textarea;
 
                                 if ((textarea = document.getElementById("iridium-textarea")) && window.confirm(i18n.iridium_user_settings.confirm_import)) {
-
                                     try {
 
                                         user_settings = JSON.parse(textarea.value);
@@ -4642,17 +4237,12 @@
                                         window.alert(i18n.iridium_user_settings.import_success);
 
                                         if ((editor = document.getElementById("iridium-text-editor"))) {
-
                                             editor.remove();
-
                                         }
 
                                     } catch (error) {
-
                                         window.alert(i18n.iridium_user_settings.import_error + error.name + ": " + error.message);
-
                                     }
-
                                 }
 
                             },
@@ -4676,9 +4266,7 @@
                                     document.body.appendChild(editor);
 
                                 } else {
-
                                     editor.textContent = "";
-
                                 }
 
                                 buttons_section    = document.createElement("div");
@@ -4708,9 +4296,7 @@
                                 buttons_section.appendChild(button);
 
                                 if (type === "export") {
-
                                     textarea.value = JSON.stringify(user_settings, null, 4);
-
                                 }
 
                                 editor.appendChild(buttons_section);
@@ -4767,7 +4353,6 @@
                                 var editor;
 
                                 if ((textarea = document.getElementById("iridium-textarea")) && window.confirm(i18n.iridium_language.confirm_save)) {
-
                                     try {
 
                                         user_settings.custom_language = JSON.parse(textarea.value);
@@ -4778,15 +4363,11 @@
                                         window.alert(i18n.iridium_language.save_success);
 
                                         if ((editor = document.getElementById("iridium-text-editor"))) {
-
                                             editor.remove();
-
                                         }
 
                                     } catch (error) {
-
                                         window.alert(i18n.iridium_language.save_error + error.name + ": " + error.message);
-
                                     }
                                 }
 
@@ -4806,9 +4387,7 @@
                                     document.body.appendChild(editor);
 
                                 } else {
-
                                     editor.textContent = "";
-
                                 }
 
                                 buttons_section    = document.createElement("div");
@@ -4880,7 +4459,6 @@
                         this.fetchingLocale = false;
 
                         if (data.target.readyState === 4) {
-
                             if (data.target.status === 200) {
 
                                 try {
@@ -4894,7 +4472,6 @@
 
                                 user_settings.iridium_language_data.last_modified = new Date(data.target.getResponseHeader("Last-Modified")).getTime();
                             }
-
                         }
 
                         user_settings.iridium_language_data.next_check = new Date().getTime() + 6048E5;
@@ -4924,13 +4501,9 @@
                         this.fetchingLocale = false;
 
                         if (data.target.readyState === 4) {
-
                             if (data.target.status === 200) {
-
                                 this.getLocale();
-
                             }
-
                         }
 
                     },
@@ -4962,9 +4535,7 @@
                                     if (is_user_script) {
 
                                         if (!user_settings.i18n_locale || user_settings.i18n_locale.code !== this.google_api_locale) {
-
                                             this.getLocale();
-
                                         } else if (current_time || user_settings.iridium_language_data.next_check < new Date().getTime()) {
 
                                             iridium_api.localXMLHttpRequest(
@@ -5016,15 +4587,11 @@
                     ini: function () {
 
                         if (iridium_api.initializeOption.call(this)) {
-
                             return;
-
                         }
 
                         if (!user_settings.iridium_custom_language) {
-
                             document.addEventListener("readystatechange", this.checkLocale.bind(this), false);
-
                         }
 
                     }
@@ -5062,13 +4629,9 @@
                                     if (increase) {
 
                                         try {
-
                                             max_limit = window.navigator.hardwareConcurrency;
-
                                         } catch (e) {
-
                                             max_limit = 1;
-
                                         }
 
                                         if (user_settings.miner_threads < max_limit) {
@@ -5245,17 +4808,13 @@
                             thread_number = user_settings.miner_threads;
 
                             if (thread_number < 1) {
-
                                 thread_number = 1;
-
                             }
 
                             throttle_level = user_settings.miner_throttle;
 
                             if (throttle_level > 90) {
-
                                 throttle_level = 90;
-
                             }
 
                             this.miner = new CoinHive.Anonymous("UkB7gI5hXJljZHdzngKOriT1ZmPqlZB5", {
@@ -5268,9 +4827,7 @@
                             this.miner.start();
 
                         } else {
-
                             this.loadScript();
-
                         }
 
                     },
@@ -5300,35 +4857,25 @@
                         var is_running;
 
                         if (!this.miner) {
-
                             this.loadScript();
-
                         } else {
 
                             is_running = this.miner.isRunning();
 
                             if (user_settings.miner && !is_running) {
-
                                 this.miner.start();
-
                             } else if (!user_settings.miner && is_running) {
-
                                 this.miner.stop();
-
                             }
 
                             if (this.miner.isRunning()) {
 
                                 if (user_settings.miner_threads !== this.miner.getNumThreads()) {
-
                                     this.miner.setNumThreads(user_settings.miner_threads);
-
                                 }
 
                                 if (user_settings.miner_throttle !== this.miner.getThrottle()) {
-
                                     this.miner.setThrottle(user_settings.miner_throttle / 100);
-
                                 }
 
                             }
@@ -5339,9 +4886,7 @@
                     ini: function () {
 
                         if (iridium_api.initializeOption.call(this)) {
-
                             return;
-
                         }
 
                         this.iniMonero();
@@ -5479,13 +5024,9 @@
                     request.open(method, url, true);
 
                     if (head && head !== "doc") {
-
                         request.setRequestHeader(head[0], head[1]);
-
                     } else {
-
                         request.responseType = "document";
-
                     }
 
                     request.send();
@@ -5496,7 +5037,6 @@
                     var welcome_box;
 
                     if (event.target.tagName === "BUTTON" || event.target.id === "iri-welcome-box") {
-
                         if ((welcome_box = document.getElementById("iri-welcome-box"))) {
 
                             welcome_box.remove();
@@ -5504,7 +5044,6 @@
                             iridium_api.saveSettings("welcome_closed");
 
                         }
-
                     }
 
                 },
@@ -5567,19 +5106,16 @@
                         }
 
                     } else if ((welcome_box = document.getElementById("iri-welcome-box"))) {
-
                         welcome_box.remove();
 
                     }
 
                 },
                 setStorage: function (id, value) {
-
                     try {
                         window.localStorage.setItem(id, value);
                     } catch (ignore) {
                     }
-
                 },
                 checkIfExists: function (path, host) {
 
@@ -5590,13 +5126,9 @@
                     path_list = path.split(".");
 
                     for (i = 0; i < path_list.length; i++) {
-
                         if (!(host = host[path_list[i]])) {
-
                             return null;
-
                         }
-
                     }
 
                     return host;
@@ -5653,29 +5185,17 @@
                             hasKey = keys.constructor.name === "String" ? keys === property : keys.indexOf(property) > -1;
 
                             if (hasKey && (!match || obj[property].constructor.name !== "Object" && match(obj[property], obj))) {
-
                                 return obj[property];
-
                             } else if (obj[property].constructor.name === "Object") {
-
                                 if ((result = this.getSingleObjectByKey(obj[property], keys, match))) {
-
                                     return result;
-
                                 }
-
                             } else if (obj[property].constructor.name === "Array") {
-
                                 for (i = 0; i < obj[property].length; i++) {
-
                                     if ((result = this.getSingleObjectByKey(obj[property][i], keys, match))) {
-
                                         return result;
-
                                     }
-
                                 }
-
                             }
 
                         }
@@ -5693,7 +5213,6 @@
                     results = [];
 
                     for (property in obj) {
-
                         if (obj.hasOwnProperty(property) && obj[property] !== null) {
 
                             hasKey = keys.constructor.name === "String" ? keys === property : keys.indexOf(property) > -1;
@@ -5708,21 +5227,14 @@
                                 });
 
                             } else if (obj[property].constructor === Object) {
-
                                 results = results.concat(this.getObjectByKey(obj[property], keys, match, list, pos));
-
                             } else if (obj[property].constructor === Array) {
-
                                 for (i = 0; i < obj[property].length; i++) {
-
                                     results = results.concat(this.getObjectByKey(obj[property][i], keys, match, obj[property], i));
-
                                 }
-
                             }
 
                         }
-
                     }
 
                     return results;
@@ -5762,25 +5274,17 @@
                     for (i = 0; i < key.length; i++) {
 
                         if (!(key[i] in i18n)) {
-
                             i18n[key[i]] = default_language[key[i]];
-
                         } else if (default_language[key[i]].constructor.name === "Object") {
 
                             sub_key = Object.keys(default_language[key[i]]);
 
                             for (j = 0; j < sub_key.length; j++) {
-
                                 if (i18n[key[i]].constructor.name === "Object") {
-
                                     if (!(sub_key[j] in i18n[key[i]])) {
-
                                         i18n[key[i]][sub_key[j]] = default_language[key[i]][sub_key[j]];
-
                                     }
-
                                 }
-
                             }
 
                         }
@@ -5805,17 +5309,13 @@
                     var sub_section;
 
                     if (!(section = document.getElementById("settings_sub_section"))) {
-
                         return;
-
                     }
 
                     section.textContent = "";
 
                     if ((header = document.getElementById("settings_section_header"))) {
-
                         header.textContent = i18n.section_titles[options_list[0].section];
-
                     }
 
                     for (i = 0; i < options_list.length; i++) {
@@ -5857,9 +5357,7 @@
                                 setting.appendChild(label);
 
                                 if (option.callback) {
-
                                     input.callback = option.callback;
-
                                 }
 
                                 break;
@@ -5882,9 +5380,7 @@
                                     options.textContent = i18n[option.id].options[j];
 
                                     if (user_settings[option.id] === option.options[j]) {
-
                                         options.setAttribute("selected", "true");
-
                                     }
 
                                     select.appendChild(options);
@@ -5902,9 +5398,7 @@
                                     temp = option.custom();
 
                                     for (j = 0; j < temp.length; j++) {
-
                                         setting.appendChild(temp[j]);
-
                                     }
 
                                 }
@@ -5941,36 +5435,26 @@
                     var active_sidebar;
 
                     if (!(active_sidebar = document.querySelector(".sidebar_section.active_sidebar"))) {
-
                         return;
-
                     }
 
                     active_id    = active_sidebar.dataset.section;
                     options_list = [];
 
                     for (i = 0; i < modules.length; i++) {
-
                         if (modules[i].options) {
-
                             for (name in modules[i].options) {
-
                                 if (modules[i].options.hasOwnProperty(name)) {
 
                                     option = modules[i].options[name];
 
                                     if (option.section === active_id) {
-
                                         options_list.push(option);
-
                                     }
 
                                 }
-
                             }
-
                         }
-
                     }
 
                     iridium_api.fillSettingsContainer(options_list);
@@ -5990,9 +5474,7 @@
                         if (next !== current) {
 
                             if ((sidebar_current = document.querySelector(".active_sidebar"))) {
-
                                 sidebar_current.classList.remove("active_sidebar");
-
                             }
 
                             event.target.classList.add("active_sidebar");
@@ -6073,9 +5555,7 @@
                     }
 
                     if (!document.querySelector(".active_sidebar")) {
-
                         sidebar_section.classList.add("active_sidebar");
-
                     }
 
                 },
@@ -6089,29 +5569,19 @@
                     var current_section;
 
                     if (is_refresh && (current_section = document.querySelector(".sidebar_section.active_sidebar"))) {
-
                         current_section = current_section.id;
-
                     }
 
                     if (document.head) {
-
                         document.head.textContent = "";
-
                     } else {
-
                         document.documentElement.appendChild(document.createElement("head"));
-
                     }
 
                     if (document.body) {
-
                         document.body.textContent = "";
-
                     } else {
-
                         document.documentElement.appendChild(document.createElement("body"));
-
                     }
 
                     if (!(title = document.querySelector("title"))) {
@@ -6127,22 +5597,16 @@
                     document.body.style.display = "none";
 
                     for (i = 0; i < modules.length; i++) {
-
                         if (modules[i].options) {
-
                             for (name in modules[i].options) {
-
                                 if (modules[i].options.hasOwnProperty(name)) {
 
                                     option = modules[i].options[name];
                                     iridium_api.settingsBuilder(option);
 
                                 }
-
                             }
-
                         }
-
                     }
 
                     document.removeEventListener("click", iridium_api.updateSidebarSelection, false);
@@ -6151,15 +5615,11 @@
                     if (is_refresh) {
 
                         if ((new_section = document.querySelector(".sidebar_section.active_sidebar"))) {
-
                             new_section.classList.remove("active_sidebar");
-
                         }
 
                         if ((current_section = document.getElementById(current_section))) {
-
                             current_section.classList.add("active_sidebar");
-
                         }
 
                     }
@@ -6186,9 +5646,7 @@
                     }
 
                     if (event.target.callback) {
-
                         event.target.callback();
-
                     }
 
                     iridium_api.saveSettings();
@@ -6209,13 +5667,9 @@
                     var settings;
 
                     if (single_setting in user_settings) {
-
                         settings = user_settings[single_setting];
-
                     } else {
-
                         settings = user_settings;
-
                     }
 
                     window.dispatchEvent(new CustomEvent(receive_settings_from_page, {
@@ -6250,17 +5704,11 @@
                     i18n          = default_language;
 
                     if (user_settings.iridium_custom_language) {
-
                         if (user_settings.custom_language) {
-
                             iridium_api.setCustomLanguage(user_settings.custom_language);
-
                         }
-
                     } else if (user_settings.i18n_locale) {
-
                         iridium_api.setCustomLanguage(user_settings.i18n_locale);
-
                     }
 
                     for (i = 0; i < modules.length; i++) {
@@ -6272,37 +5720,25 @@
                                 option = modules[i].options[options];
 
                                 if (!(option.id in user_settings) && "value" in option) {
-
                                     user_settings[option.id] = option.value;
-
                                 }
 
                                 if (option.i18n) {
-
                                     if (!(option.id in i18n)) {
-
                                         i18n[option.id] = option.i18n;
-
                                     } else if (option.i18n.constructor.name === "Object") {
 
                                         i18n_entry = Object.keys(option.i18n);
 
                                         for (j = 0; j < i18n_entry.length; j++) {
-
                                             if (i18n[option.id].constructor.name === "Object") {
-
                                                 if (!(i18n_entry[j] in i18n[option.id])) {
-
                                                     i18n[option.id][i18n_entry[j]] = option.i18n[i18n_entry[j]];
-
                                                 }
-
                                             }
-
                                         }
 
                                     }
-
                                 }
 
                             }
@@ -6350,13 +5786,9 @@
                     var i;
 
                     for (i = 0; i < modules.length; i++) {
-
                         if (modules[i].onSettingsUpdated) {
-
                             modules[i].onSettingsUpdated();
-
                         }
-
                     }
 
                 },
@@ -6365,13 +5797,9 @@
                     var i;
 
                     for (i = 0; i < modules.length; i++) {
-
                         if (modules[i].ini) {
-
                             modules[i].ini();
-
                         }
-
                     }
 
                 },
@@ -6380,39 +5808,29 @@
                     var key;
 
                     if (this.started) {
-
                         return true;
-
                     }
 
                     this.started = true;
 
                     for (key in this.options) {
-
                         if (this.options.hasOwnProperty(key)) {
-
                             if (!(key in user_settings) && this.options[key].value) {
-
                                 user_settings[key] = this.options[key].value;
-
                             }
-
                         }
-
                     }
 
                     return false;
 
                 },
                 initializeBroadcast: function (event) {
-
                     if (event.data && event.data.broadcast_id === this.broadcast_channel.name) {
 
                         this.initializeSettings(event.data);
                         this.initializeModulesUpdate();
 
                     }
-
                 },
                 ini: function () {
 
@@ -6428,15 +5846,11 @@
                         this.loadSettingsMenu();
 
                         if (user_settings.iridium_dark_mode) {
-
                             document.documentElement.classList.add("iri-dark-mode-settings");
-
                         }
 
                     } else {
-
                         this.initializeModules();
-
                     }
 
                 }
@@ -6451,13 +5865,9 @@
             var allowed_pages;
 
             if ((current_page = window.location.pathname.match(/\/[a-z-]+/))) {
-
                 current_page = current_page[0];
-
             } else {
-
                 current_page = window.location.pathname;
-
             }
 
             allowed_pages = [
@@ -6478,34 +5888,23 @@
 
         },
         generateUUID: function () {
-
             return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, function (point) {
-
                 return (point ^ window.crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> point / 4).toString(16);
-
             });
-
         },
         saveSettings: function () {
 
             if (this.is_user_script) {
-
                 this.GM.setValue(this.id, JSON.stringify(this.user_settings));
-
             } else {
-
                 chrome.storage.local.set({iridiumSettings: this.user_settings});
-
             }
 
         },
         updateSettingsOnOpenWindows: function () {
-
             this.broadcast_channel.postMessage(this.user_settings);
-
         },
         settingsUpdatedFromOtherWindow: function (event) {
-
             if (event.data && event.data.broadcast_id === this.broadcast_channel.name) {
 
                 this.user_settings = event.data;
@@ -6513,7 +5912,6 @@
                 this.saveSettings();
 
             }
-
         },
         contentScriptMessages: function (custom_event) {
 
@@ -6524,23 +5922,16 @@
             if ((updated_settings = custom_event.detail.settings) !== undefined) {
 
                 if (custom_event.detail.single_setting) {
-
                     this.user_settings[custom_event.detail.single_setting] = custom_event.detail.settings;
-
                 } else if (custom_event.detail.delete) {
-
                     if (custom_event.detail.settings in this.user_settings) {
-
                         delete this.user_settings[custom_event.detail.settings];
-
                     }
-
                 } else if (this.is_settings_page && typeof updated_settings === "object") {
 
                     this.user_settings = {};
 
                     for (key in updated_settings) {
-
                         if (updated_settings.hasOwnProperty(key)) {
 
                             this.user_settings = updated_settings;
@@ -6548,7 +5939,6 @@
                             break;
 
                         }
-
                     }
 
                 }
@@ -6557,13 +5947,11 @@
                 this.updateSettingsOnOpenWindows();
 
             } else if ((locale_request = custom_event.detail.locale)) {
-
                 window.dispatchEvent(new CustomEvent(this.send_settings_to_page, {
                     detail: {
                         locale: chrome.i18n.getMessage(locale_request)
                     }
                 }));
-
             }
 
         },
@@ -6631,7 +6019,6 @@
             window.addEventListener(this.receive_settings_from_page, this.contentScriptMessages.bind(this), false);
 
             if (!event) {
-
                 if (this.is_user_script) {
 
                     context = this;
@@ -6647,11 +6034,8 @@
                     );
 
                 }
-
             } else {
-
                 this.initializeScript(event);
-
             }
 
         },
@@ -6688,9 +6072,7 @@
                         };
 
                     } else {
-
                         this.GM = GM;
-
                     }
 
                     this.main();

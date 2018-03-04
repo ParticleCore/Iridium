@@ -361,7 +361,7 @@ html:not(.iri-always-visible):not(.iri-always-playing) #iri-mini-player-controls
     position         : fixed;
     right            : 10px;
     width            : 352px;
-    z-index          : 201;
+    z-index          : 2006;
 }
 
 .iri-always-visible:not(.iri-full-browser) #movie_player:not(.ytp-fullscreen):before,
@@ -783,6 +783,10 @@ button:hover > .iri-quick-controls-tooltip {
     z-index        : 100;
 }
 
+html:not(.iri-full-browser) #iri-full-browser-info {
+    display: none;
+}
+
 #iri-full-browser-info-message {
     display        : inline-block;
     cursor         : pointer;
@@ -803,7 +807,7 @@ button:hover > .iri-quick-controls-tooltip {
     opacity : 0;
 }
 
-.iri-full-browser.video_active #movie_player {
+.iri-full-browser.video_active ytd-watch:not([hidden]) #movie_player {
     position : fixed;
     top      : 0 !important;
     right    : 0 !important;

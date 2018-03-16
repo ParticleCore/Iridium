@@ -32,7 +32,7 @@
     },
     "welcome_box": {
         "thank_you": "Danke für die Installation von Iridium!",
-        "settings_instruction": "Du kannst deine Einstellungen öffnen, indem du auf Dreieck oben rechts klickst.",
+        "settings_instruction": "Du kannst deine Einstellungen öffnen, indem du auf das Dreieck oben rechts klickst.",
         "features_instruction": "Für eine vollständige Liste von Funktionen, besuche den folgenden Link:",
         "features_link": "Liste von Funktionen",
         "donate_instruction": "Falls du zur Entwicklung dieser Erweiterung beitragen willst, kannst du die folgenden Möglichkeiten nutzen:",

@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.1.0
+// @version         0.1.1
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1538,7 +1538,12 @@
                                                 video_count.className   = "yt-simple-endpoint iri-video-count";
                                                 video_count.setAttribute("href", channel_url + "/videos");
                                                 video_count.data = {
-                                                    webNavigationEndpointData: {
+                                                    commandMetadata: {
+                                                        webCommandMetadata: {
+                                                            url: channel_url + "/videos"
+                                                        }
+                                                    },
+                                                    urlEndpoint: {
                                                         url: channel_url + "/videos"
                                                     }
                                                 };
@@ -2401,6 +2406,12 @@
 
                         if (player_api.getAvailableQualityLevels && (available_qualities = player_api.getAvailableQualityLevels())) {
 
+                            if (available_qualities.length === 0) {
+                                return;
+                            }
+
+                            this.markedForQuality = false;
+
                             if (available_qualities.indexOf(quality) > -1) {
 
                                 player_api.setPlaybackQuality(quality);
@@ -2542,8 +2553,6 @@
                         var player;
 
                         if (this.markedForQuality && (event === 1 || event === 3) && user_settings.player_quality !== "auto" && (player = document.getElementById("movie_player"))) {
-
-                            this.markedForQuality = false;
 
                             this.setQuality(player, user_settings.player_quality);
 
@@ -4214,6 +4223,7 @@
 
                                 if (window.confirm(i18n.iridium_user_settings.confirm_reset)) {
 
+                                    user_settings = null;
                                     iridium_api.initializeSettings();
                                     iridium_api.saveSettings();
 

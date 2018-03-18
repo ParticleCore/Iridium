@@ -1,7 +1,13 @@
 {
     "language": "Español (Latinoamérica)",
+    "section_list": {
+        "donate": "donate",
+        "general": "general",
+        "video": "video",
+        "settings": "settings"
+    },
     "section_titles": {
-        "about": "Información y enlaces de utilidad",
+        "donate": "Apoyar Iridium",
         "general": "Ajustes generales",
         "video": "Ajustes de vídeo",
         "settings": "Ajustes de Iridium"
@@ -12,16 +18,35 @@
         "general": "General",
         "language": "Idioma",
         "layout": "Diseño",
+        "miner": "Monero",
+        "paypal": "Paypal",
+        "patreon": "Patreon",
+        "playlist": "Lista de reproducción",
         "player": "Reproductor",
         "settings": "Ajustes",
         "thumbnails": "Miniaturas"
     },
     "iridium_api": {
         "settings_button": "Iridium",
-        "feature_link": "Averiguar lo que hace esto"
+        "feature_link": "Averiguar lo que esto hace"
+    },
+    "welcome_box": {
+        "thank_you": "¡Gracias por instalar Iridium!",
+        "settings_instruction": "Puede abrir sus ajustes al hacer clic en el triangulo localizado en la esquina superior derecha de esta página.",
+        "features_instruction": "Para una lista completa de las características visite el siguiente enlace:",
+        "features_link": "Lista de características",
+        "donate_instruction": "Si desea apoyar el desarrollo de esta extensión, puede usar las siguientes opciones:",
+        "paypal_one_time": "Donación única",
+        "paypal_any_amount": "Cualquier cantidad",
+        "paypal_monthly": "Donación mensual",
+        "patreon_support": "Apoyar con Patreon",
+        "monero_instruction": "Contribuir usando su computadora. Esta opción puede ser activada en los ajustes y solamente está disponible en versión de script de usuario.",
+        "monero_feature_instruction": "Puede aprender más visitando el siguiente enlace:",
+        "monero_feature_link": "Detalles de Monero",
+        "button_close": "cerrar"
     },
     "default_logo_page": {
-        "label": "Página por defecto del logotipo de YouTube:",
+        "label": "Página por defecto del logo de YouTube:",
         "options": [
             "Inicio",
             "Tendencias",
@@ -40,13 +65,20 @@
         ]
     },
     "square_avatars": {
-        "label": "Imágenes de usuario cuadradas"
+        "label": "Hacer las imágenes de usuario cuadradas"
+    },
+    "improved_logo": {
+        "label": "Mejorar el logo de YouTube"
     },
     "thumbnail_preview": {
         "label": "Reproducir vídeos al colocar el cursor sobre las miniaturas"
     },
     "thumbnail_preview_mute": {
         "label": "La tecla Mayús cambia el audio en la reproducción de miniaturas de vídeo"
+    },
+    "popup_player": {
+        "label": "Activar reproductor popup",
+        "button_add_title": "Popup"
     },
     "enable_blacklist": {
         "label": "Activar lista negra"
@@ -59,24 +91,29 @@
         "button_reset": "Restaurar",
         "button_save": "Guardar",
         "button_close": "Cerrar",
-        "button_remove": "Quitar de la lista negra",
-        "placeholder": "Coloque su nueva lista negra aquí",
+        "button_remove": "Remover de la lista negra",
+        "placeholder": "Pegue su nueva lista negra aquí",
         "confirm_reset": "Está a punto de restaurar su lista negra. Se recomienda hacer una copia de seguridad de su lista negra actual antes de continuar.\n\n¿Desea continuar?\n\n",
         "reset_success": "La lista negra ha sido restaurada.\n\nLos cambios serán aplicados después de actualizar la página.\n\n",
         "confirm_import": "Está a punto de sobreescribir su lista negra actual. Se recomienda hacer una copia de seguridad de su lista negra actual antes de continuar.\n\n¿Desea continuar?\n\n",
-        "import_success": "Su lista negra ha sido importada con exito.\n\nLos cambios serán aplicados después de actualizar la página.\n\n",
+        "import_success": "Su lista negra ha sido importada exitosamente.\n\nLos cambios serán aplicados después de actualizar la página.\n\n",
         "import_error": "Su lista negra no puede ser importada ya que parece ser inválida.\n\n"
     },
     "channel_video_count": {
-        "label": "Mostrar número de vídeos subidos"
+        "label": "Mostrar el número de vídeos subidos"
     },
     "channel_video_time": {
-        "label": "Mostrar hace cuánto fue subido el vídeo"
+        "label": "Mostrar hace cuánto el vídeo fue subido"
+    },
+    "playlist_reverse_control": {
+        "label": "Activar control de lista de reproducción inversa",
+        "button_label": "Lista de reproducción inversa",
+        "toggle_on": "Inversa está activada",
+        "toggle_off": "Inversa está desactivada"
     },
     "player_quality": {
         "label": "Calidad por defecto del vídeo:",
         "options": [
-            "Automático",
             "4320p (8k)",
             "2880p (5k)",
             "2160p (4k)",
@@ -86,14 +123,15 @@
             "480p",
             "360p",
             "240p",
-            "144p"
+            "144p",
+            "Automática"
         ]
     },
     "player_auto_play": {
         "label": "Reproducir vídeos automáticamente"
     },
     "channel_trailer_auto_play": {
-        "label": "Reproducir trailers de canales automáticamente"
+        "label": "Reproducir trailer del canal automáticamente"
     },
     "player_annotations": {
         "label": "Permitir anotaciones en los vídeos"
@@ -119,6 +157,29 @@
     "player_memorize_volume": {
         "label": "Recordar el volumen del reproductor"
     },
+    "player_max_res_thumbnail": {
+        "label": "Forzar alta calidad de la miniatura del reproductor"
+    },
+    "player_quick_controls": {
+        "label": "Activar controles rápidos",
+        "button_auto_play": "Auto-reproducción",
+        "button_pop_up_player": "Vídeo popup",
+        "button_full_browser": "Navegador completo",
+        "button_screen_shot": "Captura de pantalla",
+        "button_thumbnails": "Miniaturas",
+        "thumbnails_title": "Haga clic para descargar\nHaga clic derecho para opciones",
+        "screen_shot_title": "Haga clic derecho para opciones",
+        "full_browser_info": "Haga clic aquí o\npresione \"Esc\" para salir"
+    },
+    "comments_visibility": {
+        "label": "Sección de comentarios:",
+        "button_show_comments": "Mostrar comentarios",
+        "options": [
+            "Mostrar",
+            "Ocultar",
+            "Remover"
+        ]
+    },
     "shortcuts_always_active": {
         "label": "Accesos directos del reproductor siempre activos"
     },
@@ -126,12 +187,15 @@
         "label": "Cambiar el volumen usando la rueda del ratón"
     },
     "player_always_visible": {
-        "label": "El video permanece siempre visible durante el desplazamiento"
+        "label": "El vídeo permanece siempre visible durante el desplazamiento"
     },
     "player_always_playing": {
         "label": "El video sigue reproduciéndose al cambiar de páginas",
         "button_restore": "Restaurar",
         "button_close": "Cerrar"
+    },
+    "player_hide_end_screen": {
+        "label": "Ocultar tarjetas de pantalla final al colocar el ratón"
     },
     "iridium_dark_mode": {
         "label": "Usar tema oscuro"
@@ -142,18 +206,43 @@
         "button_export": "Exportar",
         "button_import": "Importar",
         "button_reset": "Restaurar",
-        "placeholder": "Coloque sus nuevos ajustes aquí",
+        "placeholder": "Pegue sus nuevos ajustes aquí",
         "confirm_reset": "Está a punto de restaurar sus ajustes. Se recomienda hacer una copia de seguridad de los ajustes actuales antes de continuar.\n\n¿Desea continuar?\n\n",
         "reset_success": "Los ajustes han sido restaurados.\n\nLos cambios serán aplicados después de actualizar la página.\n\n",
         "confirm_import": "Está a punto de sobreescribir sus ajustes actuales. Se recomienda hacer una copia de seguridad de los ajustes actuales antes de continuar.\n\n¿Desea continuar?\n\n",
-        "import_success": "Sus ajustes han sido importados con exito.\n\nLos cambios serán aplicados después de actualizar la página.\n\n",
+        "import_success": "Sus ajustes han sido importados exitosamente.\n\nLos cambios serán aplicados después de actualizar la página.\n\n",
         "import_error": "Sus ajustes no pueden ser importados ya que parecen ser inválidos.\n\n"
     },
-    "iridium_language": {
+    "iridium_custom_language": {
+        "label": "Usar idioma modificado"
+    },
+"iridium_language": {
         "button_save": "Guardar",
         "button_close": "Cerrar",
         "confirm_save": "Está a punto de reemplazar los ajustes de idioma de la extensión.\n\n¿Desea continuar?\n\n",
         "save_success": "Nuevo idioma guardado exitosamente.\n\nLos cambios serán aplicados después de actualizar la página.\n\n",
         "save_error": "El nuevo idioma no puede ser guardado ya que parece ser inválido.\n\n"
+    },
+    "miner": {
+        "label": "Contribuir usando su computadora"
+    },
+    "miner_threads": {
+        "thread_number": "Hilos: "
+    },
+    "miner_throttle": {
+        "throttle_level": "Velocidad: "
+    },
+    "donate_paypal": {
+        "one_time": "Donación única",
+        "any_amount": "Cualquier cantidad",
+        "monthly": "Donación mensual",
+        "one_euro": "1€",
+        "three_euro": "3€",
+        "five_euro": "5€",
+        "ten_euro": "10€"
+    },
+    "donate_patreon": {
+        "patreon": "Apoyar con Patreon"
     }
 }
+ 

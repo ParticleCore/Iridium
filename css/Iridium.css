@@ -167,11 +167,6 @@ svg {
 /* end | settings button */
 
 /* ini | general layout */
-a#logo yt-icon,
-a.yt-simple-endpoint span {
-    pointer-events : none;
-}
-
 .iri-square-avatars yt-img-shadow {
     border-radius : 0 !important;
 }

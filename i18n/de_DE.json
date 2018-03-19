@@ -48,20 +48,20 @@
     "default_logo_page": {
         "label": "Standard YouTube-Logo Seite:",
         "options": [
-            "Home",
-            "Angesagt",
+            "Start",
+            "Trends",
             "Abonnements"
         ]
     },
     "default_channel_tab": {
         "label": "Standardstartseite für Kanal:",
         "options": [
-            "Home",
+            "Übersicht",
             "Videos",
             "Playlists",
             "Kanäle",
             "Diskussion",
-            "Über"
+            "Kanalinfo"
         ]
     },
     "square_avatars": {
@@ -128,28 +128,28 @@
         ]
     },
     "player_auto_play": {
-        "label": "Spiele Videos automatisch ab"
+        "label": "Videos automatisch abspielen"
     },
     "channel_trailer_auto_play": {
-        "label": "Spiele Kanal-Trailer automatisch ab"
+        "label": "Kanal-Trailer automatisch abspielen"
     },
     "player_annotations": {
-        "label": "Erlaube Anmerkungen in Videos"
+        "label": "Anmerkungen in Videos erlauben"
     },
     "player_subtitles": {
-        "label": "Erlaube Untertitel in Videos"
+        "label": "Untertitel in Videos erlauben"
     },
     "player_loudness": {
-        "label": "Erlaube Lautstärken-Normalisierung"
+        "label": "Lautstärken-Normalisierung erlauben"
     },
     "player_ads": {
-        "label": "Erlaube Werbung in Videos"
+        "label": "Werbung in Videos erlauben"
     },
     "subscribed_channel_player_ads": {
-        "label": "Erlaube Werbung nur in Videos von abonnierten Kanälen"
+        "label": "Werbung nur in Videos von abonnierten Kanälen erlauben"
     },
     "player_hfr": {
-        "label": "Erlaube HFR (60fps) Streams"
+        "label": "HFR (60fps) Streams erlauben"
     },
     "player_memorize_size": {
         "label": "Playergröße merken"
@@ -184,7 +184,7 @@
         "label": "Player-Shortcuts immer aktiv"
     },
     "player_volume_wheel": {
-        "label": "Ändern der Lautstärke über Mausrad"
+        "label": "Lautstärke über Mausrad ändern"
     },
     "player_always_visible": {
         "label": "Video bleibt beim Scrollen immer sichtbar"
@@ -245,3 +245,4 @@
         "patreon": "Mit Patreon unterstützen"
     }
 }
+

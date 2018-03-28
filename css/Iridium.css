@@ -247,6 +247,10 @@ yt-img-shadow:hover #iri-video-preview {
 /* end | thumbnail preview */
 
 /* ini | video always playing */
+.iri-always-playing .ytp-chrome-top {
+    display : none;
+}
+
 html.iri-always-playing ytd-watch[hidden] {
     display  : block !important;
     height   : 0;

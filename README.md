@@ -25,4 +25,9 @@ Find out what others had to say about Iridium; the good and the bad!
 
 ### [Une nouvelle EXTENSION que j'utilise AU QUOTIDIEN !](https://www.youtube.com/watch?v=aCsJz59XJ3M)
 [<img src="https://i.ytimg.com/vi/aCsJz59XJ3M/maxresdefault.jpg" width="50%">](https://www.youtube.com/watch?v=aCsJz59XJ3M)
+  
+---  
+
+### [CET OUTIL RÉVOLUTIONNE YOUTUBE !](https://www.youtube.com/watch?v=PYA-oWG5WGw)
+[<img src="https://i.ytimg.com/vi/PYA-oWG5WGw/maxresdefault.jpg" width="50%">](https://www.youtube.com/watch?v=PYA-oWG5WGw)
 

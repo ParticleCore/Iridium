@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.1.1
+// @version         0.1.2
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -576,16 +576,18 @@
                         var temp;
                         var player_api;
 
-                        if ((player_api = document.getElementById("movie_player"))) {
-                            if ((temp = this.document.querySelector("video"))) {
+                        if (window.location.pathname === "/watch") {
+                            if ((player_api = document.getElementById("movie_player"))) {
+                                if ((temp = this.document.querySelector("video"))) {
 
-                                if (!isNaN(temp.duration) && temp.currentTime < temp.duration) {
+                                    if (!isNaN(temp.duration) && temp.currentTime < temp.duration) {
 
-                                    temp = temp.currentTime;
-                                    player_api.seekTo(temp);
+                                        temp = temp.currentTime;
+                                        player_api.seekTo(temp);
+
+                                    }
 
                                 }
-
                             }
                         }
 
@@ -2632,8 +2634,19 @@
 
                             context.playerReady(api);
 
-                            if (window["ytSignalsInstance"] && window["ytSignalsInstance"]["processSignal"]) {
-                                window["ytSignalsInstance"]["processSignal"]("eocs");
+                            var ytSignalInstance;
+
+                            ytSignalInstance = window["ytSignalsInstance"];
+
+                            if (!ytSignalInstance) {
+                                if ((ytSignalInstance = window["ytSignals"])) {
+                                    ytSignalInstance = ytSignalInstance["getInstance"] && ytSignalInstance["getInstance"]();
+                                }
+                            }
+
+                            if (ytSignalInstance && ytSignalInstance["processSignal"]) {
+                                ytSignalInstance["processSignal"]("eocs");
+                                // ytSignalInstance["processSignal"]("fwtr"); // first warm transition requested
                             }
 
                             if (original) {
@@ -3342,6 +3355,10 @@
                             var comments_loaded;
                             var comment_contents;
 
+                            if (window.location.pathname !== "/watch") {
+                                return original.apply(this, arguments);
+                            }
+
                             if (user_settings.comments_visibility > 1) {
                                 return function () {
                                 };
@@ -3823,8 +3840,6 @@
                                                 url: iridium_api.getSingleObjectByKey(history.response.currentVideoEndpoint, ["url"])
                                             };
 
-                                            console.log(history);
-
                                             history_state = {
                                                 endpoint: history.response.currentVideoEndpoint,
                                                 entryTime: +keys[i],
@@ -3964,7 +3979,7 @@
                         var player_container;
                         var is_already_floating;
 
-                        if (!user_settings.player_always_visible) {
+                        if (!user_settings.player_always_visible || document.getElementById("miniplayer-bar")) {
                             return;
                         }
 

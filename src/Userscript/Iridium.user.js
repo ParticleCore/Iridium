@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.1.2
+// @version         0.1.3
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -3979,7 +3979,7 @@
                         var player_container;
                         var is_already_floating;
 
-                        if (!user_settings.player_always_visible || document.getElementById("miniplayer-bar")) {
+                        if (!user_settings.player_always_visible || document.querySelector("ytd-miniplayer-bar-renderer")) {
                             return;
                         }
 

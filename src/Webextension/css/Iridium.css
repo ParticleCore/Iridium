@@ -37,6 +37,8 @@ svg {
     position      : absolute;
     max-width     : 600px;
     min-width     : 500px;
+    max-height    : calc(100% - 40px);
+    overflow      : auto;
 }
 
 #iri-welcome-box a {

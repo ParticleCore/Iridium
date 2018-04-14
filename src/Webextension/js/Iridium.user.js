@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.1.3
+// @version         0.1.4
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -756,7 +756,7 @@
                             section: "general",
                             sub_section: "blacklist",
                             type: "checkbox",
-                            value: "home",
+                            value: "true",
                             i18n: {
                                 label: "Enable blacklist"
                             }
@@ -824,7 +824,7 @@
                             resetBlacklist: function () {
                                 if (window.confirm(i18n.blacklist_settings.confirm_reset)) {
 
-                                    user_settings.blacklist_settings = [];
+                                    user_settings.blacklist_settings = {};
 
                                     iridium_api.initializeSettings();
                                     iridium_api.saveSettings("blacklist_settings");
@@ -1373,6 +1373,10 @@
                             }
 
                             if (ucid && brand) {
+
+                                if (user_settings.blacklist_settings.constructor.name !== "Object") {
+                                    user_settings.blacklist_settings = {};
+                                }
 
                                 user_settings.blacklist_settings[ucid] = brand;
 

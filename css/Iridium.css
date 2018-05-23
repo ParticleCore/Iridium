@@ -785,7 +785,7 @@ button:hover > .iri-quick-controls-tooltip {
 }
 
 html:not(.iri-full-browser) #iri-full-browser-info {
-    display: none;
+    display : none;
 }
 
 #iri-full-browser-info-message {
@@ -809,14 +809,15 @@ html:not(.iri-full-browser) #iri-full-browser-info {
 }
 
 .iri-full-browser.video_active ytd-watch:not([hidden]) #movie_player {
-    position : fixed;
-    top      : 0 !important;
-    right    : 0 !important;
-    bottom   : 0 !important;
-    left     : 0 !important;
-    width    : auto;
-    height   : auto;
-    z-index  : 10000;
+    background : #000;
+    position   : fixed;
+    top        : 0 !important;
+    right      : 0 !important;
+    bottom     : 0 !important;
+    left       : 0 !important;
+    width      : auto;
+    height     : auto;
+    z-index    : 10000;
 }
 
 /* ini | quick control full browser */

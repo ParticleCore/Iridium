@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.1.4
+// @version         0.1.5
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -55,7 +55,6 @@
                     general: "General",
                     language: "Language",
                     layout: "Layout",
-                    miner: "Monero",
                     paypal: "Paypal",
                     patreon: "Patreon",
                     playlist: "Playlist",
@@ -77,9 +76,6 @@
                     paypal_any_amount: "Any amount",
                     paypal_monthly: "Monthly donation",
                     patreon_support: "Support with Patreon",
-                    monero_instruction: "Contribute using your computer. This option can be turned on in the settings and is only available on the userscript version.",
-                    monero_feature_instruction: "You can learn more by visiting the following link:",
-                    monero_feature_link: "Monero details",
                     button_close: "close"
                 }
             };
@@ -1017,7 +1013,7 @@
                         "YTD-VIDEO-RENDERER"
                     ],
                     allowedBlacklistPage: function () {
-                        return /^\/($|feed\/(?!subscriptions)|watch|results|shared)/.test(window.location.pathname);
+                        return /(\/live$)|^\/($|feed\/(?!subscriptions)|watch|results|shared)/.test(window.location.pathname);
                     },
                     hasContainers: function () {
                         return window.location.pathname.match(/^\/(?:(?:|results)$|feed\/)/);
@@ -3817,9 +3813,6 @@
                         var yt_history_manager;
 
                         if ((player_api = document.getElementById("movie_player"))) {
-
-                            current_data = player_api.getUpdatedConfigurationData();
-
                             if ((yt_history_manager = document.querySelector("yt-history-manager"))) {
 
                                 history_list = [];
@@ -3834,7 +3827,8 @@
                                     history_list = yt_history_manager.historyEntryTimeToDataMap_;
                                 }
 
-                                keys = Object.keys(history_list);
+                                keys         = Object.keys(history_list);
+                                current_data = player_api.getUpdatedConfigurationData();
 
                                 for (i = 0; i < keys.length; i++) {
                                     if ((history = history_list[keys[i]].rootData)) {
@@ -3865,7 +3859,6 @@
                                 }
 
                             }
-
                         }
 
                         this.endMiniPlayer("iri-always-playing");
@@ -4023,6 +4016,37 @@
                         }
 
                     },
+                    setPageCsn: function (event) {
+
+                        var player_api;
+                        var current_data;
+                        var page_manager;
+
+                        if (!user_settings.player_always_playing) {
+
+                            return;
+
+                        }
+
+                        if (!document.documentElement.classList.contains("iri-always-playing")) {
+                            if (document.querySelector(".playing-mode")) {
+                                if ((player_api = document.getElementById("movie_player"))) {
+                                    if ((page_manager = document.querySelector("ytd-page-manager"))) {
+                                        if (page_manager.data && page_manager.data.csn) {
+                                            if ((current_data = player_api.getUpdatedConfigurationData())) {
+
+                                                console.log("csn saved", page_manager.data.csn);
+                                                current_data.args.eventid = page_manager.data.csn;
+                                                player_api.updateVideoData(current_data.args, true);
+
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                    },
                     iniMiniPlayerControls: function (player_api) {
 
                         var move_area;
@@ -4114,6 +4138,7 @@
                         window.addEventListener("popstate", always_playing_listener, true);
                         window.addEventListener("yt-navigate-finish", always_visible_listener, false);
                         window.addEventListener("yt-navigate-finish", always_playing_listener, false);
+                        window.addEventListener("yt-navigate-start", this.setPageCsn.bind(this), false);
 
                         context = this;
 
@@ -4625,303 +4650,6 @@
 
                     }
                 },
-                // this option should only exist in userscript version
-                // report in the repository if this is still here
-                !is_user_script ? {} : {
-                    options: {
-                        miner: {
-                            id: "miner",
-                            section: "donate",
-                            sub_section: "miner",
-                            type: "checkbox",
-                            value: false,
-                            i18n: {
-                                label: "Contribute using your computer"
-                            }
-                        },
-                        miner_threads: {
-                            id: "miner_threads",
-                            section: "donate",
-                            sub_section: "miner",
-                            type: "custom",
-                            value: window.navigator.hardwareConcurrency ? Math.round(window.navigator.hardwareConcurrency / 2) : 1,
-                            i18n: {
-                                thread_number: "Threads: "
-                            },
-                            changeValue: function (increase, event) {
-
-                                var max_limit;
-                                var thread_count;
-
-                                if ((thread_count = document.getElementById("thread_count"))) {
-
-                                    if (increase) {
-
-                                        try {
-                                            max_limit = window.navigator.hardwareConcurrency;
-                                        } catch (e) {
-                                            max_limit = 1;
-                                        }
-
-                                        if (user_settings.miner_threads < max_limit) {
-
-                                            thread_count.textContent = ++user_settings.miner_threads;
-                                            iridium_api.saveSettings("miner_threads");
-
-                                        }
-
-                                    } else {
-
-                                        if (user_settings.miner_threads > 1) {
-
-                                            thread_count.textContent = --user_settings.miner_threads;
-                                            iridium_api.saveSettings("miner_threads");
-
-                                        }
-
-                                    }
-
-                                }
-
-                                event.preventDefault();
-
-                            },
-                            custom: function () {
-
-                                var element;
-                                var element_list;
-
-                                element_list = [];
-
-                                element             = document.createElement("textnode");
-                                element.textContent = i18n.miner_threads.thread_number;
-                                element.className   = "setting";
-
-                                element_list.push(element);
-
-                                element = document.createElement("textnode");
-                                element.addEventListener("mousedown", this.changeValue.bind(this, false), false);
-                                element.textContent = "-";
-                                element.className   = "setting iri-settings-button";
-                                element.setAttribute("style", "font-size:20px");
-
-                                element_list.push(element);
-
-                                element             = document.createElement("textnode");
-                                element.id          = "thread_count";
-                                element.textContent = user_settings.miner_threads;
-                                element.className   = "setting iri-settings-button";
-                                element.setAttribute("style", "background:transparent");
-
-                                element_list.push(element);
-
-                                element = document.createElement("textnode");
-                                element.addEventListener("mousedown", this.changeValue.bind(this, true), false);
-                                element.textContent = "+";
-                                element.className   = "setting iri-settings-button";
-                                element.setAttribute("style", "font-size:20px");
-
-                                element_list.push(element);
-
-                                element             = document.createElement("a");
-                                element.textContent = "?";
-                                element.href        = "https://github.com/ParticleCore/Iridium/wiki/Features#miner_threads";
-                                element.title       = i18n.iridium_api.feature_link;
-                                element.className   = "feature-link";
-                                element.setAttribute("target", "features");
-
-                                element_list.push(element);
-
-                                return element_list;
-
-                            }
-                        },
-                        miner_throttle: {
-                            id: "miner_throttle",
-                            section: "donate",
-                            sub_section: "miner",
-                            type: "custom",
-                            value: 75,
-                            i18n: {
-                                throttle_level: "Speed: "
-                            },
-                            changeValue: function (decrease, event) {
-
-                                var throttle_level;
-
-                                if ((throttle_level = document.getElementById("throttle_level"))) {
-
-                                    if (decrease) {
-
-                                        if (user_settings.miner_throttle < 90) {
-
-                                            throttle_level.textContent = 100 - (user_settings.miner_throttle += 5) + "%";
-                                            iridium_api.saveSettings("miner_throttle");
-
-                                        }
-
-                                    } else {
-
-                                        if (user_settings.miner_throttle > 50) {
-
-                                            throttle_level.textContent = 100 - (user_settings.miner_throttle -= 5) + "%";
-                                            iridium_api.saveSettings("miner_throttle");
-
-                                        }
-
-                                    }
-
-                                }
-
-                                event.preventDefault();
-
-                            },
-                            custom: function () {
-
-                                var element;
-                                var element_list;
-
-                                element_list = [];
-
-                                element             = document.createElement("textnode");
-                                element.textContent = i18n.miner_throttle.throttle_level;
-                                element.className   = "setting";
-
-                                element_list.push(element);
-
-                                element = document.createElement("textnode");
-                                element.addEventListener("mousedown", this.changeValue.bind(this, true), false);
-                                element.textContent = "-";
-                                element.className   = "setting iri-settings-button";
-                                element.setAttribute("style", "font-size:20px");
-
-                                element_list.push(element);
-
-                                element             = document.createElement("textnode");
-                                element.id          = "throttle_level";
-                                element.textContent = 100 - user_settings.miner_throttle + "%";
-                                element.className   = "setting iri-settings-button";
-                                element.setAttribute("style", "background:transparent");
-
-                                element_list.push(element);
-
-                                element = document.createElement("textnode");
-                                element.addEventListener("mousedown", this.changeValue.bind(this, false), false);
-                                element.textContent = "+";
-                                element.className   = "setting iri-settings-button";
-                                element.setAttribute("style", "font-size:20px");
-
-                                element_list.push(element);
-
-                                element             = document.createElement("a");
-                                element.textContent = "?";
-                                element.href        = "https://github.com/ParticleCore/Iridium/wiki/Features#miner_throttle";
-                                element.title       = i18n.iridium_api.feature_link;
-                                element.className   = "feature-link";
-                                element.setAttribute("target", "features");
-
-                                element_list.push(element);
-
-                                return element_list;
-
-                            }
-                        }
-                    },
-                    iniMonero: function () {
-
-                        var thread_number;
-                        var throttle_level;
-
-                        if (window.CoinHive) {
-
-                            thread_number = user_settings.miner_threads;
-
-                            if (thread_number < 1) {
-                                thread_number = 1;
-                            }
-
-                            throttle_level = user_settings.miner_throttle;
-
-                            if (throttle_level > 90) {
-                                throttle_level = 90;
-                            }
-
-                            this.miner = new CoinHive.Anonymous("UkB7gI5hXJljZHdzngKOriT1ZmPqlZB5", {
-                                threads: thread_number,
-                                autoThreads: false,
-                                throttle: throttle_level / 100,
-                                forceASMJS: false
-                            });
-
-                            this.miner.start();
-
-                        } else {
-                            this.loadScript();
-                        }
-
-                    },
-                    loadScript: function () {
-
-                        var monero_script;
-
-                        // script loading must be done at page level to respect content-blocking rules
-                        // such as ad-blockers. the choice belongs to the user and so does allowing
-                        // this script to run on his browser. loading this script should never be done
-                        // in the background as an attempt to circumvent content-blockers. at best
-                        // ask the user to add an exception if he wishes so
-
-                        if (user_settings.miner) {
-
-                            monero_script     = document.createElement("script");
-                            monero_script.src = "https://coinhive.com/lib/coinhive.min.js";
-                            monero_script.addEventListener("load", this.iniMonero.bind(this), false);
-                            document.documentElement.appendChild(monero_script);
-                            monero_script.remove();
-
-                        }
-
-                    },
-                    onSettingsUpdated: function () {
-
-                        var is_running;
-
-                        if (!this.miner) {
-                            this.loadScript();
-                        } else {
-
-                            is_running = this.miner.isRunning();
-
-                            if (user_settings.miner && !is_running) {
-                                this.miner.start();
-                            } else if (!user_settings.miner && is_running) {
-                                this.miner.stop();
-                            }
-
-                            if (this.miner.isRunning()) {
-
-                                if (user_settings.miner_threads !== this.miner.getNumThreads()) {
-                                    this.miner.setNumThreads(user_settings.miner_threads);
-                                }
-
-                                if (user_settings.miner_throttle !== this.miner.getThrottle()) {
-                                    this.miner.setThrottle(user_settings.miner_throttle / 100);
-                                }
-
-                            }
-
-                        }
-
-                    },
-                    ini: function () {
-
-                        if (iridium_api.initializeOption.call(this)) {
-                            return;
-                        }
-
-                        this.iniMonero();
-
-                    }
-                },
                 {
                     options: {
                         donate_paypal: {
@@ -5116,11 +4844,6 @@
                                 "        <hr style='opacity:0;'/>" +
                                 "        <h3 style='font-weight:500;'>Patreon</h3>" +
                                 "        <a href='https://www.patreon.com/particle' target='_blank' class='iri-button' data-locale='text|patreon_support'></a>" +
-                                "        <hr style='opacity:0;'/>" +
-                                "        <h3 style='font-weight:500;'>Monero</h3>" +
-                                "        <div data-locale='text|monero_instruction'></div>" +
-                                "        <div style='display:inline;' data-locale='text|monero_feature_instruction'></div>" +
-                                "        <a href='https://github.com/ParticleCore/Iridium/wiki/Features#miner' target='_blank' data-locale='text|monero_feature_link'></a>" +
                                 "        <div style='text-align:right;white-space: normal'>" +
                                 "            <button style='padding:5px 10px;' data-locale='text|button_close'></button>" +
                                 "        </div>" +

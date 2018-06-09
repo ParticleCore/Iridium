@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.1.5
+// @version         0.1.6
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1524,11 +1524,11 @@
                                     for (i = 0; i < playlist_data.length; i++) {
                                         if (iridium_api.checkIfExists("target.playlistSidebarPrimaryInfoRenderer.stats", playlist_data[i])) {
 
-                                            count_match = iridium_api.getObjectByKey(playlist_data[i].target.playlistSidebarPrimaryInfoRenderer.stats, ["text"]);
+                                            count_match = iridium_api.getObjectByKey(playlist_data[i].target.playlistSidebarPrimaryInfoRenderer.stats, ["text", "simpleText"]);
 
                                             if (count_match.length > 0 && (owner_container = document.getElementById("owner-container"))) {
 
-                                                count_match = count_match[0].target.text;
+                                                count_match = count_match[0].target.text || count_match[0].target.simpleText;
 
                                                 video_count_dot             = document.createElement("span");
                                                 video_count_dot.textContent = " · ";
@@ -1657,40 +1657,50 @@
 
                         watch_page_active = document.querySelector("ytd-watch:not([hidden])");
 
-                        if (watch_page_active && (channel_url = document.querySelector("#owner-name a"))) {
+                        if (watch_page_active) {
 
-                            channel_url = channel_url.getAttribute("href");
-                            channel_id  = channel_url.match(/UC([a-z0-9-_]{22})/i);
+                            if ((channel_url = document.querySelector("#owner-name a"))) {
+
+                                channel_url = channel_url.getAttribute("href");
+                                channel_id  = channel_url.match(/UC([a-z0-9-_]{22})/i);
+
+                            } else if ((channel_id = iridium_api.getSingleObjectByKey(window.ytplayer, "ucid"))) {
+
+                                channel_url = "/channel/" + channel_id + "/videos";
+                                channel_id  = channel_url.match(/UC([a-z0-9-_]{22})/i);
+
+                            } else {
+
+                                return;
+
+                            }
 
                             if (channel_id && (channel_id = channel_id[1])) {
                                 if (user_settings.channel_video_count) {
                                     if (!this.addVideoCount.fetching) {
                                         if (document.getElementById("owner-container")) {
                                             if (!document.getElementById("iri-video-count")) {
-                                                if ((channel_url = document.querySelector("#owner-name a"))) {
 
-                                                    if (this.removeVideoCount.xhr) {
-                                                        this.removeVideoCount.xhr.abort();
-                                                    }
-
-                                                    this.addVideoCount.fetching = true;
-                                                    channel_url                 = channel_url.getAttribute("href");
-
-                                                    xhr = new XMLHttpRequest();
-                                                    xhr.addEventListener("load", this.addVideoCount.bind(this, channel_url));
-                                                    xhr.open("GET", "/playlist?list=UU" + channel_id, true);
-                                                    xhr.responseType = "document";
-                                                    xhr.send();
-
-                                                    this.removeVideoCount.xhr = xhr;
-
-                                                    context = this;
-
-                                                    document.addEventListener("yt-navigate-finish", function listener() {
-                                                        context.removeVideoCount(listener);
-                                                    }, false);
-
+                                                if (this.removeVideoCount.xhr) {
+                                                    this.removeVideoCount.xhr.abort();
                                                 }
+
+                                                this.addVideoCount.fetching = true;
+
+                                                xhr = new XMLHttpRequest();
+                                                xhr.addEventListener("load", this.addVideoCount.bind(this, channel_url));
+                                                xhr.open("GET", "/playlist?list=UU" + channel_id, true);
+                                                xhr.responseType = "document";
+                                                xhr.send();
+
+                                                this.removeVideoCount.xhr = xhr;
+
+                                                context = this;
+
+                                                document.addEventListener("yt-navigate-finish", function listener() {
+                                                    context.removeVideoCount(listener);
+                                                }, false);
+
                                             }
                                         }
                                     }

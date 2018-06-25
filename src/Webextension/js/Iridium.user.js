@@ -1655,7 +1655,7 @@
                         var upload_info;
                         var watch_page_active;
 
-                        watch_page_active = document.querySelector("ytd-watch:not([hidden])");
+                        watch_page_active = document.querySelector("ytd-watch:not([hidden]), ytd-watch-flexy:not([hidden])");
 
                         if (watch_page_active) {
 
@@ -1777,7 +1777,7 @@
                         var yt_navigation_manager;
                         var twoColumnWatchNextResults;
 
-                        if ((ytd_watch = document.querySelector("ytd-watch"))) {
+                        if ((ytd_watch = document.querySelector("ytd-watch, ytd-watch-flexy"))) {
                             if (ytd_watch.data) {
                                 if ((twoColumnWatchNextResults = iridium_api.getSingleObjectByKey(ytd_watch.data, ["twoColumnWatchNextResults"]))) {
                                     if ("playlist" in twoColumnWatchNextResults && "playlist" in (playlist = twoColumnWatchNextResults["playlist"])) {
@@ -2402,7 +2402,7 @@
 
                         var watch_page_api;
 
-                        if (user_settings.player_memorize_size && window.location.pathname === "/watch" && (watch_page_api = document.querySelector("ytd-watch"))) {
+                        if (user_settings.player_memorize_size && window.location.pathname === "/watch" && (watch_page_api = document.querySelector("ytd-watch, ytd-watch-flexy"))) {
                             try {
                                 watch_page_api["theaterModeChanged_"](user_settings.theaterMode);
                             } catch (ignore) {
@@ -2883,7 +2883,7 @@
 
                             if (this.ironMediaQueryList) {
 
-                                if ((ytd_watch = document.querySelector("ytd-watch"))) {
+                                if ((ytd_watch = document.querySelector("ytd-watch, ytd-watch-flexy"))) {
                                     for (i = 0; i < this.ironMediaQueryList.childElementCount; i++) {
                                         ytd_watch.appendChild(this.ironMediaQueryList.firstElementChild);
                                     }
@@ -3050,7 +3050,7 @@
                             if (!this.ironMediaQueryList) {
 
                                 this.ironMediaQueryList = document.createDocumentFragment();
-                                media_query_list        = document.querySelectorAll("ytd-watch iron-media-query");
+                                media_query_list        = document.querySelectorAll("ytd-watch iron-media-query, ytd-watch-flexy iron-media-query");
 
                                 for (i = 0; i < media_query_list.length; i++) {
                                     this.ironMediaQueryList.appendChild(media_query_list[i]);
@@ -3092,7 +3092,7 @@
 
                             if (this.ironMediaQueryList) {
 
-                                if ((ytd_watch = document.querySelector("ytd-watch"))) {
+                                if ((ytd_watch = document.querySelector("ytd-watch, ytd-watch-flexy"))) {
                                     for (i = 0; i < this.ironMediaQueryList.childElementCount; i++) {
                                         ytd_watch.appendChild(this.ironMediaQueryList.firstElementChild);
                                     }
@@ -3246,7 +3246,7 @@
 
                         controls = document.querySelector("#iri-quick-controls");
 
-                        if (user_settings.player_quick_controls && document.querySelector("ytd-watch:not([hidden])") && (meta_section = document.querySelector("#menu-container"))) {
+                        if (user_settings.player_quick_controls && document.querySelector("ytd-watch:not([hidden]), ytd-watch-flexy:not([hidden])") && (meta_section = document.querySelector("#menu-container"))) {
 
                             if (!controls) {
 
@@ -3918,7 +3918,7 @@
 
                         if (!iridium_api.isPopUpPlayer && (player_api = document.getElementById("movie_player"))) {
 
-                            is_in_theater_mode = document.querySelector("ytd-watch[theater]");
+                            is_in_theater_mode = document.querySelector("ytd-watch[theater], ytd-watch-flexy[theater]");
 
                             if (!document.querySelector(".iri-always-visible,.iri-always-playing")) {
                                 player_api.removeAttribute("style");

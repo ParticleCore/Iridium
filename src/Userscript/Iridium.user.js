@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.1.6
+// @version         0.1.7
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -7,9 +7,6 @@
 // @compatible      chrome
 // @icon            https://raw.githubusercontent.com/ParticleCore/Iridium/gh-pages/images/i-icon.png
 // @match           *://www.youtube.com/*
-// @exclude         *://www.youtube.com/tv*
-// @exclude         *://www.youtube.com/embed/*
-// @exclude         *://www.youtube.com/live_chat*
 // @run-at          document-start
 // @homepageURL     https://github.com/ParticleCore/Iridium
 // @supportURL      https://github.com/ParticleCore/Iridium/wiki
@@ -1655,18 +1652,18 @@
                         var upload_info;
                         var watch_page_active;
 
-                        watch_page_active = document.querySelector("ytd-watch:not([hidden])");
+                        watch_page_active = document.querySelector("ytd-watch:not([hidden]), ytd-watch-flexy:not([hidden])");
 
                         if (watch_page_active) {
 
                             if ((channel_url = document.querySelector("#owner-name a"))) {
 
-                                channel_url = channel_url.getAttribute("href");
+                                channel_url = channel_url.getAttribute("href").split(/\/videos/)[0];
                                 channel_id  = channel_url.match(/UC([a-z0-9-_]{22})/i);
 
                             } else if ((channel_id = iridium_api.getSingleObjectByKey(window.ytplayer, "ucid"))) {
 
-                                channel_url = "/channel/" + channel_id + "/videos";
+                                channel_url = "/channel/" + channel_id;
                                 channel_id  = channel_url.match(/UC([a-z0-9-_]{22})/i);
 
                             } else {
@@ -1777,7 +1774,7 @@
                         var yt_navigation_manager;
                         var twoColumnWatchNextResults;
 
-                        if ((ytd_watch = document.querySelector("ytd-watch"))) {
+                        if ((ytd_watch = document.querySelector("ytd-watch, ytd-watch-flexy"))) {
                             if (ytd_watch.data) {
                                 if ((twoColumnWatchNextResults = iridium_api.getSingleObjectByKey(ytd_watch.data, ["twoColumnWatchNextResults"]))) {
                                     if ("playlist" in twoColumnWatchNextResults && "playlist" in (playlist = twoColumnWatchNextResults["playlist"])) {
@@ -1786,7 +1783,7 @@
                                             playlist["contents"].reverse();
 
                                             if ("currentIndex" in playlist) {
-                                                playlist["currentIndex"] = playlist["contents"].length - playlist["currentIndex"] - 1;
+                                                playlist["currentIndex"] = playlist["totalVideos"] - playlist["currentIndex"] - 1;
                                             }
 
                                             if ("localCurrentIndex" in playlist) {
@@ -1840,6 +1837,7 @@
 
                         var defaultLabel;
                         var toggledLabel;
+                        var notificationActionRenderer;
 
                         this["defaultIcon"].iconType = "REVERSE";
                         this["accessibility"].label  = i18n.playlist_reverse_control.button_label;
@@ -1857,6 +1855,18 @@
                         if ((toggledLabel = iridium_api.getObjectByKey(this["toggledServiceEndpoint"], ["text"]))) {
                             if (toggledLabel.length) {
                                 toggledLabel[0].target.text = i18n.playlist_reverse_control.toggle_off;
+                            }
+                        }
+
+                        if ((defaultLabel = iridium_api.getObjectByKey(this["defaultServiceEndpoint"], ["simpleText"]))) {
+                            if (defaultLabel.length) {
+                                defaultLabel[0].target.simpleText = i18n.playlist_reverse_control.toggle_on;
+                            }
+                        }
+
+                        if ((toggledLabel = iridium_api.getObjectByKey(this["toggledServiceEndpoint"], ["simpleText"]))) {
+                            if (toggledLabel.length) {
+                                toggledLabel[0].target.simpleText = i18n.playlist_reverse_control.toggle_off;
                             }
                         }
 
@@ -2402,7 +2412,7 @@
 
                         var watch_page_api;
 
-                        if (user_settings.player_memorize_size && window.location.pathname === "/watch" && (watch_page_api = document.querySelector("ytd-watch"))) {
+                        if (user_settings.player_memorize_size && window.location.pathname === "/watch" && (watch_page_api = document.querySelector("ytd-watch, ytd-watch-flexy"))) {
                             try {
                                 watch_page_api["theaterModeChanged_"](user_settings.theaterMode);
                             } catch (ignore) {
@@ -2883,7 +2893,7 @@
 
                             if (this.ironMediaQueryList) {
 
-                                if ((ytd_watch = document.querySelector("ytd-watch"))) {
+                                if ((ytd_watch = document.querySelector("ytd-watch, ytd-watch-flexy"))) {
                                     for (i = 0; i < this.ironMediaQueryList.childElementCount; i++) {
                                         ytd_watch.appendChild(this.ironMediaQueryList.firstElementChild);
                                     }
@@ -3050,7 +3060,7 @@
                             if (!this.ironMediaQueryList) {
 
                                 this.ironMediaQueryList = document.createDocumentFragment();
-                                media_query_list        = document.querySelectorAll("ytd-watch iron-media-query");
+                                media_query_list        = document.querySelectorAll("ytd-watch iron-media-query, ytd-watch-flexy iron-media-query");
 
                                 for (i = 0; i < media_query_list.length; i++) {
                                     this.ironMediaQueryList.appendChild(media_query_list[i]);
@@ -3092,7 +3102,7 @@
 
                             if (this.ironMediaQueryList) {
 
-                                if ((ytd_watch = document.querySelector("ytd-watch"))) {
+                                if ((ytd_watch = document.querySelector("ytd-watch, ytd-watch-flexy"))) {
                                     for (i = 0; i < this.ironMediaQueryList.childElementCount; i++) {
                                         ytd_watch.appendChild(this.ironMediaQueryList.firstElementChild);
                                     }
@@ -3246,7 +3256,7 @@
 
                         controls = document.querySelector("#iri-quick-controls");
 
-                        if (user_settings.player_quick_controls && document.querySelector("ytd-watch:not([hidden])") && (meta_section = document.querySelector("#menu-container"))) {
+                        if (user_settings.player_quick_controls && document.querySelector("ytd-watch:not([hidden]), ytd-watch-flexy:not([hidden])") && (meta_section = document.querySelector("#menu-container"))) {
 
                             if (!controls) {
 
@@ -3918,7 +3928,7 @@
 
                         if (!iridium_api.isPopUpPlayer && (player_api = document.getElementById("movie_player"))) {
 
-                            is_in_theater_mode = document.querySelector("ytd-watch[theater]");
+                            is_in_theater_mode = document.querySelector("ytd-watch[theater], ytd-watch-flexy[theater");
 
                             if (!document.querySelector(".iri-always-visible,.iri-always-playing")) {
                                 player_api.removeAttribute("style");
@@ -4988,12 +4998,16 @@
                                     pos: pos
                                 });
 
-                            } else if (obj[property].constructor === Object) {
-                                results = results.concat(this.getObjectByKey(obj[property], keys, match, list, pos));
-                            } else if (obj[property].constructor === Array) {
-                                for (i = 0; i < obj[property].length; i++) {
-                                    results = results.concat(this.getObjectByKey(obj[property][i], keys, match, obj[property], i));
+                            } else if (obj[property]) {
+
+                                if (obj[property].constructor === Object) {
+                                    results = results.concat(this.getObjectByKey(obj[property], keys, match, list, pos));
+                                } else if (obj[property].constructor === Array) {
+                                    for (i = 0; i < obj[property].length; i++) {
+                                        results = results.concat(this.getObjectByKey(obj[property][i], keys, match, obj[property], i));
+                                    }
                                 }
+
                             }
 
                         }
@@ -5624,7 +5638,7 @@
         isAllowedPage: function () {
 
             var current_page;
-            var allowed_pages;
+            var disallowed_pages;
 
             if ((current_page = window.location.pathname.match(/\/[a-z-]+/))) {
                 current_page = current_page[0];
@@ -5632,21 +5646,19 @@
                 current_page = window.location.pathname;
             }
 
-            allowed_pages = [
-                "/",
-                "/index",
-                "/feed",
-                "/results",
-                "/shared",
-                "/watch",
-                "/channel",
-                "/user",
-                "/c",
-                "/playlist",
-                "/iridium-settings"
+            disallowed_pages = [
+                "tv",
+                "embed",
+                "live_chat",
+                "account",
+                "account_notifications",
+                "create_channel",
+                "dashboard",
+                "upload",
+                "webcam"
             ];
 
-            return allowed_pages.indexOf(current_page) > -1;
+            return disallowed_pages.indexOf(current_page) < 0;
 
         },
         generateUUID: function () {

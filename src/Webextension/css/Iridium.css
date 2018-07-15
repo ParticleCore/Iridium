@@ -213,7 +213,8 @@ svg {
     pointer-events         : none;
 }
 
-ytd-watch:not([hidden]) .ytp-thumbnail-overlay {
+ytd-watch:not([hidden]) .ytp-thumbnail-overlay,
+ytd-watch-flexy:not([hidden]) .ytp-thumbnail-overlay {
     transition : none !important;
 }
 
@@ -253,7 +254,8 @@ yt-img-shadow:hover #iri-video-preview {
     display : none;
 }
 
-html.iri-always-playing ytd-watch[hidden] {
+html.iri-always-playing ytd-watch[hidden],
+html.iri-always-playing ytd-watch-flexy[hidden] {
     display  : block !important;
     height   : 0;
     overflow : hidden;
@@ -808,7 +810,8 @@ html:not(.iri-full-browser) #iri-full-browser-info {
     opacity : 0;
 }
 
-.iri-full-browser.video_active ytd-watch:not([hidden]) #movie_player {
+.iri-full-browser.video_active ytd-watch:not([hidden]) #movie_player,
+.iri-full-browser.video_active ytd-watch-flexy:not([hidden]) #movie_player {
     background : #000;
     position   : fixed;
     top        : 0 !important;

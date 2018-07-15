@@ -1,7 +1,7 @@
 {
     "manifest_version" : 2,
     "name" : "Iridium",
-    "version" : "0.1.6",
+    "version" : "0.1.7",
     "description" : "YouTube with more freedom",
     "default_locale" : "en",
     "icons" : {
@@ -30,11 +30,6 @@
         {
             "matches" : [
                 "*://www.youtube.com/*"
-            ],
-            "exclude_matches" : [
-                "*://www.youtube.com/live_chat*",
-                "*://www.youtube.com/embed/*",
-                "*://www.youtube.com/tv*"
             ],
             "js" : [
                 "js/Iridium.user.js"

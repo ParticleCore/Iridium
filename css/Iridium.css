@@ -213,7 +213,8 @@ svg {
     pointer-events         : none;
 }
 
-ytd-watch:not([hidden]) .ytp-thumbnail-overlay {
+ytd-watch:not([hidden]) .ytp-thumbnail-overlay,
+ytd-watch-flexy:not([hidden]) .ytp-thumbnail-overlay {
     transition : none !important;
 }
 
@@ -253,7 +254,8 @@ yt-img-shadow:hover #iri-video-preview {
     display : none;
 }
 
-html.iri-always-playing ytd-watch[hidden] {
+html.iri-always-playing ytd-watch[hidden],
+html.iri-always-playing ytd-watch-flexy[hidden] {
     display  : block !important;
     height   : 0;
     overflow : hidden;
@@ -407,96 +409,6 @@ html:not(.iri-always-visible):not(.iri-always-playing) #iri-mini-player-controls
 }
 
 /* end | mini player */
-
-/* ini | mini player resize */
-#iri-mini-player-resize {
-    position       : absolute;
-    top            : 0;
-    bottom         : 0;
-    left           : 0;
-    right          : 0;
-    z-index        : 51;
-    pointer-events : none;
-}
-
-#iri-mini-player-resize .n-resize,
-#iri-mini-player-resize .s-resize,
-#iri-mini-player-resize .w-resize,
-#iri-mini-player-resize .e-resize {
-    position       : absolute;
-    pointer-events : all;
-}
-
-#iri-mini-player-resize .n-resize,
-#iri-mini-player-resize .s-resize {
-    height : 10px;
-    left   : 0;
-    right  : 0;
-}
-
-#iri-mini-player-resize .w-resize,
-#iri-mini-player-resize .e-resize {
-    width  : 10px;
-    top    : 0;
-    bottom : 0;
-}
-
-#iri-mini-player-resize .n-resize {
-    cursor : n-resize;
-    top    : 0;
-}
-
-#iri-mini-player-resize .s-resize {
-    cursor : s-resize;
-    bottom : 0;
-}
-
-#iri-mini-player-resize .w-resize {
-    cursor : w-resize;
-    left   : 0;
-}
-
-#iri-mini-player-resize .e-resize {
-    cursor : e-resize;
-    right  : 0;
-}
-
-#iri-mini-player-resize .ne-resize,
-#iri-mini-player-resize .nw-resize,
-#iri-mini-player-resize .se-resize,
-#iri-mini-player-resize .sw-resize {
-    width          : 10px;
-    height         : 10px;
-    position       : absolute;
-    z-index        : 1;
-    pointer-events : all;
-}
-
-#iri-mini-player-resize .ne-resize {
-    cursor : ne-resize;
-    top    : 0;
-    right  : 0;
-}
-
-#iri-mini-player-resize .nw-resize {
-    cursor : nw-resize;
-    top    : 0;
-    left   : 0;
-}
-
-#iri-mini-player-resize .se-resize {
-    cursor : se-resize;
-    bottom : 0;
-    right  : 0;
-}
-
-#iri-mini-player-resize .sw-resize {
-    cursor : sw-resize;
-    bottom : 0;
-    left   : 0;
-}
-
-/* end | mini player resize */
 
 /* ini | mini player move */
 .iri-mini-player-moving {
@@ -898,7 +810,8 @@ html:not(.iri-full-browser) #iri-full-browser-info {
     opacity : 0;
 }
 
-.iri-full-browser.video_active ytd-watch:not([hidden]) #movie_player {
+.iri-full-browser.video_active ytd-watch:not([hidden]) #movie_player,
+.iri-full-browser.video_active ytd-watch-flexy:not([hidden]) #movie_player {
     background : #000;
     position   : fixed;
     top        : 0 !important;

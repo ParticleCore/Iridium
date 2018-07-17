@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.1.7
+// @version         0.1.8
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -3928,7 +3928,7 @@
 
                         if (!iridium_api.isPopUpPlayer && (player_api = document.getElementById("movie_player"))) {
 
-                            is_in_theater_mode = document.querySelector("ytd-watch[theater], ytd-watch-flexy[theater");
+                            is_in_theater_mode = document.querySelector("ytd-watch[theater], ytd-watch-flexy[theater]");
 
                             if (!document.querySelector(".iri-always-visible,.iri-always-playing")) {
                                 player_api.removeAttribute("style");
@@ -5647,15 +5647,15 @@
             }
 
             disallowed_pages = [
-                "tv",
-                "embed",
-                "live_chat",
-                "account",
-                "account_notifications",
-                "create_channel",
-                "dashboard",
-                "upload",
-                "webcam"
+                "/tv",
+                "/embed",
+                "/live_chat",
+                "/account",
+                "/account_notifications",
+                "/create_channel",
+                "/dashboard",
+                "/upload",
+                "/webcam"
             ];
 
             return disallowed_pages.indexOf(current_page) < 0;

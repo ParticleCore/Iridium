@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.1.8
+// @version         0.1.9
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -696,28 +696,6 @@
                         this.popUpPlayerResizeTimer = window.setTimeout(this.saveNewSize.bind(this), 1000);
 
                     },
-                    updatePlayerStyle: function (api) {
-                        api.setSizeStyle(true, true);
-                    },
-                    playerReady: function (api) {
-                        if (api) {
-                            api.addEventListener("onStateChange", this.updatePlayerStyle.bind(this, api));
-                        }
-                    },
-                    shareApi: function (original) {
-
-                        var context = this;
-
-                        return function (api) {
-
-                            context.playerReady(api);
-
-                            if (original) {
-                                return original.apply(this, arguments);
-                            }
-
-                        };
-                    },
                     ini: function () {
 
                         if (iridium_api.initializeOption.call(this)) {
@@ -725,8 +703,6 @@
                         }
 
                         if (iridium_api.isPopUpPlayer) {
-
-                            window.onYouTubePlayerReady = this.shareApi(window.onYouTubePlayerReady);
 
                             window.addEventListener("resize", this.popUpPlayerResize.bind(this), false);
                             document.documentElement.classList.add("iri-pop-up-player-window");
@@ -2878,8 +2854,6 @@
                     },
                     exitFullBrowser: function (event) {
 
-                        var i;
-                        var ytd_watch;
                         var video_player;
 
                         if (!user_settings.fullBrowser || (event.type === "click" || event.keyCode === 27 || event.key === "Escape")) {
@@ -2890,18 +2864,6 @@
                             user_settings.fullBrowser = false;
                             iridium_api.saveSettings("fullBrowser");
                             window.dispatchEvent(new Event("resize"));
-
-                            if (this.ironMediaQueryList) {
-
-                                if ((ytd_watch = document.querySelector("ytd-watch, ytd-watch-flexy"))) {
-                                    for (i = 0; i < this.ironMediaQueryList.childElementCount; i++) {
-                                        ytd_watch.appendChild(this.ironMediaQueryList.firstElementChild);
-                                    }
-                                }
-
-                                this.ironMediaQueryList = null;
-
-                            }
 
                             if ((video_player = document.getElementById("movie_player"))) {
                                 if (!document.querySelector("[theater]")) {
@@ -3032,10 +2994,7 @@
                     },
                     quickControlFullBrowser: function (event) {
 
-                        var i;
-                        var ytd_watch;
                         var video_player;
-                        var media_query_list;
                         var full_browser_info;
 
                         if (this.exitFullBrowserlistener) {
@@ -3056,17 +3015,6 @@
 
                             document.documentElement.classList.add("iri-full-browser");
                             document.documentElement.scrollTop = 0;
-
-                            if (!this.ironMediaQueryList) {
-
-                                this.ironMediaQueryList = document.createDocumentFragment();
-                                media_query_list        = document.querySelectorAll("ytd-watch iron-media-query, ytd-watch-flexy iron-media-query");
-
-                                for (i = 0; i < media_query_list.length; i++) {
-                                    this.ironMediaQueryList.appendChild(media_query_list[i]);
-                                }
-
-                            }
 
                             if ((video_player = document.getElementById("movie_player"))) {
 
@@ -3089,34 +3037,12 @@
 
                                 }
 
-                                if (!document.querySelector("[theater]")) {
-                                    video_player.setSizeStyle(true, true);
-                                }
-
                             }
 
                         } else if (!user_settings.fullBrowser && document.documentElement.classList.contains("iri-full-browser")) {
 
                             document.documentElement.classList.remove("iri-full-browser");
                             window.dispatchEvent(new Event("resize"));
-
-                            if (this.ironMediaQueryList) {
-
-                                if ((ytd_watch = document.querySelector("ytd-watch, ytd-watch-flexy"))) {
-                                    for (i = 0; i < this.ironMediaQueryList.childElementCount; i++) {
-                                        ytd_watch.appendChild(this.ironMediaQueryList.firstElementChild);
-                                    }
-                                }
-
-                                this.ironMediaQueryList = null;
-
-                            }
-
-                            if ((video_player = document.getElementById("movie_player"))) {
-                                if (!document.querySelector("[theater]")) {
-                                    video_player.setSizeStyle(true, false);
-                                }
-                            }
 
                         }
 
@@ -3936,6 +3862,8 @@
 
                             player_api.setSizeStyle(true, is_in_theater_mode);
 
+                            window.dispatchEvent(new Event("resize"));
+
                             if (this.setMiniPlayerSizeListener) {
 
                                 player_api.removeEventListener("onFullscreenChange", this.setMiniPlayerSizeListener, false);
@@ -3980,6 +3908,8 @@
 
                             this.updatePlayerPosition();
 
+                            window.dispatchEvent(new Event("resize"));
+
                             this.setMiniPlayerSizeListener = this.setMiniPlayerSize.bind(this, player_api);
                             player_api.addEventListener("onFullscreenChange", this.setMiniPlayerSizeListener);
 
@@ -4005,7 +3935,7 @@
                         if (event.detail && event.detail.pageType !== "watch" && is_already_floating) {
                             this.endMiniPlayer("iri-always-visible");
                         } else if (window.location.pathname === "/watch") {
-                            if ((player_container = document.querySelector("#player #player-container")) && (player_bounds = player_container.getBoundingClientRect())) {
+                            if ((player_container = document.querySelector("#player #player-container, #player-theater-container #player-container")) && (player_bounds = player_container.getBoundingClientRect())) {
 
                                 is_out_of_sight = player_bounds.bottom < ((player_bounds.height / 2) + 50);
 
@@ -4055,7 +3985,6 @@
                                         if (page_manager.data && page_manager.data.csn) {
                                             if ((current_data = player_api.getUpdatedConfigurationData())) {
 
-                                                console.log("csn saved", page_manager.data.csn);
                                                 current_data.args.eventid = page_manager.data.csn;
                                                 player_api.updateVideoData(current_data.args, true);
 
@@ -5456,6 +5385,63 @@
                     }));
 
                 },
+                initializeBypasses: function () {
+
+                    var ytd_watch;
+
+                    if ((ytd_watch = document.querySelector("ytd-watch, ytd-watch-flexy"))) {
+                        if (ytd_watch.calculatePlayerSize_) {
+                            if (!ytd_watch.calculatePlayerSize_.bypassed) {
+
+                                ytd_watch.calculatePlayerSize_ = function () {
+
+                                    var width;
+                                    var height;
+                                    var movie_player;
+
+                                    if (!ytd_watch.theater && !document.querySelector(".iri-full-browser") && (movie_player = document.querySelector("#movie_player"))) {
+
+                                        width = movie_player.offsetWidth;
+
+                                        // if (ytd_watch.videoHeightToWidthRatio_) {
+                                        //     height = Math.round(width * ytd_watch.videoHeightToWidthRatio_);
+                                        // } else {
+                                        height = Math.round(width / (16 / 9));
+                                        // }
+
+                                        if (ytd_watch.updateStyles) {
+
+                                            ytd_watch.updateStyles({
+                                                "--ytd-watch-flexy-width-ratio": 1,
+                                                "--ytd-watch-flexy-height-ratio": 0.5625
+                                            });
+                                            ytd_watch.updateStyles({
+                                                "--ytd-watch-width-ratio": 1,
+                                                "--ytd-watch-height-ratio": 0.5625
+                                            });
+
+                                        }
+
+                                    } else {
+
+                                        width = window.NaN;
+                                        height = window.NaN;
+
+                                    }
+
+                                    return {
+                                        width: width,
+                                        height: height
+                                    };
+
+                                };
+                                ytd_watch.calculatePlayerSize_.bypassed = true;
+
+                            }
+                        }
+                    }
+
+                },
                 initializeSettings: function (new_settings) {
 
                     var i;
@@ -5616,6 +5602,7 @@
                     this.broadcast_channel.addEventListener("message", this.initializeBroadcast.bind(this));
 
                     document.documentElement.addEventListener("load", this.initializeSettingsButton, true);
+                    document.documentElement.addEventListener("load", this.initializeBypasses, true);
 
                     if (this.isSettingsPage) {
 

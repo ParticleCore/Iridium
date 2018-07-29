@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.1.9
+// @version         0.2.0
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -3675,6 +3675,20 @@
                             this.move_data.mouse_offset.X          = clientX - video_rects.left;
                             this.move_data.mouse_offset.Y          = clientY - video_rects.top;
 
+                            if (!user_settings.miniPlayer || !user_settings.miniPlayer.position) {
+
+                                user_settings.miniPlayer = {
+                                    position: {
+                                        X: this.move_data.player_position.X,
+                                        Y: this.move_data.player_position.Y,
+                                        snapRight: true,
+                                        snapBottom: true
+                                    },
+                                    size: 352
+                                };
+
+                            }
+
                         }
 
                     },
@@ -5402,12 +5416,7 @@
                                     if (!ytd_watch.theater && !document.querySelector(".iri-full-browser") && (movie_player = document.querySelector("#movie_player"))) {
 
                                         width = movie_player.offsetWidth;
-
-                                        // if (ytd_watch.videoHeightToWidthRatio_) {
-                                        //     height = Math.round(width * ytd_watch.videoHeightToWidthRatio_);
-                                        // } else {
-                                        height = Math.round(width / (16 / 9));
-                                        // }
+                                        height = Math.round(movie_player.offsetWidth / (16 / 9));
 
                                         if (ytd_watch.updateStyles) {
 

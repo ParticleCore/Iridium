@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.2.0
+// @version         0.2.1
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -5402,51 +5402,64 @@
                 initializeBypasses: function () {
 
                     var ytd_watch;
+                    var sizeBypass;
 
                     if ((ytd_watch = document.querySelector("ytd-watch, ytd-watch-flexy"))) {
-                        if (ytd_watch.calculatePlayerSize_) {
-                            if (!ytd_watch.calculatePlayerSize_.bypassed) {
 
-                                ytd_watch.calculatePlayerSize_ = function () {
+                        sizeBypass = function () {
 
-                                    var width;
-                                    var height;
-                                    var movie_player;
+                            var width;
+                            var height;
+                            var movie_player;
 
-                                    if (!ytd_watch.theater && !document.querySelector(".iri-full-browser") && (movie_player = document.querySelector("#movie_player"))) {
+                            if (!ytd_watch.theater && !document.querySelector(".iri-full-browser") && (movie_player = document.querySelector("#movie_player"))) {
 
-                                        width = movie_player.offsetWidth;
-                                        height = Math.round(movie_player.offsetWidth / (16 / 9));
+                                width = movie_player.offsetWidth;
+                                height = Math.round(movie_player.offsetWidth / (16 / 9));
 
-                                        if (ytd_watch.updateStyles) {
+                                if (ytd_watch.updateStyles) {
 
-                                            ytd_watch.updateStyles({
-                                                "--ytd-watch-flexy-width-ratio": 1,
-                                                "--ytd-watch-flexy-height-ratio": 0.5625
-                                            });
-                                            ytd_watch.updateStyles({
-                                                "--ytd-watch-width-ratio": 1,
-                                                "--ytd-watch-height-ratio": 0.5625
-                                            });
+                                    ytd_watch.updateStyles({
+                                        "--ytd-watch-flexy-width-ratio": 1,
+                                        "--ytd-watch-flexy-height-ratio": 0.5625
+                                    });
+                                    ytd_watch.updateStyles({
+                                        "--ytd-watch-width-ratio": 1,
+                                        "--ytd-watch-height-ratio": 0.5625
+                                    });
 
-                                        }
+                                }
 
-                                    } else {
+                            } else {
 
-                                        width = window.NaN;
-                                        height = window.NaN;
-
-                                    }
-
-                                    return {
-                                        width: width,
-                                        height: height
-                                    };
-
-                                };
-                                ytd_watch.calculatePlayerSize_.bypassed = true;
+                                width = window.NaN;
+                                height = window.NaN;
 
                             }
+
+                            return {
+                                width: width,
+                                height: height
+                            };
+
+                        };
+
+                        if (ytd_watch.calculateCurrentPlayerSize_) {
+
+                            if (!ytd_watch.calculateCurrentPlayerSize_.bypassed) {
+
+                                ytd_watch.calculateCurrentPlayerSize_ = sizeBypass;
+                                ytd_watch.calculateCurrentPlayerSize_.bypassed = true;
+
+                            }
+
+                            if (!ytd_watch.calculateNormalPlayerSize_.bypassed) {
+
+                                ytd_watch.calculateNormalPlayerSize_ = sizeBypass;
+                                ytd_watch.calculateNormalPlayerSize_.bypassed = true;
+
+                            }
+
                         }
                     }
 

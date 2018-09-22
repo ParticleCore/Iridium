@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.2.1
+// @version         0.2.2
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -2581,9 +2581,7 @@
 
                         }
 
-                        if (user_settings.fullBrowser) {
-                            window.dispatchEvent(new Event("resize"));
-                        }
+                        window.dispatchEvent(new Event("resize"));
 
                     },
                     playerReady: function (api) {
@@ -3600,6 +3598,7 @@
                         var masthead;
                         var video_player;
                         var player_margin;
+                        var style_element;
                         var masthead_offset;
 
                         is_moving       = is_moving === true;
@@ -3627,7 +3626,6 @@
 
                         }
 
-
                         if (is_moving || !user_settings.miniPlayer.position.snapBottom) {
 
                             if (this.move_data.player_position.Y < masthead_offset) {
@@ -3654,7 +3652,20 @@
                                 style += "top:" + this.move_data.player_position.Y + "px;";
                             }
 
-                            video_player.setAttribute("style", style);
+                            if (!(style_element = document.getElementById("style-mini-player"))) {
+
+                                style_element    = document.createElement("style");
+                                style_element.id = "style-mini-player";
+
+                                video_player.parentNode.insertBefore(style_element, video_player);
+
+                            }
+
+                            style_element.textContent =
+                                ".iri-always-visible:not(.iri-full-browser) #movie_player:not(.ytp-fullscreen)," +
+                                ".iri-always-playing #movie_player:not(.ytp-fullscreen):not(.unstarted-mode) {" +
+                                style +
+                                "}";
 
                         }
 

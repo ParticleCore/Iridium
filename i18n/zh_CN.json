@@ -31,7 +31,7 @@
         "feature_link": "了解这是什么功能"
     },
     "welcome_box": {
-        "thank_you": "感谢您安装了 Iridium！",
+        "thank_you": "感谢您安装 Iridium！",
         "settings_instruction": "点击此页面右上角的三角形即可打开设置页。",
         "features_instruction": "关于完整的功能列表，请访问以下链接：",
         "features_link": "功能列表",
@@ -41,7 +41,7 @@
         "paypal_monthly": "每月捐款",
         "patreon_support": "使用 Patreon 赞助",
         "monero_instruction": "用您的电脑来贡献（挖矿）。此选项可在设置中开启，并且只能在 Userscript 版本上使用。",
-        "monero_feature_instruction": "你可以通过访问以下链接了解更多：",
+        "monero_feature_instruction": "您可以通过访问以下链接了解更多：",
         "monero_feature_link": "Monero 详细信息",
         "button_close": "关闭"
     },
@@ -49,8 +49,8 @@
         "label": "点击 YouTube 徽标到达：",
         "options": [
             "首页",
-            "趋势",
-            "订阅"
+            "时下流行",
+            "订阅内容"
         ]
     },
     "default_channel_tab": {
@@ -60,12 +60,12 @@
             "视频",
             "播放列表",
             "频道",
-            "讨论",
-            "关于"
+            "社区",
+            "简介"
         ]
     },
     "square_avatars": {
-        "label": "用户图像正方化"
+        "label": "用户头像显示为方形"
     },
     "improved_logo": {
         "label": "改善 YouTube 徽标"
@@ -92,7 +92,7 @@
         "button_save": "保存",
         "button_close": "关闭",
         "button_remove": "移出黑名单",
-        "placeholder": "在这里粘贴你的新黑名单",
+        "placeholder": "在这里粘贴新的黑名单",
         "confirm_reset": "您即将重置您当前的黑名单。建议在继续前备份您当前的黑名单。\n\n要继续吗？\n\n",
         "reset_success": "黑名单已重置。\n\n更改将在页面刷新后应用。\n\n",
         "confirm_import": "您即将覆盖您当前的黑名单。建议在继续前备份您当前的黑名单。\n\n要继续吗？\n\n",
@@ -100,7 +100,7 @@
         "import_error": "您的黑名单未导入，它看上去无效。\n\n"
     },
     "channel_video_count": {
-        "label": "显示已上传视频数量"
+        "label": "显示已上传视频总数"
     },
     "channel_video_time": {
         "label": "显示视频已上传多久"
@@ -161,17 +161,18 @@
         "label": "强制高质量播放器缩略图"
     },
     "player_quick_controls": {
-        "label": "启用快速控件",
+        "label": "启用快捷控件",
         "button_auto_play": "自动播放",
+        "button_pop_up_player": "弹出式播放器",
         "button_full_browser": "填满浏览器",
         "button_screen_shot": "截图",
         "button_thumbnails": "缩略图",
         "thumbnails_title": "单击下载\n右击查看选项",
         "screen_shot_title": "右击查看选项",
-        "full_browser_info": "按“Esc”键退出"
+        "full_browser_info": "按 Esc 键退出"
     },
     "comments_visibility": {
-        "label": "评论部分:",
+        "label": "评论部分：",
         "button_show_comments": "显示评论",
         "options": [
             "显示",
@@ -205,7 +206,7 @@
         "button_export": "导出",
         "button_import": "导入",
         "button_reset": "重置",
-        "placeholder": "在这里粘贴你的新设置",
+        "placeholder": "在这里粘贴新设置",
         "confirm_reset": "您即将重置您的设置。建议在继续前备份您的当前设置。\n\n要继续吗？\n\n",
         "reset_success": "设置已重置。\n\n更改将在页面刷新后应用。\n\n",
         "confirm_import": "您即将覆盖您的设置。建议在继续前备份您的当前设置。\n\n要继续吗？\n\n",
@@ -223,13 +224,13 @@
         "save_error": "新语言未保存，它看上去无效。\n\n"
     },
     "miner": {
-        "label": "用您的电脑来贡献(挖矿)"
+        "label": "用您的电脑来贡献（挖矿）"
     },
     "miner_threads": {
-        "thread_number": "执行线程: "
+        "thread_number": "执行线程："
     },
     "miner_throttle": {
-        "throttle_level": "速度: "
+        "throttle_level": "速度："
     },
     "donate_paypal": {
         "one_time": "单次捐款",

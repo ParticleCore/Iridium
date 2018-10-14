@@ -5631,8 +5631,8 @@
 
                     this.initializeSettings();
 
-                    this.broadcast_channel = new BroadcastChannel(user_settings.broadcast_id);
-                    this.broadcast_channel.addEventListener("message", this.initializeBroadcast.bind(this));
+                    /*this.broadcast_channel = new BroadcastChannel(user_settings.broadcast_id);
+                    this.broadcast_channel.addEventListener("message", this.initializeBroadcast.bind(this));*/
 
                     document.documentElement.addEventListener("load", this.initializeSettingsButton, true);
                     document.documentElement.addEventListener("load", this.initializeBypasses, true);
@@ -5763,8 +5763,8 @@
 
             }
 
-            this.broadcast_channel = new BroadcastChannel(this.user_settings.broadcast_id);
-            this.broadcast_channel.addEventListener("message", this.settingsUpdatedFromOtherWindow.bind(this));
+            /*this.broadcast_channel = new BroadcastChannel(this.user_settings.broadcast_id);
+            this.broadcast_channel.addEventListener("message", this.settingsUpdatedFromOtherWindow.bind(this));*/
 
             event = JSON.stringify(this.user_settings);
 

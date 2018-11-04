@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.2.2
+// @version         0.2.3
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -336,7 +336,7 @@
 
                         window.yt.player.Application.create("iri-video-preview", config);
 
-                        if ((player_api = document.getElementById("iri-preview-player"))) {
+                        if (player_api = document.getElementById("iri-preview-player")) {
 
                             if (player_api.setVolume) {
                                 player_api.setVolume(50);
@@ -349,7 +349,7 @@
                         }
 
                         if (document.documentElement.classList.contains("iri-always-visible")) {
-                            if ((player_api = document.getElementById("movie_player"))) {
+                            if (player_api = document.getElementById("movie_player")) {
                                 if (player_api.setSizeStyle) {
                                     player_api.setSizeStyle(false, true);
                                 }
@@ -399,7 +399,7 @@
                                 window.clearInterval(timer);
                             }
 
-                            if ((video_container = document.getElementById("iri-video-preview"))) {
+                            if (video_container = document.getElementById("iri-video-preview")) {
 
                                 if (xhr) {
                                     xhr.abort();
@@ -463,8 +463,8 @@
                                     xhr = this.getPreviewArgs(video_id);
                                 } else {
 
-                                    if ((player_manager_api = document.querySelector("yt-player-manager"))) {
-                                        if ((player_container = document.getElementById("player-container"))) {
+                                    if (player_manager_api = document.querySelector("yt-player-manager")) {
+                                        if (player_container = document.getElementById("player-container")) {
                                             if (iridium_api.checkIfExists("yt.config_.FILLER_DATA.player")) {
                                                 player_manager_api["acquireApi"](player_container, window.yt.config_.FILLER_DATA.player);
                                             }
@@ -548,7 +548,7 @@
                             node = externalNode.firstElementChild;
 
                             if (node) {
-                                if ((node.id === "thumbnail" || node.id === "img")) {
+                                if (node.id === "thumbnail" || node.id === "img") {
 
                                     container = node.id === "img" ? node.parentNode : node;
 
@@ -570,8 +570,8 @@
                         var player_api;
 
                         if (window.location.pathname === "/watch") {
-                            if ((player_api = document.getElementById("movie_player"))) {
-                                if ((temp = this.document.querySelector("video"))) {
+                            if (player_api = document.getElementById("movie_player")) {
+                                if (temp = this.document.querySelector("video")) {
 
                                     if (!isNaN(temp.duration) && temp.currentTime < temp.duration) {
 
@@ -605,15 +605,16 @@
                         pop_up_url = url || window.location.href.split(/&t=[0-9]+|#t=[0-9]+|&time=[0-9]+/).join("");
 
                         if (!url && video && video.currentTime && video.currentTime < video.duration) {
-                            if ((player_api = document.getElementById("movie_player"))) {
+                            if (player_api = document.getElementById("movie_player")) {
+                                if (current_config = iridium_api.getCurrentPageData("player")) {
 
-                                current_config                 = player_api.getUpdatedConfigurationData();
-                                pop_up_url                     = pop_up_url + "#t=" + video.currentTime;
-                                current_config.args.start      = video.currentTime;
-                                current_config.args.cue_player = true;
+                                    pop_up_url                     = pop_up_url + "#t=" + video.currentTime;
+                                    current_config.args.start      = video.currentTime;
+                                    current_config.args.cue_player = true;
 
-                                player_api.cueVideoByPlayerVars(current_config.args);
+                                    player_api.cueVideoByPlayerVars(current_config.args);
 
+                                }
                             }
                         }
 
@@ -656,7 +657,7 @@
                                 if (parent.data) {
 
                                     if ("commandMetadata" in parent.data) {
-                                        if ((url = iridium_api.getSingleObjectByKey(parent.data["commandMetadata"], ["url"]))) {
+                                        if (url = iridium_api.getSingleObjectByKey(parent.data["commandMetadata"], ["url"])) {
                                             this.popUpPlayer(event, url);
                                         }
                                     }
@@ -817,7 +818,7 @@
 
                                         window.alert(i18n.blacklist_settings.import_success);
 
-                                        if ((editor = document.getElementById("iridium-text-editor"))) {
+                                        if (editor = document.getElementById("iridium-text-editor")) {
 
                                             editor.remove();
 
@@ -1254,7 +1255,7 @@
                             node = externalNode.firstElementChild;
 
                             if (node) {
-                                if ((node.id === "thumbnail" || node.id === "img")) {
+                                if (node.id === "thumbnail" || node.id === "img") {
 
                                     container = node.id === "img" ? node.parentNode : node;
 
@@ -1464,11 +1465,11 @@
 
                         }
 
-                        if ((video_count_dot = document.querySelector("span.iri-video-count"))) {
+                        if (video_count_dot = document.querySelector("span.iri-video-count")) {
                             video_count_dot.remove();
                         }
 
-                        if ((video_count = document.getElementById("iri-video-count"))) {
+                        if (video_count = document.getElementById("iri-video-count")) {
                             video_count.remove();
                         }
 
@@ -1489,8 +1490,8 @@
                         script_list = event.target ? event.target.response.querySelectorAll("script") : [];
 
                         for (i = 0; i < script_list.length; i++) {
-                            if ((page_data = script_list[i].textContent.match(/window\["ytInitialData"] = ({[\w\W]+});/))) {
-                                if ((page_data = JSON.parse(page_data[1], null, true))) {
+                            if (page_data = script_list[i].textContent.match(/window\["ytInitialData"] = ({[\w\W]+});/)) {
+                                if (page_data = JSON.parse(page_data[1], null, true)) {
 
                                     playlist_data = iridium_api.getObjectByKey(page_data.sidebar, ["playlistSidebarPrimaryInfoRenderer"]);
 
@@ -1562,7 +1563,7 @@
 
                         }
 
-                        if ((time_container = document.getElementById("iri-video-time"))) {
+                        if (time_container = document.getElementById("iri-video-time")) {
                             time_container.remove();
                         }
 
@@ -1580,16 +1581,16 @@
                         script_list = event.target.response.querySelectorAll("script");
 
                         for (i = 0; i < script_list.length; i++) {
-                            if ((page_data = script_list[i].textContent.match(/window\["ytInitialData"] = ({[\w\W]+});/))) {
-                                if ((page_data = JSON.parse(page_data[1], null, true))) {
+                            if (page_data = script_list[i].textContent.match(/window\["ytInitialData"] = ({[\w\W]+});/)) {
+                                if (page_data = JSON.parse(page_data[1], null, true)) {
 
                                     video_data = iridium_api.getObjectByKey(page_data.contents, ["videoId"], function (video_id, obj) {
 
                                         var current_video_id;
 
                                         if (obj && obj.publishedTimeText) {
-                                            if ((current_video_id = window.location.href.match(iridium_api.videoIdPattern))) {
-                                                if ((current_video_id = current_video_id[1])) {
+                                            if (current_video_id = window.location.href.match(iridium_api.videoIdPattern)) {
+                                                if (current_video_id = current_video_id[1]) {
                                                     return video_id === current_video_id;
                                                 }
                                             }
@@ -1632,12 +1633,12 @@
 
                         if (watch_page_active) {
 
-                            if ((channel_url = document.querySelector("#owner-name a"))) {
+                            if (channel_url = document.querySelector("#owner-name a")) {
 
                                 channel_url = channel_url.getAttribute("href").split(/\/videos/)[0];
                                 channel_id  = channel_url.match(/UC([a-z0-9-_]{22})/i);
 
-                            } else if ((channel_id = iridium_api.getSingleObjectByKey(window.ytplayer, "ucid"))) {
+                            } else if (channel_id = iridium_api.getSingleObjectByKey(window.ytplayer, "ucid")) {
 
                                 channel_url = "/channel/" + channel_id;
                                 channel_id  = channel_url.match(/UC([a-z0-9-_]{22})/i);
@@ -1681,7 +1682,7 @@
 
                                 if (user_settings.channel_video_time) {
                                     if (!this.addVideoTime.fetching) {
-                                        if ((upload_info = document.querySelector("#upload-info .date"))) {
+                                        if (upload_info = document.querySelector("#upload-info .date")) {
                                             if (upload_info.textContent.indexOf("·") === -1) {
                                                 if ((video_id = window.location.href.match(iridium_api.videoIdPattern)) && (video_id = video_id[1])) {
 
@@ -1750,9 +1751,9 @@
                         var yt_navigation_manager;
                         var twoColumnWatchNextResults;
 
-                        if ((ytd_watch = document.querySelector("ytd-watch, ytd-watch-flexy"))) {
+                        if (ytd_watch = document.querySelector("ytd-watch, ytd-watch-flexy")) {
                             if (ytd_watch.data) {
-                                if ((twoColumnWatchNextResults = iridium_api.getSingleObjectByKey(ytd_watch.data, ["twoColumnWatchNextResults"]))) {
+                                if (twoColumnWatchNextResults = iridium_api.getSingleObjectByKey(ytd_watch.data, ["twoColumnWatchNextResults"])) {
                                     if ("playlist" in twoColumnWatchNextResults && "playlist" in (playlist = twoColumnWatchNextResults["playlist"])) {
                                         if ("contents" in (playlist = playlist["playlist"])) {
 
@@ -1786,7 +1787,7 @@
 
                                             // timeout temporary workaround for playlist buttons ui not updating after first video changes
                                             window.setTimeout(function () {
-                                                if ((yt_navigation_manager = document.querySelector("yt-navigation-manager"))) {
+                                                if (yt_navigation_manager = document.querySelector("yt-navigation-manager")) {
                                                     if ("updatePlayerComponents_" in yt_navigation_manager) {
                                                         yt_navigation_manager["updatePlayerComponents_"](null, autoplay, null, playlist);
                                                     }
@@ -1822,25 +1823,25 @@
                         this.isToggled               = user_settings.playlist_reverse;
                         this.isReverseButton         = true;
 
-                        if ((defaultLabel = iridium_api.getObjectByKey(this["defaultServiceEndpoint"], ["text"]))) {
+                        if (defaultLabel = iridium_api.getObjectByKey(this["defaultServiceEndpoint"], ["text"])) {
                             if (defaultLabel.length) {
                                 defaultLabel[0].target.text = i18n.playlist_reverse_control.toggle_on;
                             }
                         }
 
-                        if ((toggledLabel = iridium_api.getObjectByKey(this["toggledServiceEndpoint"], ["text"]))) {
+                        if (toggledLabel = iridium_api.getObjectByKey(this["toggledServiceEndpoint"], ["text"])) {
                             if (toggledLabel.length) {
                                 toggledLabel[0].target.text = i18n.playlist_reverse_control.toggle_off;
                             }
                         }
 
-                        if ((defaultLabel = iridium_api.getObjectByKey(this["defaultServiceEndpoint"], ["simpleText"]))) {
+                        if (defaultLabel = iridium_api.getObjectByKey(this["defaultServiceEndpoint"], ["simpleText"])) {
                             if (defaultLabel.length) {
                                 defaultLabel[0].target.simpleText = i18n.playlist_reverse_control.toggle_on;
                             }
                         }
 
-                        if ((toggledLabel = iridium_api.getObjectByKey(this["toggledServiceEndpoint"], ["simpleText"]))) {
+                        if (toggledLabel = iridium_api.getObjectByKey(this["toggledServiceEndpoint"], ["simpleText"])) {
                             if (toggledLabel.length) {
                                 toggledLabel[0].target.simpleText = i18n.playlist_reverse_control.toggle_off;
                             }
@@ -1882,7 +1883,7 @@
 
                         this.id = "reverse";
 
-                        if ((path = this.querySelector("path"))) {
+                        if (path = this.querySelector("path")) {
                             path.setAttribute("d", "M6 21l-4-4h3V5h2v12h3L6 21z M19 7v12h-2V7h-3l4-4l4 4H19z");
                         }
 
@@ -1900,8 +1901,8 @@
                                 return original.apply(this, arguments);
                             }
 
-                            if ((playlistButtons = iridium_api.getSingleObjectByKey(data, ["playlistButtons"]))) {
-                                if ((topLevelButtons = iridium_api.getSingleObjectByKey(playlistButtons, ["topLevelButtons"]))) {
+                            if (playlistButtons = iridium_api.getSingleObjectByKey(data, ["playlistButtons"])) {
+                                if (topLevelButtons = iridium_api.getSingleObjectByKey(playlistButtons, ["topLevelButtons"])) {
                                     context.buildReverseButton(topLevelButtons);
                                 }
                             }
@@ -1916,7 +1917,7 @@
                         var loopIcon;
                         var reverseIcon;
 
-                        if ((loopIcon = document.querySelector("g#loop"))) {
+                        if (loopIcon = document.querySelector("g#loop")) {
 
                             reverseIcon = loopIcon.cloneNode(true);
 
@@ -1934,7 +1935,7 @@
                         var reverseIcon;
 
                         if (data.target.tagName === "LINK" && data.target.rel === "import" && data.target.getAttribute("name")) {
-                            if ((reverseIcon = data.target.import.querySelector("#loop"))) {
+                            if (reverseIcon = data.target.import.querySelector("#loop")) {
 
                                 iconSet     = reverseIcon.parentElement;
                                 reverseIcon = reverseIcon.cloneNode(true);
@@ -2259,11 +2260,11 @@
                             var current_config;
                             var current_video_id;
 
-                            if (!this.getUpdatedConfigurationData || !args.eventid || iridium_api.isPopUpPlayer) {
+                            if (!args.eventid || iridium_api.isPopUpPlayer) {
                                 return original.apply(this, arguments);
                             }
 
-                            current_config = this.getUpdatedConfigurationData();
+                            current_config = iridium_api.getCurrentPageData("player");
 
                             if (current_config && current_config.args && !args.cue_player) {
 
@@ -2461,7 +2462,7 @@
                                 "    background-image:url('" + thumbnail_url.replace("maxresdefault", "mqdefault") + "') !important;" +
                                 "}";
 
-                        } else if ((style_element = document.getElementById("style-thumbnail"))) {
+                        } else if (style_element = document.getElementById("style-thumbnail")) {
                             style_element.textContent = "";
                         }
 
@@ -2633,7 +2634,7 @@
                             ytSignalInstance = window["ytSignalsInstance"];
 
                             if (!ytSignalInstance) {
-                                if ((ytSignalInstance = window["ytSignals"])) {
+                                if (ytSignalInstance = window["ytSignals"]) {
                                     ytSignalInstance = ytSignalInstance["getInstance"] && ytSignalInstance["getInstance"]();
                                 }
                             }
@@ -2803,12 +2804,12 @@
                                     keys_list = Object.keys(this);
 
                                     for (i = 0; i < keys_list.length; i++) {
-                                        if (this[keys_list[i]] && this[keys_list[i]].eventid) {
+                                        if (this[keys_list[i]] && this[keys_list[i]]["innertubeApiKey"]) {
 
                                             if (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
 
                                                 function_string = experimentsGetter["caller"].toString();
-                                                matching        = function_string.match(/this\.([a-z0-9$_]{1,3})=[^;]+\.autoplay/i);
+                                                matching        = function_string.match(/this\.([a-z0-9$_]{1,3})=[^;]+\.autoplayoverride/i);
 
                                                 if (matching && matching[1]) {
                                                     this[matching[1]] = false;
@@ -2863,7 +2864,7 @@
                             iridium_api.saveSettings("fullBrowser");
                             window.dispatchEvent(new Event("resize"));
 
-                            if ((video_player = document.getElementById("movie_player"))) {
+                            if (video_player = document.getElementById("movie_player")) {
                                 if (!document.querySelector("[theater]")) {
                                     video_player.setSizeStyle(true, false);
                                 }
@@ -2897,7 +2898,7 @@
 
                         if (event.target.tagName !== "CANVAS" && (screen_shot_container = document.getElementById("iri-screen-shot-container"))) {
 
-                            if ((link = screen_shot_container.querySelector("a"))) {
+                            if (link = screen_shot_container.querySelector("a")) {
                                 URL.revokeObjectURL(link.href);
                             }
 
@@ -2916,7 +2917,7 @@
                         var thumbnail_gallery;
                         var thumbnail_size_list;
 
-                        if ((video_id = window.location.href.match(iridium_api.videoIdPattern))) {
+                        if (video_id = window.location.href.match(iridium_api.videoIdPattern)) {
 
                             thumbnail_base = window.location.protocol + "//i.ytimg.com/vi/";
 
@@ -2973,7 +2974,7 @@
 
                                 thumbnail_size = thumbnail_list[i].dataset.thumbnailType;
 
-                                if ((thumbnail_size = thumbnail_size_list[thumbnail_size])) {
+                                if (thumbnail_size = thumbnail_size_list[thumbnail_size]) {
 
                                     thumbnail_list[i].src              = thumbnail_base + video_id[1] + "/" + thumbnail_size;
                                     thumbnail_list[i].parentNode.href  = thumbnail_list[i].src;
@@ -3014,7 +3015,7 @@
                             document.documentElement.classList.add("iri-full-browser");
                             document.documentElement.scrollTop = 0;
 
-                            if ((video_player = document.getElementById("movie_player"))) {
+                            if (video_player = document.getElementById("movie_player")) {
 
                                 this.exitFullBrowserlistener = this.exitFullBrowser.bind(this);
                                 window.addEventListener("keydown", this.exitFullBrowserlistener, false);
@@ -3139,7 +3140,7 @@
 
                         var button;
 
-                        if ((button = document.getElementById("iri-quick-control-auto-play"))) {
+                        if (button = document.getElementById("iri-quick-control-auto-play")) {
 
                             if (user_settings.player_auto_play) {
                                 button.setAttribute("enabled", "true");
@@ -3149,7 +3150,7 @@
 
                         }
 
-                        if ((button = document.getElementById("iri-quick-control-full-browser"))) {
+                        if (button = document.getElementById("iri-quick-control-full-browser")) {
 
                             if (user_settings.fullBrowser) {
 
@@ -3359,7 +3360,7 @@
                         if (user_settings.comments_visibility > 0) {
 
                             if (!((comment_contents = document.querySelector("ytd-comments #contents")) && comment_contents.firstElementChild)) {
-                                if ((comment_section = document.querySelector("ytd-comments yt-next-continuation"))) {
+                                if (comment_section = document.querySelector("ytd-comments yt-next-continuation")) {
 
                                     if (comment_section.onShow) {
                                         comment_section.onShow = this.modOnShow(comment_section.onShow);
@@ -3413,7 +3414,7 @@
                             return;
                         }
 
-                        if ((api = document.getElementById("movie_player"))) {
+                        if (api = document.getElementById("movie_player")) {
 
                             clear = window.location.pathname === "/watch" && api && api !== event.target && !api.contains(event.target);
 
@@ -3609,7 +3610,7 @@
                             return;
                         }
 
-                        if ((masthead = document.getElementById("masthead"))) {
+                        if (masthead = document.getElementById("masthead")) {
                             masthead_offset += masthead.offsetHeight;
                         }
 
@@ -3636,7 +3637,7 @@
 
                         }
 
-                        if ((video_player = document.getElementById("movie_player"))) {
+                        if (video_player = document.getElementById("movie_player")) {
 
                             style = "";
 
@@ -3675,7 +3676,7 @@
                         var video_rects;
                         var video_player;
 
-                        if ((video_player = document.getElementById("movie_player"))) {
+                        if (video_player = document.getElementById("movie_player")) {
 
                             video_rects = video_player.getBoundingClientRect();
 
@@ -3777,59 +3778,56 @@
                         var keys;
                         var history;
                         var ytd_app;
-                        var player_api;
                         var current_data;
                         var history_list;
                         var history_state;
                         var yt_history_manager;
 
-                        if ((player_api = document.getElementById("movie_player"))) {
-                            if ((yt_history_manager = document.querySelector("yt-history-manager"))) {
+                        if (yt_history_manager = document.querySelector("yt-history-manager")) {
 
-                                history_list = [];
+                            history_list = [];
 
-                                if (yt_history_manager.USE_HISTORY_SNAPSHOT_CACHE_) {
-                                    if (iridium_api.checkIfExists("historySnapshotCache_.timeToDataCache_", yt_history_manager)) {
-                                        yt_history_manager.historySnapshotCache_.timeToDataCache_.forEach(function (value, key) {
-                                            history_list[key] = value;
-                                        });
-                                    }
-                                } else if (yt_history_manager.historyEntryTimeToDataMap_) {
-                                    history_list = yt_history_manager.historyEntryTimeToDataMap_;
+                            if (yt_history_manager.USE_HISTORY_SNAPSHOT_CACHE_) {
+                                if (iridium_api.checkIfExists("historySnapshotCache_.timeToDataCache_", yt_history_manager)) {
+                                    yt_history_manager.historySnapshotCache_.timeToDataCache_.forEach(function (value, key) {
+                                        history_list[key] = value;
+                                    });
                                 }
-
-                                keys         = Object.keys(history_list);
-                                current_data = player_api.getUpdatedConfigurationData();
-
-                                for (i = 0; i < keys.length; i++) {
-                                    if ((history = history_list[keys[i]].rootData)) {
-                                        if (current_data.args.eventid === history.csn) {
-
-                                            history.response.currentVideoEndpoint.urlEndpoint = {
-                                                url: iridium_api.getSingleObjectByKey(history.response.currentVideoEndpoint, ["url"])
-                                            };
-
-                                            history_state = {
-                                                endpoint: history.response.currentVideoEndpoint,
-                                                entryTime: +keys[i],
-                                                savedComponentState: null
-                                            };
-
-                                            window.history.pushState(history_state, current_data.args.title, history.url);
-
-                                            yt_history_manager.onPopState_({state: history_state});
-
-                                            if ((ytd_app = document.querySelector("ytd-app"))) {
-                                                ytd_app.setPageTitle(current_data.args.title);
-                                            }
-
-                                            break;
-
-                                        }
-                                    }
-                                }
-
+                            } else if (yt_history_manager.historyEntryTimeToDataMap_) {
+                                history_list = yt_history_manager.historyEntryTimeToDataMap_;
                             }
+
+                            keys         = Object.keys(history_list);
+                            current_data = iridium_api.getCurrentPageData("player");
+
+                            for (i = 0; i < keys.length; i++) {
+                                if (history = history_list[keys[i]].rootData) {
+                                    if (current_data.args.eventid === history.csn) {
+
+                                        history.response.currentVideoEndpoint.urlEndpoint = {
+                                            url: iridium_api.getSingleObjectByKey(history.response.currentVideoEndpoint, ["url"])
+                                        };
+
+                                        history_state = {
+                                            endpoint: history.response.currentVideoEndpoint,
+                                            entryTime: +keys[i],
+                                            savedComponentState: null
+                                        };
+
+                                        window.history.pushState(history_state, current_data.args.title, history.url);
+
+                                        yt_history_manager.onPopState_({state: history_state});
+
+                                        if (ytd_app = document.querySelector("ytd-app")) {
+                                            ytd_app.setPageTitle(current_data.args.title);
+                                        }
+
+                                        break;
+
+                                    }
+                                }
+                            }
+
                         }
 
                         this.endMiniPlayer("iri-always-playing");
@@ -3842,9 +3840,9 @@
 
                         this.endMiniPlayer("iri-always-playing");
 
-                        if ((player_api = document.getElementById("movie_player"))) {
+                        if (player_api = document.getElementById("movie_player")) {
                             if (iridium_api.checkIfExists("yt.config_.FILLER_DATA.player.args")) {
-                                if ((current_config = player_api.getUpdatedConfigurationData())) {
+                                if (current_config = iridium_api.getCurrentPageData("player")) {
                                     player_api.cueVideoByPlayerVars(current_config.args);
                                 }
                             }
@@ -3914,7 +3912,7 @@
 
                         document.documentElement.classList.add(class_name);
 
-                        if ((player_api = document.getElementById("movie_player"))) {
+                        if (player_api = document.getElementById("movie_player")) {
 
                             if (this.setMiniPlayerSizeListener) {
 
@@ -4005,10 +4003,10 @@
 
                         if (!document.documentElement.classList.contains("iri-always-playing")) {
                             if (document.querySelector(".playing-mode")) {
-                                if ((player_api = document.getElementById("movie_player"))) {
-                                    if ((page_manager = document.querySelector("ytd-page-manager"))) {
+                                if (player_api = document.getElementById("movie_player")) {
+                                    if (page_manager = document.querySelector("ytd-page-manager")) {
                                         if (page_manager.data && page_manager.data.csn) {
-                                            if ((current_data = player_api.getUpdatedConfigurationData())) {
+                                            if (current_data = iridium_api.getCurrentPageData("player")) {
 
                                                 current_data.args.eventid = page_manager.data.csn;
                                                 player_api.updateVideoData(current_data.args, true);
@@ -4264,7 +4262,7 @@
 
                                         window.alert(i18n.iridium_user_settings.import_success);
 
-                                        if ((editor = document.getElementById("iridium-text-editor"))) {
+                                        if (editor = document.getElementById("iridium-text-editor")) {
                                             editor.remove();
                                         }
 
@@ -4390,7 +4388,7 @@
 
                                         window.alert(i18n.iridium_language.save_success);
 
-                                        if ((editor = document.getElementById("iridium-text-editor"))) {
+                                        if (editor = document.getElementById("iridium-text-editor")) {
                                             editor.remove();
                                         }
 
@@ -4449,19 +4447,19 @@
                     google_api_locale: "",
                     fetchingLocale: false,
                     locale_base_url: "https://api.github.com/repos/ParticleCore/Iridium/contents/i18n/",
-                    saveLanguage: function (data) {
+                    saveLanguage: function (message) {
 
                         var locale_updated;
 
                         this.fetchingLocale = false;
 
-                        window.removeEventListener(send_settings_to_page, this.saveLanguageListener, false);
+                        iridium_api.broadcast_channel.removeEventListener("message", this.saveLanguageListener);
 
-                        if (data.detail.locale !== "") {
+                        if (message.data && message.data.payload !== "") {
 
                             try {
 
-                                user_settings.i18n_locale      = JSON.parse(data.detail.locale);
+                                user_settings.i18n_locale      = JSON.parse(message.data.payload);
                                 user_settings.i18n_locale.code = this.google_api_locale;
                                 locale_updated                 = true;
 
@@ -4539,7 +4537,7 @@
 
                         var current_time;
 
-                        if ((this.google_api_locale = iridium_api.checkIfExists("yt.config_.GAPI_LOCALE"))) {
+                        if (this.google_api_locale = iridium_api.checkIfExists("yt.config_.GAPI_LOCALE")) {
 
                             if (this.google_api_locale !== "en_US") {
 
@@ -4586,7 +4584,7 @@
 
                                         this.saveLanguageListener = this.saveLanguage.bind(this);
 
-                                        window.addEventListener(send_settings_to_page, this.saveLanguageListener, false);
+                                        iridium_api.broadcast_channel.addEventListener("message", this.saveLanguageListener);
 
                                         window.dispatchEvent(new CustomEvent(receive_settings_from_page, {
                                             detail: {
@@ -4768,7 +4766,7 @@
                     var welcome_box;
 
                     if (event.target.tagName === "BUTTON" || event.target.id === "iri-welcome-box") {
-                        if ((welcome_box = document.getElementById("iri-welcome-box"))) {
+                        if (welcome_box = document.getElementById("iri-welcome-box")) {
 
                             welcome_box.remove();
                             user_settings.welcome_closed = true;
@@ -4831,7 +4829,7 @@
 
                         }
 
-                    } else if ((welcome_box = document.getElementById("iri-welcome-box"))) {
+                    } else if (welcome_box = document.getElementById("iri-welcome-box")) {
                         welcome_box.remove();
 
                     }
@@ -4897,6 +4895,18 @@
                     }
 
                 },
+                getCurrentPageData: function(path) {
+
+                    var data;
+                    var ytdApp;
+
+                    if (!(ytdApp = document.querySelector("ytd-app")) || !(ytdApp = iridium_api.checkIfExists("__data__.data", ytdApp))) {
+                        return;
+                    }
+
+                    return iridium_api.checkIfExists(path, ytdApp);
+
+                },
                 getSingleObjectByKey: function (obj, keys, match) {
 
                     var i;
@@ -4913,12 +4923,12 @@
                             if (hasKey && (!match || obj[property].constructor.name !== "Object" && match(obj[property], obj))) {
                                 return obj[property];
                             } else if (obj[property].constructor.name === "Object") {
-                                if ((result = this.getSingleObjectByKey(obj[property], keys, match))) {
+                                if (result = this.getSingleObjectByKey(obj[property], keys, match)) {
                                     return result;
                                 }
                             } else if (obj[property].constructor.name === "Array") {
                                 for (i = 0; i < obj[property].length; i++) {
-                                    if ((result = this.getSingleObjectByKey(obj[property][i], keys, match))) {
+                                    if (result = this.getSingleObjectByKey(obj[property][i], keys, match)) {
                                         return result;
                                     }
                                 }
@@ -5044,7 +5054,7 @@
 
                     section.textContent = "";
 
-                    if ((header = document.getElementById("settings_section_header"))) {
+                    if (header = document.getElementById("settings_section_header")) {
                         header.textContent = i18n.section_titles[options_list[0].section];
                     }
 
@@ -5203,7 +5213,7 @@
 
                         if (next !== current) {
 
-                            if ((sidebar_current = document.querySelector(".active_sidebar"))) {
+                            if (sidebar_current = document.querySelector(".active_sidebar")) {
                                 sidebar_current.classList.remove("active_sidebar");
                             }
 
@@ -5344,11 +5354,11 @@
 
                     if (is_refresh) {
 
-                        if ((new_section = document.querySelector(".sidebar_section.active_sidebar"))) {
+                        if (new_section = document.querySelector(".sidebar_section.active_sidebar")) {
                             new_section.classList.remove("active_sidebar");
                         }
 
-                        if ((current_section = document.getElementById(current_section))) {
+                        if (current_section = document.getElementById(current_section)) {
                             current_section.classList.add("active_sidebar");
                         }
 
@@ -5415,7 +5425,7 @@
                     var ytd_watch;
                     var sizeBypass;
 
-                    if ((ytd_watch = document.querySelector("ytd-watch, ytd-watch-flexy"))) {
+                    if (ytd_watch = document.querySelector("ytd-watch, ytd-watch-flexy")) {
 
                         sizeBypass = function () {
 
@@ -5425,7 +5435,7 @@
 
                             if (!ytd_watch.theater && !document.querySelector(".iri-full-browser") && (movie_player = document.querySelector("#movie_player"))) {
 
-                                width = movie_player.offsetWidth;
+                                width  = movie_player.offsetWidth;
                                 height = Math.round(movie_player.offsetWidth / (16 / 9));
 
                                 if (ytd_watch.updateStyles) {
@@ -5443,7 +5453,7 @@
 
                             } else {
 
-                                width = window.NaN;
+                                width  = window.NaN;
                                 height = window.NaN;
 
                             }
@@ -5459,14 +5469,14 @@
 
                             if (!ytd_watch.calculateCurrentPlayerSize_.bypassed) {
 
-                                ytd_watch.calculateCurrentPlayerSize_ = sizeBypass;
+                                ytd_watch.calculateCurrentPlayerSize_          = sizeBypass;
                                 ytd_watch.calculateCurrentPlayerSize_.bypassed = true;
 
                             }
 
                             if (!ytd_watch.calculateNormalPlayerSize_.bypassed) {
 
-                                ytd_watch.calculateNormalPlayerSize_ = sizeBypass;
+                                ytd_watch.calculateNormalPlayerSize_          = sizeBypass;
                                 ytd_watch.calculateNormalPlayerSize_.bypassed = true;
 
                             }
@@ -5485,7 +5495,7 @@
                     var loaded_settings;
                     var iridium_settings;
 
-                    if ((iridium_settings = document.getElementById("iridium-settings"))) {
+                    if (iridium_settings = document.getElementById("iridium-settings")) {
 
                         loaded_settings            = JSON.parse(iridium_settings.textContent || "null");
                         receive_settings_from_page = iridium_settings.getAttribute("settings-beacon-from");
@@ -5620,12 +5630,26 @@
 
                 },
                 initializeBroadcast: function (event) {
-                    if (event.data && event.data.broadcast_id === this.broadcast_channel.name) {
 
-                        this.initializeSettings(event.data);
-                        this.initializeModulesUpdate();
+                    if (event.data) {
+
+                        if (event.data.type === "settings") {
+
+                            if (event.data.payload) {
+
+                                if (event.data.payload.broadcast_id === this.broadcast_channel.name) {
+
+                                    this.initializeSettings(event.data.payload);
+                                    this.initializeModulesUpdate();
+
+                                }
+
+                            }
+
+                        }
 
                     }
+
                 },
                 ini: function () {
 
@@ -5658,15 +5682,14 @@
         isAllowedPage: function () {
 
             var current_page;
-            var disallowed_pages;
 
-            if ((current_page = window.location.pathname.match(/\/[a-z-]+/))) {
+            if (current_page = window.location.pathname.match(/\/[a-z-]+/)) {
                 current_page = current_page[0];
             } else {
                 current_page = window.location.pathname;
             }
 
-            disallowed_pages = [
+            return [
                 "/tv",
                 "/embed",
                 "/live_chat",
@@ -5676,15 +5699,16 @@
                 "/dashboard",
                 "/upload",
                 "/webcam"
-            ];
-
-            return disallowed_pages.indexOf(current_page) < 0;
+            ].indexOf(current_page) < 0;
 
         },
         generateUUID: function () {
-            return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, function (point) {
-                return (point ^ window.crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> point / 4).toString(16);
-            });
+            return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(
+                /[018]/g,
+                function (point) {
+                    return (point ^ window.crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> point / 4).toString(16);
+                }
+            );
         },
         saveSettings: function () {
 
@@ -5696,13 +5720,16 @@
 
         },
         updateSettingsOnOpenWindows: function () {
-            this.broadcast_channel.postMessage(this.user_settings);
+            this.broadcast_channel
+                .postMessage({
+                    type: "settings",
+                    payload: this.user_settings
+                });
         },
         settingsUpdatedFromOtherWindow: function (event) {
             if (event.data && event.data.broadcast_id === this.broadcast_channel.name) {
 
                 this.user_settings = event.data;
-
                 this.saveSettings();
 
             }
@@ -5729,7 +5756,6 @@
                         if (updated_settings.hasOwnProperty(key)) {
 
                             this.user_settings = updated_settings;
-
                             break;
 
                         }
@@ -5740,12 +5766,12 @@
                 this.saveSettings();
                 this.updateSettingsOnOpenWindows();
 
-            } else if ((locale_request = custom_event.detail.locale)) {
-                window.dispatchEvent(new CustomEvent(this.send_settings_to_page, {
-                    detail: {
-                        locale: chrome.i18n.getMessage(locale_request)
-                    }
-                }));
+            } else if (locale_request = custom_event.detail.locale) {
+                this.broadcast_channel
+                    .postMessage({
+                        type: "locale",
+                        payload: chrome.i18n.getMessage(locale_request)
+                    });
             }
 
         },
@@ -5758,7 +5784,6 @@
             if (!this.user_settings.broadcast_id) {
 
                 this.user_settings.broadcast_id = this.generateUUID();
-
                 this.saveSettings();
 
             }
@@ -5807,10 +5832,14 @@
 
             now = Date.now();
 
-            this.receive_settings_from_page = now + this.generateUUID();
-            this.send_settings_to_page      = now + 1 + this.generateUUID();
+            this.receive_settings_from_page = now + "-" + this.generateUUID();
+            this.send_settings_to_page      = now + 1 + "-" + this.generateUUID();
 
-            window.addEventListener(this.receive_settings_from_page, this.contentScriptMessages.bind(this), false);
+            window.addEventListener(
+                this.receive_settings_from_page,
+                this.contentScriptMessages.bind(this),
+                false
+            );
 
             if (!event) {
                 if (this.is_user_script) {
@@ -5819,13 +5848,14 @@
 
                     // javascript promises are horrible
 
-                    this.GM.getValue(this.id, "{}").then(function (value) {
+                    this.GM
+                        .getValue(this.id, "{}")
+                        .then(function (value) {
 
                             event = JSON.parse(value);
                             context.initializeScript(event);
 
-                        }
-                    );
+                        });
 
                 }
             } else {
@@ -5838,8 +5868,7 @@
             if (this.isAllowedPage()) {
 
                 this.is_settings_page = window.location.pathname === "/iridium-settings";
-
-                this.id = "iridiumSettings";
+                this.id               = "iridiumSettings";
 
                 if (typeof GM === "object" || typeof GM_info === "object") {
 
@@ -5861,7 +5890,6 @@
                                         reject(e);
                                     }
                                 });
-
                             }
                         };
 
@@ -5874,7 +5902,6 @@
                 } else {
 
                     this.is_user_script = false;
-
                     chrome.storage.local.get(this.id, this.main.bind(this));
 
                 }

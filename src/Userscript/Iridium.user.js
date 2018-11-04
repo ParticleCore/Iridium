@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         0.2.3
+// @version         0.2.4
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -2806,7 +2806,7 @@
                                     for (i = 0; i < keys_list.length; i++) {
                                         if (this[keys_list[i]] && this[keys_list[i]]["innertubeApiKey"]) {
 
-                                            if (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play) {
+                                            if (this["playerStyle"] && (context.isChannel() ? !user_settings.channel_trailer_auto_play : !user_settings.player_auto_play)) {
 
                                                 function_string = experimentsGetter["caller"].toString();
                                                 matching        = function_string.match(/this\.([a-z0-9$_]{1,3})=[^;]+\.autoplayoverride/i);

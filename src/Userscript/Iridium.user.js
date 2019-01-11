@@ -587,7 +587,7 @@
 
                     },
                     popUpPlayer: function (event, url) {
-
+                        var isFirefox = typeof InstallTrigger !== 'undefined';
                         var top;
                         var left;
                         var video;
@@ -597,36 +597,38 @@
                         var pop_up_url;
                         var player_api;
                         var current_config;
-                        document.getElementsByTagName('video')[0].requestPictureInPicture();
+                        if(!isFirefox) {
+                            document.getElementsByTagName('video')[0].requestPictureInPicture();
+                        } else {
+                            width      = user_settings.popup_player_size || this.popUpPlayerMinWidth;
+                            height     = Math.round(width / (16 / 9));
+                            left       = event.screenX - (width / 2);
+                            top        = event.screenY - 15;
+                            video      = document.querySelector("video");
+                            pop_up_url = url || window.location.href.split(/&t=[0-9]+|#t=[0-9]+|&time=[0-9]+/).join("");
 
-                        /*width      = user_settings.popup_player_size || this.popUpPlayerMinWidth;
-                        height     = Math.round(width / (16 / 9));
-                        left       = event.screenX - (width / 2);
-                        top        = event.screenY - 15;
-                        video      = document.querySelector("video");
-                        pop_up_url = url || window.location.href.split(/&t=[0-9]+|#t=[0-9]+|&time=[0-9]+/).join("");
+                            if (!url && video && video.currentTime && video.currentTime < video.duration) {
+                                if (player_api = document.getElementById("movie_player")) {
+                                    if (current_config = iridium_api.getCurrentPageData("player")) {
 
-                        if (!url && video && video.currentTime && video.currentTime < video.duration) {
-                            if (player_api = document.getElementById("movie_player")) {
-                                if (current_config = iridium_api.getCurrentPageData("player")) {
+                                        pop_up_url                     = pop_up_url + "#t=" + video.currentTime;
+                                        current_config.args.start      = video.currentTime;
+                                        current_config.args.cue_player = true;
 
-                                    pop_up_url                     = pop_up_url + "#t=" + video.currentTime;
-                                    current_config.args.start      = video.currentTime;
-                                    current_config.args.cue_player = true;
+                                        player_api.cueVideoByPlayerVars(current_config.args);
 
-                                    player_api.cueVideoByPlayerVars(current_config.args);
-
+                                    }
                                 }
                             }
+
+                            pop_up = window.open(pop_up_url, "popUpPlayer", "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top);
+
+                            if (!url) {
+                                pop_up.addEventListener("beforeunload", this.resumePlayback.bind(pop_up), false);
+                            }
+
+                            pop_up.focus();
                         }
-
-                        pop_up = window.open(pop_up_url, "popUpPlayer", "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top);
-
-                        if (!url) {
-                            pop_up.addEventListener("beforeunload", this.resumePlayback.bind(pop_up), false);
-                        }
-
-                        pop_up.focus();*/
 
                     },
                     startPopUpPlayer: function (event) {

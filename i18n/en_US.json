@@ -103,7 +103,7 @@
         "label": "Display uploaded videos number"
     },
     "channel_video_time": {
-        "label": "Display how long the video was uploaded"
+        "label": "Display how long ago the video was uploaded"
     },
     "playlist_reverse_control": {
         "label": "Enable reverse playlist control",

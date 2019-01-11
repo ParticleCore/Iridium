@@ -597,8 +597,9 @@
                         var pop_up_url;
                         var player_api;
                         var current_config;
+                        document.getElementsByTagName('video')[0].requestPictureInPicture();
 
-                        width      = user_settings.popup_player_size || this.popUpPlayerMinWidth;
+                        /*width      = user_settings.popup_player_size || this.popUpPlayerMinWidth;
                         height     = Math.round(width / (16 / 9));
                         left       = event.screenX - (width / 2);
                         top        = event.screenY - 15;
@@ -625,7 +626,7 @@
                             pop_up.addEventListener("beforeunload", this.resumePlayback.bind(pop_up), false);
                         }
 
-                        pop_up.focus();
+                        pop_up.focus();*/
 
                     },
                     startPopUpPlayer: function (event) {

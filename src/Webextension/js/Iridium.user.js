@@ -3559,7 +3559,7 @@
                             return;
                         }
 
-                        document.addEventListener("wheel", this.changeVolume.bind(this));
+                        document.addEventListener("wheel", this.changeVolume.bind(this), {passive: false});
 
                     }
                 },

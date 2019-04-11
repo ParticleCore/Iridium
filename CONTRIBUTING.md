@@ -20,7 +20,7 @@ Do not include more than one subject (problem, request or both) in one issue.
  
 ### Contributing to source code
 
-While help is appreciated, source code submissions will not be accepted. If users really want to implement modifications please create your own forks, don't submit pull requests.
+While help is appreciated, the only submissions that will be accepted are locale fixes. If users really want to implement modifications please create your own forks, don't submit pull requests.
 
 ---
 

@@ -65,13 +65,13 @@
         ]
     },
     "square_avatars": {
-        "label": "Make user images squared"
+        "label": "Make user images square"
     },
     "improved_logo": {
         "label": "Improve the YouTube logo"
     },
     "thumbnail_preview": {
-        "label": "Play videos by hovering the thumbnails"
+        "label": "Play videos by hovering over the thumbnails"
     },
     "thumbnail_preview_mute": {
         "label": "Shift key toggles audio on video thumbnail playback"
@@ -96,14 +96,14 @@
         "confirm_reset": "You are about to reset your blacklist. It is advised to backup your current blacklist before continuing.\n\nDo you wish to continue?\n\n",
         "reset_success": "Blacklist has been reset.\n\nChanges will be applied after a page refresh.\n\n",
         "confirm_import": "You are about to override your current blacklist. It is advised to backup your current blacklist before continuing.\n\nDo you wish to continue?\n\n",
-        "import_success": "Your blacklist has been imported with success.\n\nChanges will be applied after a page refresh.\n\n",
-        "import_error": "Your blacklist could not be imported because it appears to be invalid.\n\n"
+        "import_success": "Your blacklist has been imported successfully.\n\nChanges will be applied after a page refresh.\n\n",
+        "import_error": "Your blacklist appears to be invalid and could not be imported.\n\n"
     },
     "channel_video_count": {
-        "label": "Display uploaded videos number"
+        "label": "Display number of uploaded videos"
     },
     "channel_video_time": {
-        "label": "Display how long the video was uploaded"
+        "label": "Display how long ago the video was uploaded"
     },
     "playlist_reverse_control": {
         "label": "Enable reverse playlist control",
@@ -187,7 +187,7 @@
         "label": "Change volume using the mouse wheel"
     },
     "player_always_visible": {
-        "label": "Video stays always visible while scrolling"
+        "label": "Video stays visible while scrolling"
     },
     "player_always_playing": {
         "label": "Video keeps playing when changing pages",
@@ -210,8 +210,8 @@
         "confirm_reset": "You are about to reset your settings. It is advised to backup your current settings before continuing.\n\nDo you wish to continue?\n\n",
         "reset_success": "Settings have been reset.\n\nChanges will be applied after a page refresh.\n\n",
         "confirm_import": "You are about to override your current settings. It is advised to backup your current settings before continuing.\n\nDo you wish to continue?\n\n",
-        "import_success": "Your settings have been imported with success.\n\nChanges will be applied after a page refresh.\n\n",
-        "import_error": "Your settings could not be imported because they appear to be invalid.\n\n"
+        "import_success": "Your settings have been imported successfully.\n\nChanges will be applied after a page refresh.\n\n",
+        "import_error": "Your settings appear to be invalid and could not be imported.\n\n"
     },
     "iridium_custom_language": {
         "label": "Use modified locale"

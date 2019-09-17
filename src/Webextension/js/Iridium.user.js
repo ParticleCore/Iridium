@@ -1,4 +1,4 @@
-﻿// ==UserScript==
+// ==UserScript==
 // @version         0.2.5
 // @name            Iridium
 // @namespace       https://github.com/ParticleCore
@@ -5719,6 +5719,6 @@
 
     };
 
-    iridium.ini();
+    // iridium.ini();
 
 }());

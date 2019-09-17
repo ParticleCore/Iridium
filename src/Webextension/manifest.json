@@ -1,30 +1,30 @@
 {
-    "manifest_version" : 2,
-    "name" : "Iridium for YouTube",
-    "version" : "0.2.5",
-    "description" : "YouTube with more freedom",
-    "default_locale" : "en",
-    "icons" : {
-        "16" : "icons/16.png",
-        "32" : "icons/32.png",
-        "48" : "icons/48.png",
-        "64" : "icons/64.png",
-        "128" : "icons/128.png"
+    "manifest_version": 2,
+    "name": "Iridium for YouTube",
+    "version": "1.0.0",
+    "description": "YouTube with more freedom",
+    "default_locale": "en",
+    "icons": {
+        "16": "icons/16.png",
+        "32": "icons/32.png",
+        "48": "icons/48.png",
+        "64": "icons/64.png",
+        "128": "icons/128.png"
     },
-    "browser_action" : {
-        "default_icon" : {
-            "16" : "icons/16.png",
-            "32" : "icons/32.png",
-            "48" : "icons/48.png",
-            "64" : "icons/64.png",
-            "128" : "icons/128.png"
+    "browser_action": {
+        "default_icon": {
+            "16": "icons/16.png",
+            "32": "icons/32.png",
+            "48": "icons/48.png",
+            "64": "icons/64.png",
+            "128": "icons/128.png"
         }
     },
-    "background" : {
-        "scripts" : [
+    "background": {
+        "scripts": [
             "js/background.js"
         ],
-        "persistent" : false
+        "persistent": true
     },
     "content_scripts" : [
         {
@@ -32,7 +32,7 @@
                 "*://www.youtube.com/*"
             ],
             "js" : [
-                "js/Iridium.user.js"
+                "js/content-script.js"
             ],
             "css" : [
                 "css/Iridium.css"
@@ -40,14 +40,19 @@
             "run_at" : "document_start"
         }
     ],
-    "permissions" : [
-        "storage"
+    "permissions": [
+        "storage",
+        "cookies",
+        "webRequest",
+        "webRequestBlocking",
+        "*://www.youtube.com/*",
+        "*://*.ytimg.com/*"
     ],
-    "applications" : {
-        "gecko" : {
-            "id" : "unlisted-iridium@particlecore.github.io",
-            "strict_min_version" : "54.0",
-            "update_url" : "https://github.com/ParticleCore/Iridium/raw/master/bin/update.json"
+    "applications": {
+        "gecko": {
+            "id": "dev-unlisted-iridium@particlecore.github.io",
+            "strict_min_version": "54.0",
+            "update_url": "https://github.com/ParticleCore/Iridium/raw/master/bin/update.json"
         }
     }
 }

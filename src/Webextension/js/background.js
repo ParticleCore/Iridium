@@ -2,8 +2,10 @@
 
 const YT_PATTERN = "*://www.youtube.com/*";
 const YT_DOMAIN = "https://www.youtube.com";
+const GET_BROADCAST_ID = 0;
 
 let api;
+let util;
 let settings;
 
 settings = {
@@ -12,8 +14,20 @@ settings = {
     maxResThumbnail: true
 };
 
-api = {
+util = {
     videoIdPattern: /v=([\w-_]+)/,
+    generateUUID: function () {
+        return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(
+            /[018]/g,
+            function (point) {
+                return (point ^ window.crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> point / 4).toString(16);
+            }
+        );
+    }
+};
+
+api = {
+    broadcastId: util.generateUUID(),
     filterCacheData: function (data) {
         return data != null && data.startsWith("\u0000") ? data.split("\u0000").pop() : data;
 
@@ -36,20 +50,40 @@ api = {
             return;
         }
 
-        function inject() {
-            window.loadIntercept = function (...args) {
+        function inject(broadcastId, settings) {
 
-                console.log(args);
+            let broadcastChannel;
 
-                args.forEach(function (arg) {
-                    console.log(arg);
-                });
+            broadcastChannel = new BroadcastChannel(broadcastId);
+            broadcastChannel.addEventListener("message", function (event) {
 
-                if (window.loadOriginal) {
-                    window.loadOriginal();
+                console.log(event);
+
+                if (!event.data ||
+                    event.data.type !== "setting-update" ||
+                    !event.data.payload
+                ) {
+                    return;
                 }
 
-            };
+                let payload;
+
+                payload = event.data.payload;
+
+                if (payload.hasOwnProperty("autoPlayVideo")) {
+                    window.autoPlayVideo = payload.autoPlayVideo;
+                }
+
+                console.log(event);
+
+            });
+
+            if (settings) {
+                if (settings.hasOwnProperty("autoPlayVideo")) {
+                    window.autoPlayVideo = settings.autoPlayVideo;
+                }
+            }
+
         }
 
         console.log("main: " + details.url);
@@ -70,7 +104,7 @@ api = {
 
         filter.onstop = function (event) {
 
-            str = str.replace(/<head>/, "<head><script>(" + inject + "())</script>");
+            str = str.replace(/<head>/, `<head><script>(${inject}("${api.broadcastId}",${JSON.stringify(settings)}))</script>`);
 
             if (!settings.autoPlayVideo) {
                 str = str
@@ -143,8 +177,8 @@ api = {
                     //     .replace(
                     //         // /^(.+\.)(loadVideoByPlayerVars=function\([a-z0-9,]+\){)((?:(?!app).)+$)/im,
                     //         /^(.+\.)(loadVideoByPlayerVars=function\(([a-z0-9,]+)\){)((?:(?!app).)+$)/im,
-                    //         // "$1$2if(window.autoPlay===false){$1cueVideoByPlayerVars($3);return;}$4"
-                    //         "$1$2if(window.autoPlay===false){$1cueVideoByPlayerVars($3);return;}$4"
+                    //         // "$1$2if(window.autoPlayVideo===false){$1cueVideoByPlayerVars($3);return;}$4"
+                    //         "$1$2if(window.autoPlayVideo===false){$1cueVideoByPlayerVars($3);return;}$4"
                     //     )
                     //     .replace(
                     //         /(this\.[a-z0-9$_]{1,3})=[^;]+\.autoplayoverride[^;]+;/i,
@@ -164,7 +198,7 @@ api = {
                 } else {
 
                     str = str
-                        .replace(/([a-z0-9.]+)loadVideoByPlayerVars\(([^)]+)\)/gi, "(window.autoPlay!==false ? $1loadVideoByPlayerVars($2):$1cueVideoByPlayerVars($2))")
+                        .replace(/([a-z0-9.]+)loadVideoByPlayerVars\(([^)]+)\)/gi, "(window.autoPlayVideo!==false ? $1loadVideoByPlayerVars($2):$1cueVideoByPlayerVars($2))")
                         // .replace(/\.loadVideoByPlayerVars/g, ".cueVideoByPlayerVars")
                         .replace(/config_\.loaded=!0/g, "config_.loaded=!1")
                     ;
@@ -367,6 +401,18 @@ api = {
     },
     ini: function () {
 
+        chrome.runtime.onMessage.addListener(
+            function (
+                request,
+                sender,
+                sendResponse
+            ) {
+                if (request === GET_BROADCAST_ID) {
+                    sendResponse(api.broadcastId);
+                }
+            }
+        );
+
         chrome.storage.onChanged.addListener(function (
             changes,
             namespace
@@ -387,7 +433,7 @@ api = {
 
         chrome.browserAction.onClicked.addListener(function () {
             chrome.tabs.create({
-                url: chrome.runtime.getURL("html/options.html")
+                url: chrome.runtime.getURL("html/options.html?broadcastId=" + api.broadcastId)
             });
         });
 
@@ -441,6 +487,7 @@ api = {
         );
 
     }
+
 };
 
 api.ini();

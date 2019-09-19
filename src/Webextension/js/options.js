@@ -1,3 +1,7 @@
+"use strict";
+
+let url;
+
 function updateSetting(
     settingId,
     value
@@ -36,6 +40,16 @@ function onSettingsResponse(items) {
 
 }
 
+chrome.storage.onChanged.addListener(function (
+    changes,
+    namespace
+) {
+    console.log("options", changes);
+    // for (let key in changes) {
+    //     settings[key] = changes[key].newValue;
+    // }
+});
+
 document.addEventListener("change", function (event) {
 
     let data;
@@ -47,6 +61,7 @@ document.addEventListener("change", function (event) {
         console.log(event);
         console.log("saved?");
     });
+
 }, true);
 
 chrome.storage.local.get({

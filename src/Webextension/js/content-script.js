@@ -2,40 +2,45 @@
 
 const GET_BROADCAST_ID = 0;
 
-let broadcastChannel;
+function onMessageResponse(data) {
 
-chrome.runtime.sendMessage(
-    GET_BROADCAST_ID,
-    function (data) {
+    function onMessageListener(event) {
+        console.log("channel message received");
+    }
 
-        console.log("response data", data);
+    function onStorageChangedListener(
+        changes,
+        namespace
+    ) {
 
-        broadcastChannel = new BroadcastChannel(data);
-        broadcastChannel.addEventListener("message", function (event) {
-            console.log("channel message received");
-        });
+        let data;
 
-        chrome.storage.onChanged.addListener(function (
-            changes,
-            namespace
-        ) {
+        console.log("content script", changes);
 
-            let data;
+        data = {};
 
-            console.log("content script", changes);
-
-            data = {};
-
-            for (let key in changes) {
+        for (let key in changes) {
+            if (changes.hasOwnProperty(key)) {
                 data[key] = changes[key].newValue;
             }
+        }
 
-            broadcastChannel.postMessage({
-                type: "setting-update",
-                payload: data
-            });
-
+        broadcastChannel.postMessage({
+            type: "setting-update",
+            payload: data
         });
 
     }
-);
+
+    let broadcastChannel;
+
+    console.log("response data", data);
+
+    broadcastChannel = new BroadcastChannel(data);
+    broadcastChannel.addEventListener("message", onMessageListener);
+
+    chrome.storage.onChanged.addListener(onStorageChangedListener);
+
+}
+
+chrome.runtime.sendMessage(GET_BROADCAST_ID, onMessageResponse);

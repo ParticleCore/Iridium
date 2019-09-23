@@ -1,6 +1,7 @@
 "use strict";
 
 let url;
+let defaultSettings;
 
 function updateSetting(
     settingId,
@@ -40,7 +41,7 @@ function onSettingsResponse(items) {
 
 }
 
-chrome.storage.onChanged.addListener(function (
+function onSettingsChanged(
     changes,
     namespace
 ) {
@@ -48,9 +49,9 @@ chrome.storage.onChanged.addListener(function (
     // for (let key in changes) {
     //     settings[key] = changes[key].newValue;
     // }
-});
+}
 
-document.addEventListener("change", function (event) {
+function onSettingsPageUpdate(event) {
 
     let data;
 
@@ -62,10 +63,16 @@ document.addEventListener("change", function (event) {
         console.log("saved?");
     });
 
-}, true);
+}
 
-chrome.storage.local.get({
+defaultSettings = {
     darkTheme: true,
     autoPlayVideo: false,
     maxResThumbnail: true
-}, onSettingsResponse);
+};
+
+chrome.storage.onChanged.addListener(onSettingsChanged);
+
+document.addEventListener("change", onSettingsPageUpdate, true);
+
+chrome.storage.local.get(defaultSettings, onSettingsResponse);

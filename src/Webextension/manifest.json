@@ -45,8 +45,7 @@
         "cookies",
         "webRequest",
         "webRequestBlocking",
-        "*://www.youtube.com/*",
-        "*://*.ytimg.com/*"
+        "*://www.youtube.com/*"
     ],
     "applications": {
         "gecko": {

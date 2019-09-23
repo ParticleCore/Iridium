@@ -5,25 +5,30 @@
     <title>Iridium settings</title>
     <style>
         html {
-            --iri-checkbox-bkg : 7px;
+            --iri-checkbox-bkg: 7px;
         }
+
         body {
             background-color: #131313;
             color: #ffffff80;
             display: block !important;
             font-family: "Segoe UI", sans-serif;
-            font-size: 13px;
+            font-size: 14px;
             margin: 0 auto;
             max-width: 1024px;
             padding: 10px;
             position: relative;
+            font-weight: 600;
         }
+
         input[type=checkbox] + label:before {
             box-shadow: none;
         }
+
         input[type=checkbox]:checked + label:before {
             background: #27a6e5;
         }
+
         input[type=checkbox] + label:before {
             background: #808080;
             border-radius: 100px;
@@ -32,17 +37,22 @@
             content: '';
             cursor: pointer;
             display: inline-block;
-            height: calc(100% - 2 * var(--iri-checkbox-bkg));
-            left: 0;
-            margin: var(--iri-checkbox-bkg) 0;
+            /*height: calc(100% - 2 * var(--iri-checkbox-bkg));*/
+            left: 15px;
+            /*margin: var(--iri-checkbox-bkg) 0;*/
             position: absolute;
             transition: background .3s;
             vertical-align: middle;
             width: calc(40px - 2 * var(--iri-checkbox-bkg));
+            height: 12px;
+            top: 50%;
+            transform: translateY(-50%);
         }
-        input[type=checkbox]:checked + label:after {
-            left: 7px;
+
+        input[type=checkbox]:not(:checked) + label:after {
+            left: 8px;
         }
+
         input[type=checkbox] + label:after {
             background: #fff;
             border-radius: 90px;
@@ -51,29 +61,44 @@
             cursor: pointer;
             display: inline-block;
             height: 14px;
-            left: -7px;
-            margin: 6px;
+            left: 22px;
+            /*margin: 6px;*/
             position: absolute;
             transition: .3s;
             vertical-align: middle;
             width: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            margin-left: 6px;
+            margin-right: 6px;
         }
+
         input[type=checkbox] + label {
-            padding-left: 35px;
+            padding-left: 56px;
         }
+
         input[type=checkbox] {
             display: none;
             height: 0;
             visibility: hidden;
             width: 0;
         }
+
         .settings_setting {
             font-size: 0;
-            line-height: 26px;
+            line-height: 56px;
+            margin-right: -15px;
+            margin-left: -15px;
         }
+
+        .settings_setting:hover {
+            background-color: #ffffff11;
+        }
+
         .setting {
+            cursor: pointer;
             font-size: 14px;
-            display: inline-block;
+            display: block;
             position: relative;
             vertical-align: middle;
             user-select: none;
@@ -82,7 +107,7 @@
     </style>
 </head>
 <body>
-<div style="background-color: #1c1c1c;padding: 0 15px 15px 15px;">
+<div style="background-color: #1c1c1c;padding: 0 15px 15px 15px;margin-left: 210px;">
     <!--<div id="message" style="white-space: pre;">Loading settings</div>-->
     <div class="settings_setting">
         <input class="setting" type="checkbox" id="darkTheme">

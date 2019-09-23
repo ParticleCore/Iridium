@@ -38,63 +38,111 @@ inject = function (
     settings
 ) {
 
+    let broadcastChannel;
+    let featureList;
+    let autoPlayVideoFeature;
+    let darkThemeFeature;
+    let maxResThumbnailFeature;
+
+    autoPlayVideoFeature = {
+        belongs: function (option) {
+
+            if (!option.hasOwnProperty("autoPlayVideo")) {
+                return false;
+            }
+
+            if (settings.autoPlayVideo !== option.autoPlayVideo) {
+
+                settings.autoPlayVideo = option.autoPlayVideo;
+                window.autoPlayVideo = option.autoPlayVideo;
+
+            }
+
+            return true;
+
+        }
+    };
+
+    darkThemeFeature = {
+        toggleEvent: new CustomEvent("yt-action", {detail: {actionName: "yt-dark-mode-toggled-action", returnValue: []}}),
+        belongs: function (option) {
+
+            if (!option.hasOwnProperty("darkTheme")) {
+                return false;
+            }
+
+            if (settings.darkTheme !== option.darkTheme) {
+
+                settings.darkTheme = option.darkTheme;
+
+                if (settings.darkTheme !== document.documentElement.hasAttribute("dark")) {
+                    document.dispatchEvent(this.toggleEvent);
+                }
+
+            }
+
+            return true;
+
+        }
+    };
+
+    maxResThumbnailFeature = {
+        belongs: function (option) {
+
+            if (!option.hasOwnProperty("maxResThumbnail")) {
+                return false;
+            }
+
+            if (settings.maxResThumbnail !== option.maxResThumbnail) {
+
+                settings.maxResThumbnail = option.maxResThumbnail;
+                window.maxResThumbnail = option.maxResThumbnail;
+
+            }
+
+            return true;
+
+        }
+    };
+
+    featureList = [
+        autoPlayVideoFeature,
+        darkThemeFeature,
+        maxResThumbnailFeature
+    ];
+
     function onMessageListener(event) {
 
         console.log(event);
 
         if (!event.data ||
-            event.data.type !== "setting-update" ||
-            !event.data.payload
+            !event.data.payload ||
+            event.data.type !== "setting-update"
         ) {
             return;
         }
 
-        let payload;
-
-        payload = event.data.payload;
-
-        if (payload.hasOwnProperty("autoPlayVideo")) {
-
-            settings.autoPlayVideo = payload.autoPlayVideo;
-            window.autoPlayVideo = payload.autoPlayVideo;
-
-        } else if (payload.hasOwnProperty("darkTheme")) {
-
-            if (settings.darkTheme !== payload.darkTheme) {
-
-                settings.darkTheme = payload.darkTheme;
-                document.dispatchEvent(
-                    new CustomEvent("yt-action", {
-                        bubbles: !0,
-                        cancelable: !1,
-                        composed: !0,
-                        detail: {
-                            actionName: "yt-dark-mode-toggled-action",
-                            args: [payload.darkTheme],
-                            disableBroadcast: false,
-                            optionalAction: false,
-                            returnValue: []
-                        }
-                    })
-                );
-
+        for (let feature of featureList) {
+            if (feature.belongs(event.data.payload)) {
+                break;
             }
-
         }
 
-        console.log(event);
-
     }
-
-    let broadcastChannel;
 
     broadcastChannel = new BroadcastChannel(broadcastId);
     broadcastChannel.addEventListener("message", onMessageListener);
 
-    if (settings) {
-        if (settings.hasOwnProperty("autoPlayVideo")) {
-            window.autoPlayVideo = settings.autoPlayVideo;
-        }
+    if (!settings) {
+        return;
+    }
+
+    if (settings.hasOwnProperty("autoPlayVideo")) {
+        window.autoPlayVideo = settings.autoPlayVideo;
+    }
+
+    if (settings.hasOwnProperty("maxResThumbnail")) {
+        window.maxResThumbnail = settings.maxResThumbnail;
     }
 
 };
@@ -149,6 +197,37 @@ api = {
             return;
         }
 
+        function imageLoader(
+            element,
+            url
+        ) {
+
+            console.log(element.style);
+
+            if (!window.maxResThumbnail ||
+                !url ||
+                !url.match(/default\.[a-z]+/)
+            ) {
+                return;
+            }
+
+            function checkHighQualityThumbnail(event) {
+                if (event.target.width > 120) {
+                    element.style.backgroundImage = `url(${src})`;
+                }
+            }
+
+            let src;
+            let thumbnail;
+
+            element.parentElement.style.backgroundImage = `url(${url})`;
+            src = url.replace(/[a-z]+default(\.[a-z]+)/g, "maxresdefault$1");
+            thumbnail = new Image();
+            thumbnail.addEventListener("load", checkHighQualityThumbnail, false);
+            thumbnail.src = src;
+
+        }
+
         console.log("script: " + details.url);
 
         let str;
@@ -167,17 +246,22 @@ api = {
 
         filter.onstop = function (event) {
 
-            if (!settings.autoPlayVideo) {
+            if (details.url.endsWith("/base.js")) {
 
-                if (details.url.endsWith("/base.js")) {
+                str = str
+                    .replace(
+                        /([a-z0-9.]+)(.style\.backgroundImage=\n?([a-z0-9]+)\?"url\("\+[a-z0-9]+\+"\)":"";?)/gi,
+                        "$&;(" + imageLoader.toString().replace(/(\$[$&`'0-9]+)/g, "$$$1") + "($1,$3));"
+                    )
+                ;
 
-                } else {
+            } else {
 
+                if (!settings.autoPlayVideo) {
                     str = str
                         .replace(/([a-z0-9.]+)loadVideoByPlayerVars\(([^)]+)\)/gi, "(window.autoPlayVideo!==false ? $1loadVideoByPlayerVars($2):$1cueVideoByPlayerVars($2))")
                         .replace(/config_\.loaded=!0/g, "config_.loaded=!1")
                     ;
-
                 }
 
             }
@@ -256,7 +340,7 @@ api = {
 
         function updateCookie(cookie) {
 
-            console.log("cookie:", cookie);
+            // console.log("cookie:", cookie);
 
             chrome.cookies.set({
                 url: YT_DOMAIN,
@@ -285,7 +369,7 @@ api = {
                 continue;
             }
 
-            console.log(header);
+            // console.log(header);
 
             if (!header.value.match(/PREF=/)) {
 
@@ -322,37 +406,6 @@ api = {
         return {requestHeaders: details.requestHeaders};
 
     },
-    imageListener: function (details) {
-
-        console.log(details.url);
-
-        if (!settings.maxResThumbnail ||
-            details.url.match(/maxresdefault\.[a-z]+/)
-        ) {
-            return;
-        }
-
-        let videoId;
-        let imageId;
-
-        videoId = details.originUrl.match(/v=([a-z0-9-_]{11})/i);
-        imageId = details.url.match(/\/([a-z0-9-_]{11})\//i);
-
-        if (imageId &&
-            imageId[1] &&
-            details.url.match(/[a-z]+default\.[a-z]+$/)
-        ) {
-            console.log(videoId && videoId[1], imageId && imageId[1]);
-            console.log(details);
-            return {
-                redirectUrl: details.url.replace(
-                    /[a-z]+default(\.[a-z]+)/g,
-                    "maxresdefault$1"
-                )
-            };
-        }
-
-    },
     iniRequestListeners: function () {
 
         const block = ["blocking"];
@@ -368,13 +421,11 @@ api = {
             types: ["script"]
         };
         const xhrFilter = {urls: [YT_PATTERN + "pbj=1"], types: ["xmlhttprequest"]};
-        const imageFilter = {urls: ["*://*.ytimg.com/*"], types: ["image"]};
 
         chrome.webRequest.onBeforeSendHeaders.addListener(api.headersListener, headersFilter, blockHeaders);
         chrome.webRequest.onBeforeRequest.addListener(api.mainFrameListener, mainFilter, block);
         chrome.webRequest.onBeforeRequest.addListener(api.scriptListener, scriptFilter, block);
         chrome.webRequest.onBeforeRequest.addListener(api.xhrListener, xhrFilter, block);
-        chrome.webRequest.onBeforeRequest.addListener(api.imageListener, imageFilter, block);
 
     },
     ini: function () {
@@ -426,7 +477,6 @@ api = {
         this.iniRequestListeners();
 
     }
-
 };
 
 api.ini();

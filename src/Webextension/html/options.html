@@ -6,17 +6,16 @@
     <style>
         html {
             --iri-checkbox-bkg: 7px;
+            --iri-sidebar-width: 240px;
         }
 
         body {
-            background-color: #131313;
+            background-color: #1f1f1f;
             color: #ffffff80;
             display: block !important;
             font-family: "Segoe UI", sans-serif;
             font-size: 14px;
             margin: 0 auto;
-            max-width: 1024px;
-            padding: 10px;
             position: relative;
             font-weight: 600;
         }
@@ -25,32 +24,28 @@
             box-shadow: none;
         }
 
-        input[type=checkbox]:checked + label:before {
-            background: #27a6e5;
-        }
-
         input[type=checkbox] + label:before {
+            content: '';
             background: #808080;
             border-radius: 100px;
             box-shadow: 0 0 2px 0 #333 inset;
             box-sizing: border-box;
-            content: '';
             cursor: pointer;
             display: inline-block;
             /*height: calc(100% - 2 * var(--iri-checkbox-bkg));*/
-            left: 15px;
+            left: 24px;
             /*margin: var(--iri-checkbox-bkg) 0;*/
             position: absolute;
             transition: background .3s;
             vertical-align: middle;
-            width: calc(40px - 2 * var(--iri-checkbox-bkg));
+            width: 24px;
             height: 12px;
             top: 50%;
             transform: translateY(-50%);
         }
 
-        input[type=checkbox]:not(:checked) + label:after {
-            left: 8px;
+        input[type=checkbox]:checked + label:before {
+            background: #27a6e5;
         }
 
         input[type=checkbox] + label:after {
@@ -61,7 +56,7 @@
             cursor: pointer;
             display: inline-block;
             height: 14px;
-            left: 22px;
+            left: 36px;
             /*margin: 6px;*/
             position: absolute;
             transition: .3s;
@@ -69,12 +64,16 @@
             width: 14px;
             top: 50%;
             transform: translateY(-50%);
-            margin-left: 6px;
-            margin-right: 6px;
+            /*margin-left: 6px;*/
+            /*margin-right: 6px;*/
+        }
+
+        input[type=checkbox]:not(:checked) + label:after {
+            left: 22px;
         }
 
         input[type=checkbox] + label {
-            padding-left: 56px;
+            padding-left: 72px;
         }
 
         input[type=checkbox] {
@@ -84,15 +83,123 @@
             width: 0;
         }
 
+        polygon {
+            opacity: .5;
+        }
+
+        .sidebar_section_header path,
+        .sidebar_section_header polygon {
+            fill: url(#iri-gradient);
+        }
+
+        .iri-start-gradient {
+            transition: 1s;
+            stop-color: #0ff;
+        }
+
+        .iri-stop-gradient {
+            transition: 1s;
+            stop-color: #f0f;
+        }
+
+        .iri-start-gradient {
+            animation: breatheStartEffect 5s linear infinite;
+        }
+
+        .iri-stop-gradient {
+            animation: breatheStopEffect 5s linear infinite;
+        }
+
+        @keyframes breatheStartEffect {
+            0% {
+                stop-color: #0ff;
+            }
+            50% {
+                stop-color: #888;
+            }
+            100% {
+                stop-color: #0ff;
+            }
+        }
+
+        @keyframes breatheStopEffect {
+            0% {
+                stop-color: #f0f;
+            }
+            50% {
+                stop-color: #888;
+            }
+            100% {
+                stop-color: #f0f;
+            }
+        }
+
+        #sidebar {
+            background-color: #282828;
+            width: var(--iri-sidebar-width);
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            box-shadow: 2px 0 10px #00000035;
+        }
+
+        #content {
+            max-width: 1280px;
+            /*min-width: calc(100% - (var(--iri-sidebar-width) * 2));*/
+            /*margin: 0 var(--iri-sidebar-width);*/
+            margin: 0 auto;
+            padding-left: var(--iri-sidebar-width);
+        }
+
+        .sidebar_section_header {
+            line-height: 56px;
+            padding: 0 24px 12px 24px;
+            display: flex;
+        }
+
+        .sidebar_section {
+            line-height: 40px;
+            padding: 0 24px;
+            cursor: pointer;
+            display: flex;
+        }
+
+        .sidebar_label_icon {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            font-size: 0;
+            align-self: center;
+            margin-right: 24px;
+            height: 24px;
+            width: 24px;
+        }
+
+        .sidebar_label {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            flex: 1;
+            align-self: center;
+        }
+
+        .sidebar_section:hover {
+            background-color: #ffffff11;
+            color: #fffffff0;
+        }
+
         .settings_setting {
             font-size: 0;
-            line-height: 56px;
-            margin-right: -15px;
-            margin-left: -15px;
+            line-height: 40px;
+            /*margin: 0 -24px;*/
         }
 
         .settings_setting:hover {
-            background-color: #ffffff11;
+            /*background-color: #ffffff11;*/
+            color: #fffffff0;
         }
 
         .setting {
@@ -104,22 +211,130 @@
             user-select: none;
             white-space: pre;
         }
+
+        .setting_header {
+            color: #fffc;
+            font-size: 16px;
+            /*margin-top: 24px;*/
+            line-height: 56px;
+            padding: 0 24px 12px 24px;
+        }
+
+        .setting_header.background {
+            /*padding: 0 24px;*/
+            /*background-color: #1c1c1c;*/
+        }
+
+        .settings_divider {
+            /*background-color: #e2e2e2;*/
+            background-color: #ffffff24;
+            height: 1px;
+        }
+
+        #sidebar .settings_divider {
+            margin: 12px 0;
+        }
+
+        #content .settings_divider {
+            margin: 0 24px;
+        }
+
+        .settings {
+            /*background-color: #1c1c1c;*/
+            /*padding: 24px;*/
+            padding-bottom: 24px;
+        }
     </style>
 </head>
 <body>
-<div style="background-color: #1c1c1c;padding: 0 15px 15px 15px;margin-left: 210px;">
-    <!--<div id="message" style="white-space: pre;">Loading settings</div>-->
-    <div class="settings_setting">
-        <input class="setting" type="checkbox" id="darkTheme">
-        <label class="setting" for="darkTheme">Dark theme</label>
+<div id="sidebar">
+    <div class="sidebar_section_header">
+        <svg class="sidebar_label_icon" viewBox="0 0 24 24">
+            <radialGradient id="iri-gradient" gradientUnits="userSpaceOnUse" cx="6" cy="22" r="18.5">
+                <stop class="iri-start-gradient" offset="0"></stop>
+                <stop class="iri-stop-gradient" offset="1"></stop>
+            </radialGradient>
+            <polygon points="21 12 3,1.8 3 22.2"></polygon>
+            <path d="M3 1.8v20.4L21 12L3 1.8z M6 7l9 5.1l-9 5.1V7z"></path>
+        </svg>
+        <div class="sidebar_label" style="color: #fff;font-size: 20px;font-family: 'Arial', sans-serif;letter-spacing: -1.50px;">iridium</div>
     </div>
-    <div class="settings_setting">
-        <input class="setting" type="checkbox" id="autoPlayVideo">
-        <label class="setting" for="autoPlayVideo">Play videos automatically</label>
+    <div class="sidebar_section">
+        <div class="sidebar_label_icon">
+            <svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet" focusable="false" style="pointer-events: none; display: block; width: 24px; height: 24px;">
+                <path fill="#909090" d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
+            </svg>
+        </div>
+        <div class="sidebar_label">General</div>
     </div>
-    <div class="settings_setting">
-        <input class="setting" type="checkbox" id="maxResThumbnail">
-        <label class="setting" for="maxResThumbnail">Force max thumbnail resolution</label>
+    <div class="sidebar_section">
+        <div class="sidebar_label_icon">
+            <svg viewBox="0 0 68 48" width="100%" height="100%">
+                <path fill="#909090" fill-opacity="0.8" d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z"></path>
+                <path d="M 45,24 27,14 27,34" fill="#fff" style="fill: #fff;"></path>
+            </svg>
+        </div>
+        <div class="sidebar_label">Player</div>
+    </div>
+    <div class="sidebar_section">
+        <div class="sidebar_label_icon">
+            <svg width="24" height="24" viewBox="0 0 24 24">
+                <path d="M0 0h24v24H0z" fill="none"></path>
+                <path fill="#909090" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM4 12c0-4.42 3.58-8 8-8 1.85 0 3.55.63 4.9 1.69L5.69 16.9C4.63 15.55 4 13.85 4 12zm8 8c-1.85 0-3.55-.63-4.9-1.69L18.31 7.1C19.37 8.45 20 10.15 20 12c0 4.42-3.58 8-8 8z"></path>
+            </svg>
+        </div>
+        <div class="sidebar_label">Blacklist</div>
+    </div>
+    <div class="settings_divider"></div>
+    <div class="sidebar_section">
+        <div class="sidebar_label_icon">
+            <svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet" focusable="false" class="style-scope yt-icon" style="pointer-events: none; display: block; width: 100%; height: 100%;">
+                <path fill="#909090"
+                      d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.1-1.65c.2-.15.25-.42.13-.64l-2-3.46c-.12-.22-.4-.3-.6-.22l-2.5 1c-.52-.4-1.08-.73-1.7-.98l-.37-2.65c-.06-.24-.27-.42-.5-.42h-4c-.27 0-.48.18-.5.42l-.4 2.65c-.6.25-1.17.6-1.7.98l-2.48-1c-.23-.1-.5 0-.6.22l-2 3.46c-.14.22-.08.5.1.64l2.12 1.65c-.04.32-.07.65-.07.98s.02.66.06.98l-2.1 1.65c-.2.15-.25.42-.13.64l2 3.46c.12.22.4.3.6.22l2.5-1c.52.4 1.08.73 1.7.98l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.6-.25 1.17-.6 1.7-.98l2.48 1c.23.1.5 0 .6-.22l2-3.46c.13-.22.08-.5-.1-.64l-2.12-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"></path>
+            </svg>
+        </div>
+        <div class="sidebar_label">Settings</div>
+    </div>
+    <div class="sidebar_section">
+        <div class="sidebar_label_icon">
+            <svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet" focusable="false" style="pointer-events: none; display: block; width: 100%; height: 100%;" class="style-scope yt-icon">
+                <path fill="#909090" d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"></path>
+            </svg>
+        </div>
+        <div class="sidebar_label">Language</div>
+    </div>
+    <div class="sidebar_section">
+        <div class="sidebar_label_icon">
+            <svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet" focusable="false" style="pointer-events: none; display: block; width: 100%; height: 100%;">
+                <path fill="#909090" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"></path>
+            </svg>
+        </div>
+        <div class="sidebar_label">About</div>
+    </div>
+</div>
+<div id="content">
+    <div id="general" class="setting_header">
+        <div class="background">General</div>
+    </div>
+    <div class="settings">
+        <div class="settings_setting">
+            <input class="setting" type="checkbox" id="darkTheme">
+            <label class="setting" for="darkTheme">Dark theme</label>
+        </div>
+    </div>
+    <div class="settings_divider"></div>
+    <div id="player" class="setting_header">
+        <div class="background">Player</div>
+    </div>
+    <div class="settings">
+        <div class="settings_setting">
+            <input class="setting" type="checkbox" id="autoPlayVideo">
+            <label class="setting" for="autoPlayVideo">Play videos automatically</label>
+        </div>
+        <div class="settings_setting">
+            <input class="setting" type="checkbox" id="maxResThumbnail">
+            <label class="setting" for="maxResThumbnail">Force max thumbnail resolution</label>
+        </div>
     </div>
 </div>
 <script src="../js/options.js"></script>

@@ -59,8 +59,7 @@ function onSettingsPageUpdate(event) {
     data[event.target.id] = event.target.checked;
 
     chrome.storage.local.set(data, function (event) {
-        console.log(event);
-        console.log("saved?");
+        console.log("onSettingsPageUpdate", event);
     });
 
 }

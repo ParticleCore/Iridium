@@ -948,7 +948,7 @@ html body iframe[src^="/error?"] {
     margin           : 0 -15px;
 }
 
-.settings_setting {
+.setting_content {
     font-size   : 0;
     line-height : 26px;
 }
@@ -983,7 +983,7 @@ a.setting:hover {
     vertical-align  : middle;
 }
 
-.settings_setting:hover .feature-link {
+.setting_content:hover .feature-link {
     opacity : 1;
 }
 

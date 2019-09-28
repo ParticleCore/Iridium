@@ -213,14 +213,16 @@ api = {
 
             function checkHighQualityThumbnail(event) {
                 if (event.target.width > 120) {
+
+                    element.parentElement.style.backgroundImage = `url(${url})`;
                     element.style.backgroundImage = `url(${src})`;
+
                 }
             }
 
             let src;
             let thumbnail;
 
-            element.parentElement.style.backgroundImage = `url(${url})`;
             src = url.replace(/[a-z]+default(\.[a-z]+)/g, "maxresdefault$1");
             thumbnail = new Image();
             thumbnail.addEventListener("load", checkHighQualityThumbnail, false);

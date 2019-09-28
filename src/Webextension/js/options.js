@@ -53,6 +53,10 @@ function onSettingsChanged(
 
 function onSettingsPageUpdate(event) {
 
+    if (!event.target.classList.contains("setting")) {
+        return
+    }
+
     let data;
 
     data = {};
@@ -61,6 +65,10 @@ function onSettingsPageUpdate(event) {
     chrome.storage.local.set(data, function (event) {
         console.log("onSettingsPageUpdate", event);
     });
+
+}
+
+function onPageClick(event) {
 
 }
 
@@ -73,5 +81,6 @@ defaultSettings = {
 chrome.storage.onChanged.addListener(onSettingsChanged);
 
 document.addEventListener("change", onSettingsPageUpdate, true);
+document.addEventListener("click", onPageClick, true);
 
 chrome.storage.local.get(defaultSettings, onSettingsResponse);

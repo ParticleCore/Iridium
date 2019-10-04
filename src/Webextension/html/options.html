@@ -1,25 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
+<html data-dark="false" lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Iridium settings</title>
     <link href="../css/options.css" rel="stylesheet" type="text/css">
     <link href="https://s.ytimg.com/yts/img/favicon-vfl8qSV2F.ico" rel="shortcut icon" type="image/x-icon">
-    <link href="https://s.ytimg.com/yts/img/favicon_32-vflOogEID.png" rel="icon" sizes="32x32">
-    <link href="https://s.ytimg.com/yts/img/favicon_48-vflVjB_Qk.png" rel="icon" sizes="48x48">
+    <link href="../icons/32.png" rel="icon" sizes="32x32">
+    <link href="../icons/48.png" rel="icon" sizes="48x48">
     <link href="https://s.ytimg.com/yts/img/favicon_96-vflW9Ec0w.png" rel="icon" sizes="96x96">
     <link href="https://s.ytimg.com/yts/img/favicon_144-vfliLAfaB.png" rel="icon" sizes="144x144">
 </head>
 <body>
 
-<input checked hidden id="input-general" name="content" type="radio" value="general">
-<input hidden id="input-player" name="content" type="radio" value="player">
 
 <div id="sidebar">
 
     <div class="sidebar_section_header">iridium</div>
+
+    <input checked hidden id="input-general" name="content" type="radio" value="general">
     <label class="sidebar_section" data-sidebar="general" for="input-general">General</label>
+    <div class="content" id="content-general">
+        <div class="setting_header" id="general">General</div>
+        <div class="setting_content">
+            <input class="setting" id="darkTheme" type="checkbox">
+            <label class="setting" for="darkTheme">Dark theme</label>
+            <a class="feature-link" href="https://github.com/ParticleCore/Iridium/wiki/Features#darkTheme" title="Find out what this does" target="features">?</a>
+        </div>
+    </div>
+
+    <input hidden id="input-player" name="content" type="radio" value="player">
     <label class="sidebar_section" data-sidebar="player" for="input-player">Player</label>
+    <div class="content" id="content-player">
+        <div class="setting_header" id="player">Player</div>
+        <div class="setting_content">
+            <input class="setting" id="autoPlayVideo" type="checkbox">
+            <label class="setting" for="autoPlayVideo">Play videos automatically</label>
+            <a class="feature-link" href="https://github.com/ParticleCore/Iridium/wiki/Features#autoPlayVideo" title="Find out what this does" target="features">?</a>
+        </div>
+        <br>
+        <div class="setting_content">
+            <input class="setting" id="maxResThumbnail" type="checkbox">
+            <label class="setting" for="maxResThumbnail">Force max thumbnail resolution</label>
+            <a class="feature-link" href="https://github.com/ParticleCore/Iridium/wiki/Features#maxResThumbnail" title="Find out what this does" target="features">?</a>
+        </div>
+    </div>
+
     <label class="sidebar_section" data-sidebar="download" for="input-download">Download</label>
     <label class="sidebar_section" data-sidebar="channel" for="input-channel">Channels</label>
     <label class="sidebar_section" data-sidebar="blacklist" for="input-blacklist">Blacklist</label>
@@ -30,26 +55,6 @@
     <div class="settings_divider"></div>
     <label class="sidebar_section" data-sidebar="about" for="input-about">About</label>
 
-</div>
-
-<div class="content" id="content-general">
-    <div class="setting_header" id="general">General</div>
-    <div class="setting_content">
-        <input class="setting" id="darkTheme" type="checkbox">
-        <label class="setting" for="darkTheme">Dark theme</label>
-    </div>
-</div>
-
-<div class="content" id="content-player">
-    <div class="setting_header" id="player">Player</div>
-    <div class="setting_content">
-        <input class="setting" id="autoPlayVideo" type="checkbox">
-        <label class="setting" for="autoPlayVideo">Play videos automatically</label>
-    </div>
-    <div class="setting_content">
-        <input class="setting" id="maxResThumbnail" type="checkbox">
-        <label class="setting" for="maxResThumbnail">Force max thumbnail resolution</label>
-    </div>
 </div>
 
 <script src="../js/options.js"></script>

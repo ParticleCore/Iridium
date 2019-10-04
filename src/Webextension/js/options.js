@@ -24,9 +24,14 @@ function updateSetting(
 
     }
 
+    if (element.id === "darkTheme") {
+        document.documentElement.dataset.dark = value;
+    }
+
 }
 
 function onSettingsResponse(items) {
+
     console.log(items);
 
     if (document.getElementById("message")) {
@@ -65,6 +70,14 @@ function onSettingsPageUpdate(event) {
     chrome.storage.local.set(data, function (event) {
         console.log("onSettingsPageUpdate", event);
     });
+
+    switch (event.target.id) {
+
+        case "darkTheme":
+            document.documentElement.dataset.dark = event.target.checked;
+            break;
+
+    }
 
 }
 

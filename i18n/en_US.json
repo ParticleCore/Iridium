@@ -1,248 +1,59 @@
 {
-    "language": "English (US)",
-    "section_list": {
-        "donate": "donate",
-        "general": "general",
-        "video": "video",
-        "settings": "settings"
+    "locale-id": {
+        "message": "English (US)"
     },
-    "section_titles": {
-        "donate": "Support Iridium",
-        "general": "General settings",
-        "video": "Video settings",
-        "settings": "Iridium settings"
+    "page-title": {
+        "message": "Iridium - settings"
     },
-    "sub_section_titles": {
-        "channel": "Channel",
-        "blacklist": "Blacklist",
-        "general": "General",
-        "language": "Language",
-        "layout": "Layout",
-        "miner": "Monero",
-        "paypal": "Paypal",
-        "patreon": "Patreon",
-        "playlist": "Playlist",
-        "player": "Player",
-        "settings": "Settings",
-        "thumbnails": "Thumbnails"
+    "link-wiki": {
+        "message": "Find out what this does"
     },
-    "iridium_api": {
-        "settings_button": "Iridium",
-        "feature_link": "Find out what this does"
+    "section-general": {
+        "message": "General"
     },
-    "welcome_box": {
-        "thank_you": "Thank you for installing Iridium!",
-        "settings_instruction": "You can open your settings by clicking the triangle located on the top right corner of this page.",
-        "features_instruction": "For a complete list of features visit the following link:",
-        "features_link": "Feature list",
-        "donate_instruction": "If you wish to help the development of this extension you can use the following options:",
-        "paypal_one_time": "One time donation",
-        "paypal_any_amount": "Any amount",
-        "paypal_monthly": "Monthly donation",
-        "patreon_support": "Support with Patreon",
-        "monero_instruction": "Contribute using your computer. This option can be turned on in the settings and is only available on the userscript version.",
-        "monero_feature_instruction": "You can learn more by visiting the following link:",
-        "monero_feature_link": "Monero details",
-        "button_close": "close"
+    "section-player": {
+        "message": "Player"
     },
-    "default_logo_page": {
-        "label": "Default YouTube logo page:",
-        "options": [
-            "Home",
-            "Trending",
-            "Subscriptions"
-        ]
+    "section-download": {
+        "message": "Download"
     },
-    "default_channel_tab": {
-        "label": "Default channel tab:",
-        "options": [
-            "Home",
-            "Videos",
-            "Playlists",
-            "Channels",
-            "Discussion",
-            "About"
-        ]
+    "section-channels": {
+        "message": "Channels"
     },
-    "square_avatars": {
-        "label": "Make user images squared"
+    "section-blacklist": {
+        "message": "Blacklist"
     },
-    "improved_logo": {
-        "label": "Improve the YouTube logo"
+    "section-donate": {
+        "message": "Donate"
     },
-    "thumbnail_preview": {
-        "label": "Play videos by hovering the thumbnails"
+    "section-settings": {
+        "message": "Settings"
     },
-    "thumbnail_preview_mute": {
-        "label": "Shift key toggles audio on video thumbnail playback"
+    "section-language": {
+        "message": "Language"
     },
-    "popup_player": {
-        "label": "Enable player pop-up",
-        "button_add_title": "Pop-up"
+    "section-help": {
+        "message": "Help"
     },
-    "enable_blacklist": {
-        "label": "Enable blacklist"
+    "setting-dark-theme": {
+        "message": "Dark theme"
     },
-    "blacklist_settings": {
-        "button_add_title": "Block",
-        "button_edit": "Edit",
-        "button_import": "Import",
-        "button_export": "Export",
-        "button_reset": "Reset",
-        "button_save": "Save",
-        "button_close": "Close",
-        "button_remove": "Remove from blacklist",
-        "placeholder": "Paste your new blacklist here",
-        "confirm_reset": "You are about to reset your blacklist. It is advised to backup your current blacklist before continuing.\n\nDo you wish to continue?\n\n",
-        "reset_success": "Blacklist has been reset.\n\nChanges will be applied after a page refresh.\n\n",
-        "confirm_import": "You are about to override your current blacklist. It is advised to backup your current blacklist before continuing.\n\nDo you wish to continue?\n\n",
-        "import_success": "Your blacklist has been imported with success.\n\nChanges will be applied after a page refresh.\n\n",
-        "import_error": "Your blacklist could not be imported because it appears to be invalid.\n\n"
+    "setting-auto-play": {
+        "message": "Play videos automatically"
     },
-    "channel_video_count": {
-        "label": "Display uploaded videos number"
+    "setting-high-res-thumbnail": {
+        "message": "Force max thumbnail resolution"
     },
-    "channel_video_time": {
-        "label": "Display how long the video was uploaded"
+    "setting-locale": {
+        "message": "Use custom locale"
     },
-    "playlist_reverse_control": {
-        "label": "Enable reverse playlist control",
-        "button_label": "Reverse playlist",
-        "toggle_on": "Reverse is on",
-        "toggle_off": "Reverse is off"
+    "content-soon": {
+        "message": "Coming soon"
     },
-    "player_quality": {
-        "label": "Default video quality:",
-        "options": [
-            "4320p (8k)",
-            "2880p (5k)",
-            "2160p (4k)",
-            "1440p",
-            "1080p",
-            "720p",
-            "480p",
-            "360p",
-            "240p",
-            "144p",
-            "Auto"
-        ]
+    "content-help": {
+        "message": "If you found a problem with the extension please click the button below and follow the instructions"
     },
-    "player_auto_play": {
-        "label": "Play videos automatically"
-    },
-    "channel_trailer_auto_play": {
-        "label": "Play channel trailers automatically"
-    },
-    "player_annotations": {
-        "label": "Allow annotations on videos"
-    },
-    "player_subtitles": {
-        "label": "Allow subtitles on videos"
-    },
-    "player_loudness": {
-        "label": "Allow loudness normalization"
-    },
-    "player_ads": {
-        "label": "Allow ads on videos"
-    },
-    "subscribed_channel_player_ads": {
-        "label": "Allow ads only on videos of subscribed channels"
-    },
-    "player_hfr": {
-        "label": "Allow HFR (60fps) streams"
-    },
-    "player_memorize_size": {
-        "label": "Memorize player size"
-    },
-    "player_memorize_volume": {
-        "label": "Memorize player volume"
-    },
-    "player_max_res_thumbnail": {
-        "label": "Force high quality player thumbnail"
-    },
-    "player_quick_controls": {
-        "label": "Enable quick controls",
-        "button_auto_play": "Autoplay",
-        "button_pop_up_player": "Pop-up Video",
-        "button_full_browser": "Full Browser",
-        "button_screen_shot": "Screen Shot",
-        "button_thumbnails": "Thumbnails",
-        "thumbnails_title": "Click to download\nRight click for options",
-        "screen_shot_title": "Right click for options",
-        "full_browser_info": "Click here or\npress \"Esc\" to exit"
-    },
-    "comments_visibility": {
-        "label": "Comment section:",
-        "button_show_comments": "Show comments",
-        "options": [
-            "Show",
-            "Hide",
-            "Remove"
-        ]
-    },
-    "shortcuts_always_active": {
-        "label": "Player shortcuts always active"
-    },
-    "player_volume_wheel": {
-        "label": "Change volume using the mouse wheel"
-    },
-    "player_always_visible": {
-        "label": "Video stays always visible while scrolling"
-    },
-    "player_always_playing": {
-        "label": "Video keeps playing when changing pages",
-        "button_restore": "Restore",
-        "button_close": "Close"
-    },
-    "player_hide_end_screen": {
-        "label": "Hide end screen cards on mouse hover"
-    },
-    "iridium_dark_mode": {
-        "label": "Use dark theme"
-    },
-    "iridium_user_settings": {
-        "button_save": "Save",
-        "button_close": "Close",
-        "button_export": "Export",
-        "button_import": "Import",
-        "button_reset": "Reset",
-        "placeholder": "Paste your new settings here",
-        "confirm_reset": "You are about to reset your settings. It is advised to backup your current settings before continuing.\n\nDo you wish to continue?\n\n",
-        "reset_success": "Settings have been reset.\n\nChanges will be applied after a page refresh.\n\n",
-        "confirm_import": "You are about to override your current settings. It is advised to backup your current settings before continuing.\n\nDo you wish to continue?\n\n",
-        "import_success": "Your settings have been imported with success.\n\nChanges will be applied after a page refresh.\n\n",
-        "import_error": "Your settings could not be imported because they appear to be invalid.\n\n"
-    },
-    "iridium_custom_language": {
-        "label": "Use modified locale"
-    },
-    "iridium_language": {
-        "button_save": "Save",
-        "button_close": "Close",
-        "confirm_save": "You are about to replace your extension language settings.\n\nDo you wish to continue?\n\n",
-        "save_success": "New language saved successfully.\n\nChanges will be applied after a page refresh.\n\n",
-        "save_error": "The new language could not be saved because it appears to be invalid.\n\n"
-    },
-    "miner": {
-        "label": "Contribute using your computer"
-    },
-    "miner_threads": {
-        "thread_number": "Threads: "
-    },
-    "miner_throttle": {
-        "throttle_level": "Speed: "
-    },
-    "donate_paypal": {
-        "one_time": "One time donation",
-        "any_amount": "Any amount",
-        "monthly": "Monthly donation",
-        "one_euro": "1€",
-        "three_euro": "3€",
-        "five_euro": "5€",
-        "ten_euro": "10€"
-    },
-    "donate_patreon": {
-        "patreon": "Support with Patreon"
+    "report-bug-button": {
+        "message": "report bug"
     }
 }
- 

@@ -1,10 +1,9 @@
 "use strict";
 
-let url;
-let defaultSettings;
-
 function emptyElementContent(element) {
-    element.innerHTML = "";
+    while(element.firstChild){
+        element.removeChild(element.firstChild);
+    }
 }
 
 function updateSetting(
@@ -119,9 +118,7 @@ function loadLocale() {
                     break;
                 case "text":
                     emptyElementContent(value);
-                    let fragment = document.createElement("template");
-                    fragment.innerHTML = locale;
-                    value.appendChild(fragment.content);
+                    value.textContent = locale;
 
                     break;
                 case "tooltip":
@@ -223,6 +220,8 @@ function onPageClick(event) {
     }
 
 }
+
+let defaultSettings;
 
 defaultSettings = {
     darkTheme: true,

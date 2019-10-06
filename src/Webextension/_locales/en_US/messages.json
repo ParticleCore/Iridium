@@ -52,5 +52,8 @@
     },
     "content-help": {
         "message": "If you found a problem with the extension please click the button below and follow the instructions"
+    },
+    "report-bug-button": {
+        "message": "report bug"
     }
 }

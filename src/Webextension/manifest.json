@@ -34,9 +34,6 @@
             "js" : [
                 "js/content-script.js"
             ],
-            "css" : [
-                "css/Iridium.css"
-            ],
             "run_at" : "document_start"
         }
     ],
@@ -49,8 +46,8 @@
     ],
     "applications": {
         "gecko": {
-            "id": "dev-unlisted-iridium@particlecore.github.io",
-            "strict_min_version": "54.0",
+            "id": "unlisted-iridium@particlecore.github.io",
+            "strict_min_version": "57.0",
             "update_url": "https://github.com/ParticleCore/Iridium/raw/master/bin/update.json"
         }
     }

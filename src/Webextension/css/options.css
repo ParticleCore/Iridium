@@ -4,6 +4,7 @@ html {
     --iri-sidebar-width: 240px;
     --iri-body-text-color: #00000080;
     --iri-content-background: #f1f1f1;
+    --iri-content-shade-background: #c9c9c9;
     --iri-sidebar-background: #ffffff;
     --iri-sidebar-text-color: #909090;;
     --iri-sidebar-selected-text-color: #0d0d0d;
@@ -17,6 +18,7 @@ html {
 html[data-dark=true] {
     --iri-body-text-color: #ffffff80;
     --iri-content-background: #1f1f1f;
+    --iri-content-shade-background: #3f3f3f;
     --iri-sidebar-background: #282828;
     --iri-sidebar-text-color: #909090;
     --iri-sidebar-selected-text-color: #ffffff;
@@ -164,8 +166,8 @@ body {
     mask-image: url("../img/language.svg");
 }
 
-[data-sidebar=about]:after {
-    mask-image: url("../img/about.svg");
+[data-sidebar=help]:after {
+    mask-image: url("../img/help.svg");
 }
 
 .sidebar_label_icon {
@@ -187,23 +189,15 @@ body {
 }
 
 .setting_content {
-    cursor: pointer;
-    display: inline-block;
-    font-size: 0;
-    line-height: 40px;
-    padding: 0 24px;
-}
-
-.setting_content:hover {
     color: var(--iri-content-text-hover-color);
+    display: inline-block;
+    padding: 0 24px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .setting_header {
     user-select: none;
-}
-
-.setting[type=checkbox] + .setting[for]:before {
-    box-shadow: none;
 }
 
 .setting[type=checkbox] + .setting[for]:before {
@@ -222,6 +216,10 @@ body {
     height: 14px;
     top: 50%;
     transform: translateY(-50%);
+}
+
+.setting[type=checkbox] + .setting[for]:before {
+    box-shadow: none;
 }
 
 .setting[type=checkbox]:checked + .setting[for]:before {
@@ -250,7 +248,15 @@ body {
 }
 
 .setting[type=checkbox] + .setting[for] {
+    cursor: pointer;
+    color: var(--iri-content-text-color);
+    line-height: 40px;
     padding-left: 60px;
+}
+
+.setting[type=checkbox] + .setting[for]:hover {
+    padding-left: 60px;
+    color: var(--iri-content-text-hover-color);
 }
 
 .setting[type=checkbox] {
@@ -275,10 +281,11 @@ body {
     font-weight: 700;
     color: #27a6e5;
     cursor: pointer;
-    margin-left: 12px;
     overflow: hidden;
     text-decoration: none;
     opacity: 0;
+    padding: 0 12px;
+    line-height: 40px;
 }
 
 .setting_content:hover .feature-link {
@@ -303,4 +310,17 @@ body {
 
 #content .settings_divider {
     margin: 0 24px;
+}
+
+.custom-content {
+    user-select: none;
+    white-space: pre-wrap;
+}
+
+#system-information {
+    display: inline-block;
+    background: var(--iri-content-shade-background);
+    padding: 12px;
+    border-radius: 10px;
+    user-select: all;
 }

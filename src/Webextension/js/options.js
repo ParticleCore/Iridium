@@ -3,6 +3,10 @@
 let url;
 let defaultSettings;
 
+function emptyElementContent(element) {
+    element.innerHTML = "";
+}
+
 function updateSetting(
     settingId,
     value
@@ -59,7 +63,7 @@ function onSettingsChanged(
 function onSettingsPageUpdate(event) {
 
     if (!event.target.classList.contains("setting")) {
-        return
+        return;
     }
 
     let data;
@@ -85,15 +89,117 @@ function onPageClick(event) {
 
 }
 
+function loadLocale() {
+
+    document
+        .querySelectorAll("[data-locale]")
+        .forEach(function (
+            value,
+            key,
+            parent
+        ) {
+
+            let type;
+            let label;
+            let locale;
+            let attributeList;
+
+            if ((attributeList = value.dataset.locale.split("|")).length !== 2) {
+                return;
+            }
+
+            type = attributeList[0];
+            label = attributeList[1];
+
+            if ((locale = chrome.i18n.getMessage(label)) === "") {
+                return;
+            }
+
+            switch (type) {
+
+                case "title":
+                    value.setAttribute("title", locale);
+
+                    break;
+                case "text":
+                    emptyElementContent(value);
+                    let fragment = document.createElement("template");
+                    fragment.innerHTML = locale;
+                    value.appendChild(fragment.content);
+
+                    break;
+                case "tooltip":
+                    value.tooltipText = locale;
+                    break;
+
+            }
+
+        });
+
+}
+
+function loadSystemInformation() {
+
+    let section;
+    let manifest;
+    let infoList;
+
+    if ((section = document.getElementById("system-information")) == null) {
+        return;
+    }
+
+    emptyElementContent(section);
+
+    manifest = chrome.runtime.getManifest();
+
+    infoList = [
+        "manifestVersion: " + manifest.version,
+        "cookieEnabled: " + window.navigator.cookieEnabled,
+        "doNotTrack: " + window.navigator.doNotTrack,
+        "language: " + window.navigator.language
+    ];
+
+    browser
+        .runtime
+        .getBrowserInfo()
+        .then(
+            info => {
+
+                infoList.push(
+                    "buildID: " + info.buildID,
+                    "name: " + info.name,
+                    "vendor: " + info.vendor,
+                    "version: " + info.version
+                );
+
+                return browser.runtime.getPlatformInfo();
+
+            })
+        .then(
+            info => {
+
+                infoList.push(
+                    "arch: " + info.arch,
+                    "os: " + info.os
+                );
+
+                section.textContent = infoList.join("\n");
+
+            });
+
+}
+
 defaultSettings = {
     darkTheme: true,
     autoPlayVideo: false,
     maxResThumbnail: true
 };
 
-chrome.storage.onChanged.addListener(onSettingsChanged);
-
 document.addEventListener("change", onSettingsPageUpdate, true);
 document.addEventListener("click", onPageClick, true);
 
+chrome.storage.onChanged.addListener(onSettingsChanged);
 chrome.storage.local.get(defaultSettings, onSettingsResponse);
+
+loadLocale();
+loadSystemInformation();

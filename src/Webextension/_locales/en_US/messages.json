@@ -1,0 +1,56 @@
+{
+    "locale-id": {
+        "message": "English (US)"
+    },
+    "page-title": {
+        "message": "Iridium - settings"
+    },
+    "link-wiki": {
+        "message": "Find out what this does"
+    },
+    "section-general": {
+        "message": "General"
+    },
+    "section-player": {
+        "message": "Player"
+    },
+    "section-download": {
+        "message": "Download"
+    },
+    "section-channels": {
+        "message": "Channels"
+    },
+    "section-blacklist": {
+        "message": "Blacklist"
+    },
+    "section-donate": {
+        "message": "Donate"
+    },
+    "section-settings": {
+        "message": "Settings"
+    },
+    "section-language": {
+        "message": "Language"
+    },
+    "section-help": {
+        "message": "Help"
+    },
+    "setting-dark-theme": {
+        "message": "Dark theme"
+    },
+    "setting-auto-play": {
+        "message": "Play videos automatically"
+    },
+    "setting-high-res-thumbnail": {
+        "message": "Force max thumbnail resolution"
+    },
+    "setting-locale": {
+        "message": "Use custom locale"
+    },
+    "content-soon": {
+        "message": "Coming soon"
+    },
+    "content-help": {
+        "message": "If you found a problem with the extension please copy the information below and follow the <a href='https://github.com/ParticleCore/Iridium/blob/master/CONTRIBUTING.md'>instructions</a>"
+    }
+}

@@ -3,7 +3,7 @@
     "name": "Iridium for YouTube",
     "version": "1.0.0",
     "description": "YouTube with more freedom",
-    "default_locale": "en",
+    "default_locale": "en_US",
     "icons": {
         "16": "icons/16.png",
         "32": "icons/32.png",

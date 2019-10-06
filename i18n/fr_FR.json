@@ -100,13 +100,13 @@
         "import_error": "Votre liste noire n' a pas pu être importée car elle semble invalide.\n\n"
     },
     "channel_video_count": {
-        "label": "Afficher le numéro des vidéos importée"
+        "label": "Afficher le nombre de vidéos importées"
     },
     "channel_video_time": {
-        "label": "Afficher en combien de temps la vidéo a été importée"
+        "label": "Afficher depuis combien de temps la vidéo a été importée"
     },
     "playlist_reverse_control": {
-        "label": "Activer le contrôle des playlists inversées",
+        "label": "Activer le contrôle d'inversion des playlists",
         "button_label": "Inverser la playlist",
         "toggle_on": "L'inversion est activée",
         "toggle_off": "L'inversion est désactivée"
@@ -164,7 +164,7 @@
         "label": "Activer les contrôles rapides",
         "button_auto_play": "Lecture-Auto",
         "button_pop_up_player": "Lecteur vidéo Pop-up",
-        "button_full_browser": "Navigateur en pleine écran",
+        "button_full_browser": "Plein navigateur",
         "button_screen_shot": "Capture d'écran",
         "button_thumbnails": "Miniatures",
         "thumbnails_title": "Cliquez pour télécharger\nClic droit pour les options",

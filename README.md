@@ -8,7 +8,7 @@ Iridium (former [YouTube Plus](https://github.com/ParticleCore/Particle)) is an 
 
 Current bug support is being provided only for:  
 
-[![Firefox 54+](https://img.shields.io/badge/Firefox-57%2B-orange.svg)](https://www.mozilla.org/firefox)  
+[![Firefox 57+](https://img.shields.io/badge/Firefox-57%2B-orange.svg)](https://www.mozilla.org/firefox)  
 
 ## Mentions
 

@@ -85,10 +85,6 @@ function onSettingsPageUpdate(event) {
 
 }
 
-function onPageClick(event) {
-
-}
-
 function loadLocale() {
 
     document
@@ -140,26 +136,16 @@ function loadLocale() {
 
 function loadSystemInformation() {
 
-    let section;
-    let manifest;
     let infoList;
 
-    if ((section = document.getElementById("system-information")) == null) {
-        return;
-    }
-
-    emptyElementContent(section);
-
-    manifest = chrome.runtime.getManifest();
-
     infoList = [
-        "manifestVersion: " + manifest.version,
+        "manifestVersion: " + chrome.runtime.getManifest().version,
         "cookieEnabled: " + window.navigator.cookieEnabled,
         "doNotTrack: " + window.navigator.doNotTrack,
         "language: " + window.navigator.language
     ];
 
-    browser
+    return browser
         .runtime
         .getBrowserInfo()
         .then(
@@ -183,9 +169,58 @@ function loadSystemInformation() {
                     "os: " + info.os
                 );
 
-                section.textContent = infoList.join("\n");
+                return infoList.join("\n");
 
             });
+
+}
+
+function openBugReport() {
+
+    loadSystemInformation()
+        .then(
+            data => {
+                console.log(window.encodeURIComponent(data));
+
+                let template;
+
+                template = [
+                    "Make sure you followed the instructions in the link below before opening a new bug report:",
+                    "https://github.com/ParticleCore/Iridium/wiki/Report-a-bug",
+                    "Once you've finished following the instructions remove this section to confirm you've read them",
+                    "",
+                    "---",
+                    "",
+                    "software details:",
+                    "````",
+                    data,
+                    "````",
+                    "",
+                    "steps to recreate the problem:",
+                    "",
+                    "",
+                    "additional information that could be helpful:",
+                    ""
+                ];
+
+                browser.tabs.create({
+                    url: "https://github.com/ParticleCore/Iridium/issues/new?body=" + window.encodeURIComponent(template.join("\n"))
+                });
+            }
+        );
+
+
+}
+
+function onPageClick(event) {
+
+    switch (event.target.id) {
+
+        case "report-bug-button":
+            openBugReport();
+            break;
+
+    }
 
 }
 

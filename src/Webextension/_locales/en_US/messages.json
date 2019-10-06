@@ -51,6 +51,6 @@
         "message": "Coming soon"
     },
     "content-help": {
-        "message": "If you found a problem with the extension please copy the information below and follow the <a href='https://github.com/ParticleCore/Iridium/blob/master/CONTRIBUTING.md'>instructions</a>"
+        "message": "If you found a problem with the extension please click the button below and follow the instructions"
     }
 }

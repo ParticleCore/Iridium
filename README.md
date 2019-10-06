@@ -15,7 +15,7 @@ Current bug support is being provided only for:
 Find out what others had to say about Iridium; the good and the bad!  
 
 --- 
->## ghacks.net · [Iridium gives you more control on YouTube](https://www.ghacks.net/2018/06/08/iridium-gives-you-more-control-on-youtube/)  
+## ghacks.net · [Iridium gives you more control on YouTube](https://www.ghacks.net/2018/06/08/iridium-gives-you-more-control-on-youtube/)  
 
 --- 
   

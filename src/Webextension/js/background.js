@@ -179,7 +179,7 @@ api = {
 
             if (!settings.autoPlayVideo) {
                 str = str
-                // .replace(/("args":{)/, "$1\"autoplay\":\"0\",")
+                    .replace(/("args":{)/, "$1\"autoplay\":\"0\",")
                     .replace(/ytplayer\.load\(\);/, "")
                     .replace(/disable_new_pause_state3=true/g, "disable_new_pause_state3=false")
                 ;
@@ -255,6 +255,10 @@ api = {
                         /([a-z0-9.]+)(.style\.backgroundImage=\n?([a-z0-9]+)\?"url\("\+[a-z0-9]+\+"\)":"";?)/gi,
                         "$&;(" + imageLoader.toString().replace(/(\$[$&`'0-9]+)/g, "$$$1") + "($1,$3));"
                     )
+                    .replace(
+                        /(this\.[a-z0-9]+)=[^;]+\.autoplayoverride\);/i,
+                        "$1=window.autoPlayVideo;"
+                    )
                 ;
 
             } else {
@@ -300,10 +304,7 @@ api = {
 
             if (!settings.autoPlayVideo) {
                 str = str
-                // .replace(
-                //     /("args":{)/,
-                //     "$1\"autoplay\":\"0\","
-                // )
+                    .replace(/("args":{)/, "$1\"autoplay\":\"0\",")
                     .replace(/disable_new_pause_state3=true/g, "disable_new_pause_state3=false")
                 ;
             }

@@ -6,14 +6,9 @@ const GET_BROADCAST_ID = 0;
 
 let api;
 let util;
-let inject;
 let settings;
 
-settings = {
-    darkTheme: true,
-    autoPlayVideo: false,
-    maxResThumbnail: true
-};
+settings = window.defaultSettings || {};
 
 util = {
     videoIdPattern: /v=([\w-_]+)/,
@@ -30,121 +25,34 @@ util = {
     },
     filterResponse: function (requestId) {
         return chrome.webRequest.filterResponseData(requestId);
-    }
-};
+    },
+    filterEngine: function (
+        details,
+        modifier
+    ) {
 
-inject = function (
-    broadcastId,
-    settings
-) {
+        let str;
+        let filter;
+        let decoder;
+        let encoder;
 
-    let broadcastChannel;
-    let featureList;
-    let autoPlayVideoFeature;
-    let darkThemeFeature;
-    let maxResThumbnailFeature;
+        str = "";
+        decoder = new TextDecoder("utf-8");
+        encoder = new TextEncoder();
+        filter = util.filterResponse(details.requestId);
 
-    autoPlayVideoFeature = {
-        belongs: function (option) {
+        filter.ondata = function (event) {
+            str += util.filterCacheData(decoder.decode(event.data, {stream: true}));
+        };
 
-            if (!option.hasOwnProperty("autoPlayVideo")) {
-                return false;
-            }
+        filter.onstop = function (event) {
 
-            if (settings.autoPlayVideo !== option.autoPlayVideo) {
+            filter.write(encoder.encode(modifier(str)));
+            filter.disconnect();
 
-                settings.autoPlayVideo = option.autoPlayVideo;
-                window.autoPlayVideo = option.autoPlayVideo;
-
-            }
-
-            return true;
-
-        }
-    };
-
-    darkThemeFeature = {
-        toggleEvent: new CustomEvent("yt-action", {detail: {actionName: "yt-dark-mode-toggled-action", returnValue: []}}),
-        belongs: function (option) {
-
-            if (!option.hasOwnProperty("darkTheme")) {
-                return false;
-            }
-
-            if (settings.darkTheme !== option.darkTheme) {
-
-                settings.darkTheme = option.darkTheme;
-
-                if (settings.darkTheme !== document.documentElement.hasAttribute("dark")) {
-                    document.dispatchEvent(this.toggleEvent);
-                }
-
-            }
-
-            return true;
-
-        }
-    };
-
-    maxResThumbnailFeature = {
-        belongs: function (option) {
-
-            if (!option.hasOwnProperty("maxResThumbnail")) {
-                return false;
-            }
-
-            if (settings.maxResThumbnail !== option.maxResThumbnail) {
-
-                settings.maxResThumbnail = option.maxResThumbnail;
-                window.maxResThumbnail = option.maxResThumbnail;
-
-            }
-
-            return true;
-
-        }
-    };
-
-    featureList = [
-        autoPlayVideoFeature,
-        darkThemeFeature,
-        maxResThumbnailFeature
-    ];
-
-    function onMessageListener(event) {
-
-        console.log(event);
-
-        if (!event.data ||
-            !event.data.payload ||
-            event.data.type !== "setting-update"
-        ) {
-            return;
-        }
-
-        for (let feature of featureList) {
-            if (feature.belongs(event.data.payload)) {
-                break;
-            }
-        }
+        };
 
     }
-
-    broadcastChannel = new BroadcastChannel(broadcastId);
-    broadcastChannel.addEventListener("message", onMessageListener);
-
-    if (!settings) {
-        return;
-    }
-
-    if (settings.hasOwnProperty("autoPlayVideo")) {
-        window.autoPlayVideo = settings.autoPlayVideo;
-    }
-
-    if (settings.hasOwnProperty("maxResThumbnail")) {
-        window.maxResThumbnail = settings.maxResThumbnail;
-    }
-
 };
 
 api = {
@@ -159,36 +67,27 @@ api = {
 
         console.log("main: " + details.url);
 
-        let str;
-        let filter;
-        let decoder;
-        let encoder;
+        let modifier;
 
-        str = "";
-        decoder = new TextDecoder("utf-8");
-        encoder = new TextEncoder();
-        filter = util.filterResponse(details.requestId);
+        modifier = function (str) {
 
-        filter.ondata = function (event) {
-            str += util.filterCacheData(decoder.decode(event.data, {stream: true}));
-        };
-
-        filter.onstop = function (event) {
-
-            str = str.replace(/<head>/, `<head><script>(${inject}("${api.broadcastId}",${JSON.stringify(settings)}))</script>`);
+            str = str.replace(
+                /<head>/,
+                `<head><script>(${window.main}("${api.broadcastId}",${JSON.stringify(settings)}))</script>`
+            );
 
             if (!settings.autoPlayVideo) {
                 str = str
-                    .replace(/("args":{)/, "$1\"autoplay\":\"0\",")
                     .replace(/ytplayer\.load\(\);/, "")
                     .replace(/disable_new_pause_state3=true/g, "disable_new_pause_state3=false")
                 ;
             }
 
-            filter.write(encoder.encode(str));
-            filter.disconnect();
+            return str;
 
         };
+
+        util.filterEngine(details ,modifier);
 
     },
     scriptListener: function (details) {
@@ -197,85 +96,53 @@ api = {
             return;
         }
 
-        function imageLoader(
-            element,
-            url
-        ) {
-
-            console.log(element.style);
-
-            if (!window.maxResThumbnail ||
-                !url ||
-                !url.match(/default\.[a-z]+/)
-            ) {
-                return;
-            }
-
-            function checkHighQualityThumbnail(event) {
-                if (event.target.width > 120) {
-
-                    element.parentElement.style.backgroundImage = `url(${url})`;
-                    element.style.backgroundImage = `url(${src})`;
-
-                }
-            }
-
-            let src;
-            let thumbnail;
-
-            src = url.replace(/[a-z]+default(\.[a-z]+)/g, "maxresdefault$1");
-            thumbnail = new Image();
-            thumbnail.addEventListener("load", checkHighQualityThumbnail, false);
-            thumbnail.src = src;
-
-        }
-
         console.log("script: " + details.url);
 
-        let str;
-        let filter;
-        let decoder;
-        let encoder;
+        let modifier;
 
-        str = "";
-        decoder = new TextDecoder("utf-8");
-        encoder = new TextEncoder();
-        filter = util.filterResponse(details.requestId);
-
-        filter.ondata = function (event) {
-            str += util.filterCacheData(decoder.decode(event.data, {stream: true}));
-        };
-
-        filter.onstop = function (event) {
+        modifier = function (str) {
 
             if (details.url.endsWith("/base.js")) {
-
                 str = str
                     .replace(
+                        /"loadVideoByPlayerVars",this\.loadVideoByPlayerVars/,
+                        "\"loadVideoByPlayerVars\",window.modifier.bind(this,this.loadVideoByPlayerVars)"
+                    )
+                    .replace(
+                        /"cueVideoByPlayerVars",this\.cueVideoByPlayerVars/,
+                        "\"cueVideoByPlayerVars\",window.modifier.bind(this,this.cueVideoByPlayerVars)"
+                    )
+                    .replace(
                         /([a-z0-9.]+)(.style\.backgroundImage=\n?([a-z0-9]+)\?"url\("\+[a-z0-9]+\+"\)":"";?)/gi,
-                        "$&;(" + imageLoader.toString().replace(/(\$[$&`'0-9]+)/g, "$$$1") + "($1,$3));"
+                        "$&;(" + window.imageLoader.toString().replace(/(\$[$&`'0-9]+)/g, "$$$1") + "($1,$3));"
                     )
                     .replace(
                         /(this\.[a-z0-9]+)=[^;]+\.autoplayoverride\);/i,
                         "$1=window.autoPlayVideo;"
                     )
                 ;
-
             } else {
 
                 if (!settings.autoPlayVideo) {
                     str = str
-                        .replace(/([a-z0-9.]+)loadVideoByPlayerVars\(([^)]+)\)/gi, "(window.autoPlayVideo!==false ? $1loadVideoByPlayerVars($2):$1cueVideoByPlayerVars($2))")
-                        .replace(/config_\.loaded=!0/g, "config_.loaded=!1")
+                        .replace(
+                            /([a-z0-9.]+)loadVideoByPlayerVars\(([^)]+)\)/gi,
+                            "(window.autoPlayVideo!==false?$1loadVideoByPlayerVars($2):$1cueVideoByPlayerVars($2))"
+                        )
+                        .replace(
+                            /config_\.loaded=!0/g,
+                            "config_.loaded=!1"
+                        )
                     ;
                 }
 
             }
 
-            filter.write(encoder.encode(str));
-            filter.disconnect();
+            return str;
 
         };
+
+        util.filterEngine(details, modifier);
 
     },
     xhrListener: function (details) {
@@ -286,35 +153,24 @@ api = {
 
         console.log("xhr: " + details.url);
 
-        let str;
-        let filter;
-        let decoder;
-        let encoder;
+        let modifier;
 
-        str = "";
-        decoder = new TextDecoder("utf-8");
-        encoder = new TextEncoder();
-        filter = util.filterResponse(details.requestId);
-
-        filter.ondata = function (event) {
-            str += util.filterCacheData(decoder.decode(event.data, {stream: true}));
-        };
-
-        filter.onstop = function (event) {
+        modifier = function (str) {
 
             if (!settings.autoPlayVideo) {
                 str = str
-                    .replace(/("args":{)/, "$1\"autoplay\":\"0\",")
-                    .replace(/disable_new_pause_state3=true/g, "disable_new_pause_state3=false")
+                    .replace(
+                        /disable_new_pause_state3=true/g,
+                        "disable_new_pause_state3=false"
+                    )
                 ;
             }
 
-            filter.write(encoder.encode(str));
-            filter.disconnect();
+            return str;
 
         };
 
-        return {};
+        util.filterEngine(details, modifier);
 
     },
     headersListener: function (details) {

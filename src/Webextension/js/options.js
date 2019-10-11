@@ -221,19 +221,15 @@ function onPageClick(event) {
 
 }
 
-let defaultSettings;
+let settings;
 
-defaultSettings = {
-    darkTheme: true,
-    autoPlayVideo: false,
-    maxResThumbnail: true
-};
+settings = window.defaultSettings || {};
 
 document.addEventListener("change", onSettingsPageUpdate, true);
 document.addEventListener("click", onPageClick, true);
 
 chrome.storage.onChanged.addListener(onSettingsChanged);
-chrome.storage.local.get(defaultSettings, onSettingsResponse);
+chrome.storage.local.get(settings, onSettingsResponse);
 
 loadLocale();
 loadSystemInformation();

@@ -21,20 +21,18 @@
         }
     },
     "background": {
-        "scripts": [
-            "js/background.js"
-        ],
+        "page": "html/background.html",
         "persistent": true
     },
-    "content_scripts" : [
+    "content_scripts": [
         {
-            "matches" : [
+            "matches": [
                 "*://www.youtube.com/*"
             ],
-            "js" : [
+            "js": [
                 "js/content-script.js"
             ],
-            "run_at" : "document_start"
+            "run_at": "document_start"
         }
     ],
     "permissions": [

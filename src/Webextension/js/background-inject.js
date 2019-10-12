@@ -174,6 +174,42 @@ window.main = function (
 
 };
 
+window.pbjMod = function (data) {
+
+    if (!data.response ||
+        !data.response.parts ||
+        !data.url.endsWith("pbj=1")
+    ) {
+
+        return;
+
+    }
+
+    let i;
+
+    for (i = 0; i < data.response.parts.length; i++) {
+
+        if (!data.response.parts[i].player) {
+            continue;
+        }
+
+        if (window.autoPlayVideo &&
+            data.response.parts[i].player &&
+            data.response.parts[i].player.args &&
+            data.response.parts[i].player.args.fflags
+        ) {
+            data.response.parts[i].player.args.fflags = data.response.parts[i].player.args.fflags.replace(
+                /disable_new_pause_state3=true/g,
+                "disable_new_pause_state3=false"
+            );
+        }
+
+        break;
+
+    }
+
+};
+
 window.imageLoader = function (
     element,
     url

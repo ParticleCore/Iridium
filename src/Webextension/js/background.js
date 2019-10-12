@@ -1,8 +1,8 @@
 "use strict";
 
+const GET_BROADCAST_ID = 0;
 const YT_PATTERN = "*://www.youtube.com/*";
 const YT_DOMAIN = "https://www.youtube.com";
-const GET_BROADCAST_ID = 0;
 
 let api;
 let util;
@@ -59,6 +59,10 @@ api = {
     broadcastId: util.generateUUID(),
     mainFrameListener: function (details) {
 
+        if (details.frameId !== 0) {
+            return {};
+        }
+
         if (settings.autoPlayVideo &&
             !settings.maxResThumbnail
         ) {
@@ -87,10 +91,14 @@ api = {
 
         };
 
-        util.filterEngine(details ,modifier);
+        util.filterEngine(details, modifier);
 
     },
     scriptListener: function (details) {
+
+        if (details.frameId !== 0) {
+            return {};
+        }
 
         if (settings.autoPlayVideo) {
             return;
@@ -123,6 +131,12 @@ api = {
                 ;
             } else {
 
+                str = str
+                    .replace(
+                        /(\.onDone=function\(([a-z0-9]+)\){)/gi,
+                        "$1(" + window.pbjMod + "($2));"
+                    );
+
                 if (!settings.autoPlayVideo) {
                     str = str
                         .replace(
@@ -145,35 +159,11 @@ api = {
         util.filterEngine(details, modifier);
 
     },
-    xhrListener: function (details) {
-
-        if (settings.autoPlayVideo) {
-            return;
-        }
-
-        console.log("xhr: " + details.url);
-
-        let modifier;
-
-        modifier = function (str) {
-
-            if (!settings.autoPlayVideo) {
-                str = str
-                    .replace(
-                        /disable_new_pause_state3=true/g,
-                        "disable_new_pause_state3=false"
-                    )
-                ;
-            }
-
-            return str;
-
-        };
-
-        util.filterEngine(details, modifier);
-
-    },
     headersListener: function (details) {
+
+        if (details.frameId !== 0) {
+            return {requestHeaders: details.requestHeaders};
+        }
 
         function setCookieValue(originalValue) {
 
@@ -269,8 +259,13 @@ api = {
 
         const block = ["blocking"];
         const blockHeaders = ["blocking", "requestHeaders"];
-        const headersFilter = {urls: [YT_PATTERN]};
-        const mainFilter = {urls: [YT_PATTERN], types: ["main_frame"]};
+        const headersFilter = {
+            urls: [YT_PATTERN]
+        };
+        const mainFilter = {
+            urls: [YT_PATTERN],
+            types: ["main_frame"]
+        };
         const scriptFilter = {
             urls: [
                 YT_PATTERN + "/base.js",
@@ -279,12 +274,10 @@ api = {
             ],
             types: ["script"]
         };
-        const xhrFilter = {urls: [YT_PATTERN + "pbj=1"], types: ["xmlhttprequest"]};
 
         chrome.webRequest.onBeforeSendHeaders.addListener(api.headersListener, headersFilter, blockHeaders);
         chrome.webRequest.onBeforeRequest.addListener(api.mainFrameListener, mainFilter, block);
         chrome.webRequest.onBeforeRequest.addListener(api.scriptListener, scriptFilter, block);
-        chrome.webRequest.onBeforeRequest.addListener(api.xhrListener, xhrFilter, block);
 
     },
     ini: function () {

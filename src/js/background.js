@@ -69,8 +69,6 @@ api = {
             return;
         }
 
-        console.log("main: " + details.url);
-
         let modifier;
 
         modifier = function (str) {
@@ -78,6 +76,14 @@ api = {
             str = str.replace(
                 /<head>/,
                 `<head><script>(${window.main}("${api.broadcastId}",${JSON.stringify(settings)}))</script>`
+            );
+
+            str = str.replace(
+                /(<g id="like">)/,
+                "      <g id=\"autoplay\">\n" +
+                "        <polygon data-iri-feature=\"autoPlayVideo\" points=\"7.4,4 21.2,12 7.4,20\"></polygon>\n" +
+                "      </g>\n" +
+                "      $1"
             );
 
             if (!settings.autoPlayVideo) {
@@ -99,12 +105,6 @@ api = {
         if (details.frameId !== 0) {
             return {};
         }
-
-        if (settings.autoPlayVideo) {
-            return;
-        }
-
-        console.log("script: " + details.url);
 
         let modifier;
 
@@ -135,7 +135,15 @@ api = {
                     .replace(
                         /(\.onDone=function\(([a-z0-9]+)\){)/gi,
                         "$1(" + window.pbjMod + "($2));"
-                    );
+                    )
+                ;
+
+                str = str
+                    .replace(
+                        /(updatePageData_:function\(([a-z0-9]+)\){)/gi,
+                        "$1(window.pageModifier($2));"
+                    )
+                ;
 
                 if (!settings.autoPlayVideo) {
                     str = str
@@ -188,9 +196,6 @@ api = {
         }
 
         function updateCookie(cookie) {
-
-            // console.log("cookie:", cookie);
-
             chrome.cookies.set({
                 url: YT_DOMAIN,
                 name: cookie.name,
@@ -206,7 +211,6 @@ api = {
                 expirationDate: cookie.expirationDate,
                 storeId: cookie.storeId
             });
-
         }
 
         let values;
@@ -217,8 +221,6 @@ api = {
             if ((header = details.requestHeaders[i]).name.toLowerCase() !== "cookie") {
                 continue;
             }
-
-            // console.log(header);
 
             if (!header.value.match(/PREF=/)) {
 
@@ -246,7 +248,6 @@ api = {
         }
 
         // no cookies header, add it
-
         details.requestHeaders.push({
             name: "cookie",
             value: "PREF=f6=" + setCookieValue("0")
@@ -297,8 +298,6 @@ api = {
             namespace
         ) {
 
-            console.log(changes);
-
             for (let key in changes) {
                 if (changes.hasOwnProperty(key)) {
                     settings[key] = changes[key].newValue;
@@ -308,11 +307,7 @@ api = {
         }
 
         function onStorageGetListener(items) {
-
-            console.log(items);
-
             settings = items;
-
         }
 
         function onBrowserActionClickedListener() {

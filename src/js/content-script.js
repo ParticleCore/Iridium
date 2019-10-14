@@ -5,7 +5,18 @@ const GET_BROADCAST_ID = 0;
 function onMessageResponse(data) {
 
     function onMessageListener(event) {
-        console.log("channel message received");
+
+        if (!event.data ||
+            !event.data.payload ||
+            event.data.type !== "setting-update"
+        ) {
+            return;
+        }
+
+        chrome.storage.local.set(event.data.payload, function (event) {
+            console.log("onMessageListener", event);
+        });
+
     }
 
     function onStorageChangedListener(
@@ -14,8 +25,6 @@ function onMessageResponse(data) {
     ) {
 
         let data;
-
-        console.log("content script", changes);
 
         data = {};
 
@@ -33,8 +42,6 @@ function onMessageResponse(data) {
     }
 
     let broadcastChannel;
-
-    console.log("response data", data);
 
     broadcastChannel = new BroadcastChannel(data);
     broadcastChannel.addEventListener("message", onMessageListener);

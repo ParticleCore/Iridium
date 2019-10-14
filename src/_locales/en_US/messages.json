@@ -38,8 +38,14 @@
     "setting-dark-theme": {
         "message": "Dark theme"
     },
+    "setting-quick-controls": {
+        "message": "Quick controls"
+    },
     "setting-auto-play": {
         "message": "Play videos automatically"
+    },
+    "setting-hfr-on": {
+        "message": "Allow HFR streams (60fps)"
     },
     "setting-high-res-thumbnail": {
         "message": "Force max thumbnail resolution"

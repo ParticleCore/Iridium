@@ -1,7 +1,7 @@
 "use strict";
 
 function emptyElementContent(element) {
-    while(element.firstChild){
+    while (element.firstChild) {
         element.removeChild(element.firstChild);
     }
 }
@@ -35,8 +35,6 @@ function updateSetting(
 
 function onSettingsResponse(items) {
 
-    console.log(items);
-
     if (document.getElementById("message")) {
         document.getElementById("message").textContent = JSON.stringify(items, null, 4);
     }
@@ -53,10 +51,15 @@ function onSettingsChanged(
     changes,
     namespace
 ) {
-    console.log("options", changes);
-    // for (let key in changes) {
-    //     settings[key] = changes[key].newValue;
-    // }
+
+    for (let key in changes) {
+        if (changes.hasOwnProperty(key)) {
+
+            settings[key] = changes[key].newValue;
+            updateSetting(key, settings[key]);
+
+        }
+    }
 }
 
 function onSettingsPageUpdate(event) {
@@ -177,7 +180,6 @@ function openBugReport() {
     loadSystemInformation()
         .then(
             data => {
-                console.log(window.encodeURIComponent(data));
 
                 let template;
 

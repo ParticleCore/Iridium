@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Iridium for YouTube",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "description": "YouTube with more freedom",
     "default_locale": "en_US",
     "icons": {
@@ -36,6 +36,7 @@
         }
     ],
     "permissions": [
+        "tabs",
         "storage",
         "cookies",
         "webRequest",

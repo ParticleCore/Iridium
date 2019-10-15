@@ -53,12 +53,16 @@ function onSettingsChanged(
 ) {
 
     for (let key in changes) {
-        if (changes.hasOwnProperty(key)) {
 
-            settings[key] = changes[key].newValue;
-            updateSetting(key, settings[key]);
-
+        if (!changes.hasOwnProperty(key) ||
+            changes[key].newValue === changes[key].oldValue
+        ) {
+            continue;
         }
+
+        settings[key] = changes[key].newValue;
+        updateSetting(key, settings[key]);
+
     }
 }
 

@@ -63,12 +63,6 @@ api = {
             return {};
         }
 
-        if (settings.autoPlayVideo &&
-            !settings.maxResThumbnail
-        ) {
-            return;
-        }
-
         let modifier;
 
         modifier = function (str) {
@@ -136,21 +130,18 @@ api = {
                         /(\.onDone=function\(([a-z0-9]+)\){)/gi,
                         "$1(" + window.pbjMod + "($2));"
                     )
-                ;
-
-                str = str
                     .replace(
                         /(updatePageData_:function\(([a-z0-9]+)\){)/gi,
                         "$1(window.pageModifier($2));"
+                    )
+                    .replace(
+                        /([a-z0-9.]+)loadVideoByPlayerVars\(([^)]+)\)/gi,
+                        "(window.autoPlayVideo!==false?$1loadVideoByPlayerVars($2):$1cueVideoByPlayerVars($2))"
                     )
                 ;
 
                 if (!settings.autoPlayVideo) {
                     str = str
-                        .replace(
-                            /([a-z0-9.]+)loadVideoByPlayerVars\(([^)]+)\)/gi,
-                            "(window.autoPlayVideo!==false?$1loadVideoByPlayerVars($2):$1cueVideoByPlayerVars($2))"
-                        )
                         .replace(
                             /config_\.loaded=!0/g,
                             "config_.loaded=!1"
@@ -196,6 +187,20 @@ api = {
         }
 
         function updateCookie(cookie) {
+
+            if (cookie === null) {
+                cookie = {
+                    name: "PREF",
+                    value: "f6=400",
+                    domain: ".youtube.com",
+                    path: "/",
+                    secure: false,
+                    httpOnly: false,
+                    sameSite: "no_restriction",
+                    expirationDate:  Math.round(Date.now() / 1000)
+                };
+            }
+
             chrome.cookies.set({
                 url: YT_DOMAIN,
                 name: cookie.name,
@@ -208,9 +213,9 @@ api = {
                 secure: cookie.secure,
                 httpOnly: cookie.httpOnly,
                 sameSite: cookie.sameSite,
-                expirationDate: cookie.expirationDate,
-                storeId: cookie.storeId
+                expirationDate: cookie.expirationDate
             });
+
         }
 
         let values;
@@ -288,9 +293,45 @@ api = {
             sender,
             sendResponse
         ) {
+
             if (request === GET_BROADCAST_ID) {
+
                 sendResponse(api.broadcastId);
+                return;
+
             }
+
+            console.log(request);
+
+            let data;
+
+            for (let key in request) {
+
+                if (!request.hasOwnProperty(key)) {
+                    continue;
+                }
+
+                data = {};
+
+                if (key in settings) {
+                    if (request[key] !== settings[key]) {
+
+                        settings[key] = request[key];
+                        data[key] = settings[key];
+
+                    }
+                }
+
+                if (Object.keys(data).length < 1) {
+                    return;
+                }
+
+                chrome.storage.local.set(data, function (event) {
+                    console.log("onMessageListener", event);
+                });
+
+            }
+
         }
 
         function onStorageChangedListener(
@@ -311,9 +352,19 @@ api = {
         }
 
         function onBrowserActionClickedListener() {
-            chrome.tabs.create({
-                url: chrome.runtime.getURL("html/options.html")
+
+            let url;
+
+            url = chrome.runtime.getURL("html/options.html");
+
+            chrome.tabs.query({url: url}, function (tabs) {
+                if (tabs.length > 0) {
+                    chrome.tabs.update(tabs[0].id, {active: true});
+                } else {
+                    chrome.tabs.create({url: url});
+                }
             });
+
         }
 
         chrome.runtime.onMessage.addListener(onMessageListener);

@@ -13,9 +13,7 @@ function onMessageResponse(data) {
             return;
         }
 
-        chrome.storage.local.set(event.data.payload, function (event) {
-            console.log("onMessageListener", event);
-        });
+        chrome.runtime.sendMessage(event.data.payload);
 
     }
 

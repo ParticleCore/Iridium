@@ -2,13 +2,25 @@
 
 const GET_BROADCAST_ID = 0;
 const YT_PATTERN = "*://www.youtube.com/*";
-const YT_DOMAIN = "https://www.youtube.com";
+const YT_FP_DOMAIN = "youtube.com";
+const YT_URL = "http://." + YT_FP_DOMAIN;
+const YT_PREF_COOKIE = "PREF";
 
+let fpi;
 let api;
 let util;
 let settings;
 
 settings = window.defaultSettings || {};
+
+browser
+    .privacy
+    .websites
+    .firstPartyIsolate
+    .get({})
+    .then(function (got) {
+        fpi = got.value;
+    });
 
 util = {
     videoIdPattern: /v=([\w-_]+)/,
@@ -82,8 +94,14 @@ api = {
 
             if (!settings.autoPlayVideo) {
                 str = str
-                    .replace(/ytplayer\.load\(\);/, "")
-                    .replace(/disable_new_pause_state3=true/g, "disable_new_pause_state3=false")
+                    .replace(
+                        /ytplayer\.load\(\);/,
+                        ""
+                    )
+                    .replace(
+                        /disable_new_pause_state3=true/g,
+                        "disable_new_pause_state3=false"
+                    )
                 ;
             }
 
@@ -160,7 +178,9 @@ api = {
     },
     headersListener: function (details) {
 
-        if (details.frameId !== 0) {
+        if (details.frameId !== 0 ||
+            details.type !== "main_frame"
+        ) {
             return {requestHeaders: details.requestHeaders};
         }
 
@@ -186,34 +206,62 @@ api = {
 
         }
 
+        function processCookieValue(
+            match,
+            p1,
+            p2,
+            offset,
+            string
+        ) {
+
+            if (!p1 || !p2) {
+                return string;
+            }
+
+            return p1 + setCookieValue(p2);
+
+        }
+
+        function bakeCookie() {
+
+            let date;
+
+            date = new Date();
+
+            return {
+                expirationDate: Math.round(date.setFullYear(date.getFullYear() + 1) / 1000),
+                firstPartyDomain: fpi ? YT_FP_DOMAIN : null,
+                httpOnly: false,
+                name: YT_PREF_COOKIE,
+                path: "/",
+                sameSite: "no_restriction",
+                secure: false,
+                storeId: details.cookieStoreId,
+                value: "f6=400"
+            };
+
+        }
+
         function updateCookie(cookie) {
 
-            if (cookie === null) {
-                cookie = {
-                    name: "PREF",
-                    value: "f6=400",
-                    domain: ".youtube.com",
-                    path: "/",
-                    secure: false,
-                    httpOnly: false,
-                    sameSite: "no_restriction",
-                    expirationDate:  Math.round(Date.now() / 1000)
-                };
+            if (!cookie) {
+                cookie = bakeCookie();
             }
 
             chrome.cookies.set({
-                url: YT_DOMAIN,
+                expirationDate: cookie.expirationDate,
+                firstPartyDomain: cookie.firstPartyDomain,
+                httpOnly: cookie.httpOnly,
                 name: cookie.name,
+                path: cookie.path,
+                sameSite: cookie.sameSite,
+                secure: cookie.secure,
+                storeId: cookie.storeId,
+                url: YT_URL,
                 value: cookie.value.replace(
                     /(f6=)([0-9a-z]+)/i,
-                    "$1" + setCookieValue("$2")
-                ),
-                domain: cookie.domain,
-                path: cookie.path,
-                secure: cookie.secure,
-                httpOnly: cookie.httpOnly,
-                sameSite: cookie.sameSite,
-                expirationDate: cookie.expirationDate
+                    processCookieValue
+                )
             });
 
         }
@@ -241,13 +289,27 @@ api = {
                 values = values ? values[1] : "";
                 values = values.split("&");
                 values.push("f6=" + setCookieValue("0"));
-                header.value = header.value.replace(/(PREF=)[^;|$]+/i, "$1" + values.join("&"));
+                header.value = header.value.replace(
+                    /(PREF=)[^;|$]+/i,
+                    "$1" + values.join("&")
+                );
 
             } else {
-                header.value = header.value.replace(/(f6=)([0-9a-z]+)/i, "$1" + setCookieValue("$2"));
+                header.value = header.value.replace(
+                    /(f6=)([0-9a-z]+)/i,
+                    processCookieValue
+                );
             }
 
-            chrome.cookies.get({url: YT_DOMAIN, name: "PREF"}, updateCookie);
+            chrome.cookies.get({
+                    storeId: details.cookieStoreId,
+                    firstPartyDomain: fpi ? YT_FP_DOMAIN : null,
+                    name: YT_PREF_COOKIE,
+                    url: YT_URL
+                },
+                updateCookie
+            );
+
             return {requestHeaders: details.requestHeaders};
 
         }
@@ -352,19 +414,7 @@ api = {
         }
 
         function onBrowserActionClickedListener() {
-
-            let url;
-
-            url = chrome.runtime.getURL("html/options.html");
-
-            chrome.tabs.query({url: url}, function (tabs) {
-                if (tabs.length > 0) {
-                    chrome.tabs.update(tabs[0].id, {active: true});
-                } else {
-                    chrome.tabs.create({url: url});
-                }
-            });
-
+            chrome.runtime.openOptionsPage();
         }
 
         chrome.runtime.onMessage.addListener(onMessageListener);

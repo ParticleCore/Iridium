@@ -50,6 +50,9 @@
     "setting-high-res-thumbnail": {
         "message": "Force max thumbnail resolution"
     },
+    "setting-sync-settings": {
+        "message": "Sync Settings"
+    },
     "setting-locale": {
         "message": "Use custom locale"
     },

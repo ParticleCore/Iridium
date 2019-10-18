@@ -79,18 +79,19 @@ api = {
 
         modifier = function (str) {
 
-            str = str.replace(
-                /<head>/,
-                `<head><script>(${window.main}("${api.broadcastId}",${JSON.stringify(settings)}))</script>`
-            );
-
-            str = str.replace(
-                /(<g id="like">)/,
-                "      <g id=\"autoplay\">\n" +
-                "        <polygon data-iri-feature=\"autoPlayVideo\" points=\"7.4,4 21.2,12 7.4,20\"></polygon>\n" +
-                "      </g>\n" +
-                "      $1"
-            );
+            str = str
+                .replace(
+                    /<head>/,
+                    `<head><script>(${window.main}("${api.broadcastId}",${JSON.stringify(settings)}))</script>`
+                )
+                .replace(
+                    /(<g id="like">)/,
+                    "      <g id=\"autoplay\">\n" +
+                    "        <polygon data-iri-feature=\"autoPlayVideo\" points=\"7.4,4 21.2,12 7.4,20\"></polygon>\n" +
+                    "      </g>\n" +
+                    "      $1"
+                )
+            ;
 
             if (!settings.autoPlayVideo) {
                 str = str
@@ -178,9 +179,7 @@ api = {
     },
     headersListener: function (details) {
 
-        if (details.frameId !== 0 ||
-            details.type !== "main_frame"
-        ) {
+        if (details.frameId !== 0) {
             return {requestHeaders: details.requestHeaders};
         }
 
@@ -328,7 +327,8 @@ api = {
         const block = ["blocking"];
         const blockHeaders = ["blocking", "requestHeaders"];
         const headersFilter = {
-            urls: [YT_PATTERN]
+            urls: [YT_PATTERN],
+            types: ["main_frame"]
         };
         const mainFilter = {
             urls: [YT_PATTERN],
@@ -363,9 +363,10 @@ api = {
 
             }
 
-            console.log(request);
-
             let data;
+            let migrate;
+
+            data = {};
 
             for (let key in request) {
 
@@ -373,40 +374,50 @@ api = {
                     continue;
                 }
 
-                data = {};
-
                 if (key in settings) {
                     if (request[key] !== settings[key]) {
 
                         settings[key] = request[key];
                         data[key] = settings[key];
+                        migrate = key === "syncSettings";
 
                     }
                 }
 
-                if (Object.keys(data).length < 1) {
-                    return;
-                }
-
-                chrome.storage.local.set(data, function (event) {
-                    console.log("onMessageListener", event);
-                });
-
             }
+
+            if (Object.keys(data).length < 1) {
+                return;
+            }
+
+            if (migrate) {
+                data = settings;
+            }
+
+            chrome.storage[settings.syncSettings ? "sync" : "local"].set(data, function (event) {
+                console.log("onMessageListener", event);
+            });
 
         }
 
-        function onStorageChangedListener(
-            changes,
-            namespace
-        ) {
+        function keepUsingSync(items) {
 
+            if ("syncSettings" in items &&
+                items["syncSettings"] === true
+            ) {
+                return chrome.storage.sync.get(settings, onStorageGetListener);
+            }
+
+            chrome.storage.local.get(settings, onStorageGetListener);
+
+        }
+
+        function onStorageChangedListener(changes) {
             for (let key in changes) {
                 if (changes.hasOwnProperty(key)) {
                     settings[key] = changes[key].newValue;
                 }
             }
-
         }
 
         function onStorageGetListener(items) {
@@ -419,8 +430,8 @@ api = {
 
         chrome.runtime.onMessage.addListener(onMessageListener);
         chrome.storage.onChanged.addListener(onStorageChangedListener);
-        chrome.storage.local.get(settings, onStorageGetListener);
         chrome.browserAction.onClicked.addListener(onBrowserActionClickedListener);
+        chrome.storage.sync.get({"syncSettings": settings.syncSettings}, keepUsingSync);
 
         this.iniRequestListeners();
 

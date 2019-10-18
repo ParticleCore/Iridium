@@ -5,22 +5,15 @@ const GET_BROADCAST_ID = 0;
 function onMessageResponse(data) {
 
     function onMessageListener(event) {
-
-        if (!event.data ||
-            !event.data.payload ||
-            event.data.type !== "setting-update"
+        if (event.data &&
+            event.data.payload &&
+            event.data.type === "setting-update"
         ) {
-            return;
+            chrome.runtime.sendMessage(event.data.payload);
         }
-
-        chrome.runtime.sendMessage(event.data.payload);
-
     }
 
-    function onStorageChangedListener(
-        changes,
-        namespace
-    ) {
+    function onStorageChangedListener(changes) {
 
         let data;
 

@@ -1,3 +1,5 @@
+"use strict";
+
 window.main = function (
     broadcastId,
     settings
@@ -429,8 +431,6 @@ window.pbjMod = function (data) {
     ) {
         return;
     }
-
-    // window.pageModifier(data);
 
     let config;
 

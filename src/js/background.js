@@ -86,10 +86,14 @@ api = {
                 )
                 .replace(
                     /(<g id="like">)/,
-                    "      <g id=\"autoplay\">\n" +
-                    "        <polygon data-iri-feature=\"autoPlayVideo\" points=\"7.4,4 21.2,12 7.4,20\"></polygon>\n" +
-                    "      </g>\n" +
-                    "      $1"
+                    "<g id=\"iridium_logo\">\n" +
+                    "    <polygon data-iri-feature=\"iridiumLogo\" opacity=\"0.5\" points=\"6.8,3 22.4,12 6.8,21\"/>\n" +
+                    "    <path data-iri-feature=\"iridiumLogo\" d=\"M6.8,3v18l15.6-9L6.8,3z M9.8,8.2l6.6,3.8l-6.6,3.8V8.2z\"/>\n" +
+                    "</g>\n" +
+                    "<g id=\"autoplay\">\n" +
+                    "    <polygon data-iri-feature=\"autoPlayVideo\" points=\"7.4,4 21.2,12 7.4,20\"></polygon>\n" +
+                    "</g>\n" +
+                    "$1"
                 )
             ;
 
@@ -147,11 +151,11 @@ api = {
                 str = str
                     .replace(
                         /(\.onDone=function\(([a-z0-9]+)\){)/gi,
-                        "$1(" + window.pbjMod + "($2));"
+                        "$1(window.pbjMod($2));"
                     )
                     .replace(
-                        /(updatePageData_:function\(([a-z0-9]+)\){)/gi,
-                        "$1(window.pageModifier($2));"
+                        /(loadDesktopData_:function\(([a-z0-9]+)(,)?([a-z0-9]+)?\){)/gi,
+                        "$1(window.pageModifier($4||$2));"
                     )
                     .replace(
                         /([a-z0-9.]+)loadVideoByPlayerVars\(([^)]+)\)/gi,
@@ -359,6 +363,13 @@ api = {
             if (request === GET_BROADCAST_ID) {
 
                 sendResponse(api.broadcastId);
+                return;
+
+            }
+
+            if (request === "iridiumLogo") {
+
+                chrome.runtime.openOptionsPage();
                 return;
 
             }

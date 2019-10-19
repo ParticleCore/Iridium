@@ -50,6 +50,9 @@
     "setting-high-res-thumbnail": {
         "message": "Force max thumbnail resolution"
     },
+    "setting-iridium-logo": {
+        "message": "Show settings button in YouTube"
+    },
     "setting-sync-settings": {
         "message": "Sync Settings"
     },

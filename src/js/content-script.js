@@ -6,8 +6,7 @@ function onMessageResponse(data) {
 
     function onMessageListener(event) {
         if (event.data &&
-            event.data.payload &&
-            event.data.type === "setting-update"
+            event.data.payload
         ) {
             chrome.runtime.sendMessage(event.data.payload);
         }

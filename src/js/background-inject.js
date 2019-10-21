@@ -333,6 +333,12 @@ window.main = function (
 
         if (key === "iridiumLogo") {
 
+            if (document.activeElement &&
+                document.activeElement.blur
+            ){
+                document.activeElement.blur();
+            }
+
             broadcastChannel.postMessage({
                 type: "action",
                 payload: "iridiumLogo"

@@ -131,11 +131,11 @@ api = {
                 str = str
                     .replace(
                         /"loadVideoByPlayerVars",this\.loadVideoByPlayerVars/,
-                        "\"loadVideoByPlayerVars\",window.modifier.bind(this,this.loadVideoByPlayerVars)"
+                        "\"loadVideoByPlayerVars\",window.modifier?window.modifier.bind(this,this.loadVideoByPlayerVars):this.loadVideoByPlayerVars"
                     )
                     .replace(
                         /"cueVideoByPlayerVars",this\.cueVideoByPlayerVars/,
-                        "\"cueVideoByPlayerVars\",window.modifier.bind(this,this.cueVideoByPlayerVars)"
+                        "\"cueVideoByPlayerVars\",window.modifier?window.modifier.bind(this,this.cueVideoByPlayerVars):this.cueVideoByPlayerVars"
                     )
                     .replace(
                         /([a-z0-9.]+)(.style\.backgroundImage=\n?([a-z0-9]+)\?"url\("\+[a-z0-9]+\+"\)":"";?)/gi,
@@ -151,15 +151,15 @@ api = {
                 str = str
                     .replace(
                         /(\.onDone=function\(([a-z0-9]+)\){)/gi,
-                        "$1(window.pbjMod($2));"
+                        "$1(window.pbjMod&&window.pbjMod($2));"
                     )
                     .replace(
                         /(loadDesktopData_:function\(([a-z0-9]+)(,)?([a-z0-9]+)?\){)/gi,
-                        "$1(window.pageModifier($4||$2));"
+                        "$1(window.pageModifier&&window.pageModifier($4||$2));"
                     )
                     .replace(
                         /([a-z0-9.]+)loadVideoByPlayerVars\(([^)]+)\)/gi,
-                        "(window.autoPlayVideo!==false?$1loadVideoByPlayerVars($2):$1cueVideoByPlayerVars($2))"
+                        "(window.autoPlayVideo!==false||window.autoPlayVideo===undefined?$1loadVideoByPlayerVars($2):$1cueVideoByPlayerVars($2))"
                     )
                 ;
 

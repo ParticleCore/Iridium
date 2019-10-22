@@ -85,13 +85,22 @@ function onSettingsPageUpdate(event) {
 
         case "syncSettings":
             data = settings;
+            chrome
+                .storage[!settings.syncSettings ? "sync" : "local"]
+                .set({syncSettings: false},
+                    function (event) {
+                        console.log("migrate storage");
+                    });
             break;
 
     }
 
-    chrome.storage[settings.syncSettings ? "sync" : "local"].set(data, function (event) {
-        console.log("onSettingsPageUpdate", event);
-    });
+    chrome
+        .storage[settings.syncSettings ? "sync" : "local"]
+        .set(data,
+            function (event) {
+                console.log("onSettingsPageUpdate", event);
+            });
 
 }
 

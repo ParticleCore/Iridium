@@ -381,19 +381,16 @@ api = {
 
             for (let key in request) {
 
-                if (!request.hasOwnProperty(key)) {
+                if (!request.hasOwnProperty(key) ||
+                    !(key in settings) ||
+                    request[key] === settings[key]
+                ) {
                     continue;
                 }
 
-                if (key in settings) {
-                    if (request[key] !== settings[key]) {
-
-                        settings[key] = request[key];
-                        data[key] = settings[key];
-                        migrate = key === "syncSettings";
-
-                    }
-                }
+                settings[key] = request[key];
+                data[key] = settings[key];
+                migrate = key === "syncSettings";
 
             }
 
@@ -402,19 +399,30 @@ api = {
             }
 
             if (migrate) {
+
                 data = settings;
+                chrome
+                    .storage[!settings.syncSettings ? "sync" : "local"]
+                    .set({syncSettings: false},
+                        function (event) {
+                            console.log("migrate storage");
+                        });
+
             }
 
-            chrome.storage[settings.syncSettings ? "sync" : "local"].set(data, function (event) {
-                console.log("onMessageListener", event);
-            });
+            chrome
+                .storage[settings.syncSettings ? "sync" : "local"]
+                .set(data,
+                    function (event) {
+                        console.log("onMessageListener", event);
+                    });
 
         }
 
         function keepUsingSync(items) {
 
             if ("syncSettings" in items &&
-                items["syncSettings"] === true
+                items.syncSettings === true
             ) {
                 return chrome.storage.sync.get(settings, onStorageGetListener);
             }
@@ -442,7 +450,7 @@ api = {
         chrome.runtime.onMessage.addListener(onMessageListener);
         chrome.storage.onChanged.addListener(onStorageChangedListener);
         chrome.browserAction.onClicked.addListener(onBrowserActionClickedListener);
-        chrome.storage.sync.get({"syncSettings": settings.syncSettings}, keepUsingSync);
+        chrome.storage.sync.get({syncSettings: settings.syncSettings}, keepUsingSync);
 
         this.iniRequestListeners();
 

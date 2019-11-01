@@ -5,6 +5,70 @@ window.main = function (
     settings
 ) {
 
+    window.modArgs = function (args) {
+
+        let i;
+        let fps;
+        let list;
+        let keyType;
+
+        if (!window.autoPlayVideo) {
+
+            args.autoplay = "0";
+            args.fflags = args.fflags.replace(
+                /disable_new_pause_state3=true/g,
+                "disable_new_pause_state3=false"
+            );
+
+        }
+
+        if (!window.hfrOn &&
+            args.adaptive_fmts
+        ) {
+
+            keyType = args.adaptive_fmts.indexOf(",") > -1 ? "," : "%2C";
+            list = args.adaptive_fmts.split(keyType);
+
+            for (i = 0; i < list.length; i++) {
+                if ((fps = list[i].split(/fps(?:=|%3D)([0-9]{2})/))
+                    && fps[1] > 30
+                ) {
+                    list.splice(i--, 1);
+                }
+            }
+
+            args.adaptive_fmts = list.join(keyType);
+
+        }
+
+        return args;
+
+    };
+
+    window.imageLoader = function (
+        element,
+        url
+    ) {
+
+        if (!window.maxResThumbnail ||
+            !url ||
+            !url.match(/default\.[a-z]+/)
+        ) {
+            return;
+        }
+
+        let src;
+        let thumbnail;
+
+        src = url.replace(/[a-z]+default(\.[a-z]+)/g, "maxresdefault$1");
+        thumbnail = new Image();
+        thumbnail.addEventListener("load", checkHighQualityThumbnail, false);
+        thumbnail.src = src;
+        thumbnail.url = url;
+        thumbnail.element = element;
+
+    };
+
     window.pbjMod = function (data) {
 
         if (!data.response ||
@@ -30,20 +94,13 @@ window.main = function (
                 !config &&
                 "player" in data.response.parts[i]
             ) {
-                config = window.getSingleObjectByKey(data, "player")
+                if ((config = getSingleObjectByKey(data, "player")) &&
+                    config.args
+                ) {
+                    modArgs(config.args);
+                }
             }
 
-        }
-
-        if (!window.autoPlayVideo &&
-            config &&
-            config.args &&
-            config.args.fflags
-        ) {
-            config.args.fflags = config.args.fflags.replace(
-                /disable_new_pause_state3=true/g,
-                "disable_new_pause_state3=false"
-            );
         }
 
     };
@@ -53,34 +110,7 @@ window.main = function (
         ...args
     ) {
 
-        let i;
-        let fps;
-        let list;
-        let keyType;
-
-        if (!window.autoPlayVideo) {
-            args[0].autoplay = "0";
-        }
-
-        if (!window.hfrOn &&
-            args[0].adaptive_fmts
-        ) {
-
-            keyType = args[0].adaptive_fmts.indexOf(",") > -1 ? "," : "%2C";
-            list = args[0].adaptive_fmts.split(keyType);
-
-            for (i = 0; i < list.length; i++) {
-                if ((fps = list[i].split(/fps(?:=|%3D)([0-9]{2})/))
-                    && fps[1] > 30
-                ) {
-                    list.splice(i--, 1);
-                }
-            }
-
-            args[0].adaptive_fmts = list.join(keyType);
-
-        }
-
+        modArgs(args[0]);
         api.apply(this, args);
 
     };
@@ -91,93 +121,15 @@ window.main = function (
             return;
         }
 
-        function setQuickControls(topLevelButtons) {
-
-            if (!topLevelButtons) {
-                return;
-            }
-
-            let key;
-            let quickControls;
-
-            quickControls = {
-                AUTOPLAY: {
-                    label: "Auto Play",
-                    isToggled: window.autoPlayVideo || false,
-                    injected: false
-                }
-            };
-
-            topLevelButtons.forEach(function (value) {
-                if (value.hasOwnProperty("toggleButtonRenderer") &&
-                    value.toggleButtonRenderer.defaultIcon &&
-                    value.toggleButtonRenderer.defaultIcon.iconType &&
-                    quickControls.hasOwnProperty(value.toggleButtonRenderer.defaultIcon.iconType)
-                ) {
-                    quickControls[value.toggleButtonRenderer.defaultIcon.iconType].injected = true;
-                }
-            });
-
-            for (key in quickControls) {
-
-                if (quickControls[key].injected) {
-                    continue;
-                }
-
-                topLevelButtons.push({
-                    toggleButtonRenderer: {
-                        isToggled: quickControls[key].isToggled,
-                        defaultTooltip: quickControls[key].label,
-                        defaultIcon: {iconType: key},
-                        style: {styleType: "STYLE_TEXT"},
-                        toggledStyle: {styleType: "STYLE_DEFAULT_ACTIVE"}
-                    }
-                });
-
-            }
-
-        }
-
-        function setExtensionButton(topBarButtons) {
-
-            if (!topBarButtons) {
-                return;
-            }
-
-            let alreadySet;
-
-            topBarButtons.forEach(function (value) {
-                if (value.hasOwnProperty("topbarMenuButtonRenderer") &&
-                    value.topbarMenuButtonRenderer.icon &&
-                    value.topbarMenuButtonRenderer.icon.iconType === "IRIDIUM_LOGO"
-                ) {
-                    return alreadySet = true;
-                }
-            });
-
-            if (alreadySet) {
-                return;
-            }
-
-            topBarButtons.unshift({
-                topbarMenuButtonRenderer: {
-                    icon: {iconType: "IRIDIUM_LOGO"},
-                    tooltip: "Iridium settings",
-                    style: "STYLE_DEFAULT"
-                }
-            });
-
-        }
-
         if (window.quickControls &&
             data.url &&
             data.url.indexOf("/watch") > -1
         ) {
-            setQuickControls(window.getSingleObjectByKey(data, "topLevelButtons"));
+            setQuickControls(getSingleObjectByKey(data, "topLevelButtons"));
         }
 
         if (window.iridiumLogo) {
-            setExtensionButton(window.getSingleObjectByKey(data, "topbarButtons"));
+            setExtensionButton(getSingleObjectByKey(data, "topbarButtons"));
         }
 
     };
@@ -187,58 +139,19 @@ window.main = function (
         chain
     ) {
 
-        chain.split(".").forEach(function (value) {
+        chain
+            .split(".")
+            .forEach(function (value) {
 
-            if (!parent.hasOwnProperty(value)) {
-                return false;
-            }
+                if (!parent.hasOwnProperty(value)) {
+                    return false;
+                }
 
-            parent = parent[value];
+                parent = parent[value];
 
-        });
+            });
 
         return parent;
-
-    };
-
-    window.getSingleObjectByKey = function (
-        obj,
-        keys,
-        match
-    ) {
-
-        let i;
-        let hasKey;
-        let result;
-
-        for (let property in obj) {
-
-            if (!obj.hasOwnProperty(property) ||
-                obj[property] === null ||
-                obj[property] === undefined
-            ) {
-                continue;
-            }
-
-            if ((hasKey = keys.constructor.name === "String" ? keys === property : keys.indexOf(property) > -1) &&
-                (!match || obj[property].constructor.name !== "Object" && match(obj[property], obj))
-            ) {
-                return obj[property];
-            }
-
-            if (obj[property].constructor.name === "Object") {
-                if ((result = getSingleObjectByKey(obj[property], keys, match))) {
-                    return result;
-                }
-            } else if (obj[property].constructor.name === "Array") {
-                for (i = 0; i < obj[property].length; i++) {
-                    if ((result = getSingleObjectByKey(obj[property][i], keys, match))) {
-                        return result;
-                    }
-                }
-            }
-
-        }
 
     };
 
@@ -301,6 +214,129 @@ window.main = function (
     let maxResThumbnailFeature;
     let hfrOnFeature;
 
+    function checkHighQualityThumbnail(event) {
+        if (event.target.width > 120) {
+
+            event.target.element.parentElement.style.backgroundImage = `url(${event.target.url})`;
+            event.target.element.style.backgroundImage = `url(${event.target.src})`;
+
+        }
+    }
+
+    function setQuickControls(topLevelButtons) {
+
+        if (!topLevelButtons) {
+            return;
+        }
+
+        let key;
+        let quickControls;
+
+        quickControls = {
+            AUTOPLAY: {
+                injected: false,
+                element: {
+                    toggleButtonRenderer: {
+                        isToggled: window.autoPlayVideo || false,
+                        defaultTooltip: "Auto Play",
+                        defaultIcon: {iconType: "AUTOPLAY"},
+                        style: {styleType: "STYLE_TEXT"},
+                        toggledStyle: {styleType: "STYLE_DEFAULT_ACTIVE"}
+                    }
+                }
+            }
+        };
+
+        topLevelButtons.forEach(function (value) {
+            if (value.hasOwnProperty("toggleButtonRenderer") &&
+                value.toggleButtonRenderer.defaultIcon &&
+                value.toggleButtonRenderer.defaultIcon.iconType &&
+                quickControls.hasOwnProperty(value.toggleButtonRenderer.defaultIcon.iconType)
+            ) {
+                quickControls[value.toggleButtonRenderer.defaultIcon.iconType].injected = true;
+            }
+        });
+
+        for (key in quickControls) {
+            if (!quickControls[key].injected) {
+                topLevelButtons.push(quickControls[key].element);
+            }
+        }
+
+    }
+
+    function setExtensionButton(topBarButtons) {
+
+        if (!topBarButtons) {
+            return;
+        }
+
+        let alreadySet;
+
+        topBarButtons.forEach(function (value) {
+            if (value.hasOwnProperty("topbarMenuButtonRenderer") &&
+                value.topbarMenuButtonRenderer.icon &&
+                value.topbarMenuButtonRenderer.icon.iconType === "IRIDIUM_LOGO"
+            ) {
+                return alreadySet = true;
+            }
+        });
+
+        if (alreadySet) {
+            return;
+        }
+
+        topBarButtons.unshift({
+            topbarMenuButtonRenderer: {
+                icon: {iconType: "IRIDIUM_LOGO"},
+                tooltip: "Iridium settings",
+                style: "STYLE_DEFAULT"
+            }
+        });
+
+    }
+
+    function getSingleObjectByKey(
+        obj,
+        keys,
+        match
+    ) {
+
+        let i;
+        let hasKey;
+        let result;
+
+        for (let property in obj) {
+
+            if (!obj.hasOwnProperty(property) ||
+                obj[property] === null ||
+                obj[property] === undefined
+            ) {
+                continue;
+            }
+
+            if ((hasKey = keys.constructor.name === "String" ? keys === property : keys.indexOf(property) > -1) &&
+                (!match || obj[property].constructor.name !== "Object" && match(obj[property], obj))
+            ) {
+                return obj[property];
+            }
+
+            if (obj[property].constructor.name === "Object") {
+                if ((result = getSingleObjectByKey(obj[property], keys, match))) {
+                    return result;
+                }
+            } else if (obj[property].constructor.name === "Array") {
+                for (i = 0; i < obj[property].length; i++) {
+                    if ((result = getSingleObjectByKey(obj[property][i], keys, match))) {
+                        return result;
+                    }
+                }
+            }
+
+        }
+
+    }
+
     function onMessageListener(event) {
 
         if (!event.data ||
@@ -335,7 +371,7 @@ window.main = function (
 
             if (document.activeElement &&
                 document.activeElement.blur
-            ){
+            ) {
                 document.activeElement.blur();
             }
 
@@ -532,36 +568,5 @@ window.main = function (
     if (settings.hasOwnProperty("hfrOn")) {
         window.hfrOn = settings.hfrOn;
     }
-
-};
-
-window.imageLoader = function (
-    element,
-    url
-) {
-
-    if (!window.maxResThumbnail ||
-        !url ||
-        !url.match(/default\.[a-z]+/)
-    ) {
-        return;
-    }
-
-    function checkHighQualityThumbnail(event) {
-        if (event.target.width > 120) {
-
-            element.parentElement.style.backgroundImage = `url(${url})`;
-            element.style.backgroundImage = `url(${src})`;
-
-        }
-    }
-
-    let src;
-    let thumbnail;
-
-    src = url.replace(/[a-z]+default(\.[a-z]+)/g, "maxresdefault$1");
-    thumbnail = new Image();
-    thumbnail.addEventListener("load", checkHighQualityThumbnail, false);
-    thumbnail.src = src;
 
 };

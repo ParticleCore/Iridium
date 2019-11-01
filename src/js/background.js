@@ -81,19 +81,23 @@ api = {
 
             str = str
                 .replace(
-                    /<head>/,
+                    "<head>",
                     `<head><script>(${window.main}("${api.broadcastId}",${JSON.stringify(settings)}))</script>`
                 )
                 .replace(
                     /(<g id="like">)/,
-                    "<g id=\"iridium_logo\">\n" +
-                    "    <polygon data-iri-feature=\"iridiumLogo\" opacity=\"0.5\" points=\"6.8,3 22.4,12 6.8,21\"/>\n" +
-                    "    <path data-iri-feature=\"iridiumLogo\" d=\"M6.8,3v18l15.6-9L6.8,3z M9.8,8.2l6.6,3.8l-6.6,3.8V8.2z\"/>\n" +
-                    "</g>\n" +
-                    "<g id=\"autoplay\">\n" +
-                    "    <polygon data-iri-feature=\"autoPlayVideo\" points=\"7.4,4 21.2,12 7.4,20\"></polygon>\n" +
-                    "</g>\n" +
-                    "$1"
+                    "\n<g id=\"iridium_logo\">" +
+                    "\n    <polygon data-iri-feature=\"iridiumLogo\" opacity=\"0.5\" points=\"6.8,3 22.4,12 6.8,21\"/>" +
+                    "\n    <path data-iri-feature=\"iridiumLogo\" d=\"M6.8,3v18l15.6-9L6.8,3z M9.8,8.2l6.6,3.8l-6.6,3.8V8.2z\"/>" +
+                    "\n</g>" +
+                    "\n<g id=\"autoplay\">" +
+                    "\n    <polygon data-iri-feature=\"autoPlayVideo\" points=\"7.4,4 21.2,12 7.4,20\"/>" +
+                    "\n</g>" +
+                    "\n$1"
+                )
+                .replace(
+                    /yt\.player\.Application\.create\("player-api", ?ytplayer\.config\);/,
+                    "window.modArgs&&window.modArgs(ytplayer.config.args);$&"
                 )
             ;
 
@@ -102,10 +106,6 @@ api = {
                     .replace(
                         /ytplayer\.load\(\);/,
                         ""
-                    )
-                    .replace(
-                        /disable_new_pause_state3=true/g,
-                        "disable_new_pause_state3=false"
                     )
                 ;
             }
@@ -139,7 +139,7 @@ api = {
                     )
                     .replace(
                         /([a-z0-9.]+)(.style\.backgroundImage=\n?([a-z0-9]+)\?"url\("\+[a-z0-9]+\+"\)":"";?)/gi,
-                        "$&;(" + window.imageLoader.toString().replace(/(\$[$&`'0-9]+)/g, "$$$1") + "($1,$3));"
+                        "$&;(window.imageLoader&&window.imageLoader($1,$3));"
                     )
                     .replace(
                         /(this\.[a-z0-9]+)=[^;]+\.autoplayoverride\);/i,

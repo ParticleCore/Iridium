@@ -110,6 +110,11 @@ window.main = function (
         ...args
     ) {
 
+        window.streams = {
+            adaptive_fmts: args[0].adaptive_fmts ? parseStreams(args[0].adaptive_fmts.split(",")) : "",
+            url_encoded_fmt_stream_map: args[0].url_encoded_fmt_stream_map ? parseStreams(args[0].url_encoded_fmt_stream_map.split(",")) : ""
+        };
+
         modArgs(args[0]);
         api.apply(this, args);
 
@@ -214,6 +219,50 @@ window.main = function (
     let maxResThumbnailFeature;
     let hfrOnFeature;
 
+    function parseStreams(list) {
+
+        if (!list || !list.length) {
+            return "";
+        }
+
+        let i;
+        let j;
+        let temp;
+        let stream;
+        let tempList;
+        let contentLength;
+        let processedList;
+
+        processedList = [];
+
+        for (i = 0; i < list.length; i++) {
+
+            processedList.push((stream = {}));
+            tempList = list[i].split("&");
+
+            for (j = 0; j < tempList.length; j++) {
+
+                temp = tempList[j].split("=");
+                stream[temp[0]] = temp.length > 1 ? decodeURIComponent(temp[1]) : null;
+
+            }
+
+            if (stream.clen) {
+                continue;
+            }
+
+            if (stream.url &&
+                (contentLength = stream.url.match(/clen=(\d+)/))
+            ) {
+                stream.clen = contentLength[1];
+            }
+
+        }
+
+        return processedList;
+
+    }
+
     function checkHighQualityThumbnail(event) {
         if (event.target.width > 120) {
 
@@ -242,6 +291,30 @@ window.main = function (
                         defaultIcon: {iconType: "AUTOPLAY"},
                         style: {styleType: "STYLE_TEXT"},
                         toggledStyle: {styleType: "STYLE_DEFAULT_ACTIVE"}
+                    }
+                }
+            },
+            SAVE_VIDEO: {
+                injected: false,
+                element: {
+                    buttonRenderer: {
+                        style: "STYLE_DEFAULT",
+                        size: "SIZE_DEFAULT",
+                        isDisabled: false,
+                        icon: {iconType: "SAVE_VIDEO"},
+                        tooltip: "Save"
+                    }
+                }
+            },
+            STREAM_LIST: {
+                injected: false,
+                element: {
+                    buttonRenderer: {
+                        style: "STYLE_DEFAULT",
+                        size: "SIZE_DEFAULT",
+                        isDisabled: false,
+                        icon: {iconType: "STREAM_LIST"},
+                        tooltip: "Streams"
                     }
                 }
             }
@@ -354,32 +427,534 @@ window.main = function (
 
     }
 
+    function getQualityLabel(
+        label,
+        verticalSize
+    ) {
+
+        let i;
+        let qualityLabelList;
+        let qualitySizeList;
+
+        qualityLabelList = {
+            tiny: 144,
+            light: 144,
+            small: 240,
+            medium: 360,
+            large: 480,
+            hd720: 720,
+            hd1080: 1080,
+            hd1440: 1440,
+            hd2160: 2160,
+            hd2880: 2880,
+            highres: 4320
+        };
+
+        qualitySizeList = [
+            144,
+            240,
+            360,
+            480,
+            720,
+            1080,
+            1440,
+            2160,
+            2880,
+            4320
+        ];
+
+        if (!verticalSize) {
+            verticalSize = qualityLabelList[label];
+        }
+
+        i = qualitySizeList.length - 1;
+
+        while (i--) {
+            if (verticalSize > qualitySizeList[i]) {
+                return verticalSize + "p";
+            }
+        }
+
+    }
+
+    function getBadge(quality) {
+
+        if (quality > 2880) {
+            return "8K";
+        }
+
+        if (quality > 2160) {
+            return "5K";
+        }
+
+        if (quality > 1440) {
+            return "4K";
+        }
+
+        if (quality > 720) {
+            return "HD";
+        }
+
+        return "";
+
+    }
+
+    function buildTemplate(streamList) {
+
+        let i;
+        let template;
+        let videoList;
+
+        streamList.sort(function (
+            previous,
+            next
+        ) {
+            return next.quality - previous.quality || next.clen - previous.clen;
+        });
+
+        videoList = "";
+
+        for (i = 0; i < streamList.length; i++) {
+
+            if (!streamList[i].label) {
+                continue;
+            }
+
+            videoList += `
+                <div class="ytp-menuitem" style="color: #fff; text-decoration: none;">
+                    <div class="ytp-menuitem-label">
+                        <div style="display: flex; justify-content: space-between; white-space: nowrap;">
+                            <span>${streamList[i].label} <sup class="ytp-swatch-color">${streamList[i].badge}</sup></span>
+                        </div>
+                    </div>
+                    <div class="ytp-menuitem-content">
+                        <span>${streamList[i].codec}.${streamList[i].fileType} </span>
+                        <span class="ytp-menu-label-secondary">
+                            <span>${streamList[i].size}</span>
+                        </span>
+                    </div>
+                </div>`;
+
+        }
+
+        template = `
+            <div data-iri-panel-target="type" id="iri-video-panel" class="ytp-panel ytp-quality-menu" style="width: 250px;">
+                <div data-iri-panel-target="type" class="ytp-panel-header">
+                     <button data-iri-panel-target="type" class="ytp-button ytp-panel-title">Video</button>
+                </div>
+                <div class="ytp-panel-menu">
+                    ${videoList}
+                </div>
+            </div>`;
+
+        return new DOMParser()
+            .parseFromString(template, "text/html")
+            .querySelector("#iri-video-panel");
+
+    }
+
+    function createNonDashPanel() {
+
+        if (!window.streams.url_encoded_fmt_stream_map) {
+            return null;
+        }
+
+        let i;
+        let size;
+        let codec;
+        let label;
+        let typeInfo;
+        let streamList;
+
+        streamList = [];
+
+        for (i = 0; i < window.streams.url_encoded_fmt_stream_map.length; i++) {
+
+            label = getQualityLabel(window.streams.url_encoded_fmt_stream_map[i].quality);
+            typeInfo = window.streams.url_encoded_fmt_stream_map[i].type.split(/[\/;]/);
+            codec = typeInfo.length > 2 ? typeInfo[2].split(/codecs="([a-z0-9]+)/) : "";
+            size = window.streams.url_encoded_fmt_stream_map[i].url.match(/clen=([0-9]+)/);
+
+            streamList.push({
+                badge: "",
+                codec: codec.length > 1 ? codec[1] : "",
+                fileType: typeInfo.length > 0 ? typeInfo[1] : "",
+                label: label,
+                size: size && size.length > 1 ? formatSize(+size[1]) : "",
+                url: window.streams.url_encoded_fmt_stream_map[i].url
+            });
+
+        }
+
+        return buildTemplate(streamList);
+
+    }
+
+    function createDashAudioPanel() {
+
+        if (!window.streams.adaptive_fmts) {
+            return null;
+        }
+
+        let i;
+        let codec;
+        let label;
+        let typeInfo;
+        let streamList;
+
+        streamList = [];
+
+        for (i = 0; i < window.streams.adaptive_fmts.length; i++) {
+
+            if (!window.streams.adaptive_fmts[i].type.startsWith("audio")) {
+                continue;
+            }
+
+            label = Math.round(window.streams.adaptive_fmts[i].bitrate / 1000) + "kbps";
+            typeInfo = window.streams.adaptive_fmts[i].type.split(/[\/;]/);
+            codec = typeInfo.length > 2 ? typeInfo[2].split(/codecs="([a-z0-9]+)/) : "";
+
+            streamList.push({
+                badge: "",
+                quality: window.streams.adaptive_fmts[i].bitrate,
+                codec: codec.length > 1 ? codec[1] : "",
+                fileType: typeInfo.length > 0 ? typeInfo[1] : "",
+                type: typeInfo.length > -1 ? typeInfo[0] : "",
+                label: label,
+                clen: +window.streams.adaptive_fmts[i].clen,
+                size: formatSize(+window.streams.adaptive_fmts[i].clen),
+                url: window.streams.adaptive_fmts[i].url
+            });
+
+        }
+
+        return buildTemplate(streamList);
+
+    }
+
+    function createDashVideoPanel() {
+
+        if (!window.streams.adaptive_fmts) {
+            return null;
+        }
+
+        let i;
+        let label;
+        let codec;
+        let quality;
+        let typeInfo;
+        let streamList;
+
+        streamList = [];
+
+        for (i = 0; i < window.streams.adaptive_fmts.length; i++) {
+
+            if (!window.streams.adaptive_fmts[i].type.startsWith("video")) {
+                continue;
+            }
+
+            label = window.streams.adaptive_fmts[i].quality_label.replace(/\+/, " ");
+            typeInfo = window.streams.adaptive_fmts[i].type.split(/[\/;]/);
+            codec = typeInfo.length > 2 ? typeInfo[2].split(/codecs="([a-z0-9]+)/) : "";
+            quality = window.parseInt(label);
+
+            streamList.push({
+                badge: getBadge(quality),
+                codec: codec.length > 1 ? codec[1] : "",
+                fileType: typeInfo.length > 0 ? typeInfo[1] : "",
+                quality: quality || 0,
+                label: label,
+                fps: window.streams.adaptive_fmts[i].fps,
+                clen: +window.streams.adaptive_fmts[i].clen,
+                size: formatSize(+window.streams.adaptive_fmts[i].clen),
+                url: window.streams.adaptive_fmts[i].url
+            });
+
+        }
+
+        return buildTemplate(streamList);
+
+    }
+
+    function createTypePanel() {
+
+        let i;
+        let type;
+        let typeAttribute;
+        let typeList;
+        let htmlTypeList;
+
+        typeList = {
+            Audio: 0,
+            Video: 0,
+            "Audio + Video": window.streams.url_encoded_fmt_stream_map ? window.streams.url_encoded_fmt_stream_map.length : 0
+        };
+
+        if (window.streams.adaptive_fmts) {
+            for (i = 0; i < window.streams.adaptive_fmts.length; i++) {
+                if (window.streams.adaptive_fmts[i].type.startsWith("video")) {
+                    typeList.Video++;
+                } else {
+                    typeList.Audio++;
+                }
+            }
+        }
+
+        htmlTypeList = "";
+
+        for (type in typeList) {
+
+            if (!typeList[type]) {
+                continue;
+            }
+
+            typeAttribute = `data-iri-panel-target="${type.toLowerCase()}"`;
+
+            htmlTypeList += `
+                <div ${typeAttribute} class="ytp-menuitem" aria-haspopup="true" style="color: #fff; text-decoration: none;">
+                    <div ${typeAttribute} class="ytp-menuitem-label">
+                        <div style="pointer-events: none; display: flex; justify-content: space-between; white-space: nowrap;">
+                            <span>${type}</span>
+                        </div>
+                    </div>
+                    <div ${typeAttribute} class="ytp-menuitem-content">
+                        <span class="ytp-menu-label-secondary" style="pointer-events: none;">
+                            <span>${typeList[type]}</span>
+                        </span>
+                    </div>
+                </div>`;
+
+        }
+
+        return new DOMParser()
+            .parseFromString(`
+                <div id="iri-type-panel" class="ytp-panel" style="width: 250px;">
+                    <div class="ytp-panel-menu">${htmlTypeList}</div>
+                </div>`,
+                "text/html"
+            )
+            .querySelector("#iri-type-panel");
+
+    }
+
+    function createStreamListMenu() {
+
+        let container;
+
+        container = document.createElement("div");
+        container.id = "iri-stream-list";
+        container.classList.add("ytp-popup", "ytp-settings-menu");
+
+        return container;
+
+    }
+
+    function formatSize(size) {
+
+        if (!size) {
+            return "";
+        }
+
+        let pow;
+        let transform;
+        let sizeLabel;
+
+        pow = 0;
+        transform = size;
+
+        while (transform > 1024) {
+
+            pow++;
+            transform /= 1024;
+
+        }
+
+        sizeLabel = [
+            "B",
+            "KB",
+            "MB",
+            "GB",
+            "TB"
+        ];
+
+        pow = pow >= sizeLabel.length ? sizeLabel.length - 1 : pow;
+
+        return (size / Math.pow(1024, pow))
+            .toFixed(2) + " " + sizeLabel[pow];
+
+    }
+
+    function updateContainerSize(
+        container,
+        element
+    ) {
+
+        if (element) {
+
+            element.style.height = container.style.height = (element.clientHeight > 300 ? 300 : element.clientHeight) + "px";
+            element.style.width = container.style.width = (element.clientWidth < 250 ? 250 : element.clientWidth) + "px";
+
+        }
+
+    }
+
+    function switchPanel(
+        reverse,
+        container,
+        previousPanel,
+        nextPanel
+    ) {
+
+        let element;
+        let firstClass;
+        let secondClass;
+
+        firstClass = reverse ? "ytp-panel-animate-back" : "ytp-panel-animate-forward";
+        secondClass = reverse ? "ytp-panel-animate-forward" : "ytp-panel-animate-back";
+
+        if (nextPanel) {
+
+            nextPanel.classList.add(firstClass);
+            container.appendChild(nextPanel);
+            element = nextPanel;
+
+        }
+
+        container.classList.add("ytp-popup-animating");
+
+        updateContainerSize(container, element);
+
+        if (previousPanel) {
+            previousPanel.classList.add(secondClass);
+        }
+
+        if (nextPanel) {
+            nextPanel.classList.remove(firstClass);
+        }
+
+        container.addEventListener("transitionend", function () {
+
+            container.classList.remove("ytp-popup-animating");
+
+            if (previousPanel) {
+
+                previousPanel.classList.remove(secondClass);
+                previousPanel.remove();
+
+            }
+
+        }, {once: true});
+
+    }
+
+    function toggleStreamListMenu(posX, posY) {
+
+        let streamListContainer;
+        let typePanel;
+        let dashVideoPanel;
+        let dashAudioPanel;
+        let nonDashAudioPanel;
+        let secondPanel;
+        let clickListener;
+        let resizeListener;
+
+        if ((streamListContainer = document.getElementById("iri-stream-list"))) {
+            return streamListContainer.remove();
+        }
+
+        typePanel = createTypePanel();
+        nonDashAudioPanel = createNonDashPanel();
+        dashAudioPanel = createDashAudioPanel();
+        dashVideoPanel = createDashVideoPanel();
+        streamListContainer = createStreamListMenu();
+        streamListContainer.appendChild(typePanel);
+
+        clickListener = function (event) {
+
+            if (streamListContainer !== event.target &&
+                !streamListContainer.contains(event.target)
+            ) {
+
+                streamListContainer.remove();
+                document.documentElement.removeEventListener("click", clickListener, false);
+                return;
+
+            }
+
+            switch (event.target.dataset.iriPanelTarget) {
+
+                case "type":
+                    switchPanel(true, streamListContainer, secondPanel, typePanel);
+                    break;
+
+                case "audio":
+                    switchPanel(false, streamListContainer, typePanel, (secondPanel = dashAudioPanel));
+                    break;
+
+                case "video":
+                    switchPanel(false, streamListContainer, typePanel, (secondPanel = dashVideoPanel));
+                    break;
+
+                case "audio + video":
+                    switchPanel(false, streamListContainer, typePanel, (secondPanel = nonDashAudioPanel));
+                    break;
+
+            }
+
+        };
+
+        resizeListener = function () {
+
+            streamListContainer.remove();
+            document.documentElement.removeEventListener("click", clickListener, false);
+
+        };
+
+        window.addEventListener("resize", resizeListener, {once: true});
+        document.documentElement.addEventListener("click", clickListener, false);
+        document.body.appendChild(streamListContainer);
+
+        updateContainerSize(streamListContainer, typePanel);
+
+        streamListContainer.style.right = document.documentElement.clientWidth - posX + "px";
+        streamListContainer.style.bottom = document.documentElement.clientHeight - posY + "px";
+
+    }
+
     function onDocumentClick(event) {
 
         let key;
         let data;
         let element;
 
-        if ("YT-ICON" !== event.target.tagName ||
+        if (!event.target.tagName.toLowerCase().startsWith("yt-icon") ||
             !(element = event.target.querySelector("[data-iri-feature]")) ||
             !(key = element.getAttribute("data-iri-feature"))
         ) {
             return;
         }
 
-        if (key === "iridiumLogo") {
+        if (document.activeElement &&
+            document.activeElement.blur
+        ) {
+            document.activeElement.blur();
+        }
 
-            if (document.activeElement &&
-                document.activeElement.blur
-            ) {
-                document.activeElement.blur();
-            }
+        switch (key) {
 
-            broadcastChannel.postMessage({
-                type: "action",
-                payload: "iridiumLogo"
-            });
-            return;
+            case "iridiumLogo":
+                broadcastChannel.postMessage({
+                    type: "action",
+                    payload: "iridiumLogo"
+                });
+                return;
+
+            case "saveVideo":
+                return;
+
+            case "streamList":
+                toggleStreamListMenu(event.clientX, event.clientY);
+                return;
 
         }
 

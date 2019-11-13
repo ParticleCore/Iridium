@@ -86,12 +86,18 @@ api = {
                 )
                 .replace(
                     /(<g id="like">)/,
-                    "\n<g id=\"iridium_logo\">" +
-                    "\n    <polygon data-iri-feature=\"iridiumLogo\" opacity=\"0.5\" points=\"6.8,3 22.4,12 6.8,21\"/>" +
-                    "\n    <path data-iri-feature=\"iridiumLogo\" d=\"M6.8,3v18l15.6-9L6.8,3z M9.8,8.2l6.6,3.8l-6.6,3.8V8.2z\"/>" +
+                    "\n<g id='iridium_logo'>" +
+                    "\n    <polygon data-iri-feature='iridiumLogo' opacity='0.5' points='6.8,3 22.4,12 6.8,21'/>" +
+                    "\n    <path data-iri-feature='iridiumLogo' d='M6.8,3v18l15.6-9L6.8,3z M9.8,8.2l6.6,3.8l-6.6,3.8V8.2z'/>" +
                     "\n</g>" +
-                    "\n<g id=\"autoplay\">" +
-                    "\n    <polygon data-iri-feature=\"autoPlayVideo\" points=\"7.4,4 21.2,12 7.4,20\"/>" +
+                    "\n<g id='autoplay'>" +
+                    "\n    <polygon data-iri-feature='autoPlayVideo' points='7,3.3 7,20.7 22,12'/>" +
+                    "\n</g>" +
+                    "\n<g id='save_video'>" +
+                    "\n    <path data-iri-feature='saveVideo' d='M20,9.1h-4.6V2.3H8.6v6.9H4l8,8L20,9.1z M4,19.4v2.3h16v-2.3H4z'/>" +
+                    "\n</g>" +
+                    "\n<g id='stream_list'>" +
+                    "\n    <path data-iri-feature='streamList' d='M9,1.5v6H5l7,7l7-7h-4v-6H9 M5,16.5v2h14v-2H5 M5,20.5v2h14v-2H5z'/>" +
                     "\n</g>" +
                     "\n$1"
                 )

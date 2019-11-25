@@ -43,6 +43,7 @@
         "storage",
         "privacy",
         "cookies",
+        "downloads",
         "webRequest",
         "webRequestBlocking",
         "*://.youtube.com/*",

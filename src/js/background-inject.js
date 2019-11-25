@@ -110,10 +110,20 @@ window.main = function (
         ...args
     ) {
 
-        window.streams = {
-            adaptive_fmts: args[0].adaptive_fmts ? parseStreams(args[0].adaptive_fmts.split(",")) : "",
-            url_encoded_fmt_stream_map: args[0].url_encoded_fmt_stream_map ? parseStreams(args[0].url_encoded_fmt_stream_map.split(",")) : ""
-        };
+        window.streams = {};
+        window.streams.adaptive_fmts = parseStreams(args[0].adaptive_fmts);
+        window.streams.url_encoded_fmt_stream_map = parseStreams(args[0].url_encoded_fmt_stream_map);
+        window.streams.player_response = {};
+
+        if (args[0].player_response) {
+            try {
+
+                window.streams.player_response = JSON.parse(args[0].player_response);
+                window.streams.subtitles = getSingleObjectByKey(window.streams.player_response, "captionTracks");
+
+            } catch (ignore) {
+            }
+        }
 
         modArgs(args[0]);
         api.apply(this, args);
@@ -193,7 +203,6 @@ window.main = function (
                     pos: pos
                 });
             } else if (obj[property]) {
-
                 if (obj[property].constructor === Object) {
                     results = results.concat(getObjectByKey(obj[property], keys, match, list, pos));
                 } else if (obj[property].constructor === Array) {
@@ -201,7 +210,6 @@ window.main = function (
                         results = results.concat(getObjectByKey(obj[property][i], keys, match, obj[property], i));
                     }
                 }
-
             }
 
         }
@@ -221,7 +229,15 @@ window.main = function (
 
     function parseStreams(list) {
 
-        if (!list || !list.length) {
+        if (!list ||
+            !list.split
+        ) {
+            return "";
+        }
+
+        list = list.split(",");
+
+        if (!list.length) {
             return "";
         }
 
@@ -477,6 +493,41 @@ window.main = function (
 
     }
 
+    function formatSize(size) {
+
+        if (!size) {
+            return "";
+        }
+
+        let pow;
+        let transform;
+        let sizeLabel;
+
+        pow = 0;
+        transform = size;
+
+        while (transform > 1024) {
+
+            pow++;
+            transform /= 1024;
+
+        }
+
+        sizeLabel = [
+            "B",
+            "KB",
+            "MB",
+            "GB",
+            "TB"
+        ];
+
+        pow = pow >= sizeLabel.length ? sizeLabel.length - 1 : pow;
+
+        return (size / Math.pow(1024, pow))
+            .toFixed(2) + " " + sizeLabel[pow];
+
+    }
+
     function getBadge(quality) {
 
         if (quality > 2880) {
@@ -502,8 +553,11 @@ window.main = function (
     function buildTemplate(streamList) {
 
         let i;
+        let element;
         let template;
         let videoList;
+        let fileDetail;
+        let saveNodeList;
 
         streamList.sort(function (
             previous,
@@ -513,6 +567,7 @@ window.main = function (
         });
 
         videoList = "";
+        fileDetail = [];
 
         for (i = 0; i < streamList.length; i++) {
 
@@ -520,15 +575,25 @@ window.main = function (
                 continue;
             }
 
+            fileDetail.length = 0;
+
+            if (streamList[i].codec) {
+                fileDetail.push(streamList[i].codec);
+            }
+
+            if (streamList[i].fileType) {
+                fileDetail.push(streamList[i].fileType);
+            }
+
             videoList += `
-                <div class="ytp-menuitem" style="color: #fff; text-decoration: none;">
+                <div data-iri-stream-index="${i}" class="ytp-menuitem" style="color: #fff; text-decoration: none;">
                     <div class="ytp-menuitem-label">
                         <div style="display: flex; justify-content: space-between; white-space: nowrap;">
                             <span>${streamList[i].label} <sup class="ytp-swatch-color">${streamList[i].badge}</sup></span>
                         </div>
                     </div>
                     <div class="ytp-menuitem-content">
-                        <span>${streamList[i].codec}.${streamList[i].fileType} </span>
+                        <span>${fileDetail.join('.')} </span>
                         <span class="ytp-menu-label-secondary">
                             <span>${streamList[i].size}</span>
                         </span>
@@ -547,9 +612,22 @@ window.main = function (
                 </div>
             </div>`;
 
-        return new DOMParser()
+        element = new DOMParser()
             .parseFromString(template, "text/html")
             .querySelector("#iri-video-panel");
+
+        saveNodeList = element.querySelectorAll("[data-iri-stream-index]");
+
+        saveNodeList.forEach(function (node) {
+            node.addEventListener("click", function (event) {
+                broadcastChannel.postMessage({
+                    type: "save",
+                    payload: streamList[event.currentTarget.dataset.iriStreamIndex]
+                });
+            }, true);
+        });
+
+        return element;
 
     }
 
@@ -563,6 +641,7 @@ window.main = function (
         let size;
         let codec;
         let label;
+        let title;
         let typeInfo;
         let streamList;
 
@@ -574,12 +653,16 @@ window.main = function (
             typeInfo = window.streams.url_encoded_fmt_stream_map[i].type.split(/[\/;]/);
             codec = typeInfo.length > 2 ? typeInfo[2].split(/codecs="([a-z0-9]+)/) : "";
             size = window.streams.url_encoded_fmt_stream_map[i].url.match(/clen=([0-9]+)/);
+            title = window.streams.player_response.videoDetails.title;
 
             streamList.push({
+                author: window.streams.player_response.videoDetails.author,
+                title: title,
                 badge: "",
                 codec: codec.length > 1 ? codec[1] : "",
                 fileType: typeInfo.length > 0 ? typeInfo[1] : "",
                 label: label,
+                signature: window.streams.url_encoded_fmt_stream_map[i].s,
                 size: size && size.length > 1 ? formatSize(+size[1]) : "",
                 url: window.streams.url_encoded_fmt_stream_map[i].url
             });
@@ -599,6 +682,7 @@ window.main = function (
         let i;
         let codec;
         let label;
+        let title;
         let typeInfo;
         let streamList;
 
@@ -613,8 +697,11 @@ window.main = function (
             label = Math.round(window.streams.adaptive_fmts[i].bitrate / 1000) + "kbps";
             typeInfo = window.streams.adaptive_fmts[i].type.split(/[\/;]/);
             codec = typeInfo.length > 2 ? typeInfo[2].split(/codecs="([a-z0-9]+)/) : "";
+            title = window.streams.player_response.videoDetails.title;
 
             streamList.push({
+                author: window.streams.player_response.videoDetails.author,
+                title: title,
                 badge: "",
                 quality: window.streams.adaptive_fmts[i].bitrate,
                 codec: codec.length > 1 ? codec[1] : "",
@@ -622,6 +709,7 @@ window.main = function (
                 type: typeInfo.length > -1 ? typeInfo[0] : "",
                 label: label,
                 clen: +window.streams.adaptive_fmts[i].clen,
+                signature: window.streams.adaptive_fmts[i].s,
                 size: formatSize(+window.streams.adaptive_fmts[i].clen),
                 url: window.streams.adaptive_fmts[i].url
             });
@@ -639,8 +727,9 @@ window.main = function (
         }
 
         let i;
-        let label;
         let codec;
+        let label;
+        let title;
         let quality;
         let typeInfo;
         let streamList;
@@ -657,8 +746,11 @@ window.main = function (
             typeInfo = window.streams.adaptive_fmts[i].type.split(/[\/;]/);
             codec = typeInfo.length > 2 ? typeInfo[2].split(/codecs="([a-z0-9]+)/) : "";
             quality = window.parseInt(label);
+            title = window.streams.player_response.videoDetails.title;
 
             streamList.push({
+                author: window.streams.player_response.videoDetails.author,
+                title: title,
                 badge: getBadge(quality),
                 codec: codec.length > 1 ? codec[1] : "",
                 fileType: typeInfo.length > 0 ? typeInfo[1] : "",
@@ -666,8 +758,43 @@ window.main = function (
                 label: label,
                 fps: window.streams.adaptive_fmts[i].fps,
                 clen: +window.streams.adaptive_fmts[i].clen,
+                signature: window.streams.adaptive_fmts[i].s,
                 size: formatSize(+window.streams.adaptive_fmts[i].clen),
                 url: window.streams.adaptive_fmts[i].url
+            });
+
+        }
+
+        return buildTemplate(streamList);
+
+    }
+
+    function createSubtitlePanel() {
+
+        if (!window.streams.subtitles) {
+            return null;
+        }
+
+        let i;
+        let label;
+        let title;
+        let streamList;
+
+        streamList = [];
+
+        for (i = 0; i < window.streams.subtitles.length; i++) {
+
+            label = window.streams.subtitles[i].name && window.streams.subtitles[i].name.simpleText || "";
+            title = window.streams.player_response.videoDetails.title;
+
+            streamList.push({
+                title: title,
+                badge: "",
+                codec: "",
+                fileType: "xml",
+                label: label,
+                size: "",
+                url: window.streams.subtitles[i].baseUrl
             });
 
         }
@@ -680,6 +807,7 @@ window.main = function (
 
         let i;
         let type;
+        let template;
         let typeAttribute;
         let typeList;
         let htmlTypeList;
@@ -687,7 +815,8 @@ window.main = function (
         typeList = {
             Audio: 0,
             Video: 0,
-            "Audio + Video": window.streams.url_encoded_fmt_stream_map ? window.streams.url_encoded_fmt_stream_map.length : 0
+            "Audio + Video": window.streams.url_encoded_fmt_stream_map ? window.streams.url_encoded_fmt_stream_map.length : 0,
+            Subtitles: window.streams.subtitles ? window.streams.subtitles.length : 0
         };
 
         if (window.streams.adaptive_fmts) {
@@ -726,13 +855,13 @@ window.main = function (
 
         }
 
+        template = `
+            <div id="iri-type-panel" class="ytp-panel" style="width: 250px;">
+                <div class="ytp-panel-menu">${htmlTypeList}</div>
+            </div>`;
+
         return new DOMParser()
-            .parseFromString(`
-                <div id="iri-type-panel" class="ytp-panel" style="width: 250px;">
-                    <div class="ytp-panel-menu">${htmlTypeList}</div>
-                </div>`,
-                "text/html"
-            )
+            .parseFromString(template, "text/html")
             .querySelector("#iri-type-panel");
 
     }
@@ -749,53 +878,16 @@ window.main = function (
 
     }
 
-    function formatSize(size) {
-
-        if (!size) {
-            return "";
-        }
-
-        let pow;
-        let transform;
-        let sizeLabel;
-
-        pow = 0;
-        transform = size;
-
-        while (transform > 1024) {
-
-            pow++;
-            transform /= 1024;
-
-        }
-
-        sizeLabel = [
-            "B",
-            "KB",
-            "MB",
-            "GB",
-            "TB"
-        ];
-
-        pow = pow >= sizeLabel.length ? sizeLabel.length - 1 : pow;
-
-        return (size / Math.pow(1024, pow))
-            .toFixed(2) + " " + sizeLabel[pow];
-
-    }
-
     function updateContainerSize(
         container,
         element
     ) {
-
         if (element) {
 
             element.style.height = container.style.height = (element.clientHeight > 300 ? 300 : element.clientHeight) + "px";
             element.style.width = container.style.width = (element.clientWidth < 250 ? 250 : element.clientWidth) + "px";
 
         }
-
     }
 
     function switchPanel(
@@ -847,13 +939,17 @@ window.main = function (
 
     }
 
-    function toggleStreamListMenu(posX, posY) {
+    function toggleStreamListMenu(
+        posX,
+        posY
+    ) {
 
         let streamListContainer;
         let typePanel;
         let dashVideoPanel;
         let dashAudioPanel;
         let nonDashAudioPanel;
+        let subtitlePanel;
         let secondPanel;
         let clickListener;
         let resizeListener;
@@ -866,6 +962,7 @@ window.main = function (
         nonDashAudioPanel = createNonDashPanel();
         dashAudioPanel = createDashAudioPanel();
         dashVideoPanel = createDashVideoPanel();
+        subtitlePanel = createSubtitlePanel();
         streamListContainer = createStreamListMenu();
         streamListContainer.appendChild(typePanel);
 
@@ -897,6 +994,10 @@ window.main = function (
 
                 case "audio + video":
                     switchPanel(false, streamListContainer, typePanel, (secondPanel = nonDashAudioPanel));
+                    break;
+
+                case "subtitles":
+                    switchPanel(false, streamListContainer, typePanel, (secondPanel = subtitlePanel));
                     break;
 
             }

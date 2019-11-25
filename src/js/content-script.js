@@ -8,7 +8,7 @@ function onMessageResponse(data) {
         if (event.data &&
             event.data.payload
         ) {
-            chrome.runtime.sendMessage(event.data.payload);
+            chrome.runtime.sendMessage(event.data);
         }
     }
 

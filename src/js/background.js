@@ -9,7 +9,10 @@ const YT_PREF_COOKIE = "PREF";
 let fpi;
 let api;
 let util;
+let algorithm;
 let settings;
+
+algorithm = [];
 
 settings = window.defaultSettings || {};
 
@@ -123,6 +126,112 @@ api = {
         util.filterEngine(details, modifier);
 
     },
+    decipher: function (signature) {
+
+        let i;
+        let temp;
+
+        i = algorithm.length;
+        signature = signature.split("");
+
+        while (i--) {
+
+            if (!algorithm[i]) {
+
+                signature.reverse();
+                continue;
+
+            }
+
+            if (algorithm[i] < 0) {
+
+                signature.splice(0, -algorithm[i]);
+                continue;
+
+            }
+
+            temp = signature[0];
+            signature[0] = signature[algorithm[i] % signature.length];
+            signature[algorithm[i]] = temp;
+
+        }
+
+        return signature.join("");
+
+    },
+    buildAlgorithm: function (sourceCode) {
+
+        let i;
+        let decoder;
+        let temp;
+        let key;
+        let operator;
+
+        operator = {};
+        decoder = sourceCode.match(/[\w\d]+={([\w\d]{1,2}:function\(a[\s\S]*a\[b%a\.length][\s\S]*?)}};/i);
+
+        if (!decoder ||
+            decoder.length < 2
+        ) {
+            return;
+        }
+
+        decoder = decoder[1]
+            .replace(/\n/g, "")
+            .split("},");
+        i = decoder.length;
+
+        while (i--) {
+
+            if (decoder[i].match("reverse")) {
+                temp = -1;
+            } else if (decoder[i].match("splice")) {
+                temp = 1;
+            } else {
+                temp = 0;
+            }
+
+            operator[decoder[i].split(":")[0]] = temp;
+
+        }
+
+        key = sourceCode.match(/[a-z0-9]+=[a-z0-9]+\.split\(""\);([^}]+)return/i);
+
+        if (!key ||
+            key.length < 2
+        ) {
+            return;
+        }
+
+        algorithm.length = 0;
+        key = key[1].split(";");
+        i = key.length;
+
+        while (i--) {
+
+            if (!key[i] ||
+                !key[i].length
+            ) {
+                continue;
+            }
+
+            temp = key[i].match(/[\w\d]+\.([\w\s]+)\([^\d]+([\d]+)\)/i);
+
+            if (temp.length !== 3) {
+                continue;
+            }
+
+            if (!operator[temp[1]]) {
+                algorithm.push(+temp[2]);
+            } else if (operator[temp[1]] < 0) {
+                algorithm.push(0);
+            } else {
+                algorithm.push(-temp[2]);
+            }
+
+        }
+
+    },
     scriptListener: function (details) {
 
         if (details.frameId !== 0) {
@@ -134,6 +243,9 @@ api = {
         modifier = function (str) {
 
             if (details.url.endsWith("/base.js")) {
+
+                api.buildAlgorithm(str);
+
                 str = str
                     .replace(
                         /"loadVideoByPlayerVars",this\.loadVideoByPlayerVars/,
@@ -152,6 +264,7 @@ api = {
                         "$1=window.autoPlayVideo;"
                     )
                 ;
+
             } else {
 
                 str = str
@@ -373,9 +486,27 @@ api = {
 
             }
 
-            if (request === "iridiumLogo") {
+            if (!request.type ||
+                !request.payload
+            ) {
+                return;
+            }
+
+            if (request.payload === "iridiumLogo") {
 
                 chrome.runtime.openOptionsPage();
+                return;
+
+            }
+
+            if (request.type === "save") {
+
+                chrome.downloads.download({
+                    url: request.payload.url + (request.payload.signature ? "&sig=" + api.decipher(request.payload.signature) : ""),
+                    filename: request.payload.title.replace(/[^a-z0-9-_. ]/gi, "") + "." + request.payload.fileType,
+                    conflictAction: "uniquify",
+                    saveAs: true
+                });
                 return;
 
             }
@@ -385,16 +516,16 @@ api = {
 
             data = {};
 
-            for (let key in request) {
+            for (let key in request.payload) {
 
-                if (!request.hasOwnProperty(key) ||
+                if (!request.payload.hasOwnProperty(key) ||
                     !(key in settings) ||
-                    request[key] === settings[key]
+                    request.payload[key] === settings[key]
                 ) {
                     continue;
                 }
 
-                settings[key] = request[key];
+                settings[key] = request.payload[key];
                 data[key] = settings[key];
                 migrate = key === "syncSettings";
 
@@ -418,10 +549,9 @@ api = {
 
             chrome
                 .storage[settings.syncSettings ? "sync" : "local"]
-                .set(data,
-                    function (event) {
-                        console.log("onMessageListener", event);
-                    });
+                .set(data, function (event) {
+                    console.log("onMessageListener", event);
+                });
 
         }
 

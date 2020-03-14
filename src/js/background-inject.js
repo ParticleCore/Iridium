@@ -23,11 +23,11 @@ window.main = function (
         }
 
         if (!window.hfrOn &&
-            args.adaptive_fmts
+            args.adaptiveFormats
         ) {
 
-            keyType = args.adaptive_fmts.indexOf(",") > -1 ? "," : "%2C";
-            list = args.adaptive_fmts.split(keyType);
+            keyType = args.adaptiveFormats.indexOf(",") > -1 ? "," : "%2C";
+            list = args.adaptiveFormats.split(keyType);
 
             for (i = 0; i < list.length; i++) {
                 if ((fps = list[i].split(/fps(?:=|%3D)([0-9]{2})/))
@@ -37,7 +37,7 @@ window.main = function (
                 }
             }
 
-            args.adaptive_fmts = list.join(keyType);
+            args.adaptiveFormats = list.join(keyType);
 
         }
 
@@ -111,8 +111,8 @@ window.main = function (
     ) {
 
         window.streams = {};
-        window.streams.adaptive_fmts = parseStreams(args[0].adaptive_fmts);
-        window.streams.url_encoded_fmt_stream_map = parseStreams(args[0].url_encoded_fmt_stream_map);
+        window.streams.adaptiveFormats = parseStreams(args[0].adaptiveFormats);
+        window.streams.formats = parseStreams(args[0].formats);
         window.streams.player_response = {};
 
         if (args[0].player_response) {
@@ -120,6 +120,15 @@ window.main = function (
 
                 window.streams.player_response = JSON.parse(args[0].player_response);
                 window.streams.subtitles = getSingleObjectByKey(window.streams.player_response, "captionTracks");
+
+                if (!window.streams.adaptiveFormats || window.streams.adaptiveFormats === "") {
+                    window.streams.adaptiveFormats = getSingleObjectByKey(window.streams.player_response, "adaptiveFormats");
+                }
+
+                if (!window.streams.formats || window.streams.formats === "") {
+                    window.streams.formats = getSingleObjectByKey(window.streams.player_response, "formats");
+                }
+
 
             } catch (ignore) {
             }
@@ -263,14 +272,14 @@ window.main = function (
 
             }
 
-            if (stream.clen) {
+            if (stream.contentLength) {
                 continue;
             }
 
             if (stream.url &&
                 (contentLength = stream.url.match(/clen=(\d+)/))
             ) {
-                stream.clen = contentLength[1];
+                stream.contentLength = contentLength[1];
             }
 
         }
@@ -563,7 +572,7 @@ window.main = function (
             previous,
             next
         ) {
-            return next.quality - previous.quality || next.clen - previous.clen;
+            return next.quality - previous.quality || next.contentLength - previous.contentLength;
         });
 
         videoList = "";
@@ -587,6 +596,7 @@ window.main = function (
 
             videoList += `
                 <div data-iri-stream-index="${i}" class="ytp-menuitem" style="color: #fff; text-decoration: none;">
+                    <div class="ytp-menuitem-icon"></div>
                     <div class="ytp-menuitem-label">
                         <div style="display: flex; justify-content: space-between; white-space: nowrap;">
                             <span>${streamList[i].label} <sup class="ytp-swatch-color">${streamList[i].badge}</sup></span>
@@ -633,7 +643,7 @@ window.main = function (
 
     function createNonDashPanel() {
 
-        if (!window.streams.url_encoded_fmt_stream_map) {
+        if (!window.streams.formats) {
             return null;
         }
 
@@ -647,12 +657,12 @@ window.main = function (
 
         streamList = [];
 
-        for (i = 0; i < window.streams.url_encoded_fmt_stream_map.length; i++) {
+        for (i = 0; i < window.streams.formats.length; i++) {
 
-            label = getQualityLabel(window.streams.url_encoded_fmt_stream_map[i].quality);
-            typeInfo = window.streams.url_encoded_fmt_stream_map[i].type.split(/[\/;]/);
+            label = getQualityLabel(window.streams.formats[i].quality);
+            typeInfo = window.streams.formats[i].mimeType.split(/[\/;]/);
             codec = typeInfo.length > 2 ? typeInfo[2].split(/codecs="([a-z0-9]+)/) : "";
-            size = window.streams.url_encoded_fmt_stream_map[i].url.match(/clen=([0-9]+)/);
+            size = window.streams.formats[i].url.match(/clen=([0-9]+)/);
             title = window.streams.player_response.videoDetails.title;
 
             streamList.push({
@@ -662,9 +672,9 @@ window.main = function (
                 codec: codec.length > 1 ? codec[1] : "",
                 fileType: typeInfo.length > 0 ? typeInfo[1] : "",
                 label: label,
-                signature: window.streams.url_encoded_fmt_stream_map[i].s,
+                signature: window.streams.formats[i].s,
                 size: size && size.length > 1 ? formatSize(+size[1]) : "",
-                url: window.streams.url_encoded_fmt_stream_map[i].url
+                url: window.streams.formats[i].url
             });
 
         }
@@ -675,7 +685,7 @@ window.main = function (
 
     function createDashAudioPanel() {
 
-        if (!window.streams.adaptive_fmts) {
+        if (!window.streams.adaptiveFormats) {
             return null;
         }
 
@@ -688,14 +698,14 @@ window.main = function (
 
         streamList = [];
 
-        for (i = 0; i < window.streams.adaptive_fmts.length; i++) {
+        for (i = 0; i < window.streams.adaptiveFormats.length; i++) {
 
-            if (!window.streams.adaptive_fmts[i].type.startsWith("audio")) {
+            if (!window.streams.adaptiveFormats[i].mimeType.startsWith("audio")) {
                 continue;
             }
 
-            label = Math.round(window.streams.adaptive_fmts[i].bitrate / 1000) + "kbps";
-            typeInfo = window.streams.adaptive_fmts[i].type.split(/[\/;]/);
+            label = Math.round(window.streams.adaptiveFormats[i].bitrate / 1000) + "kbps";
+            typeInfo = window.streams.adaptiveFormats[i].mimeType.split(/[\/;]/);
             codec = typeInfo.length > 2 ? typeInfo[2].split(/codecs="([a-z0-9]+)/) : "";
             title = window.streams.player_response.videoDetails.title;
 
@@ -703,15 +713,15 @@ window.main = function (
                 author: window.streams.player_response.videoDetails.author,
                 title: title,
                 badge: "",
-                quality: window.streams.adaptive_fmts[i].bitrate,
+                quality: window.streams.adaptiveFormats[i].bitrate,
                 codec: codec.length > 1 ? codec[1] : "",
                 fileType: typeInfo.length > 0 ? typeInfo[1] : "",
                 type: typeInfo.length > -1 ? typeInfo[0] : "",
                 label: label,
-                clen: +window.streams.adaptive_fmts[i].clen,
-                signature: window.streams.adaptive_fmts[i].s,
-                size: formatSize(+window.streams.adaptive_fmts[i].clen),
-                url: window.streams.adaptive_fmts[i].url
+                clen: +window.streams.adaptiveFormats[i].contentLength,
+                signature: window.streams.adaptiveFormats[i].s,
+                size: formatSize(+window.streams.adaptiveFormats[i].contentLength),
+                url: window.streams.adaptiveFormats[i].url
             });
 
         }
@@ -722,7 +732,7 @@ window.main = function (
 
     function createDashVideoPanel() {
 
-        if (!window.streams.adaptive_fmts) {
+        if (!window.streams.adaptiveFormats) {
             return null;
         }
 
@@ -736,14 +746,14 @@ window.main = function (
 
         streamList = [];
 
-        for (i = 0; i < window.streams.adaptive_fmts.length; i++) {
+        for (i = 0; i < window.streams.adaptiveFormats.length; i++) {
 
-            if (!window.streams.adaptive_fmts[i].type.startsWith("video")) {
+            if (!window.streams.adaptiveFormats[i].mimeType.startsWith("video")) {
                 continue;
             }
 
-            label = window.streams.adaptive_fmts[i].quality_label.replace(/\+/, " ");
-            typeInfo = window.streams.adaptive_fmts[i].type.split(/[\/;]/);
+            label = window.streams.adaptiveFormats[i].qualityLabel.replace(/\+/, " ");
+            typeInfo = window.streams.adaptiveFormats[i].mimeType.split(/[\/;]/);
             codec = typeInfo.length > 2 ? typeInfo[2].split(/codecs="([a-z0-9]+)/) : "";
             quality = window.parseInt(label);
             title = window.streams.player_response.videoDetails.title;
@@ -756,11 +766,11 @@ window.main = function (
                 fileType: typeInfo.length > 0 ? typeInfo[1] : "",
                 quality: quality || 0,
                 label: label,
-                fps: window.streams.adaptive_fmts[i].fps,
-                clen: +window.streams.adaptive_fmts[i].clen,
-                signature: window.streams.adaptive_fmts[i].s,
-                size: formatSize(+window.streams.adaptive_fmts[i].clen),
-                url: window.streams.adaptive_fmts[i].url
+                fps: window.streams.adaptiveFormats[i].fps,
+                clen: +window.streams.adaptiveFormats[i].contentLength,
+                signature: window.streams.adaptiveFormats[i].s,
+                size: formatSize(+window.streams.adaptiveFormats[i].contentLength),
+                url: window.streams.adaptiveFormats[i].url
             });
 
         }
@@ -815,13 +825,13 @@ window.main = function (
         typeList = {
             Audio: 0,
             Video: 0,
-            "Audio + Video": window.streams.url_encoded_fmt_stream_map ? window.streams.url_encoded_fmt_stream_map.length : 0,
+            "Audio + Video": window.streams.formats ? window.streams.formats.length : 0,
             Subtitles: window.streams.subtitles ? window.streams.subtitles.length : 0
         };
 
-        if (window.streams.adaptive_fmts) {
-            for (i = 0; i < window.streams.adaptive_fmts.length; i++) {
-                if (window.streams.adaptive_fmts[i].type.startsWith("video")) {
+        if (window.streams.adaptiveFormats) {
+            for (i = 0; i < window.streams.adaptiveFormats.length; i++) {
+                if (window.streams.adaptiveFormats[i].mimeType.startsWith("video")) {
                     typeList.Video++;
                 } else {
                     typeList.Audio++;
@@ -841,6 +851,7 @@ window.main = function (
 
             htmlTypeList += `
                 <div ${typeAttribute} class="ytp-menuitem" aria-haspopup="true" style="color: #fff; text-decoration: none;">
+                    <div class="ytp-menuitem-icon"></div>
                     <div ${typeAttribute} class="ytp-menuitem-label">
                         <div style="pointer-events: none; display: flex; justify-content: space-between; white-space: nowrap;">
                             <span>${type}</span>

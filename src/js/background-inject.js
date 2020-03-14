@@ -318,7 +318,7 @@ window.main = function (
                         toggledStyle: {styleType: "STYLE_DEFAULT_ACTIVE"}
                     }
                 }
-            },
+            }/*,
             SAVE_VIDEO: {
                 injected: false,
                 element: {
@@ -342,7 +342,7 @@ window.main = function (
                         tooltip: "Streams"
                     }
                 }
-            }
+            }*/
         };
 
         topLevelButtons.forEach(function (value) {

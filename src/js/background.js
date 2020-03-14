@@ -47,23 +47,66 @@ util = {
     ) {
 
         let str;
+        let data;
+        let buffer;
         let filter;
         let decoder;
         let encoder;
+        let writeOffset;
+        let patchVersion;
+        let combinedArray;
+        let combinedLength;
+        let commentBlock;
 
-        str = "";
+        data = [];
+        patchVersion = "iridium patch version " + chrome.runtime.getManifest().version;
+        commentBlock = (details.type === "script" ? `// ${patchVersion} ` : `<!-- ${patchVersion} -->`) + "\n";
         decoder = new TextDecoder("utf-8");
         encoder = new TextEncoder();
         filter = util.filterResponse(details.requestId);
 
         filter.ondata = function (event) {
-            str += util.filterCacheData(decoder.decode(event.data, {stream: true}));
+            data.push(new Uint8Array(event.data));
         };
 
         filter.onstop = function (event) {
 
-            filter.write(encoder.encode(modifier(str)));
-            filter.disconnect();
+            writeOffset = 0;
+            combinedLength = 0;
+
+            for (buffer of data) {
+                combinedLength += buffer.length;
+            }
+
+            combinedArray = new Uint8Array(combinedLength);
+
+            while (writeOffset < combinedLength) {
+
+                buffer = data.shift();
+                combinedArray.set(buffer, writeOffset);
+                writeOffset += buffer.length;
+
+            }
+
+            // check if the resource has already been modified by the current extension version
+            // to avoid redundant operations
+            // note: still have to find a way to handle when a cached version was modified by a
+            //   previous extension version
+
+            str = decoder.decode(combinedArray, {stream: false});
+
+            if (str.startsWith(commentBlock)) {
+                filter.write(combinedArray);
+            } else {
+                filter.write(encoder.encode(commentBlock + modifier(util.filterCacheData(str))));
+            }
+
+            filter.close();
+
+            str = null;
+            combinedArray = null;
+            buffer = null;
+            data.length = 0;
 
         };
 

@@ -131,23 +131,6 @@ api = {
                     `<head><script>(${window.main}("${api.broadcastId}",${JSON.stringify(settings)}))</script>`
                 )
                 .replace(
-                    /(<g id="like">)/,
-                    "\n<g id='iridium_logo'>" +
-                    "\n    <polygon data-iri-feature='iridiumLogo' opacity='0.5' points='6.8,3 22.4,12 6.8,21'/>" +
-                    "\n    <path data-iri-feature='iridiumLogo' d='M6.8,3v18l15.6-9L6.8,3z M9.8,8.2l6.6,3.8l-6.6,3.8V8.2z'/>" +
-                    "\n</g>" +
-                    "\n<g id='autoplay'>" +
-                    "\n    <polygon data-iri-feature='autoPlayVideo' points='7,3.3 7,20.7 22,12'/>" +
-                    "\n</g>" +
-                    "\n<g id='save_video'>" +
-                    "\n    <path data-iri-feature='saveVideo' d='M20,9.1h-4.6V2.3H8.6v6.9H4l8,8L20,9.1z M4,19.4v2.3h16v-2.3H4z'/>" +
-                    "\n</g>" +
-                    "\n<g id='stream_list'>" +
-                    "\n    <path data-iri-feature='streamList' d='M9,1.5v6H5l7,7l7-7h-4v-6H9 M5,16.5v2h14v-2H5 M5,20.5v2h14v-2H5z'/>" +
-                    "\n</g>" +
-                    "\n$1"
-                )
-                .replace(
                     /yt\.player\.Application\.create\("player-api", ?ytplayer\.config\);/,
                     "window.modArgs&&window.modArgs(ytplayer.config.args);$&"
                 )
@@ -322,6 +305,23 @@ api = {
                     .replace(
                         /([a-z0-9.]+)loadVideoByPlayerVars\(([^)]+)\)/gi,
                         "(window.autoPlayVideo!==false||window.autoPlayVideo===undefined?$1loadVideoByPlayerVars($2):$1cueVideoByPlayerVars($2))"
+                    )
+                    .replace(
+                        /(<g id=\\"like\\">)/,
+                        "<g id='iridium_logo'>" +
+                        "    <polygon data-iri-feature='iridiumLogo' opacity='0.5' points='6.8,3 22.4,12 6.8,21'/>" +
+                        "    <path data-iri-feature='iridiumLogo' d='M6.8,3v18l15.6-9L6.8,3z M9.8,8.2l6.6,3.8l-6.6,3.8V8.2z'/>" +
+                        "</g>" +
+                        "<g id='autoplay'>" +
+                        "    <polygon data-iri-feature='autoPlayVideo' points='7,3.3 7,20.7 22,12'/>" +
+                        "</g>" +
+                        "<g id='save_video'>" +
+                        "    <path data-iri-feature='saveVideo' d='M20,9.1h-4.6V2.3H8.6v6.9H4l8,8L20,9.1z M4,19.4v2.3h16v-2.3H4z'/>" +
+                        "</g>" +
+                        "<g id='stream_list'>" +
+                        "    <path data-iri-feature='streamList' d='M9,1.5v6H5l7,7l7-7h-4v-6H9 M5,16.5v2h14v-2H5 M5,20.5v2h14v-2H5z'/>" +
+                        "</g>" +
+                        "$1"
                     )
                 ;
 
@@ -504,7 +504,8 @@ api = {
             urls: [
                 YT_PATTERN + "/base.js",
                 YT_PATTERN + "/desktop_polymer_v2.js",
-                YT_PATTERN + "/desktop_polymer_sel_auto_svg_home_v2.js"
+                YT_PATTERN + "/desktop_polymer_sel_auto_svg_home_v2.js",
+                YT_PATTERN + "/desktop_polymer_inlined_html_polymer_flags_v2.js"
             ],
             types: ["script"]
         };

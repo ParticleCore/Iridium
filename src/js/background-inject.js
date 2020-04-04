@@ -15,10 +15,6 @@ window.main = function (
         if (!window.autoPlayVideo) {
 
             args.autoplay = "0";
-            args.fflags = args.fflags.replace(
-                /disable_new_pause_state3=true/g,
-                "disable_new_pause_state3=false"
-            );
 
         }
 

@@ -142,6 +142,10 @@ api = {
                         /ytplayer\.load\(\);/,
                         ""
                     )
+                    .replace(
+                        /disable_new_pause_state3=true/g,
+                        "disable_new_pause_state3=false"
+                    )
                 ;
             }
 

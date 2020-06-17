@@ -1,0 +1,229 @@
+{
+    "language": "中文（台灣）",
+    "section_list": {
+        "donate": "捐贈",
+        "general": "一般",
+        "video": "影片",
+        "settings": "設定"
+    },
+    "section_titles": {
+        "donate": "支持 Iridium",
+        "general": "一般設定",
+        "video": "影片設定",
+        "settings": "Iridium 設定"
+    },
+    "sub_section_titles": {
+        "channel": "頻道",
+        "blacklist": "黑名單",
+        "general": "一般",
+        "language": "語言",
+        "layout": "介面",
+        "paypal": "Paypal",
+        "patreon": "Patreon",
+        "playlist": "播放清單",
+        "player": "播放器",
+        "settings": "設定",
+        "thumbnails": "縮圖"
+    },
+    "iridium_api": {
+        "settings_button": "Iridium",
+        "feature_link": "看看他在幹嘛"
+    },
+    "welcome_box": {
+        "thank_you": "感謝您安裝 Iridium!",
+        "settings_instruction": "您可以透過點擊右上角的三角形按鈕來進入設定頁面",
+        "features_instruction": "完整功能列表請造訪以下網址:",
+        "features_link": "功能列表",
+        "donate_instruction": "如果您想要協助開發此擴充功能的話可以使用下列選項:",
+        "paypal_one_time": "一次性捐贈",
+        "paypal_any_amount": "任何價格",
+        "paypal_monthly": "按月捐贈",
+        "patreon_support": "使用 Patreon 支持",
+        "button_close": "關閉"
+    },
+    "default_logo_page": {
+        "label": "預設 YouTube Logo 頁面:",
+        "options": [
+            "首頁",
+            "發燒影片",
+            "訂閱內容"
+        ]
+    },
+    "default_channel_tab": {
+        "label": "預設頻道頁面:",
+        "options": [
+            "首頁",
+            "影片",
+            "播放清單",
+            "頻道",
+            "討論",
+            "關於"
+        ]
+    },
+    "square_avatars": {
+        "label": "讓使用者的頭貼為方形的"
+    },
+    "improved_logo": {
+        "label": "改善 YouTube Logo"
+    },
+    "thumbnail_preview": {
+        "label": "移到縮圖上時播放影片"
+    },
+    "thumbnail_preview_mute": {
+        "label": "Shift key toggles audio on video thumbnail playback"
+    },
+    "popup_player": {
+        "label": "啟用彈出式播放器",
+        "button_add_title": "彈出播放器"
+    },
+    "enable_blacklist": {
+        "label": "啟用黑名單"
+    },
+    "blacklist_settings": {
+        "button_add_title": "封鎖",
+        "button_edit": "編輯",
+        "button_import": "匯入",
+        "button_export": "匯出",
+        "button_reset": "重設",
+        "button_save": "儲存",
+        "button_close": "關閉",
+        "button_remove": "從黑名單中移除",
+        "placeholder": "在這裡貼上新的黑名單",
+        "confirm_reset": "您即將要重設黑名單。建議您在繼續動作前先備份好目前的黑名單。\n\n您確定要繼續嗎?\n\n",
+        "reset_success": "黑名單已重設\n\n更動將在重新整理後套用\n\n",
+        "confirm_import": "您即將要覆寫黑名單。建議您在繼續動作前先備份好目前的黑名單。\n\n您確定要繼續嗎?\n\n",
+        "import_success": "您的黑名單已成功匯入。\n\n更動將在重新整理後套用\n\n",
+        "import_error": "您的黑名單無效，因此無法匯入\n\n"
+    },
+    "channel_video_count": {
+        "label": "顯示上傳的影片數"
+    },
+    "channel_video_time": {
+        "label": "顯示影片多久前被上傳的"
+    },
+    "playlist_reverse_control": {
+        "label": "啟用倒序播放控制項",
+        "button_label": "倒序播放",
+        "toggle_on": "倒序播放開啟",
+        "toggle_off": "倒序播放關閉"
+    },
+    "player_quality": {
+        "label": "預設影片畫質:",
+        "options": [
+            "4320p (8k)",
+            "2880p (5k)",
+            "2160p (4k)",
+            "1440p",
+            "1080p",
+            "720p",
+            "480p",
+            "360p",
+            "240p",
+            "144p",
+            "自動"
+        ]
+    },
+    "player_auto_play": {
+        "label": "自動播放影片"
+    },
+    "channel_trailer_auto_play": {
+        "label": "自動播放頻道推薦影片"
+    },
+    "player_annotations": {
+        "label": "允許影片註解"
+    },
+    "player_subtitles": {
+        "label": "允許影片字幕"
+    },
+    "player_loudness": {
+        "label": "允許音量標準化"
+    },
+    "player_ads": {
+        "label": "允許廣告"
+    },
+    "subscribed_channel_player_ads": {
+        "label": "允許已訂閱頻道出現廣告"
+    },
+    "player_hfr": {
+        "label": "允許 HFR (60fps) 串流"
+    },
+    "player_memorize_size": {
+        "label": "記住播放器大小"
+    },
+    "player_memorize_volume": {
+        "label": "記住播放器音量"
+    },
+    "player_max_res_thumbnail": {
+        "label": "強制顯示高畫質縮圖"
+    },
+    "player_quick_controls": {
+        "label": "啟用快速控制項",
+        "button_auto_play": "自動播放",
+        "button_pop_up_player": "彈出式播放器",
+        "button_full_browser": "網頁全螢幕",
+        "button_screen_shot": "螢幕截圖",
+        "button_thumbnails": "打開縮圖",
+        "thumbnails_title": "點擊下載\n右鍵設定",
+        "screen_shot_title": "點擊右鍵進行設定",
+        "full_browser_info": "點擊這裡或\n按 \"Esc\" 退出"
+    },
+    "comments_visibility": {
+        "label": "留言區塊:",
+        "button_show_comments": "顯示留言",
+        "options": [
+            "顯示",
+            "隱藏",
+            "移除"
+        ]
+    },
+    "shortcuts_always_active": {
+        "label": "永遠啟用播放器捷徑"
+    },
+    "player_volume_wheel": {
+        "label": "使用滑鼠調整音量"
+    },
+    "player_always_visible": {
+        "label": "滾動時保持影片可見"
+    },
+    "player_hide_end_screen": {
+        "label": "滑鼠移過時隱藏片尾資訊卡"
+    },
+    "iridium_dark_mode": {
+        "label": "使用深色主題"
+    },
+    "iridium_user_settings": {
+        "button_save": "儲存",
+        "button_close": "關閉",
+        "button_export": "匯出",
+        "button_import": "匯入",
+        "button_reset": "重設",
+        "placeholder": "在這裡貼上新的設定",
+        "confirm_reset": "您即將要重設設定。建議您在繼續動作前先備份好目前的設定。\n\n您確定要繼續嗎?\n\n",
+        "reset_success": "設定已重設\n\n更動將在重新整理後套用\n\n",
+        "confirm_import": "您即將要覆寫設定。建議您在繼續動作前先備份好目前的設定。\n\n您確定要繼續嗎?\n\n",
+        "import_success": "您的設定已成功匯入。\n\n更動將在重新整理後套用\n\n",
+        "import_error": "您的設定無效，因此無法匯入\n\n"
+    },
+    "iridium_custom_language": {
+        "label": "使用修改的語言本地化"
+    },
+    "iridium_language": {
+        "button_save": "儲存",
+        "button_close": "關閉",
+        "confirm_save": "您即將要覆蓋您的語言設定。\n\n您確定要繼續嗎?\n\n",
+        "save_success": "新語言已成功儲存。\n\n更動將在重新整理後套用\n\n",
+        "save_error": "無效，無法儲存新語言\n\n"
+    },
+    "donate_paypal": {
+        "one_time": "一次性捐贈",
+        "any_amount": "任何金額",
+        "monthly": "按月捐贈",
+        "one_euro": "1€",
+        "three_euro": "3€",
+        "five_euro": "5€",
+        "ten_euro": "10€"
+    },
+    "donate_patreon": {
+        "patreon": "使用 Patreon 支持"
+    }
+}

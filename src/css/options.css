@@ -1,0 +1,362 @@
+
+html {
+    height: 100%;
+    --iri-sidebar-width: 240px;
+    --iri-body-text-color: #00000080;
+    --iri-content-background: #f1f1f1;
+    --iri-content-shade-background: #c9c9c9;
+    --iri-sidebar-background: #ffffff;
+    --iri-sidebar-text-color: #909090;;
+    --iri-sidebar-selected-text-color: #0d0d0d;
+    --iri-sidebar-selected-color: #e5e5e5;
+    --iri-sidebar-selected-hover-color: #d9d9d9;
+    --iri-sidebar-divider-color: #00000024;
+    --iri-content-text-color: #00000080;
+    --iri-content-text-hover-color: #000000f0;
+}
+
+html[data-dark=true] {
+    --iri-body-text-color: #ffffff80;
+    --iri-content-background: #1f1f1f;
+    --iri-content-shade-background: #3f3f3f;
+    --iri-sidebar-background: #282828;
+    --iri-sidebar-text-color: #909090;
+    --iri-sidebar-selected-text-color: #ffffff;
+    --iri-sidebar-selected-color: #3e3e3e;
+    --iri-sidebar-selected-hover-color: #525252;
+    --iri-sidebar-divider-color: #ffffff24;
+    --iri-content-text-color: #ffffff80;
+    --iri-content-text-hover-color: #fffffff0;
+}
+
+body {
+    height: 100%;
+    background-color: var(--iri-content-background);
+    color: #111111;
+    display: block !important;
+    font-family: "Segoe UI", sans-serif;
+    font-size: 14px;
+    margin: 0 auto;
+    position: relative;
+    font-weight: 600;
+}
+
+svg {
+    /* workaround for Firefox 9 years old
+    half-pixel svg blur @ bugzilla#608812 */
+    transform: scale(1);
+}
+
+a {
+    color: #27a6e5;
+}
+
+:focus {
+    outline: none;
+}
+
+::-moz-focus-inner {
+    border: 0;
+}
+
+[hidden] {
+    display: none;
+}
+
+.button {
+    box-shadow: rgba(0, 0, 0, .05) 0 1px 0;
+    cursor: pointer;
+    font-weight: bold;
+    outline: none 0;
+    vertical-align: middle;
+    border-image: initial;
+    background-color: #ffffff14;
+    border-color: #303030;
+    color: #888;
+    margin-left: 0;
+    text-transform: uppercase;
+    padding: 10px 16px;
+    font-size: 14px;
+    border-radius: 2px;
+    margin-top: 18px;
+}
+
+#sidebar {
+    background-color: var(--iri-sidebar-background);
+    width: var(--iri-sidebar-width);
+    height: 100%;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    box-shadow: 2px 0 10px #00000015;
+    overflow-y: auto;
+}
+
+.content {
+    max-width: 1280px;
+    color: var(--iri-content-text-color);
+    margin: 0 auto;
+    padding-left: var(--iri-sidebar-width);
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+}
+
+#sidebar > input:not(:checked) + .sidebar_section + .content {
+    display: none;
+}
+
+.sidebar_section_header {
+    user-select: none;
+    pointer-events: none;
+    line-height: 56px;
+    padding: 0 24px 0 72px;
+    display: flex;
+    position: relative;
+    margin-bottom: 12px;
+    color: var(--iri-content-text-color);
+    font-size: 30px;
+    font-family: 'Arial', sans-serif;
+    letter-spacing: -1.50px;
+}
+
+.sidebar_section_header:after,
+.sidebar_section:after {
+    content: "";
+    width: 24px;
+    height: 24px;
+    background-repeat: no-repeat;
+    background-position: center;
+    transform: translateY(-50%);
+    top: 50%;
+    left: 24px;
+    position: absolute;
+}
+
+.sidebar_section_header:after {
+    background-image: url("../img/logo.svg");
+}
+
+.sidebar_section {
+    color: var(--iri-sidebar-text-color);
+    line-height: 40px;
+    padding: 0 24px 0 72px;
+    cursor: pointer;
+    display: flex;
+    position: relative;
+    user-select: none;
+    z-index: 1;
+}
+
+.sidebar_section:after {
+    background-color: var(--iri-sidebar-text-color);
+}
+
+#sidebar > input:checked + .sidebar_section {
+    color: var(--iri-sidebar-selected-text-color);
+    background-color: var(--iri-sidebar-selected-color);
+}
+
+#sidebar > input:checked + .sidebar_section:after {
+    background-color: var(--iri-sidebar-selected-text-color);
+}
+
+#sidebar > input:checked + .sidebar_section:hover {
+    background-color: var(--iri-sidebar-selected-hover-color);
+}
+
+.sidebar_section:hover {
+    background-color: var(--iri-sidebar-selected-color);
+}
+
+[data-sidebar=general]:after {
+    mask-image: url("../img/general.svg");
+}
+
+[data-sidebar=player]:after {
+    mask-image: url("../img/player.svg");
+}
+
+[data-sidebar=download]:after {
+    mask-image: url("../img/download.svg");
+}
+
+[data-sidebar=channel]:after {
+    mask-image: url("../img/channel.svg");
+}
+
+[data-sidebar=blacklist]:after {
+    mask-image: url("../img/blacklist.svg");
+}
+
+[data-sidebar=donate]:after {
+    mask-image: url("../img/donate.svg");
+}
+
+[data-sidebar=settings]:after {
+    mask-image: url("../img/settings.svg");
+}
+
+[data-sidebar=language]:after {
+    mask-image: url("../img/language.svg");
+}
+
+[data-sidebar=help]:after {
+    mask-image: url("../img/bug.svg");
+}
+
+.sidebar_label_icon {
+    user-select: none;
+    pointer-events: none;
+    font-size: 0;
+    align-self: center;
+    margin-right: 24px;
+    height: 24px;
+    width: 24px;
+}
+
+.sidebar_label {
+    user-select: none;
+    pointer-events: none;
+    flex: 1;
+    align-self: center;
+    font-weight: 600;
+}
+
+.setting_content {
+    color: var(--iri-content-text-hover-color);
+    display: inline-block;
+    padding: 0 24px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.setting_header {
+    user-select: none;
+}
+
+.setting[type=checkbox] + .setting[for]:before {
+    content: '';
+    background: #808080;
+    border-radius: 100px;
+    box-shadow: 0 0 2px 0 #333 inset;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: inline-block;
+    left: 0;
+    position: absolute;
+    transition: background .3s;
+    vertical-align: middle;
+    width: 36px;
+    height: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.setting[type=checkbox] + .setting[for]:before {
+    box-shadow: none;
+}
+
+.setting[type=checkbox]:checked + .setting[for]:before {
+    background: #27a6e5;
+}
+
+.setting[type=checkbox] + .setting[for]:after {
+    background: #fff;
+    border-radius: 90px;
+    box-shadow: 0 0 3px 0 #333;
+    content: '';
+    cursor: pointer;
+    display: inline-block;
+    height: 20px;
+    width: 20px;
+    left: 16px;
+    position: absolute;
+    transition: .3s;
+    vertical-align: middle;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.setting[type=checkbox]:not(:checked) + .setting[for]:after {
+    left: 0;
+}
+
+.setting[type=checkbox] + .setting[for] {
+    cursor: pointer;
+    color: var(--iri-content-text-color);
+    line-height: 40px;
+    padding-left: 60px;
+}
+
+.setting[type=checkbox] + .setting[for]:hover {
+    padding-left: 60px;
+    color: var(--iri-content-text-hover-color);
+}
+
+.setting[type=checkbox] {
+    display: none;
+    height: 0;
+    visibility: hidden;
+    width: 0;
+}
+
+.setting,
+.feature-link {
+    cursor: pointer;
+    font-size: 14px;
+    position: relative;
+    vertical-align: middle;
+    user-select: none;
+    white-space: pre;
+}
+
+.feature-link {
+    font-size: 14px;
+    font-weight: 700;
+    color: #27a6e5;
+    cursor: pointer;
+    overflow: hidden;
+    text-decoration: none;
+    opacity: 0;
+    padding: 0 12px;
+    line-height: 40px;
+}
+
+.setting_content:hover .feature-link {
+    opacity: 1;
+}
+
+.setting_header {
+    color: var(--iri-content-text-color);
+    font-size: 18px;
+    line-height: 56px;
+    padding: 0 24px 12px 24px;
+}
+
+.settings_divider {
+    background-color: var(--iri-sidebar-divider-color);
+    height: 1px;
+}
+
+#sidebar .settings_divider {
+    margin: 12px 0;
+}
+
+#content .settings_divider {
+    margin: 0 24px;
+}
+
+.custom-content {
+    user-select: none;
+    white-space: pre-wrap;
+}
+
+#system-information {
+    display: inline-block;
+    background: var(--iri-content-shade-background);
+    padding: 12px;
+    border-radius: 10px;
+    user-select: all;
+}

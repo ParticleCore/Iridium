@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <radialGradient id="iri-gradient" gradientUnits="userSpaceOnUse" cx="6" cy="22" r="18.5">
+        <stop class="iri-start-gradient" offset="0"/>
+        <stop class="iri-stop-gradient" offset="1"/>
+    </radialGradient>
+    <polygon opacity="0.5" fill="url(#iri-gradient)" points="6.8,3 22.4,12 6.8,21"/>
+    <path fill="url(#iri-gradient)" d="M6.8,3v18l15.6-9L6.8,3z M9.8,8.2l6.6,3.8l-6.6,3.8V8.2z"/>
+    <style type="text/css"><![CDATA[
+        .iri-start-gradient {
+            animation : breatheStartEffect 5s linear infinite;
+        }
+
+        .iri-stop-gradient {
+            animation : breatheStopEffect 5s linear infinite;
+        }
+
+        @keyframes breatheStartEffect {
+            0% {
+                stop-color : #0ff;
+            }
+            50% {
+                stop-color : #888;
+            }
+            100% {
+                stop-color : #0ff;
+            }
+        }
+
+        @keyframes breatheStopEffect {
+            0% {
+                stop-color : #f0f;
+            }
+            50% {
+                stop-color : #888;
+            }
+            100% {
+                stop-color : #f0f;
+            }
+        }
+    ]]></style>
+</svg>

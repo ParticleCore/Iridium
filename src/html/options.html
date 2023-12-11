@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html data-dark="false" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title data-locale="text|page-title">Iridium - settings</title>
+    <link href="../css/options.css" rel="stylesheet" type="text/css">
+    <link href="../icons/favicon.ico" rel="shortcut icon" type="image/x-icon">
+    <link href="../icons/32.png" rel="icon" sizes="32x32">
+    <link href="../icons/48.png" rel="icon" sizes="48x48">
+    <link href="../icons/64.png" rel="icon" sizes="64x64">
+    <link href="../icons/128.png" rel="icon" sizes="128x128">
+    <link href="../icons/144.png" rel="icon" sizes="144x144">
+    <script src="../js/default-settings.js"></script>
+</head>
+<body>
+
+<div id="sidebar">
+
+    <div class="sidebar_section_header">iridium</div>
+
+    <input checked hidden id="input-general" name="content" type="radio">
+    <label class="sidebar_section" data-sidebar="general" for="input-general" data-locale="text|section-general">General</label>
+    <div class="content" id="content-general">
+        <div class="setting_header" id="general" data-locale="text|section-general">General</div>
+        <div class="setting_content">
+            <input class="setting" id="darkTheme" type="checkbox">
+            <label class="setting" for="darkTheme" data-locale="text|setting-dark-theme">Dark theme</label>
+            <a class="feature-link" href="https://github.com/ParticleCore/Iridium/wiki/Features#darkTheme" data-locale="title|link-wiki" title="Find out what this does" target="features">?</a>
+        </div>
+    </div>
+
+    <input hidden id="input-player" name="content" type="radio">
+    <label class="sidebar_section" data-sidebar="player" for="input-player" data-locale="text|section-player">Player</label>
+    <div class="content" id="content-player">
+        <div class="setting_header" id="player" data-locale="text|section-player">Player</div>
+        <div class="setting_content">
+            <input class="setting" id="quickControls" type="checkbox">
+            <label class="setting" for="quickControls" data-locale="text|setting-quick-controls">Quick controls</label>
+            <a class="feature-link" href="https://github.com/ParticleCore/Iridium/wiki/Features#quickControls" data-locale="title|link-wiki" title="Find out what this does" target="features">?</a>
+        </div>
+        <div class="setting_content">
+            <input class="setting" id="autoPlayVideo" type="checkbox">
+            <label class="setting" for="autoPlayVideo" data-locale="text|setting-auto-play">Play videos automatically</label>
+            <a class="feature-link" href="https://github.com/ParticleCore/Iridium/wiki/Features#autoPlayVideo" data-locale="title|link-wiki" title="Find out what this does" target="features">?</a>
+        </div>
+        <div class="setting_content">
+            <input class="setting" id="maxResThumbnail" type="checkbox">
+            <label class="setting" for="maxResThumbnail" data-locale="text|setting-high-res-thumbnail">Force max thumbnail resolution</label>
+            <a class="feature-link" href="https://github.com/ParticleCore/Iridium/wiki/Features#maxResThumbnail" data-locale="title|link-wiki" title="Find out what this does" target="features">?</a>
+        </div>
+        <div class="setting_content">
+            <input class="setting" id="hfrOn" type="checkbox">
+            <label class="setting" for="hfrOn" data-locale="text|setting-hfr-on">Allow HFR streams (60fps)</label>
+            <a class="feature-link" href="https://github.com/ParticleCore/Iridium/wiki/Features#hfrOn" data-locale="title|link-wiki" title="Find out what this does" target="features">?</a>
+        </div>
+    </div>
+
+    <input hidden id="input-download" name="content" type="radio">
+    <label class="sidebar_section" data-sidebar="download" for="input-download" data-locale="text|section-download">Download</label>
+    <div class="content">
+        <div class="setting_header" data-locale="text|section-download">Download</div>
+        <div class="setting_content">
+            <div class="custom-content" data-locale="text|content-soon">Coming soon</div>
+            <!--<input class="setting" id="downloadList" type="checkbox">
+            <label class="setting" for="downloadList" data-locale="text|setting-download-list">Display download list option</label>
+            <a class="feature-link" href="https://github.com/ParticleCore/Iridium/wiki/Features#downloadList" data-locale="title|link-wiki" title="Find out what this does" target="features">?</a>
+            <br>
+            <label class="setting" for="fileName" data-locale="text|setting-file-name">File name pattern</label>
+            <a class="feature-link" href="https://github.com/ParticleCore/Iridium/wiki/Features#fileName" data-locale="title|link-wiki" title="Find out what this does" target="features">?</a>
+            <br>
+            <input class="setting" id="fileName" type="text">-->
+        </div>
+    </div>
+
+    <input hidden id="input-channel" name="content" type="radio">
+    <label class="sidebar_section" data-sidebar="channel" for="input-channel" data-locale="text|section-channels">Channels</label>
+    <div class="content">
+        <div class="setting_header" data-locale="text|section-channels">Channels</div>
+        <div class="setting_content">
+            <div class="custom-content" data-locale="text|content-soon">Coming soon</div>
+        </div>
+    </div>
+
+    <input hidden id="input-blacklist" name="content" type="radio">
+    <label class="sidebar_section" data-sidebar="blacklist" for="input-blacklist" data-locale="text|section-blacklist">Blacklist</label>
+    <div class="content">
+        <div class="setting_header" data-locale="text|section-blacklist">Blacklist</div>
+        <div class="setting_content">
+            <div class="custom-content" data-locale="text|content-soon">Coming soon</div>
+        </div>
+    </div>
+
+    <div class="settings_divider"></div>
+
+    <input hidden id="input-donate" name="content" type="radio">
+    <label class="sidebar_section" data-sidebar="donate" for="input-donate" data-locale="text|section-donate">Donate</label>
+    <div class="content">
+        <div class="setting_header" data-locale="text|section-donate">Donate</div>
+        <div class="setting_content">
+            <div class="custom-content" data-locale="text|content-soon">Coming soon</div>
+        </div>
+    </div>
+
+    <input hidden id="input-settings" name="content" type="radio">
+    <label class="sidebar_section" data-sidebar="settings" for="input-settings" data-locale="text|section-settings">Settings</label>
+    <div class="content">
+        <div class="setting_header" data-locale="text|section-settings">Settings</div>
+        <div class="setting_content">
+            <input class="setting" id="syncSettings" type="checkbox">
+            <label class="setting" for="syncSettings" data-locale="text|setting-sync-settings">Sync settings</label>
+            <a class="feature-link" href="https://github.com/ParticleCore/Iridium/wiki/Features#syncSettings" data-locale="title|link-wiki" title="Find out what this does" target="features">?</a>
+        </div>
+        <div class="setting_content">
+            <input class="setting" id="iridiumLogo" type="checkbox">
+            <label class="setting" for="iridiumLogo" data-locale="text|setting-iridium-logo">Show settings button in YouTube</label>
+            <a class="feature-link" href="https://github.com/ParticleCore/Iridium/wiki/Features#iridiumLogo" data-locale="title|link-wiki" title="Find out what this does" target="features">?</a>
+        </div>
+    </div>
+
+    <input hidden id="input-language" name="content" type="radio">
+    <label class="sidebar_section" data-sidebar="language" for="input-language" data-locale="text|section-language">Language</label>
+    <div class="content" id="content-language">
+        <div class="setting_header" data-locale="text|section-language">Language</div>
+        <div class="setting_content">
+            <div class="custom-content" data-locale="text|content-soon">Coming soon</div>
+        </div>
+    </div>
+
+    <div class="settings_divider"></div>
+
+    <input hidden id="input-help" name="content" type="radio">
+    <label class="sidebar_section" data-sidebar="help" for="input-help" data-locale="text|section-help">Help</label>
+    <div class="content" id="content-help">
+        <div class="setting_header" data-locale="text|section-help">Help</div>
+        <div class="setting_content">
+            <div class="custom-content" data-locale="text|content-help">If you found a problem with the extension please click the button below and follow the instructions</div>
+            <button class="button" id="report-bug-button" data-locale="text|report-bug-button">report bug</button>
+        </div>
+    </div>
+
+</div>
+
+<script src="../js/options.js"></script>
+
+</body>
+</html>

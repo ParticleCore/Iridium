@@ -413,7 +413,7 @@ const Api = {
     ini: () => {
 
         browser.runtime.onConnect.addListener(Api.onPortConnect);
-        browser.action.onClicked.addListener(Util.onBrowserActionClickedListener);
+        browser.browserAction.onClicked.addListener(Util.onBrowserActionClickedListener);
         browser.storage.local.onChanged.addListener(Util.onStorageChangedListener);
         browser.storage.sync.get().then(Util.checkSyncStorage);
 
@@ -422,23 +422,4 @@ const Api = {
     }
 }
 
-function checkPermissions() {
-
-    const manifestData = browser.runtime.getManifest();
-    const data = {
-        origins: manifestData.host_permissions,
-        permissions: manifestData.permissions
-    };
-
-    browser.permissions.contains(data).then(allAllowed => {
-        if (allAllowed){
-            browser.permissions.onAdded.removeListener(checkPermissions);
-            Api.ini();
-        } else {
-            browser.permissions.onAdded.addListener(checkPermissions);
-        }
-    });
-
-}
-
-checkPermissions();
+Api.ini();

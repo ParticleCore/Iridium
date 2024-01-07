@@ -1,1255 +1,1074 @@
 "use strict";
 
-window.main = function (
-    broadcastId,
-    settings
-) {
+function mainScript(extensionId, broadcastId, SettingId, Names, settings) {
 
-    window.modArgs = function (args) {
+    const Util = {
+        getSingleObjectByKey: function (obj, keys, match) {
 
-        let i;
-        let fps;
-        let list;
-        let keyType;
+            for (let property in obj) {
 
-        if (!window.autoPlayVideo) {
+                if (!obj.hasOwnProperty(property) || obj[property] === null || obj[property] === undefined) {
+                    continue;
+                }
 
-            args.autoplay = "0";
-
-        }
-
-        if (!window.hfrOn &&
-            args.adaptiveFormats
-        ) {
-
-            keyType = args.adaptiveFormats.indexOf(",") > -1 ? "," : "%2C";
-            list = args.adaptiveFormats.split(keyType);
-
-            for (i = 0; i < list.length; i++) {
-                if ((fps = list[i].split(/fps(?:=|%3D)([0-9]{2})/))
-                    && fps[1] > 30
+                if ((keys.constructor.name === "String" ? keys === property : keys.indexOf(property) > -1)
+                    && (!match || obj[property].constructor.name !== "Object" && match(obj[property], obj))
                 ) {
-                    list.splice(i--, 1);
-                }
-            }
-
-            args.adaptiveFormats = list.join(keyType);
-
-        }
-
-        return args;
-
-    };
-
-    window.imageLoader = function (
-        element,
-        url
-    ) {
-
-        if (!window.maxResThumbnail ||
-            !url ||
-            !url.match(/default\.[a-z]+/)
-        ) {
-            return;
-        }
-
-        let src;
-        let thumbnail;
-
-        src = url.replace(/[a-z]+default(\.[a-z]+)/g, "maxresdefault$1");
-        thumbnail = new Image();
-        thumbnail.addEventListener("load", checkHighQualityThumbnail, false);
-        thumbnail.src = src;
-        thumbnail.url = url;
-        thumbnail.element = element;
-
-    };
-
-    window.pbjMod = function (data) {
-
-        if (!data.response ||
-            !data.response.parts ||
-            !data.url.endsWith("pbj=1")
-        ) {
-            return;
-        }
-
-        let i;
-        let config;
-
-        for (i = 0; i < data.response.parts.length; i++) {
-
-            if ("endpoint" in data.response.parts[i]) {
-
-                window.pageModifier(data.response.parts[i]);
-                continue;
-
-            }
-
-            if (!window.autoPlayVideo &&
-                !config &&
-                "player" in data.response.parts[i]
-            ) {
-                if ((config = getSingleObjectByKey(data, "player")) &&
-                    config.args
-                ) {
-                    modArgs(config.args);
-                }
-            }
-
-        }
-
-    };
-
-    window.modifier = function (
-        api,
-        ...args
-    ) {
-
-        window.streams = {};
-        window.streams.adaptiveFormats = parseStreams(args[0].adaptiveFormats);
-        window.streams.formats = parseStreams(args[0].formats);
-        window.streams.player_response = {};
-
-        if (args[0].player_response) {
-            try {
-
-                window.streams.player_response = JSON.parse(args[0].player_response);
-                window.streams.subtitles = getSingleObjectByKey(window.streams.player_response, "captionTracks");
-
-                if (!window.streams.adaptiveFormats || window.streams.adaptiveFormats === "") {
-                    window.streams.adaptiveFormats = getSingleObjectByKey(window.streams.player_response, "adaptiveFormats");
+                    return obj[property];
                 }
 
-                if (!window.streams.formats || window.streams.formats === "") {
-                    window.streams.formats = getSingleObjectByKey(window.streams.player_response, "formats");
-                }
-
-
-            } catch (ignore) {
-            }
-        }
-
-        modArgs(args[0]);
-        api.apply(this, args);
-
-    };
-
-    window.pageModifier = function (data) {
-
-        if (!data) {
-            return;
-        }
-
-        if (window.quickControls &&
-            data.url &&
-            data.url.indexOf("/watch") > -1
-        ) {
-            setQuickControls(getSingleObjectByKey(data, "topLevelButtons"));
-        }
-
-        if (window.iridiumLogo) {
-            setExtensionButton(getSingleObjectByKey(data, "topbarButtons"));
-        }
-
-    };
-
-    window.endpointExists = function (
-        parent,
-        chain
-    ) {
-
-        chain
-            .split(".")
-            .forEach(function (value) {
-
-                if (!parent.hasOwnProperty(value)) {
-                    return false;
-                }
-
-                parent = parent[value];
-
-            });
-
-        return parent;
-
-    };
-
-    window.getObjectByKey = function (
-        obj,
-        keys,
-        match,
-        list,
-        pos
-    ) {
-
-        let i;
-        let hasKey;
-        let results;
-
-        results = [];
-
-        for (let property in obj) {
-
-            if (!obj.hasOwnProperty(property) ||
-                obj[property] === null ||
-                obj[property] === undefined
-            ) {
-                continue;
-            }
-
-            if ((hasKey = keys.constructor.name === "String" ? keys === property : keys.indexOf(property) > -1) &&
-                (!match || typeof obj[property] !== "object" && match(obj[property], obj))
-            ) {
-                results.push({
-                    target: obj,
-                    property: property,
-                    list: list,
-                    pos: pos
-                });
-            } else if (obj[property]) {
-                if (obj[property].constructor === Object) {
-                    results = results.concat(getObjectByKey(obj[property], keys, match, list, pos));
-                } else if (obj[property].constructor === Array) {
-                    for (i = 0; i < obj[property].length; i++) {
-                        results = results.concat(getObjectByKey(obj[property][i], keys, match, obj[property], i));
-                    }
-                }
-            }
-
-        }
-
-        return results;
-
-    };
-
-    let broadcastChannel;
-    let featureList;
-    let iridiumLogoFeature;
-    let quickControlsFeature;
-    let autoPlayVideoFeature;
-    let darkThemeFeature;
-    let maxResThumbnailFeature;
-    let hfrOnFeature;
-
-    function parseStreams(list) {
-
-        if (!list ||
-            !list.split
-        ) {
-            return "";
-        }
-
-        list = list.split(",");
-
-        if (!list.length) {
-            return "";
-        }
-
-        let i;
-        let j;
-        let temp;
-        let stream;
-        let tempList;
-        let contentLength;
-        let processedList;
-
-        processedList = [];
-
-        for (i = 0; i < list.length; i++) {
-
-            processedList.push((stream = {}));
-            tempList = list[i].split("&");
-
-            for (j = 0; j < tempList.length; j++) {
-
-                temp = tempList[j].split("=");
-                stream[temp[0]] = temp.length > 1 ? decodeURIComponent(temp[1]) : null;
-
-            }
-
-            if (stream.contentLength) {
-                continue;
-            }
-
-            if (stream.url &&
-                (contentLength = stream.url.match(/clen=(\d+)/))
-            ) {
-                stream.contentLength = contentLength[1];
-            }
-
-        }
-
-        return processedList;
-
-    }
-
-    function checkHighQualityThumbnail(event) {
-        if (event.target.width > 120) {
-
-            event.target.element.parentElement.style.backgroundImage = `url(${event.target.url})`;
-            event.target.element.style.backgroundImage = `url(${event.target.src})`;
-
-        }
-    }
-
-    function setQuickControls(topLevelButtons) {
-
-        if (!topLevelButtons) {
-            return;
-        }
-
-        let key;
-        let quickControls;
-
-        quickControls = {
-            AUTOPLAY: {
-                injected: false,
-                element: {
-                    toggleButtonRenderer: {
-                        isToggled: window.autoPlayVideo || false,
-                        defaultTooltip: "Auto Play",
-                        defaultIcon: {iconType: "AUTOPLAY"},
-                        style: {styleType: "STYLE_TEXT"},
-                        toggledStyle: {styleType: "STYLE_DEFAULT_ACTIVE"}
-                    }
-                }
-            }/*,
-            SAVE_VIDEO: {
-                injected: false,
-                element: {
-                    buttonRenderer: {
-                        style: "STYLE_DEFAULT",
-                        size: "SIZE_DEFAULT",
-                        isDisabled: false,
-                        icon: {iconType: "SAVE_VIDEO"},
-                        tooltip: "Save"
-                    }
-                }
-            },
-            STREAM_LIST: {
-                injected: false,
-                element: {
-                    buttonRenderer: {
-                        style: "STYLE_DEFAULT",
-                        size: "SIZE_DEFAULT",
-                        isDisabled: false,
-                        icon: {iconType: "STREAM_LIST"},
-                        tooltip: "Streams"
-                    }
-                }
-            }*/
-        };
-
-        topLevelButtons.forEach(function (value) {
-            if (value.hasOwnProperty("toggleButtonRenderer") &&
-                value.toggleButtonRenderer.defaultIcon &&
-                value.toggleButtonRenderer.defaultIcon.iconType &&
-                quickControls.hasOwnProperty(value.toggleButtonRenderer.defaultIcon.iconType)
-            ) {
-                quickControls[value.toggleButtonRenderer.defaultIcon.iconType].injected = true;
-            }
-        });
-
-        for (key in quickControls) {
-            if (!quickControls[key].injected) {
-                topLevelButtons.push(quickControls[key].element);
-            }
-        }
-
-    }
-
-    function setExtensionButton(topBarButtons) {
-
-        if (!topBarButtons) {
-            return;
-        }
-
-        let alreadySet;
-
-        topBarButtons.forEach(function (value) {
-            if (value.hasOwnProperty("topbarMenuButtonRenderer") &&
-                value.topbarMenuButtonRenderer.icon &&
-                value.topbarMenuButtonRenderer.icon.iconType === "IRIDIUM_LOGO"
-            ) {
-                return alreadySet = true;
-            }
-        });
-
-        if (alreadySet) {
-            return;
-        }
-
-        topBarButtons.unshift({
-            topbarMenuButtonRenderer: {
-                icon: {iconType: "IRIDIUM_LOGO"},
-                tooltip: "Iridium settings",
-                style: "STYLE_DEFAULT"
-            }
-        });
-
-    }
-
-    function getSingleObjectByKey(
-        obj,
-        keys,
-        match
-    ) {
-
-        let i;
-        let hasKey;
-        let result;
-
-        for (let property in obj) {
-
-            if (!obj.hasOwnProperty(property) ||
-                obj[property] === null ||
-                obj[property] === undefined
-            ) {
-                continue;
-            }
-
-            if ((hasKey = keys.constructor.name === "String" ? keys === property : keys.indexOf(property) > -1) &&
-                (!match || obj[property].constructor.name !== "Object" && match(obj[property], obj))
-            ) {
-                return obj[property];
-            }
-
-            if (obj[property].constructor.name === "Object") {
-                if ((result = getSingleObjectByKey(obj[property], keys, match))) {
-                    return result;
-                }
-            } else if (obj[property].constructor.name === "Array") {
-                for (i = 0; i < obj[property].length; i++) {
-                    if ((result = getSingleObjectByKey(obj[property][i], keys, match))) {
+                if (obj[property].constructor.name === "Object") {
+                    let result = Util.getSingleObjectByKey(obj[property], keys, match);
+                    if (result) {
                         return result;
                     }
+                } else if (obj[property].constructor.name === "Array") {
+                    for (let i = 0; i < obj[property].length; i++) {
+                        let result = Util.getSingleObjectByKey(obj[property][i], keys, match);
+                        if (result) {
+                            return result;
+                        }
+                    }
                 }
+
             }
 
-        }
+        },
+        getSingleObjectAndParentByKey: function (obj, keys, match) {
 
-    }
+            for (let property in obj) {
 
-    function onMessageListener(event) {
+                if (!obj.hasOwnProperty(property) || obj[property] === null || obj[property] === undefined) {
+                    continue;
+                }
 
-        if (!event.data ||
-            !event.data.payload ||
-            event.data.type !== "setting-update"
-        ) {
-            return;
-        }
+                if ((keys.constructor.name === "String" ? keys === property : keys.indexOf(property) > -1)
+                    && (!match || /*obj[property].constructor.name !== "Object" &&*/ match(obj[property], obj))
+                ) {
+                    return {
+                        parent: obj,
+                        object: obj[property]
+                    };
+                }
 
-        for (let feature of featureList) {
-            if (feature.belongs(event.data.payload)) {
-                break;
-            }
-        }
+                if (obj[property].constructor.name === "Object") {
+                    let result = Util.getSingleObjectAndParentByKey(obj[property], keys, match);
+                    if (result) {
+                        return result;
+                    }
+                } else if (obj[property].constructor.name === "Array") {
+                    for (let i = 0; i < obj[property].length; i++) {
+                        let result = Util.getSingleObjectAndParentByKey(obj[property][i], keys, match);
+                        if (result) {
+                            return result;
+                        }
+                    }
+                }
 
-    }
-
-    function getQualityLabel(
-        label,
-        verticalSize
-    ) {
-
-        let i;
-        let qualityLabelList;
-        let qualitySizeList;
-
-        qualityLabelList = {
-            tiny: 144,
-            light: 144,
-            small: 240,
-            medium: 360,
-            large: 480,
-            hd720: 720,
-            hd1080: 1080,
-            hd1440: 1440,
-            hd2160: 2160,
-            hd2880: 2880,
-            highres: 4320
-        };
-
-        qualitySizeList = [
-            144,
-            240,
-            360,
-            480,
-            720,
-            1080,
-            1440,
-            2160,
-            2880,
-            4320
-        ];
-
-        if (!verticalSize) {
-            verticalSize = qualityLabelList[label];
-        }
-
-        i = qualitySizeList.length - 1;
-
-        while (i--) {
-            if (verticalSize > qualitySizeList[i]) {
-                return verticalSize + "p";
-            }
-        }
-
-    }
-
-    function formatSize(size) {
-
-        if (!size) {
-            return "";
-        }
-
-        let pow;
-        let transform;
-        let sizeLabel;
-
-        pow = 0;
-        transform = size;
-
-        while (transform > 1024) {
-
-            pow++;
-            transform /= 1024;
-
-        }
-
-        sizeLabel = [
-            "B",
-            "KB",
-            "MB",
-            "GB",
-            "TB"
-        ];
-
-        pow = pow >= sizeLabel.length ? sizeLabel.length - 1 : pow;
-
-        return (size / Math.pow(1024, pow))
-            .toFixed(2) + " " + sizeLabel[pow];
-
-    }
-
-    function getBadge(quality) {
-
-        if (quality > 2880) {
-            return "8K";
-        }
-
-        if (quality > 2160) {
-            return "5K";
-        }
-
-        if (quality > 1440) {
-            return "4K";
-        }
-
-        if (quality > 720) {
-            return "HD";
-        }
-
-        return "";
-
-    }
-
-    function buildTemplate(streamList) {
-
-        let i;
-        let element;
-        let template;
-        let videoList;
-        let fileDetail;
-        let saveNodeList;
-
-        streamList.sort(function (
-            previous,
-            next
-        ) {
-            return next.quality - previous.quality || next.contentLength - previous.contentLength;
-        });
-
-        videoList = "";
-        fileDetail = [];
-
-        for (i = 0; i < streamList.length; i++) {
-
-            if (!streamList[i].label) {
-                continue;
             }
 
-            fileDetail.length = 0;
+        },
+    };
 
-            if (streamList[i].codec) {
-                fileDetail.push(streamList[i].codec);
-            }
-
-            if (streamList[i].fileType) {
-                fileDetail.push(streamList[i].fileType);
-            }
-
-            videoList += `
-                <div data-iri-stream-index="${i}" class="ytp-menuitem" style="color: #fff; text-decoration: none;">
-                    <div class="ytp-menuitem-icon"></div>
-                    <div class="ytp-menuitem-label">
-                        <div style="display: flex; justify-content: space-between; white-space: nowrap;">
-                            <span>${streamList[i].label} <sup class="ytp-swatch-color">${streamList[i].badge}</sup></span>
-                        </div>
-                    </div>
-                    <div class="ytp-menuitem-content">
-                        <span>${fileDetail.join('.')} </span>
-                        <span class="ytp-menu-label-secondary">
-                            <span>${streamList[i].size}</span>
-                        </span>
-                    </div>
-                </div>`;
-
-        }
-
-        template = `
-            <div data-iri-panel-target="type" id="iri-video-panel" class="ytp-panel ytp-quality-menu" style="width: 250px;">
-                <div data-iri-panel-target="type" class="ytp-panel-header">
-                     <button data-iri-panel-target="type" class="ytp-button ytp-panel-title">Video</button>
-                </div>
-                <div class="ytp-panel-menu">
-                    ${videoList}
-                </div>
-            </div>`;
-
-        element = new DOMParser()
-            .parseFromString(template, "text/html")
-            .querySelector("#iri-video-panel");
-
-        saveNodeList = element.querySelectorAll("[data-iri-stream-index]");
-
-        saveNodeList.forEach(function (node) {
-            node.addEventListener("click", function (event) {
-                broadcastChannel.postMessage({
-                    type: "save",
-                    payload: streamList[event.currentTarget.dataset.iriStreamIndex]
+    const Api = {
+        onYTPCreated: [
+            function (api) {
+                api.addEventListener("onStateChange", function (state) {
+                    if (settings.videoFocus) {
+                        switch (state) {
+                            case 1:
+                            case 3:
+                                document.documentElement.setAttribute("dim", "");
+                                break;
+                            default:
+                                document.documentElement.removeAttribute("dim");
+                        }
+                    }
                 });
-            }, true);
-        });
+            },
+            function (api) {
+                api.addEventListener("onStateChange", function () {
+                    if (settings.defaultQuality !== "auto" && Api.isValidQuality(settings.defaultQuality)) {
+                        const currentQuality = api?.["getPreferredQuality"]?.();
+                        if (currentQuality === "auto") {
+                            const availableQualityList = api?.["getAvailableQualityLevels"]?.();
+                            if (availableQualityList?.length > 0) {
+                                const qualitySet = Api.getAvailableQuality(settings.defaultQuality, availableQualityList)
+                                api?.["setPlaybackQuality"]?.(qualitySet);
+                                api?.["setPlaybackQualityRange"]?.(qualitySet);
+                            }
+                        }
+                    }
+                });
+            },
+            function (api) {
+                api.addEventListener("onStateChange", function () {
+                    const currentSpeed = api?.["getPlaybackRate"]?.()?.toString();
+                    if (settings.defaultSpeed !== currentSpeed) {
+                        api?.["setPlaybackRate"]?.(Number(settings.defaultSpeed));
+                    }
+                });
+            },
+        ],
+        qualityList: [
+            "highres",
+            "hd2880",
+            "hd2160",
+            "hd1440",
+            "hd1080",
+            "hd720",
+            "large",
+            "medium",
+            "small",
+            "tiny",
+            "auto",
+        ],
+        isValidQuality: quality => Api.qualityList.indexOf(quality) > -1,
+        getAvailableQuality: function (quality, availableList) {
+            if (availableList.indexOf(quality) > -1) {
+                return quality;
+            } else {
+                return availableList[0];
+            }
+        },
+        iniSettingsButton: function (data) {
 
-        return element;
-
-    }
-
-    function createNonDashPanel() {
-
-        if (!window.streams.formats) {
-            return null;
-        }
-
-        let i;
-        let size;
-        let codec;
-        let label;
-        let title;
-        let typeInfo;
-        let streamList;
-
-        streamList = [];
-
-        for (i = 0; i < window.streams.formats.length; i++) {
-
-            label = getQualityLabel(window.streams.formats[i].quality);
-            typeInfo = window.streams.formats[i].mimeType.split(/[\/;]/);
-            codec = typeInfo.length > 2 ? typeInfo[2].split(/codecs="([a-z0-9]+)/) : "";
-            size = window.streams.formats[i].url.match(/clen=([0-9]+)/);
-            title = window.streams.player_response.videoDetails.title;
-
-            streamList.push({
-                author: window.streams.player_response.videoDetails.author,
-                title: title,
-                badge: "",
-                codec: codec.length > 1 ? codec[1] : "",
-                fileType: typeInfo.length > 0 ? typeInfo[1] : "",
-                label: label,
-                signature: window.streams.formats[i].s,
-                size: size && size.length > 1 ? formatSize(+size[1]) : "",
-                url: window.streams.formats[i].url
-            });
-
-        }
-
-        return buildTemplate(streamList);
-
-    }
-
-    function createDashAudioPanel() {
-
-        if (!window.streams.adaptiveFormats) {
-            return null;
-        }
-
-        let i;
-        let codec;
-        let label;
-        let title;
-        let typeInfo;
-        let streamList;
-
-        streamList = [];
-
-        for (i = 0; i < window.streams.adaptiveFormats.length; i++) {
-
-            if (!window.streams.adaptiveFormats[i].mimeType.startsWith("audio")) {
-                continue;
+            if (!settings.extensionButton) {
+                return
             }
 
-            label = Math.round(window.streams.adaptiveFormats[i].bitrate / 1000) + "kbps";
-            typeInfo = window.streams.adaptiveFormats[i].mimeType.split(/[\/;]/);
-            codec = typeInfo.length > 2 ? typeInfo[2].split(/codecs="([a-z0-9]+)/) : "";
-            title = window.streams.player_response.videoDetails.title;
+            const topBarButtons = Util.getSingleObjectByKey(data, "topbarButtons");
 
-            streamList.push({
-                author: window.streams.player_response.videoDetails.author,
-                title: title,
-                badge: "",
-                quality: window.streams.adaptiveFormats[i].bitrate,
-                codec: codec.length > 1 ? codec[1] : "",
-                fileType: typeInfo.length > 0 ? typeInfo[1] : "",
-                type: typeInfo.length > -1 ? typeInfo[0] : "",
-                label: label,
-                clen: +window.streams.adaptiveFormats[i].contentLength,
-                signature: window.streams.adaptiveFormats[i].s,
-                size: formatSize(+window.streams.adaptiveFormats[i].contentLength),
-                url: window.streams.adaptiveFormats[i].url
-            });
-
-        }
-
-        return buildTemplate(streamList);
-
-    }
-
-    function createDashVideoPanel() {
-
-        if (!window.streams.adaptiveFormats) {
-            return null;
-        }
-
-        let i;
-        let codec;
-        let label;
-        let title;
-        let quality;
-        let typeInfo;
-        let streamList;
-
-        streamList = [];
-
-        for (i = 0; i < window.streams.adaptiveFormats.length; i++) {
-
-            if (!window.streams.adaptiveFormats[i].mimeType.startsWith("video")) {
-                continue;
+            if (!topBarButtons) {
+                return;
             }
 
-            label = window.streams.adaptiveFormats[i].qualityLabel.replace(/\+/, " ");
-            typeInfo = window.streams.adaptiveFormats[i].mimeType.split(/[\/;]/);
-            codec = typeInfo.length > 2 ? typeInfo[2].split(/codecs="([a-z0-9]+)/) : "";
-            quality = window.parseInt(label);
-            title = window.streams.player_response.videoDetails.title;
+            let alreadySet;
 
-            streamList.push({
-                author: window.streams.player_response.videoDetails.author,
-                title: title,
-                badge: getBadge(quality),
-                codec: codec.length > 1 ? codec[1] : "",
-                fileType: typeInfo.length > 0 ? typeInfo[1] : "",
-                quality: quality || 0,
-                label: label,
-                fps: window.streams.adaptiveFormats[i].fps,
-                clen: +window.streams.adaptiveFormats[i].contentLength,
-                signature: window.streams.adaptiveFormats[i].s,
-                size: formatSize(+window.streams.adaptiveFormats[i].contentLength),
-                url: window.streams.adaptiveFormats[i].url
+            topBarButtons.forEach(function (value) {
+                if (value.hasOwnProperty("topbarMenuButtonRenderer")
+                    && value.topbarMenuButtonRenderer.icon
+                    && value.topbarMenuButtonRenderer.icon.iconType === "IRIDIUM_LOGO"
+                ) {
+                    return alreadySet = true;
+                }
             });
 
-        }
+            if (alreadySet) {
+                return;
+            }
 
-        return buildTemplate(streamList);
-
-    }
-
-    function createSubtitlePanel() {
-
-        if (!window.streams.subtitles) {
-            return null;
-        }
-
-        let i;
-        let label;
-        let title;
-        let streamList;
-
-        streamList = [];
-
-        for (i = 0; i < window.streams.subtitles.length; i++) {
-
-            label = window.streams.subtitles[i].name && window.streams.subtitles[i].name.simpleText || "";
-            title = window.streams.player_response.videoDetails.title;
-
-            streamList.push({
-                title: title,
-                badge: "",
-                codec: "",
-                fileType: "xml",
-                label: label,
-                size: "",
-                url: window.streams.subtitles[i].baseUrl
+            topBarButtons.unshift({
+                topbarMenuButtonRenderer: {
+                    icon: {iconType: "IRIDIUM_LOGO"},
+                    tooltip: "Iridium",
+                    style: "IRIDIUM_OPTIONS",
+                    isDisabled: false,
+                }
             });
 
-        }
+        },
+        iniLogoShortcut: function (data) {
 
-        return buildTemplate(streamList);
+            if (settings.logoSubscriptions) {
 
-    }
+                const topbarLogoRenderer = Util.getSingleObjectByKey(data, "topbarLogoRenderer");
+                const endpoint = topbarLogoRenderer?.["endpoint"];
 
-    function createTypePanel() {
+                if (endpoint?.["browseEndpoint"]?.["browseId"]) {
+                    endpoint["browseEndpoint"]["browseId"] = "FEsubscriptions";
+                }
 
-        let i;
-        let type;
-        let template;
-        let typeAttribute;
-        let typeList;
-        let htmlTypeList;
+                if (endpoint?.["commandMetadata"]?.["webCommandMetadata"]?.["url"]) {
+                    endpoint["commandMetadata"]["webCommandMetadata"]["url"] = "/feed/subscriptions";
+                }
 
-        typeList = {
-            Audio: 0,
-            Video: 0,
-            "Audio + Video": window.streams.formats ? window.streams.formats.length : 0,
-            Subtitles: window.streams.subtitles ? window.streams.subtitles.length : 0
-        };
+            }
 
-        if (window.streams.adaptiveFormats) {
-            for (i = 0; i < window.streams.adaptiveFormats.length; i++) {
-                if (window.streams.adaptiveFormats[i].mimeType.startsWith("video")) {
-                    typeList.Video++;
-                } else {
-                    typeList.Audio++;
+        },
+        isAdAllowed: function (isSubscribed, enabled) {
+
+            // when all ads are opted out
+            if (settings.adOptOutAll) {
+                // ads will be allowed only if:
+                // the exception for videos from subscribed channels is enabled
+                // and the video belongs to a subscribed channel
+                return settings.adSubscribed && isSubscribed;
+            }
+
+            // ads will be allowed if:
+            // the exception for videos from subscribed channels is enabled
+            // the video belongs to a subscribed channel
+            // and the option is enabled
+            if (settings.adSubscribed) {
+                return isSubscribed && enabled;
+            }
+
+            // otherwise the setting itself prevails
+            return enabled;
+
+        },
+        iniPageAdManager: function (data) {
+
+            const subscribeButtonRenderer = Util.getSingleObjectByKey(data, "subscribeButtonRenderer");
+            const isSubscribed = subscribeButtonRenderer?.["subscribed"] === true;
+            const isAdTaggedProductsAllowed = Api.isAdAllowed(isSubscribed, settings.adTaggedProducts);
+
+            if (!isAdTaggedProductsAllowed) {
+
+                // player args
+                const playerOverlayRenderer = Util.getSingleObjectByKey(data, "playerOverlayRenderer");
+
+                // video tagged products
+                if (playerOverlayRenderer?.["productsInVideoOverlayRenderer"]) {
+                    delete playerOverlayRenderer["productsInVideoOverlayRenderer"];
+                }
+
+            }
+
+            const isAdMastheadAllowed = Api.isAdAllowed(isSubscribed, settings.adMasthead);
+            const isAdHomeFeedAllowed = Api.isAdAllowed(isSubscribed, settings.adHomeFeed);
+
+            if (!isAdMastheadAllowed || !isAdHomeFeedAllowed) {
+
+                // home page ads
+                const richGridRenderer = Util.getSingleObjectByKey(data, "richGridRenderer");
+
+                if (!isAdMastheadAllowed) {
+                    // home page masthead banner
+                    if (richGridRenderer?.["masthead"]?.["bannerPromoRenderer"] || richGridRenderer?.["masthead"]?.["adSlotRenderer"]) {
+                        delete richGridRenderer["masthead"];
+                    }
+                }
+
+                if (!isAdHomeFeedAllowed) {
+
+                    const richGridRendererContents = richGridRenderer?.["contents"];
+
+                    // home page list ads
+                    if (richGridRendererContents?.constructor === Array && richGridRendererContents.length > 0) {
+                        for (let i = richGridRendererContents.length - 1; i >= 0; i--) {
+                            const itemRenderer = richGridRendererContents[i];
+                            if (itemRenderer?.["richItemRenderer"]?.["content"]?.["adSlotRenderer"]) {
+                                richGridRendererContents.splice(i, 1);
+                            }
+                        }
+                    }
+
+                }
+
+            }
+
+            const isAdSearchFeedAllowed = Api.isAdAllowed(isSubscribed, settings.adSearchFeed);
+
+            if (!isAdSearchFeedAllowed) {
+
+                // search results ads
+                const sectionListRenderer = Util.getSingleObjectByKey(data, "sectionListRenderer");
+                const sectionListRendererContents = sectionListRenderer?.["contents"];
+
+                if (sectionListRendererContents?.constructor === Array && sectionListRendererContents.length > 0) {
+                    for (let i = sectionListRendererContents.length - 1; i >= 0; i--) {
+
+                        const itemRenderer = sectionListRendererContents[i];
+                        const itemRendererContents = itemRenderer?.["itemSectionRenderer"]?.["contents"];
+
+                        if (itemRendererContents?.constructor === Array && itemRendererContents.length > 0) {
+
+                            for (let j = itemRendererContents.length - 1; j >= 0; j--) {
+                                const subItemRender = itemRendererContents[j];
+                                if (subItemRender?.["adSlotRenderer"] || subItemRender?.["searchPyvRenderer"]) {
+                                    itemRendererContents.splice(j, 1);
+                                }
+                            }
+
+                            if (itemRendererContents.length === 0) {
+                                sectionListRendererContents.splice(i, 1);
+                            }
+
+                        }
+
+                    }
+                }
+
+            }
+
+            const isAdVideoFeedAllowed = Api.isAdAllowed(isSubscribed, settings.adVideoFeed);
+
+            if (!isAdVideoFeedAllowed) {
+
+                // video page sidebar ads
+                const secondaryResults = Util.getSingleObjectByKey(data, "secondaryResults")?.["secondaryResults"];
+                const results = secondaryResults?.["results"];
+
+                if (results?.constructor === Array && results.length > 0) {
+                    for (let i = results.length - 1; i >= 0; i--) {
+
+                        const itemRenderer = results[i];
+                        const adSlotRenderer = itemRenderer["adSlotRenderer"];
+
+                        if (adSlotRenderer) {
+                            results.splice(i, 1);
+                        } else {
+
+                            const itemRendererContents = itemRenderer?.["itemSectionRenderer"]?.["contents"];
+
+                            if (itemRendererContents?.constructor === Array && itemRendererContents.length > 0) {
+
+                                for (let j = itemRendererContents.length - 1; j >= 0; j--) {
+                                    const subItemRender = itemRendererContents[j];
+                                    if (subItemRender?.["adSlotRenderer"]) {
+                                        itemRendererContents.splice(j, 1);
+                                    }
+                                }
+
+                                if (itemRendererContents.length === 0) {
+                                    results.splice(i, 1);
+                                }
+
+                            }
+
+                        }
+
+                    }
+                }
+
+            }
+
+        },
+        iniPlayerConfig: function (original) {
+
+            const data = structuredClone(original?.["0"]);
+
+            original["0"] = data;
+
+            const subscribeButtonRenderer = Util.getSingleObjectByKey(data, "subscribeButtonRenderer");
+            const isSubscribed = subscribeButtonRenderer?.["subscribed"] === true;
+            const isInVideoAdsAllowed = Api.isAdAllowed(isSubscribed, settings.adInVideo);
+
+            if (!isInVideoAdsAllowed) {
+
+                const adPlacements = Util.getSingleObjectByKey(data, "adPlacements");
+                const adSlots = Util.getSingleObjectByKey(data, "adSlots");
+                const playerAds = Util.getSingleObjectByKey(data, "playerAds");
+
+                if (adPlacements?.length) {
+                    adPlacements.length = 0;
+                }
+
+                if (adSlots?.length) {
+                    adSlots.length = 0;
+                }
+
+                if (playerAds?.length) {
+                    playerAds.length = 0;
+                }
+
+            }
+
+            if (!settings.loudness) {
+
+                const audioConfig = Util.getSingleObjectByKey(data, "audioConfig");
+                const adaptiveFormats = Util.getSingleObjectByKey(data, "adaptiveFormats");
+
+                if (audioConfig) {
+                    audioConfig["loudnessDb"] = 0;
+                }
+
+                if (adaptiveFormats) {
+                    if (adaptiveFormats.constructor === Array && adaptiveFormats.length > 0) {
+                        for (let i = 0; i < adaptiveFormats.length; i++) {
+                            if (adaptiveFormats[i]?.["loudnessDb"]) {
+                                adaptiveFormats[i]["loudnessDb"] = 0;
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            if (!settings.hfrAllowed) {
+
+                const adaptiveFormats = Util.getSingleObjectByKey(data, "adaptiveFormats");
+
+                if (adaptiveFormats) {
+                    if (adaptiveFormats.constructor === Array && adaptiveFormats.length > 0) {
+                        for (let i = adaptiveFormats.length - 1; i >= 0; i--) {
+                            if (adaptiveFormats[i]?.["fps"] > 30) {
+                                adaptiveFormats.splice(i, 1);
+                            }
+                        }
+                    }
+                }
+
+            }
+
+        },
+        iniExcludeShorts: function (data) {
+
+            if (!settings.searchShorts) {
+
+                // search results shorts
+                const itemSectionRenderer = Util.getSingleObjectByKey(arguments, "itemSectionRenderer");
+                const itemSectionRendererContents = itemSectionRenderer?.["contents"];
+
+                if (itemSectionRendererContents) {
+                    for (let i = itemSectionRendererContents.length - 1; i >= 0; i--) {
+                        if (itemSectionRendererContents[i]?.["reelShelfRenderer"] || itemSectionRendererContents[i]?.["videoRenderer"]?.["navigationEndpoint"]?.["reelWatchEndpoint"]) {
+                            itemSectionRendererContents.splice(i, 1);
+                        } else if (itemSectionRendererContents[i]?.["shelfRenderer"]) {
+
+                            const shelfRendererItems = itemSectionRendererContents[i]?.["shelfRenderer"]?.["content"]?.["verticalListRenderer"]?.["items"];
+
+                            if (shelfRendererItems?.constructor === Array && shelfRendererItems.length > 0) {
+
+                                for (let j = shelfRendererItems.length - 1; j >= 0; j--) {
+                                    const reelWatchEndpoint = shelfRendererItems[j]?.["videoRenderer"]?.["navigationEndpoint"]?.["reelWatchEndpoint"];
+                                    if (reelWatchEndpoint) {
+                                        shelfRendererItems.splice(j, 1);
+                                    }
+                                }
+
+                                if (itemSectionRendererContents.length === 0) {
+                                    itemSectionRendererContents.splice(i, 1);
+                                }
+
+                            }
+
+                        }
+                    }
+                }
+
+            }
+
+            if ((!settings.homeShorts && window.location.pathname === "/") || (!settings.subscriptionsShorts && window.location.pathname === "/feed/subscriptions")) {
+
+                // home page and subscriptions shorts
+                const richGridRenderer = Util.getSingleObjectByKey(arguments, "richGridRenderer");
+                const richGridRendererContents = richGridRenderer?.["contents"];
+
+                if (richGridRendererContents?.constructor === Array && richGridRendererContents.length > 0) {
+                    for (let i = richGridRendererContents.length - 1; i >= 0; i--) {
+
+                        const richShelfRendererContents = richGridRendererContents[i]?.["richSectionRenderer"]?.["content"]?.["richShelfRenderer"]?.["contents"];
+
+                        if (richShelfRendererContents?.constructor === Array && richShelfRendererContents.length > 0) {
+
+                            for (let j = richShelfRendererContents.length - 1; j >= 0; j--) {
+                                const reelItemRenderer = richShelfRendererContents[j]?.["richItemRenderer"]?.["content"]?.["reelItemRenderer"];
+                                if (reelItemRenderer) {
+                                    richShelfRendererContents.splice(j, 1);
+                                }
+                            }
+
+                            if (richShelfRendererContents.length === 0) {
+                                richGridRendererContents.splice(i, 1);
+                            }
+
+                        }
+
+                    }
+                }
+
+            }
+
+        },
+        iniInfoCards: function (data) {
+            if (!settings.infoCards) {
+                const cards = Util.getSingleObjectAndParentByKey(arguments, "cards", (cards, _) => !!cards?.["cardCollectionRenderer"]);
+                if (cards?.parent?.["cards"]) {
+                    delete cards.parent["cards"];
                 }
             }
-        }
+        },
+        iniScrollVolume: function (event) {
 
-        htmlTypeList = "";
+            const api = document.getElementById("movie_player");
+            const playerState = api?.["getPlayerState"]?.() || -1;
+            const ivDrawer = document.querySelector(".iv-drawer");
+            const playerSettings = document.querySelector(".ytp-settings-menu");
+            const fullscreenPlaylist = document.querySelector(".ytp-playlist-menu");
+            const canScroll = (!fullscreenPlaylist || !fullscreenPlaylist.contains(event.target))
+                && (!ivDrawer || !ivDrawer.contains(event.target))
+                && (!playerSettings || !playerSettings.contains(event.target));
 
-        for (type in typeList) {
+            if (api && api.contains(event.target) && playerState > 0 && playerState < 5 && canScroll) {
 
-            if (!typeList[type]) {
-                continue;
-            }
+                event.preventDefault();
 
-            typeAttribute = `data-iri-panel-target="${type.toLowerCase()}"`;
+                const direction = event.deltaY;
+                const oldVolume = api?.["getVolume"]?.() || 0;
+                let newVolume = oldVolume - (Math.sign(direction) * 5);
 
-            htmlTypeList += `
-                <div ${typeAttribute} class="ytp-menuitem" aria-haspopup="true" style="color: #fff; text-decoration: none;">
-                    <div class="ytp-menuitem-icon"></div>
-                    <div ${typeAttribute} class="ytp-menuitem-label">
-                        <div style="pointer-events: none; display: flex; justify-content: space-between; white-space: nowrap;">
-                            <span>${type}</span>
-                        </div>
-                    </div>
-                    <div ${typeAttribute} class="ytp-menuitem-content">
-                        <span class="ytp-menu-label-secondary" style="pointer-events: none;">
-                            <span>${typeList[type]}</span>
-                        </span>
-                    </div>
-                </div>`;
+                if (newVolume < 0) {
+                    newVolume = 0;
+                } else if (newVolume > 100) {
+                    newVolume = 100;
+                }
 
-        }
+                if (newVolume > oldVolume && api?.["isMuted"]?.() === true) {
+                    api?.["unMute"]?.();
+                }
 
-        template = `
-            <div id="iri-type-panel" class="ytp-panel" style="width: 250px;">
-                <div class="ytp-panel-menu">${htmlTypeList}</div>
-            </div>`;
+                api?.["setVolume"]?.(newVolume);
 
-        return new DOMParser()
-            .parseFromString(template, "text/html")
-            .querySelector("#iri-type-panel");
+                let levelText = document.getElementById("iridium-scroll-volume-level");
 
-    }
+                if (!levelText) {
+                    levelText = document.createElement("div");
+                    levelText.id = "iridium-scroll-volume-level";
+                }
 
-    function createStreamListMenu() {
+                levelText.textContent = `${newVolume}%`;
 
-        let container;
+                let levelContainer = document.getElementById("iridium-scroll-volume-level-container");
 
-        container = document.createElement("div");
-        container.id = "iri-stream-list";
-        container.classList.add("ytp-popup", "ytp-settings-menu");
+                if (!levelContainer) {
+                    levelContainer = document.createElement("div");
+                    levelContainer.id = "iridium-scroll-volume-level-container";
+                    levelContainer.appendChild(levelText);
+                    api.prepend(levelContainer);
+                } else {
+                    levelContainer.style.display = "";
+                }
 
-        return container;
+                clearTimeout(levelContainer.timeoutId);
 
-    }
-
-    function updateContainerSize(
-        container,
-        element
-    ) {
-        if (element) {
-
-            element.style.height = container.style.height = (element.clientHeight > 300 ? 300 : element.clientHeight) + "px";
-            element.style.width = container.style.width = (element.clientWidth < 250 ? 250 : element.clientWidth) + "px";
-
-        }
-    }
-
-    function switchPanel(
-        reverse,
-        container,
-        previousPanel,
-        nextPanel
-    ) {
-
-        let element;
-        let firstClass;
-        let secondClass;
-
-        firstClass = reverse ? "ytp-panel-animate-back" : "ytp-panel-animate-forward";
-        secondClass = reverse ? "ytp-panel-animate-forward" : "ytp-panel-animate-back";
-
-        if (nextPanel) {
-
-            nextPanel.classList.add(firstClass);
-            container.appendChild(nextPanel);
-            element = nextPanel;
-
-        }
-
-        container.classList.add("ytp-popup-animating");
-
-        updateContainerSize(container, element);
-
-        if (previousPanel) {
-            previousPanel.classList.add(secondClass);
-        }
-
-        if (nextPanel) {
-            nextPanel.classList.remove(firstClass);
-        }
-
-        container.addEventListener("transitionend", function () {
-
-            container.classList.remove("ytp-popup-animating");
-
-            if (previousPanel) {
-
-                previousPanel.classList.remove(secondClass);
-                previousPanel.remove();
+                levelContainer.timeoutId = setTimeout(() => {
+                    levelContainer.style.display = "none";
+                }, 1000);
 
             }
 
-        }, {once: true});
+        },
+        checkPlayerTools: function () {
 
-    }
+            const titleSection = document.querySelector("#below ytd-watch-metadata #title");
 
-    function toggleStreamListMenu(
-        posX,
-        posY
-    ) {
+            if (!titleSection) {
+                return null;
+            }
 
-        let streamListContainer;
-        let typePanel;
-        let dashVideoPanel;
-        let dashAudioPanel;
-        let nonDashAudioPanel;
-        let subtitlePanel;
-        let secondPanel;
-        let clickListener;
-        let resizeListener;
+            let playerTools = document.getElementById("iridium-player-tools");
 
-        if ((streamListContainer = document.getElementById("iri-stream-list"))) {
-            return streamListContainer.remove();
-        }
+            if (!playerTools) {
+                playerTools = document.createElement("div");
+                playerTools.id = "iridium-player-tools";
+                titleSection.appendChild(playerTools);
+                titleSection.style.position = "relative";
+            } else {
+                playerTools.replaceChildren();
+            }
 
-        typePanel = createTypePanel();
-        nonDashAudioPanel = createNonDashPanel();
-        dashAudioPanel = createDashAudioPanel();
-        dashVideoPanel = createDashVideoPanel();
-        subtitlePanel = createSubtitlePanel();
-        streamListContainer = createStreamListMenu();
-        streamListContainer.appendChild(typePanel);
+            return playerTools;
 
-        clickListener = function (event) {
+        },
+        checkScreenshotTool: function (playerTools) {
 
-            if (streamListContainer !== event.target &&
-                !streamListContainer.contains(event.target)
-            ) {
+            if (!settings.videoScreenshot) {
+                document.getElementById("iridium-screenshot")?.remove();
+            } else {
 
-                streamListContainer.remove();
-                document.documentElement.removeEventListener("click", clickListener, false);
+                let screenshotButton = document.getElementById("iridium-screenshot");
+
+                if (!screenshotButton) {
+
+                    screenshotButton = document.createElement("div");
+                    screenshotButton.id = "iridium-screenshot";
+                    screenshotButton.title = "Screenshot";
+                    screenshotButton.innerHTML =
+                        `<svg viewBox="0 -960 960 960" height="24" width="24">
+                            <path d="M620-332.308h127.692V-460h-35.384v92.308H620v35.384ZM212.308-580h35.384v-92.308H340v-35.384H212.308V-580ZM360-160v-80H184.615Q157-240 138.5-258.5 120-277 120-304.615v-430.77Q120-763 138.5-781.5 157-800 184.615-800h590.77Q803-800 821.5-781.5 840-763 840-735.385v430.77Q840-277 821.5-258.5 803-240 775.385-240H600v80H360ZM184.615-280h590.77q9.23 0 16.923-7.692Q800-295.385 800-304.615v-430.77q0-9.23-7.692-16.923Q784.615-760 775.385-760h-590.77q-9.23 0-16.923 7.692Q160-744.615 160-735.385v430.77q0 9.23 7.692 16.923Q175.385-280 184.615-280ZM160-280v-480 480Z"/>
+                        </svg>`;
+
+                    if (!playerTools) {
+                        playerTools = Api.checkPlayerTools();
+                    }
+
+                    playerTools?.appendChild(screenshotButton);
+
+                }
+
+                if (screenshotButton) {
+
+                    screenshotButton.onclick = function () {
+
+                        const video = document.querySelector("video");
+
+                        if (!video || !video.src) {
+                            return;
+                        }
+
+                        const canvas = document.createElement("canvas");
+                        const context = canvas.getContext("2d");
+                        const aspectRatio = video.videoWidth / video.videoHeight;
+                        const canvasWidth = video.videoWidth;
+                        const canvasHeight = parseInt(`${canvasWidth / aspectRatio}`, 10);
+
+                        canvas.width = canvasWidth;
+                        canvas.height = canvasHeight;
+                        context.drawImage(video, 0, 0, canvasWidth, canvasHeight);
+                        canvas.toBlob(function (blob) {
+                            window.open(URL.createObjectURL(blob));
+                        });
+
+                    };
+
+                }
+
+            }
+
+        },
+        checkThumbnailTool: function (playerTools) {
+
+            if (!settings.videoThumbnail) {
+                document.getElementById("iridium-thumbnail")?.remove();
+            } else {
+
+                let thumbnailButton = document.getElementById("iridium-thumbnail");
+
+                if (!thumbnailButton) {
+
+                    thumbnailButton = document.createElement("div");
+                    thumbnailButton.id = "iridium-thumbnail";
+                    thumbnailButton.title = "Thumbnail";
+                    thumbnailButton.innerHTML =
+                        `<svg viewBox="0 -960 960 960" height="24" width="24">
+                            <path d="M224.615-160Q197-160 178.5-178.5 160-197 160-224.615v-510.77Q160-763 178.5-781.5 197-800 224.615-800h510.77Q763-800 781.5-781.5 800-763 800-735.385v510.77Q800-197 781.5-178.5 763-160 735.385-160h-510.77Zm0-40h510.77q9.23 0 16.923-7.692Q760-215.385 760-224.615v-510.77q0-9.23-7.692-16.923Q744.615-760 735.385-760h-510.77q-9.23 0-16.923 7.692Q200-744.615 200-735.385v510.77q0 9.23 7.692 16.923Q215.385-200 224.615-200ZM200-200v-560 560Zm132.307-100h301.539q9.693 0 14.154-8.692 4.462-8.693-1.23-17.154L566-434.385q-5.231-6.461-12.923-6.461t-12.923 6.461l-91.692 115.923-57.077-69q-5.231-5.692-12.539-5.692t-12.538 6.461l-46.154 60.847q-6.462 8.461-2 17.154Q322.615-300 332.307-300ZM340-580q16.539 0 28.269-11.731Q380-603.461 380-620q0-16.539-11.731-28.269Q356.539-660 340-660q-16.539 0-28.269 11.731Q300-636.539 300-620q0 16.539 11.731 28.269Q323.461-580 340-580Z"/>
+                        </svg>`;
+
+                    if (!playerTools) {
+                        playerTools = Api.checkPlayerTools();
+                    }
+
+                    playerTools?.appendChild(thumbnailButton);
+
+                }
+
+                if (thumbnailButton) {
+
+                    thumbnailButton.onclick = function () {
+
+                        const playerResponse = document.querySelector("ytd-app")?.["data"]?.["playerResponse"];
+                        const thumbnails = Util.getSingleObjectByKey(playerResponse, "thumbnails");
+
+                        if (thumbnails) {
+
+                            let maxRes = null;
+
+                            for (let thumbnailsKey in thumbnails) {
+                                const thumbnail = thumbnails[thumbnailsKey];
+                                if (maxRes === null || thumbnail?.["width"] > maxRes?.["width"]) {
+                                    maxRes = thumbnail;
+                                }
+                            }
+
+                            if (maxRes?.["url"]) {
+                                window.open(maxRes["url"]);
+                            }
+
+                        }
+
+                    };
+
+                }
+
+            }
+
+        },
+        checkMonetizationInfoTool: function (playerTools) {
+
+            if (!settings.monetizationInfo) {
+                document.getElementById("iridium-monetization")?.remove();
+            } else {
+
+                let monetizationButton = document.getElementById("iridium-monetization");
+
+                if (!monetizationButton) {
+
+                    monetizationButton = document.createElement("div");
+                    monetizationButton.id = "iridium-monetization";
+                    monetizationButton.title = "Monetization state";
+                    monetizationButton.innerHTML =
+                        `<svg viewBox="0 -960 960 960" height="24" width="24">
+                            <path d="M480.134-120q-74.673 0-140.41-28.339-65.737-28.34-114.365-76.922-48.627-48.582-76.993-114.257Q120-405.194 120-479.866q0-74.673 28.339-140.41 28.34-65.737 76.922-114.365 48.582-48.627 114.257-76.993Q405.194-840 479.866-840q74.673 0 140.41 28.339 65.737 28.34 114.365 76.922 48.627 48.582 76.993 114.257Q840-554.806 840-480.134q0 74.673-28.339 140.41-28.34 65.737-76.922 114.365-48.582 48.627-114.257 76.993Q554.806-120 480.134-120ZM480-160q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Zm-1 264.615q7.846 0 13.731-5.884 5.884-5.885 5.884-13.731v-27.308q43.077-3.615 82.539-30.923 39.461-27.307 39.461-84.769 0-42-25.538-71.615-25.538-29.616-97.538-55.616-66.154-23.077-84.539-39.615-18.385-16.539-18.385-47.154 0-30.615 23.885-51t63.5-20.385q24.615 0 43.077 9.693 18.461 9.692 31.538 25.538 4.616 5.846 11.347 8.423 6.73 2.577 12.928-.115 8.451-3.231 11.55-11.039 3.099-7.807-1.825-14.423-16-22.231-39.884-36.307-23.885-14.077-50.116-16.077V-725q0-7.846-5.884-13.731-5.885-5.884-13.731-5.884t-13.731 5.884q-5.884 5.885-5.884 13.731v27.308q-52.308 8.692-79.154 39-26.846 30.307-26.846 66.692 0 43.154 27.115 69.077Q409.615-497 474-473.692q64.538 23.769 86.731 42.923 22.192 19.154 22.192 52.769 0 42.231-30.808 60.808-30.807 18.577-66.115 18.577-31 0-56.038-15.962-25.039-15.962-42.116-44.808-4.154-7.077-11.769-9.384-7.615-2.308-14.365.465-7.27 2.774-10.645 10.539t.318 14.611q17.538 33.231 44.538 52.039 27 18.807 63.462 26.807V-235q0 7.846 5.884 13.731 5.885 5.884 13.731 5.884Z"/>
+                        </svg>
+                        <div id="iridium-monetization-count"/>`;
+
+                    if (!playerTools) {
+                        playerTools = Api.checkPlayerTools();
+                    }
+
+                    playerTools?.appendChild(monetizationButton);
+
+                }
+
+                if (monetizationButton) {
+
+                    const adCount = document.querySelector("ytd-page-manager")?.["getCurrentData"]?.()?.["playerResponse"]?.["adPlacements"]?.length || 0;
+                    const countInfo = document.getElementById("iridium-monetization-count");
+
+                    if (adCount > 0) {
+                        monetizationButton.classList.add("monetized");
+                        monetizationButton.title = "Monetized";
+                        if (countInfo) {
+                            countInfo.textContent = adCount;
+                        }
+                    } else {
+                        monetizationButton.classList.remove("monetized");
+                        monetizationButton.title = "Not monetized";
+                        if (countInfo) {
+                            countInfo.textContent = "";
+                        }
+                    }
+
+                }
+
+            }
+
+        },
+        checkPlayerToolsSpacing: function (playerTools) {
+
+            if (!playerTools) {
+
+                playerTools = document.getElementById("iridium-player-tools");
+
+                if (!playerTools || playerTools.childElementCount === 0) {
+                    playerTools?.remove();
+                    return;
+                }
+
+            }
+
+            const titleSection = document.querySelector("#below ytd-watch-metadata #title");
+
+            if (titleSection) {
+                titleSection.style.paddingRight = (playerTools.offsetWidth || 0) + "px";
+            }
+
+        },
+        checkTools: function () {
+
+            if (!settings.videoScreenshot && !settings.videoThumbnail && !settings.monetizationInfo) {
+                document.getElementById("iridium-player-tools")?.remove();
                 return;
-
             }
 
-            switch (event.target.dataset.iriPanelTarget) {
+            const playerTools = Api.checkPlayerTools();
 
-                case "type":
-                    switchPanel(true, streamListContainer, secondPanel, typePanel);
-                    break;
+            Api.checkScreenshotTool(playerTools);
+            Api.checkThumbnailTool(playerTools);
+            Api.checkMonetizationInfoTool(playerTools);
+            Api.checkPlayerToolsSpacing(playerTools);
 
-                case "audio":
-                    switchPanel(false, streamListContainer, typePanel, (secondPanel = dashAudioPanel));
-                    break;
+        },
+        onPageChanges: function (_) {
+            Api.checkTools();
+        },
+    };
 
-                case "video":
-                    switchPanel(false, streamListContainer, typePanel, (secondPanel = dashVideoPanel));
-                    break;
+    const Feature = {
+        [SettingId.extensionButton]: function (value) {
+            if (settings.extensionButton !== value) {
+                settings.extensionButton = value;
+            }
+        },
+        [SettingId.adOptOutAll]: function (value) {
+            if (settings.adOptOutAll !== value) {
+                settings.adOptOutAll = value;
+            }
+        },
+        [SettingId.adSubscribed]: function (value) {
+            if (settings.adSubscribed !== value) {
+                settings.adSubscribed = value;
+            }
+        },
+        [SettingId.adVideoFeed]: function (value) {
+            if (settings.adVideoFeed !== value) {
+                settings.adVideoFeed = value;
+            }
+        },
+        [SettingId.adInVideo]: function (value) {
+            if (settings.adInVideo !== value) {
+                settings.adInVideo = value;
+            }
+        },
+        [SettingId.adTaggedProducts]: function (value) {
+            if (settings.adTaggedProducts !== value) {
+                settings.adTaggedProducts = value;
+            }
+        },
+        [SettingId.adMasthead]: function (value) {
+            if (settings.adMasthead !== value) {
+                settings.adOptOutAll = value;
+            }
+        },
+        [SettingId.adHomeFeed]: function (value) {
+            if (settings.adHomeFeed !== value) {
+                settings.adHomeFeed = value;
+            }
+        },
+        [SettingId.adSearchFeed]: function (value) {
+            if (settings.adSearchFeed !== value) {
+                settings.adSearchFeed = value;
+            }
+        },
+        [SettingId.theme]: function (value) {
 
-                case "audio + video":
-                    switchPanel(false, streamListContainer, typePanel, (secondPanel = nonDashAudioPanel));
-                    break;
-
-                case "subtitles":
-                    switchPanel(false, streamListContainer, typePanel, (secondPanel = subtitlePanel));
-                    break;
-
+            if (settings.theme !== value) {
+                settings.theme = value;
             }
 
-        };
+            const ytdApp = document.querySelector("ytd-app");
 
-        resizeListener = function () {
+            switch (value) {
+                case "deviceTheme":
+                    ytdApp?.["handleSignalActionToggleDarkThemeDevice"]?.();
+                    break;
+                case "darkTheme":
+                    ytdApp?.["handleSignalActionToggleDarkThemeOn"]?.();
+                    break;
+                case "lightTheme":
+                    ytdApp?.["handleSignalActionToggleDarkThemeOff"]?.();
+                    break;
+            }
 
-            streamListContainer.remove();
-            document.documentElement.removeEventListener("click", clickListener, false);
+        },
+        [SettingId.logoSubscriptions]: function (value) {
+            if (settings.logoSubscriptions !== value) {
+                settings.logoSubscriptions = value;
+            }
+        },
+        [SettingId.homeShorts]: function (value) {
+            if (settings.homeShorts !== value) {
+                settings.homeShorts = value;
+            }
+        },
+        [SettingId.subscriptionsShorts]: function (value) {
+            if (settings.subscriptionsShorts !== value) {
+                settings.subscriptionsShorts = value;
+            }
+        },
+        [SettingId.searchShorts]: function (value) {
+            if (settings.searchShorts !== value) {
+                settings.searchShorts = value;
+            }
+        },
+        [SettingId.videoFocus]: function (value) {
 
-        };
+            if (settings.videoFocus !== value) {
+                settings.videoFocus = value;
+            }
 
-        window.addEventListener("resize", resizeListener, {once: true});
-        document.documentElement.addEventListener("click", clickListener, false);
-        document.body.appendChild(streamListContainer);
+            if (!settings.videoFocus) {
+                document.documentElement.removeAttribute("dim");
+            }
 
-        updateContainerSize(streamListContainer, typePanel);
+        },
+        [SettingId.defaultQuality]: function (value) {
+            if (settings.defaultQuality !== value) {
+                settings.defaultQuality = value;
+            }
+        },
+        [SettingId.defaultSpeed]: function (value) {
+            if (settings.defaultSpeed !== value) {
+                settings.defaultSpeed = value;
+            }
+        },
+        [SettingId.autoplay]: function (value) {
+            if (settings.autoplay !== value) {
+                settings.autoplay = value;
+            }
+        },
+        [SettingId.loudness]: function (value) {
+            if (settings.loudness !== value) {
+                settings.loudness = value;
+            }
+        },
+        [SettingId.scrollVolume]: function (value) {
 
-        streamListContainer.style.right = document.documentElement.clientWidth - posX + "px";
-        streamListContainer.style.bottom = document.documentElement.clientHeight - posY + "px";
+            if (settings.scrollVolume !== value) {
+                settings.scrollVolume = value;
+            }
 
+            if (settings.scrollVolume) {
+                document.addEventListener("wheel", Api.iniScrollVolume, {passive: false});
+            } else {
+                document.removeEventListener("wheel", Api.iniScrollVolume);
+            }
+
+        },
+        [SettingId.infoCards]: function (value) {
+            if (settings.infoCards !== value) {
+                settings.infoCards = value;
+            }
+        },
+        [SettingId.endScreen]: function (value) {
+
+            if (settings.endScreen !== value) {
+                settings.endScreen = value;
+            }
+
+            if (settings.endScreen) {
+                document.documentElement.classList.add("iridium-hide-end-screen-cards");
+            } else {
+                document.documentElement.classList.remove("iridium-hide-end-screen-cards");
+            }
+
+        },
+        [SettingId.hfrAllowed]: function (value) {
+            if (settings.hfrAllowed !== value) {
+                settings.hfrAllowed = value;
+            }
+        },
+        [SettingId.videoScreenshot]: function (value) {
+
+            if (settings.videoScreenshot !== value) {
+                settings.videoScreenshot = value;
+            }
+
+            Api.checkTools();
+
+        },
+        [SettingId.videoThumbnail]: function (value) {
+
+            if (settings.videoThumbnail !== value) {
+                settings.videoThumbnail = value;
+            }
+
+            Api.checkTools();
+
+        },
+        [SettingId.monetizationInfo]: function (value) {
+
+            if (settings.monetizationInfo !== value) {
+                settings.monetizationInfo = value;
+            }
+
+            Api.checkTools();
+
+        },
     }
 
-    function onDocumentClick(event) {
+    const onMessageListener = function (event) {
 
-        let key;
-        let data;
-        let element;
-
-        if (!event.target.tagName.toLowerCase().startsWith("yt-icon") ||
-            !(element = event.target.querySelector("[data-iri-feature]")) ||
-            !(key = element.getAttribute("data-iri-feature"))
-        ) {
+        if (event?.data?.broadcastId !== broadcastId) {
             return;
         }
 
-        if (document.activeElement &&
-            document.activeElement.blur
-        ) {
+        if (event?.data?.newBroadcastId) {
+            broadcastId = event?.data?.newBroadcastId;
+            return;
+        }
+
+        if (!event?.data?.payload) {
+            return;
+        }
+
+        for (let key in event.data.payload) {
+            Feature[key]?.(event.data.payload?.[key]);
+        }
+
+    };
+
+    const onDocumentClick = function (event) {
+
+        const optionsButton = document.documentElement.querySelector(".iridium-options");
+        const buttonClicked = optionsButton === event.target || optionsButton?.contains(event.target);
+
+        if (!buttonClicked) {
+            return;
+        }
+
+        if (document.activeElement && document.activeElement.blur) {
             document.activeElement.blur();
         }
 
-        switch (key) {
-
-            case "iridiumLogo":
-                broadcastChannel.postMessage({
-                    type: "action",
-                    payload: "iridiumLogo"
-                });
-                return;
-
-            case "saveVideo":
-                return;
-
-            case "streamList":
-                toggleStreamListMenu(event.clientX, event.clientY);
-                return;
-
-        }
-
-        if (!window.hasOwnProperty(key)) {
-            return;
-        }
-
-        data = {};
-        data[key] = !window[key];
-
         broadcastChannel.postMessage({
-            type: "setting-update",
-            payload: data
+            broadcastId: broadcastId,
+            type: "action",
+            payload: "extensionButton"
         });
 
-    }
+    };
 
-    broadcastChannel = new BroadcastChannel(broadcastId);
-    broadcastChannel.addEventListener("message", onMessageListener);
+    window[Names.pageModifier] = function () {
+        Api.iniSettingsButton(arguments);
+        Api.iniLogoShortcut(arguments);
+        Api.iniPageAdManager(arguments);
+        Api.iniExcludeShorts(arguments);
+        Api.iniInfoCards(arguments);
+    };
+
+    window[Names.navigationMod] = function (data) {
+        try {
+            const response = JSON.parse(data);
+            window[Names.pageModifier](response);
+            return JSON.stringify(response);
+        } catch (ignore) {
+            return data;
+        }
+    };
+
+    window[Names.patchYtInitialData] = function (data) {
+        window[Names.pageModifier](data);
+    };
+
+    window[Names.onAppReady] = function () {
+        for (let featureKey in Feature) {
+            const setting = settings?.[featureKey];
+            if (setting !== undefined) {
+                Feature?.[featureKey]?.(setting);
+            }
+        }
+    };
+
+    window[Names.patchApplicationCreate] = function (original) {
+        return function () {
+
+            const created = original.apply(this, arguments);
+            const moviePlayer = created?.["template"]?.["element"];
+
+            if (moviePlayer?.["id"] === "movie_player") {
+
+                const loadVideoByPlayerVars = created?.["loadVideoByPlayerVars"];
+                const cueVideoByPlayerVars = created?.["cueVideoByPlayerVars"];
+
+                created["loadVideoByPlayerVars"] = function () {
+
+                    Api.iniPlayerConfig(arguments);
+
+                    if (window.location.pathname === "/watch" && !settings.autoplay) {
+                        created?.["cueVideoByPlayerVars"]?.apply(this, arguments);
+                    } else {
+                        loadVideoByPlayerVars?.apply(this, arguments);
+                    }
+
+                }
+
+                created["cueVideoByPlayerVars"] = function () {
+                    Api.iniPlayerConfig(arguments);
+                    cueVideoByPlayerVars?.apply(this, arguments);
+                }
+
+                Api.onYTPCreated.forEach(callback => callback(moviePlayer));
+
+            }
+
+            return created;
+
+        }
+    };
+
+    window.addEventListener("yt-page-data-updated", Api.onPageChanges, true);
+    window.addEventListener("yt-navigate-start", Api.onPageChanges, false);
+    window.addEventListener("yt-navigate-finish", Api.onPageChanges, false);
+    window.addEventListener("popstate", Api.onPageChanges, true);
 
     document.documentElement.addEventListener("click", onDocumentClick, false);
 
-    autoPlayVideoFeature = {
-        belongs: function (option) {
+    const broadcastChannel = new BroadcastChannel(extensionId);
 
-            if (!option.hasOwnProperty("autoPlayVideo")) {
-                return false;
-            }
+    broadcastChannel.addEventListener("message", onMessageListener);
 
-            if (settings.autoPlayVideo === option.autoPlayVideo) {
-                return true;
-            }
-
-            let svg;
-            let parent;
-
-            settings.autoPlayVideo = option.autoPlayVideo;
-            window.autoPlayVideo = option.autoPlayVideo;
-
-            if ((svg = document.querySelector("#top-level-buttons [data-iri-feature=autoPlayVideo]")) == null) {
-                return true;
-            }
-
-            parent = svg.parentElement;
-
-            while (parent !== null) {
-
-                if ("YT-ICON-BUTTON" === parent.tagName ||
-                    "YTD-TOGGLE-BUTTON-RENDERER" === parent.tagName
-                ) {
-
-                    parent.classList.add(window.autoPlayVideo ? "style-default-active" : "style-text");
-                    parent.classList.remove(window.autoPlayVideo ? "style-text" : "style-default-active");
-
-                }
-
-                if ("YTD-TOGGLE-BUTTON-RENDERER" === parent.tagName) {
-                    break;
-                }
-
-                parent = parent.parentElement;
-
-            }
-
-            return true;
-
-        }
-    };
-
-    iridiumLogoFeature = {
-        belongs: function (option) {
-
-            if (!option.hasOwnProperty("iridiumLogo")) {
-                return false;
-            }
-
-            if (settings.iridiumLogo !== option.iridiumLogo) {
-                window.iridiumLogo = settings.iridiumLogo = option.iridiumLogo;
-            }
-
-            return true;
-
-        }
-    };
-
-    quickControlsFeature = {
-        belongs: function (option) {
-
-            if (!option.hasOwnProperty("quickControls")) {
-                return false;
-            }
-
-            if (settings.quickControls !== option.quickControls) {
-                window.quickControls = settings.quickControls = option.quickControls;
-            }
-
-            return true;
-
-        }
-    };
-
-    darkThemeFeature = {
-        toggleEvent: new CustomEvent("yt-action", {detail: {actionName: "yt-dark-mode-toggled-action", returnValue: []}}),
-        belongs: function (option) {
-
-            if (!option.hasOwnProperty("darkTheme")) {
-                return false;
-            }
-
-            if (settings.darkTheme !== option.darkTheme) {
-
-                settings.darkTheme = option.darkTheme;
-
-                if (settings.darkTheme !== document.documentElement.hasAttribute("dark")) {
-                    document.dispatchEvent(this.toggleEvent);
-                }
-
-            }
-
-            return true;
-
-        }
-    };
-
-    maxResThumbnailFeature = {
-        belongs: function (option) {
-
-            if (!option.hasOwnProperty("maxResThumbnail")) {
-                return false;
-            }
-
-            if (settings.maxResThumbnail !== option.maxResThumbnail) {
-                window.maxResThumbnail = settings.maxResThumbnail = option.maxResThumbnail;
-            }
-
-            return true;
-
-        }
-    };
-
-    hfrOnFeature = {
-        belongs: function (option) {
-
-            if (!option.hasOwnProperty("hfrOn")) {
-                return false;
-            }
-
-            if (settings.hfrOn !== option.hfrOn) {
-                window.hfrOn = settings.hfrOn = option.hfrOn;
-            }
-
-            return true;
-
-        }
-    };
-
-    featureList = [
-        iridiumLogoFeature,
-        quickControlsFeature,
-        autoPlayVideoFeature,
-        darkThemeFeature,
-        maxResThumbnailFeature,
-        hfrOnFeature
-    ];
-
-    if (!settings) {
-        return;
-    }
-
-    if (settings.hasOwnProperty("iridiumLogo")) {
-        window.iridiumLogo = settings.iridiumLogo;
-    }
-
-    if (settings.hasOwnProperty("quickControls")) {
-        window.quickControls = settings.quickControls;
-    }
-
-    if (settings.hasOwnProperty("autoPlayVideo")) {
-        window.autoPlayVideo = settings.autoPlayVideo;
-    }
-
-    if (settings.hasOwnProperty("maxResThumbnail")) {
-        window.maxResThumbnail = settings.maxResThumbnail;
-    }
-
-    if (settings.hasOwnProperty("hfrOn")) {
-        window.hfrOn = settings.hfrOn;
-    }
-
-};
+}

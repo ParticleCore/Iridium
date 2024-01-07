@@ -1,43 +1,37 @@
 "use strict";
 
-const GET_BROADCAST_ID = 0;
+const channel = new BroadcastChannel(browser.runtime.id);
+const port = browser.runtime.connect(browser.runtime.id);
+let broadcastId = "";
 
-function onMessageResponse(data) {
+channel.addEventListener("message", (message) => {
+    if (broadcastId !== "" && message?.data?.broadcastId === broadcastId) {
+        port.postMessage(message.data);
+    }
+});
 
-    function onMessageListener(event) {
-        if (event.data &&
-            event.data.payload
-        ) {
-            chrome.runtime.sendMessage(event.data);
-        }
+port.onMessage.addListener((data) => {
+
+    const id = data["broadcastId"]?.trim()  || "";
+    const newId = data["newBroadcastId"]?.trim() || "";
+
+    if (!id && !newId) {
+        return;
     }
 
-    function onStorageChangedListener(changes) {
-
-        let data;
-
-        data = {};
-
-        for (let key in changes) {
-            if (changes.hasOwnProperty(key)) {
-                data[key] = changes[key].newValue;
-            }
+    if (newId) {
+        if (newId !== broadcastId) {
+            broadcastId = newId;
         }
-
-        broadcastChannel.postMessage({
-            type: "setting-update",
-            payload: data
-        });
-
+    } else if (id && id !== broadcastId) {
+        if (!broadcastId) {
+            data["broadcastId"] = id;
+        } else {
+            data["newBroadcastId"] = broadcastId;
+        }
+        broadcastId = id;
     }
 
-    let broadcastChannel;
+    channel.postMessage(data);
 
-    broadcastChannel = new BroadcastChannel(data);
-    broadcastChannel.addEventListener("message", onMessageListener);
-
-    chrome.storage.onChanged.addListener(onStorageChangedListener);
-
-}
-
-chrome.runtime.sendMessage(GET_BROADCAST_ID, onMessageResponse);
+});

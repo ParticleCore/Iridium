@@ -1,7 +1,7 @@
 {
-    "manifest_version": 3,
+    "manifest_version": 2,
     "name": "Iridium for YouTube",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "YouTube with more freedom",
     "default_locale": "en_US",
     "options_ui": {
@@ -15,7 +15,7 @@
         "64": "icons/64.png",
         "128": "icons/128.png"
     },
-    "action": {
+    "browser_action": {
         "default_icon": {
             "16": "icons/16.png",
             "32": "icons/32.png",
@@ -29,7 +29,8 @@
             "js/setting-data.js",
             "js/background-inject.js",
             "js/background.js"
-        ]
+        ],
+        "persistent": true
     },
     "content_scripts": [
         {
@@ -46,16 +47,13 @@
         "storage",
         "webRequest",
         "webRequestBlocking",
-        "webRequestFilterResponse"
-    ],
-    "host_permissions": [
-        "*://.youtube.com/*",
+        "webRequestFilterResponse",
         "*://www.youtube.com/*"
     ],
     "browser_specific_settings": {
         "gecko": {
             "id": "unlisted-iridium@particlecore.github.io",
-            "strict_min_version": "100.0",
+            "strict_min_version": "110.0",
             "update_url": "https://github.com/ParticleCore/Iridium/raw/master/bin/update.json"
         }
     }

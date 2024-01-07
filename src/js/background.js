@@ -1,106 +1,55 @@
 "use strict";
 
-const GET_BROADCAST_ID = 0;
-const YT_PATTERN = "*://www.youtube.com/*";
-const YT_FP_DOMAIN = "youtube.com";
-const YT_URL = "http://." + YT_FP_DOMAIN;
-const YT_PREF_COOKIE = "PREF";
-
-let fpi;
-let api;
-let util;
-let algorithm;
-let settings;
-
-algorithm = [];
-
-settings = window.defaultSettings || {};
-
-browser
-    .privacy
-    .websites
-    .firstPartyIsolate
-    .get({})
-    .then(function (got) {
-        fpi = got.value;
-    });
-
-util = {
+const settings = DEFAULT_SETTINGS || {};
+const Names = {
+    navigationMod: "navigationMod",
+    modArgs: "modArgs",
+    imageLoader: "imageLoader",
+    pageModifier: "pageModifier",
+    onAppReady: "onAppReady",
+    parseBypass: "parseBypass",
+    patchApplicationCreate: "patchApplicationCreate",
+    patchYtInitialData: "patchYtInitialData",
+    patchYtInitialPlayerResponse: "patchYtInitialPlayerResponse",
+    patchLoadVideoByPlayerVars: "patchLoadVideoByPlayerVars",
+};
+const Util = {
     videoIdPattern: /v=([\w-_]+)/,
-    generateUUID: function () {
-        return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(
-            /[018]/g,
-            function (point) {
-                return (point ^ window.crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> point / 4).toString(16);
-            }
-        );
-    },
-    filterCacheData: function (data) {
-        return data != null && data.startsWith("\u0000") ? data.split("\u0000").pop() : data;
-    },
-    filterResponse: function (requestId) {
-        return chrome.webRequest.filterResponseData(requestId);
-    },
-    filterEngine: function (
-        details,
-        modifier
-    ) {
+    generateUUID: () => ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, point => (point ^ window.crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> point / 4).toString(16)),
+    filterCacheData: data => data != null && data.startsWith("\u0000") ? data.split("\u0000").pop() : data,
+    filterEngine: (details, modifier) => {
 
-        let str;
-        let data;
-        let buffer;
-        let filter;
-        let decoder;
-        let encoder;
-        let writeOffset;
-        let patchVersion;
-        let combinedArray;
-        let combinedLength;
-        let commentBlock;
+        let data = [];
+        let patchVersion = `iridium patch version ${browser.runtime.getManifest().version}`;
+        let commentBlock = details.type === "script" ? `// ${patchVersion}\n` : `<!-- ${patchVersion} -->\n`;
+        let decoder = new TextDecoder("utf-8");
+        let encoder = new TextEncoder();
+        let filter = browser.webRequest.filterResponseData(details.requestId);
 
-        data = [];
-        patchVersion = "iridium patch version " + chrome.runtime.getManifest().version;
-        commentBlock = (details.type === "script" ? `// ${patchVersion} ` : `<!-- ${patchVersion} -->`) + "\n";
-        decoder = new TextDecoder("utf-8");
-        encoder = new TextEncoder();
-        filter = util.filterResponse(details.requestId);
+        filter.ondata = event => data.push(new Uint8Array(event.data));
 
-        filter.ondata = function (event) {
-            data.push(new Uint8Array(event.data));
-        };
+        filter.onstop = _ => {
 
-        filter.onstop = function (event) {
-
-            writeOffset = 0;
-            combinedLength = 0;
+            let buffer;
+            let combinedLength = 0;
 
             for (buffer of data) {
                 combinedLength += buffer.length;
             }
 
-            combinedArray = new Uint8Array(combinedLength);
+            let writeOffset = 0;
+            let combinedArray = new Uint8Array(combinedLength);
 
             while (writeOffset < combinedLength) {
-
                 buffer = data.shift();
                 combinedArray.set(buffer, writeOffset);
                 writeOffset += buffer.length;
-
             }
 
-            // check if the resource has already been modified by the current extension version
-            // to avoid redundant operations
-            // note: still have to find a way to handle when a cached version was modified by a
-            //   previous extension version
+            let str = decoder.decode(combinedArray, {stream: false});
 
-            str = decoder.decode(combinedArray, {stream: false});
-
-            if (str.startsWith(commentBlock)) {
-                filter.write(combinedArray);
-            } else {
-                filter.write(encoder.encode(commentBlock + modifier(util.filterCacheData(str))));
-            }
-
+            // change nothing if the resource has already been modified to avoid redundant operations
+            filter.write(str.startsWith(commentBlock) ? combinedArray : encoder.encode(commentBlock + modifier(Util.filterCacheData(str))));
             filter.close();
 
             str = null;
@@ -110,535 +59,386 @@ util = {
 
         };
 
-    }
+    },
+    onMessageListener: (data) => {
+
+        if (data.broadcastId !== Api.broadcastId) {
+            return;
+        }
+
+        if (!data.type || !data.payload) {
+            return;
+        }
+
+        if (data.payload === SettingId.extensionButton) {
+            browser.runtime.openOptionsPage().then();
+            return;
+        }
+
+        if (data.type === "setting") {
+            Util.saveSingleSetting(data.payload.id, data.payload.value);
+        }
+
+    },
+    saveAllSettings: function () {
+
+        browser.storage.local.set(settings).then();
+
+        if (settings.syncSettings === true) {
+            browser.storage.sync.set(settings).then();
+        }
+
+    },
+    updateAllSettings: function (data) {
+
+        for (let key in data) {
+            settings[key] = data[key];
+        }
+
+        Util.saveAllSettings();
+
+    },
+    saveSingleSetting: function (key, value) {
+
+        browser.storage.local.set({[key]: value}).then();
+
+        if (settings.syncSettings === true) {
+            browser.storage.sync.set({[key]: value}).then();
+        }
+
+    },
+    updateSingleSetting: function (key, value) {
+
+        if (settings[key] === value) {
+            return;
+        }
+
+        settings[key] = value;
+
+        Util.saveSingleSetting(key, value);
+
+    },
+    initialLoad: items => {
+
+        for (let key in DEFAULT_SETTINGS) {
+            if (!Object.hasOwn(settings, key)) {
+                settings[key] = DEFAULT_SETTINGS[key];
+            }
+        }
+
+        if (items.broadcastId && items.broadcastId !== Api.broadcastId) {
+            Api.oldBroadcastId = items.broadcastId;
+            items.broadcastId = Api.broadcastId;
+            Util.dispatchNewBroadcastId();
+        } else if (!items.broadcastId) {
+            items.broadcastId = Api.broadcastId;
+        }
+
+        Util.updateAllSettings(items);
+
+    },
+    checkSyncStorage: items => {
+        if (Object.keys(items).length > 0 && items[SettingId.syncSettings] === true) {
+            Util.initialLoad(items);
+        } else {
+            browser.storage.local.get().then(Util.initialLoad);
+        }
+    },
+    dispatchNewBroadcastId: () => {
+        Api.ports.forEach((port) => {
+            try {
+                port?.postMessage({
+                    broadcastId: Api.oldBroadcastId,
+                    newBroadcastId: Api.broadcastId
+                });
+            } catch (e) {
+                Api.ports.splice(Api.ports.indexOf(port), 1);
+            }
+        });
+    },
+    sendMessageToPage: data => {
+        Api.ports.forEach((port) => {
+            port?.postMessage({
+                broadcastId: Api.broadcastId,
+                payload: data
+            });
+        });
+    },
+    onStorageChangedListener: changes => {
+
+        const changedData = {};
+
+        for (let key in changes) {
+
+            const change = changes[key];
+
+            if (change.newValue !== change.oldValue && settings[key] !== changes.newValue) {
+
+                settings[key] = changes[key].newValue;
+
+                if (key !== "broadcastId") {
+                    changedData[key] = changes[key].newValue;
+                }
+
+            }
+
+        }
+
+        if (Object.keys(changedData).length > 0) {
+            Util.sendMessageToPage(changedData);
+        }
+
+    },
+    onBrowserActionClickedListener: () => browser.runtime.openOptionsPage().then(),
 };
+const Api = {
+    broadcastId: Util.generateUUID(),
+    oldBroadcastId: "",
+    customScript: () => `<script>(${mainScript}("${browser.runtime.id}","${Api.broadcastId}",${JSON.stringify(SettingId)},${JSON.stringify(Names)},${JSON.stringify(settings)}))</script>`,
+    customStyle: () => `<style>
+        html #masthead-container,
+        html #secondary,
+        html #below {
+            transition-property: opacity !important;
+            transition-duration: 0.8s !important;;
+            transition-timing-function: ease !important;;
+            transition-delay: 0.25s !important;;
+        }
+        html[dim] #masthead-container,
+        html[dim] #secondary,
+        html[dim] #below {
+            opacity: 0.1;
+        }
+        /* ini | iridium icon */
+        html[dark] .iridium-options yt-icon {
+            background: #fff;
+        }
+        html .iridium-options:hover yt-icon {
+            background: radial-gradient(circle at 0% 150%, #0ff 35%, #f0f 75%);
+        }
+        .iridium-options yt-icon {
+            mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon opacity="0.5" points="6.8,3 22.4,12 6.8,21"/><path d="M6.8,3v18l15.6-9L6.8,3z M9.8,8.2l6.6,3.8l-6.6,3.8V8.2z"/></svg>');
+            background: #030303;
+        }
+        /* end | iridium icon */
+        /* ini | hide end screen cards */
+        .iridium-hide-end-screen-cards #movie_player:hover .ytp-ce-element:not(:hover) {
+            opacity: 0;
+        }
+        /* end | hide end screen cards */
+        /* ini | scroll volume */
+        #iridium-scroll-volume-level-container {
+            text-align: center;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 10%;
+            z-index: 19;
+        }
+        #iridium-scroll-volume-level {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 175%;
+            background: rgba(0,0,0,.5);
+            pointer-events: none;
+            border-radius: 3px;
+        }
+        /* end | scroll volume */
+        #iridium-player-tools {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+        }
+        #iridium-player-tools > div {
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            justify-content: center;
+            display: flex;
+            align-items: center;
+            fill: currentColor;
+            position: relative;
+        }
+        #iridium-player-tools > div:hover {
+            background-color: var(--yt-spec-10-percent-layer);
+            border-radius: 18px;
+        }
+        #iridium-player-tools > div > svg {
+            pointer-events: none;
+            user-select: none;
+        }
+        html[dark] #iridium-player-tools .monetized {
+            fill: #71ff3e;
+        }
+        #iridium-player-tools .monetized {
+            fill: #3ad406;
+        }
+        #iridium-monetization-count {
+            font-size: 10px;
+            position: absolute;
+            color: var(--yt-spec-text-primary);
+            bottom: 0;
+            right: 0;
+            background: var(--yt-spec-base-background);
+            border-radius: 12px;
+            padding: 0 3px;
+        }
+        #iridium-player-tools > div:hover #iridium-monetization-count {
+            display: none;
+        }
+    </style>`,
+    iniRequestListeners: () => {
 
-api = {
-    broadcastId: util.generateUUID(),
-    mainFrameListener: function (details) {
+        const BASE_URL = "*://www.youtube.com/*";
+        const MAIN_FILTER_URLS = [BASE_URL];
+        const SCRIPT_FILTER_URLS = [
+            `${BASE_URL}/base.js`,
+            `${BASE_URL}/desktop_polymer.js`,
+        ];
 
+        browser.webRequest.onBeforeRequest.addListener(
+            Api.mainFrameListener,
+            {urls: MAIN_FILTER_URLS, types: ["main_frame"]},
+            ["blocking"]
+        );
+
+        browser.webRequest.onBeforeRequest.addListener(
+            Api.scriptListener,
+            {urls: SCRIPT_FILTER_URLS, types: ["script"]},
+            ["blocking"]
+        );
+
+    },
+    mainFrameListener: details => {
+
+        // ignore anything that is not part of the main frame
+        // https://mdn.io/onBeforeRequest
         if (details.frameId !== 0) {
             return {};
         }
 
-        let modifier;
-
-        modifier = function (str) {
+        Util.filterEngine(details, str => {
 
             str = str
                 .replace(
                     "<head>",
-                    `<head><script>(${window.main}("${api.broadcastId}",${JSON.stringify(settings)}))</script>`
+                    `<head>${Api.customScript()}${Api.customStyle()}`
+                )
+                // forces player creation through Polymer
+                .replace(
+                    /(if\(createPlayer\)\{)/gi,
+                    `if(false){`
                 )
                 .replace(
-                    /yt\.player\.Application\.create\("player-api", ?ytplayer\.config\);/,
-                    "window.modArgs&&window.modArgs(ytplayer.config.args);$&"
+                    /(var ytInitialData = \{.*};)/g,
+                    `$1window?.["${Names.patchYtInitialData}"]?.(ytInitialData);`
                 )
             ;
 
-            if (!settings.autoPlayVideo) {
-                str = str
-                    .replace(
-                        /ytplayer\.load\(\);/,
-                        ""
-                    )
-                    .replace(
-                        /disable_new_pause_state3=true/g,
-                        "disable_new_pause_state3=false"
-                    )
-                ;
-            }
-
             return str;
 
-        };
-
-        util.filterEngine(details, modifier);
+        });
 
     },
-    decipher: function (signature) {
+    scriptListener: details => {
 
-        let i;
-        let temp;
-
-        i = algorithm.length;
-        signature = signature.split("");
-
-        while (i--) {
-
-            if (!algorithm[i]) {
-
-                signature.reverse();
-                continue;
-
-            }
-
-            if (algorithm[i] < 0) {
-
-                signature.splice(0, -algorithm[i]);
-                continue;
-
-            }
-
-            temp = signature[0];
-            signature[0] = signature[algorithm[i] % signature.length];
-            signature[algorithm[i]] = temp;
-
-        }
-
-        return signature.join("");
-
-    },
-    buildAlgorithm: function (sourceCode) {
-
-        let i;
-        let decoder;
-        let temp;
-        let key;
-        let operator;
-
-        operator = {};
-        decoder = sourceCode.match(/[\w\d]+={([\w\d]{1,2}:function\(a[\s\S]*a\[b%a\.length][\s\S]*?)}};/i);
-
-        if (!decoder ||
-            decoder.length < 2
-        ) {
-            return;
-        }
-
-        decoder = decoder[1]
-            .replace(/\n/g, "")
-            .split("},");
-        i = decoder.length;
-
-        while (i--) {
-
-            if (decoder[i].match("reverse")) {
-                temp = -1;
-            } else if (decoder[i].match("splice")) {
-                temp = 1;
-            } else {
-                temp = 0;
-            }
-
-            operator[decoder[i].split(":")[0]] = temp;
-
-        }
-
-        key = sourceCode.match(/[a-z0-9]+=[a-z0-9]+\.split\(""\);([^}]+)return/i);
-
-        if (!key ||
-            key.length < 2
-        ) {
-            return;
-        }
-
-        algorithm.length = 0;
-        key = key[1].split(";");
-        i = key.length;
-
-        while (i--) {
-
-            if (!key[i] ||
-                !key[i].length
-            ) {
-                continue;
-            }
-
-            temp = key[i].match(/[\w\d]+\.([\w\s]+)\([^\d]+([\d]+)\)/i);
-
-            if (temp.length !== 3) {
-                continue;
-            }
-
-            if (!operator[temp[1]]) {
-                algorithm.push(+temp[2]);
-            } else if (operator[temp[1]] < 0) {
-                algorithm.push(0);
-            } else {
-                algorithm.push(-temp[2]);
-            }
-
-        }
-
-    },
-    scriptListener: function (details) {
-
+        // ignore anything that is not part of the main frame
+        // https://mdn.io/onBeforeRequest
         if (details.frameId !== 0) {
             return {};
         }
 
-        let modifier;
-
-        modifier = function (str) {
+        Util.filterEngine(details, str => {
 
             if (details.url.endsWith("/base.js")) {
 
-                api.buildAlgorithm(str);
-
                 str = str
                     .replace(
-                        /"loadVideoByPlayerVars",this\.loadVideoByPlayerVars/,
-                        "\"loadVideoByPlayerVars\",window.modifier?window.modifier.bind(this,this.loadVideoByPlayerVars):this.loadVideoByPlayerVars"
+                        /"yt\.player\.Application\.create",(.*?create)\);/g,
+                        `"yt.player.Application.create",window?.["${Names.patchApplicationCreate}"]?.($1)||$1);`
                     )
                     .replace(
-                        /"cueVideoByPlayerVars",this\.cueVideoByPlayerVars/,
-                        "\"cueVideoByPlayerVars\",window.modifier?window.modifier.bind(this,this.cueVideoByPlayerVars):this.cueVideoByPlayerVars"
-                    )
-                    .replace(
-                        /([a-z0-9.]+)(.style\.backgroundImage=\n?([a-z0-9]+)\?"url\("\+[a-z0-9]+\+"\)":"";?)/gi,
-                        "$&;(window.imageLoader&&window.imageLoader($1,$3));"
-                    )
-                    .replace(
-                        /(this\.[a-z0-9]+)=[^;]+\.autoplayoverride\);/i,
-                        "$1=window.autoPlayVideo;"
+                        /"yt\.player\.Application\.createAlternate",(.*?create)\);/g,
+                        `"yt.player.Application.createAlternate",window?.["${Names.patchApplicationCreate}"]?.($1)||$1);`
                     )
                 ;
 
-            } else {
+            } else if (details.url.endsWith("/desktop_polymer.js")) {
 
                 str = str
                     .replace(
-                        /(\.onDone=function\(([a-z0-9]+)\){)/gi,
-                        "$1(window.pbjMod&&window.pbjMod($2));"
+                        /text\(\)\.then(\(function\(([a-z0-9]+)\){)/gi,
+                        `text().then(function($2){return window?.["${Names.navigationMod}"]?.($2)||$2;}).then$1`
                     )
                     .replace(
-                        /(loadDesktopData_:function\(([a-z0-9]+)(,)?([a-z0-9]+)?\){)/gi,
-                        "$1(window.pageModifier&&window.pageModifier($4||$2));"
+                        /(transition\("rendering"\))/gi,
+                        `$1;window?.["${Names.onAppReady}"]?.()`
                     )
                     .replace(
-                        /([a-z0-9.]+)loadVideoByPlayerVars\(([^)]+)\)/gi,
-                        "(window.autoPlayVideo!==false||window.autoPlayVideo===undefined?$1loadVideoByPlayerVars($2):$1cueVideoByPlayerVars($2))"
-                    )
-                    .replace(
-                        /(<g id=\\"like\\">)/,
-                        "<g id='iridium_logo'>" +
-                        "    <polygon data-iri-feature='iridiumLogo' opacity='0.5' points='6.8,3 22.4,12 6.8,21'/>" +
-                        "    <path data-iri-feature='iridiumLogo' d='M6.8,3v18l15.6-9L6.8,3z M9.8,8.2l6.6,3.8l-6.6,3.8V8.2z'/>" +
-                        "</g>" +
-                        "<g id='autoplay'>" +
-                        "    <polygon data-iri-feature='autoPlayVideo' points='7,3.3 7,20.7 22,12'/>" +
-                        "</g>" +
-                        "<g id='save_video'>" +
-                        "    <path data-iri-feature='saveVideo' d='M20,9.1h-4.6V2.3H8.6v6.9H4l8,8L20,9.1z M4,19.4v2.3h16v-2.3H4z'/>" +
-                        "</g>" +
-                        "<g id='stream_list'>" +
-                        "    <path data-iri-feature='streamList' d='M9,1.5v6H5l7,7l7-7h-4v-6H9 M5,16.5v2h14v-2H5 M5,20.5v2h14v-2H5z'/>" +
-                        "</g>" +
-                        "$1"
+                        /config\.loaded=!0\)/g,
+                        "config.loaded=!!0)",
                     )
                 ;
-
-                if (!settings.autoPlayVideo) {
-                    str = str
-                        .replace(
-                            /config_\.loaded=!0/g,
-                            "config_.loaded=!1"
-                        )
-                    ;
-                }
 
             }
 
             return str;
 
-        };
-
-        util.filterEngine(details, modifier);
-
-    },
-    headersListener: function (details) {
-
-        if (details.frameId !== 0) {
-            return {requestHeaders: details.requestHeaders};
-        }
-
-        function setCookieValue(originalValue) {
-
-            if (typeof originalValue !== 'string' &&
-                !(originalValue instanceof String)
-            ) {
-                return "";
-            }
-
-            let decimal;
-
-            decimal = parseInt(originalValue, 16);
-
-            if (settings.darkTheme) {
-                decimal = decimal & ~Math.pow(2, 19) | Math.pow(2, 10); //"41414"
-            } else {
-                decimal = decimal & ~Math.pow(2, 10) | Math.pow(2, 19); //"c1014"
-            }
-
-            return decimal.toString(16);
-
-        }
-
-        function processCookieValue(
-            match,
-            p1,
-            p2,
-            offset,
-            string
-        ) {
-
-            if (!p1 || !p2) {
-                return string;
-            }
-
-            return p1 + setCookieValue(p2);
-
-        }
-
-        function bakeCookie() {
-
-            let date;
-
-            date = new Date();
-
-            return {
-                expirationDate: Math.round(date.setFullYear(date.getFullYear() + 1) / 1000),
-                firstPartyDomain: fpi ? YT_FP_DOMAIN : null,
-                httpOnly: false,
-                name: YT_PREF_COOKIE,
-                path: "/",
-                sameSite: "no_restriction",
-                secure: false,
-                storeId: details.cookieStoreId,
-                value: "f6=400"
-            };
-
-        }
-
-        function updateCookie(cookie) {
-
-            if (!cookie) {
-                cookie = bakeCookie();
-            }
-
-            chrome.cookies.set({
-                expirationDate: cookie.expirationDate,
-                firstPartyDomain: cookie.firstPartyDomain,
-                httpOnly: cookie.httpOnly,
-                name: cookie.name,
-                path: cookie.path,
-                sameSite: cookie.sameSite,
-                secure: cookie.secure,
-                storeId: cookie.storeId,
-                url: YT_URL,
-                value: cookie.value.replace(
-                    /(f6=)([0-9a-z]+)/i,
-                    processCookieValue
-                )
-            });
-
-        }
-
-        let values;
-        let header;
-
-        for (let i = 0; i < details.requestHeaders.length; i++) {
-
-            if ((header = details.requestHeaders[i]).name.toLowerCase() !== "cookie") {
-                continue;
-            }
-
-            if (!header.value.match(/PREF=/)) {
-
-                // doesn't have pref cookie
-                values = header.value.split(/; ?/);
-                values.push("PREF=f6=" + setCookieValue("0"));
-                header.value = values.join("; ");
-
-            } else if (!header.value.match(/f6=[0-9]+/)) {
-
-                // doesn't have f6 group setting
-                values = header.value.match(/PREF=([^;|$]+)/i);
-                values = values ? values[1] : "";
-                values = values.split("&");
-                values.push("f6=" + setCookieValue("0"));
-                header.value = header.value.replace(
-                    /(PREF=)[^;|$]+/i,
-                    "$1" + values.join("&")
-                );
-
-            } else {
-                header.value = header.value.replace(
-                    /(f6=)([0-9a-z]+)/i,
-                    processCookieValue
-                );
-            }
-
-            chrome.cookies.get({
-                    storeId: details.cookieStoreId,
-                    firstPartyDomain: fpi ? YT_FP_DOMAIN : null,
-                    name: YT_PREF_COOKIE,
-                    url: YT_URL
-                },
-                updateCookie
-            );
-
-            return {requestHeaders: details.requestHeaders};
-
-        }
-
-        // no cookies header, add it
-        details.requestHeaders.push({
-            name: "cookie",
-            value: "PREF=f6=" + setCookieValue("0")
         });
 
-        return {requestHeaders: details.requestHeaders};
+    },
+    ports: [],
+    onPortMessage: (data) => {
+        Util.onMessageListener(data);
+    },
+    onPortConnect: (port) => {
+
+        Api.ports[port.sender.tab.id] = port;
+
+        port.onDisconnect.addListener(() => Api.ports.splice(Api.ports.indexOf(port.sender.tab.id), 1));
+        port.onMessage.addListener(Api.onPortMessage);
+
+        if (Api.oldBroadcastId) {
+            Util.dispatchNewBroadcastId();
+        } else {
+            port.postMessage({broadcastId: Api.broadcastId});
+        }
 
     },
-    iniRequestListeners: function () {
+    ini: () => {
 
-        const block = ["blocking"];
-        const blockHeaders = ["blocking", "requestHeaders"];
-        const headersFilter = {
-            urls: [YT_PATTERN],
-            types: ["main_frame"]
-        };
-        const mainFilter = {
-            urls: [YT_PATTERN],
-            types: ["main_frame"]
-        };
-        const scriptFilter = {
-            urls: [
-                YT_PATTERN + "/base.js",
-                YT_PATTERN + "/desktop_polymer_v2.js",
-                YT_PATTERN + "/desktop_polymer_sel_auto_svg_home_v2.js",
-                YT_PATTERN + "/desktop_polymer_inlined_html_polymer_flags_v2.js"
-            ],
-            types: ["script"]
-        };
+        browser.runtime.onConnect.addListener(Api.onPortConnect);
+        browser.action.onClicked.addListener(Util.onBrowserActionClickedListener);
+        browser.storage.local.onChanged.addListener(Util.onStorageChangedListener);
+        browser.storage.sync.get().then(Util.checkSyncStorage);
 
-        chrome.webRequest.onBeforeSendHeaders.addListener(api.headersListener, headersFilter, blockHeaders);
-        chrome.webRequest.onBeforeRequest.addListener(api.mainFrameListener, mainFilter, block);
-        chrome.webRequest.onBeforeRequest.addListener(api.scriptListener, scriptFilter, block);
-
-    },
-    ini: function () {
-
-        function onMessageListener(
-            request,
-            sender,
-            sendResponse
-        ) {
-
-            if (request === GET_BROADCAST_ID) {
-
-                sendResponse(api.broadcastId);
-                return;
-
-            }
-
-            if (!request.type ||
-                !request.payload
-            ) {
-                return;
-            }
-
-            if (request.payload === "iridiumLogo") {
-
-                chrome.runtime.openOptionsPage();
-                return;
-
-            }
-
-            if (request.type === "save") {
-
-                chrome.downloads.download({
-                    url: request.payload.url + (request.payload.signature ? "&sig=" + api.decipher(request.payload.signature) : ""),
-                    filename: request.payload.title.replace(/[^a-z0-9-_. ]/gi, "") + "." + request.payload.fileType,
-                    conflictAction: "uniquify",
-                    saveAs: true
-                });
-                return;
-
-            }
-
-            let data;
-            let migrate;
-
-            data = {};
-
-            for (let key in request.payload) {
-
-                if (!request.payload.hasOwnProperty(key) ||
-                    !(key in settings) ||
-                    request.payload[key] === settings[key]
-                ) {
-                    continue;
-                }
-
-                settings[key] = request.payload[key];
-                data[key] = settings[key];
-                migrate = key === "syncSettings";
-
-            }
-
-            if (Object.keys(data).length < 1) {
-                return;
-            }
-
-            if (migrate) {
-
-                data = settings;
-                chrome
-                    .storage[!settings.syncSettings ? "sync" : "local"]
-                    .set({syncSettings: false},
-                        function (event) {
-                            console.log("migrate storage");
-                        });
-
-            }
-
-            chrome
-                .storage[settings.syncSettings ? "sync" : "local"]
-                .set(data, function (event) {
-                    console.log("onMessageListener", event);
-                });
-
-        }
-
-        function keepUsingSync(items) {
-
-            if ("syncSettings" in items &&
-                items.syncSettings === true
-            ) {
-                return chrome.storage.sync.get(settings, onStorageGetListener);
-            }
-
-            chrome.storage.local.get(settings, onStorageGetListener);
-
-        }
-
-        function onStorageChangedListener(changes) {
-            for (let key in changes) {
-                if (changes.hasOwnProperty(key)) {
-                    settings[key] = changes[key].newValue;
-                }
-            }
-        }
-
-        function onStorageGetListener(items) {
-            settings = items;
-        }
-
-        function onBrowserActionClickedListener() {
-            chrome.runtime.openOptionsPage();
-        }
-
-        chrome.runtime.onMessage.addListener(onMessageListener);
-        chrome.storage.onChanged.addListener(onStorageChangedListener);
-        chrome.browserAction.onClicked.addListener(onBrowserActionClickedListener);
-        chrome.storage.sync.get({syncSettings: settings.syncSettings}, keepUsingSync);
-
-        this.iniRequestListeners();
+        Api.iniRequestListeners();
 
     }
-};
+}
 
-api.ini();
+function checkPermissions() {
+
+    const manifestData = browser.runtime.getManifest();
+    const data = {
+        origins: manifestData.host_permissions,
+        permissions: manifestData.permissions
+    };
+
+    browser.permissions.contains(data).then(allAllowed => {
+        if (allAllowed){
+            browser.permissions.onAdded.removeListener(checkPermissions);
+            Api.ini();
+        } else {
+            browser.permissions.onAdded.addListener(checkPermissions);
+        }
+    });
+
+}
+
+checkPermissions();

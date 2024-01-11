@@ -3,7 +3,7 @@
 const settings = structuredClone(DEFAULT_SETTINGS) || {};
 const options = [];
 const Manager = {
-    updateSyncSettings: function (newState) {
+    updateSyncSettings: function (newState, userInteraction) {
 
         const settingId = SettingId.syncSettings;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -12,17 +12,37 @@ const Manager = {
             ui.checked = newState;
         }
 
-        if (newState === true) {
-            // save a copy of all settings to sync storage
-            Util.updateAllSettings({[settingId]: newState});
-        } else {
-            // sync storage was disabled
-            browser.storage.sync.clear().then();
-            Util.updateSingleSetting(settingId, newState);
-        }
+        if (!userInteraction) return;
+
+        settings[settingId] = newState;
+
+        (async () => {
+
+            // to properly migrate storage areas:
+            // remove listener from old storage area
+            // add listener to new storage area
+            // save all settings in new storage area
+            // update sync setting in previous storage area to signal change to open tabs
+            // clear old storage area
+
+            if (newState === true) {
+                browser.storage.local.onChanged.removeListener(Util.onStorageChangedListener);
+                browser.storage.sync.onChanged.addListener(Util.onStorageChangedListener);
+                await Util.saveData(settings);
+                await browser.storage.local.set({[SettingId.syncSettings]: newState});
+                await browser.storage.local.clear();
+            } else {
+                browser.storage.sync.onChanged.removeListener(Util.onStorageChangedListener);
+                browser.storage.local.onChanged.addListener(Util.onStorageChangedListener);
+                await Util.saveData(settings);
+                await browser.storage.sync.set({[SettingId.syncSettings]: newState});
+                await browser.storage.sync.clear();
+            }
+
+        })();
 
     },
-    updateExtensionButton: function (newState) {
+    updateExtensionButton: function (newState, userInteraction) {
 
         const settingId = SettingId.extensionButton;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -31,10 +51,12 @@ const Manager = {
             ui.checked = newState;
         }
 
+        if (!userInteraction) return;
+
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateTheme: function (newState) {
+    updateTheme: function (newState, userInteraction) {
 
         function toggleTheme(isDark) {
             if (isDark) {
@@ -79,10 +101,12 @@ const Manager = {
                 break;
         }
 
+        if (!userInteraction) return;
+
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateLogoSubscriptions: function (newState) {
+    updateLogoSubscriptions: function (newState, userInteraction) {
 
         const settingId = SettingId.logoSubscriptions;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -91,10 +115,12 @@ const Manager = {
             ui.checked = newState;
         }
 
+        if (!userInteraction) return;
+
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateShorts: function (id, newState) {
+    updateShorts: function (id, newState, userInteraction) {
 
         const settingId = id;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -103,10 +129,12 @@ const Manager = {
             ui.checked = newState;
         }
 
+        if (!userInteraction) return;
+
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateAdManager: function (id, newState) {
+    updateAdManager: function (id, newState, userInteraction) {
 
         const settingId = id;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -136,10 +164,12 @@ const Manager = {
 
         }
 
+        if (!userInteraction) return;
+
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateVideoFocus: function (newState) {
+    updateVideoFocus: function (newState, userInteraction) {
 
         const settingId = SettingId.videoFocus;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -148,10 +178,12 @@ const Manager = {
             ui.checked = newState;
         }
 
+        if (!userInteraction) return;
+
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateAutoplay: function (newState) {
+    updateAutoplay: function (newState, userInteraction) {
 
         const settingId = SettingId.autoplay;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -160,10 +192,12 @@ const Manager = {
             ui.checked = newState;
         }
 
+        if (!userInteraction) return;
+
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateLoudness: function (newState) {
+    updateLoudness: function (newState, userInteraction) {
 
         const settingId = SettingId.loudness;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -172,10 +206,12 @@ const Manager = {
             ui.checked = newState;
         }
 
+        if (!userInteraction) return;
+
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateScrollVolume: function (newState) {
+    updateScrollVolume: function (newState, userInteraction) {
 
         const settingId = SettingId.scrollVolume;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -184,10 +220,12 @@ const Manager = {
             ui.checked = newState;
         }
 
+        if (!userInteraction) return;
+
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateInfoCards: function (newState) {
+    updateInfoCards: function (newState, userInteraction) {
 
         const settingId = SettingId.infoCards;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -196,10 +234,12 @@ const Manager = {
             ui.checked = newState;
         }
 
+        if (!userInteraction) return;
+
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateEndScreen: function (newState) {
+    updateEndScreen: function (newState, userInteraction) {
 
         const settingId = SettingId.endScreen;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -208,10 +248,12 @@ const Manager = {
             ui.checked = newState;
         }
 
+        if (!userInteraction) return;
+
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateDefaultQuality: function (newState) {
+    updateDefaultQuality: function (newState, userInteraction) {
 
         const settingId = SettingId.defaultQuality;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -220,10 +262,12 @@ const Manager = {
             ui.value = newState;
         }
 
+        if (!userInteraction) return;
+
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateDefaultSpeed: function (newState) {
+    updateDefaultSpeed: function (newState, userInteraction) {
 
         const settingId = SettingId.defaultSpeed;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -232,10 +276,12 @@ const Manager = {
             ui.value = newState;
         }
 
+        if (!userInteraction) return;
+
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateHFRAllowed: function (newState) {
+    updateHFRAllowed: function (newState, userInteraction) {
 
         const settingId = SettingId.hfrAllowed;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -244,10 +290,12 @@ const Manager = {
             ui.checked = newState;
         }
 
+        if (!userInteraction) return;
+
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateVideoScreenshot: function (newState) {
+    updateVideoScreenshot: function (newState, userInteraction) {
 
         const settingId = SettingId.videoScreenshot;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -256,10 +304,12 @@ const Manager = {
             ui.checked = newState;
         }
 
+        if (!userInteraction) return;
+
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateVideoThumbnail: function (newState) {
+    updateVideoThumbnail: function (newState, userInteraction) {
 
         const settingId = SettingId.videoThumbnail;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -268,10 +318,12 @@ const Manager = {
             ui.checked = newState;
         }
 
+        if (!userInteraction) return;
+
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateMonetizationInfo: function (newState) {
+    updateMonetizationInfo: function (newState, userInteraction) {
 
         const settingId = SettingId.monetizationInfo;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -280,36 +332,27 @@ const Manager = {
             ui.checked = newState;
         }
 
+        if (!userInteraction) return;
+
         Util.updateSingleSetting(settingId, newState);
 
     },
 };
 const Util = {
-    saveAllSettings: function () {
-
-        browser.storage.local.set(settings)?.then();
-
+    saveData: async function (data) {
         if (settings.syncSettings === true) {
-            browser.storage.sync.set(settings)?.then();
+            await browser.storage.sync.set(data);
+        } else {
+            await browser.storage.local.set(data);
         }
-
     },
-    updateAllSettings: function (data) {
+    updateSettings: function (data) {
 
         for (let key in data) {
             settings[key] = data[key];
         }
 
-        Util.saveAllSettings();
-
-    },
-    saveSingleSetting: function (key, value) {
-
-        browser.storage.local.set({[key]: value})?.then();
-
-        if (settings.syncSettings === true) {
-            browser.storage.sync.set({[key]: value})?.then();
-        }
+        Util.saveData(data).then();
 
     },
     updateSingleSetting: function (key, value) {
@@ -320,7 +363,7 @@ const Util = {
 
         settings[key] = value;
 
-        Util.saveSingleSetting(key, value);
+        Util.saveData({[key]: value}).then();
 
     },
     populateOptions: function (item) {
@@ -351,13 +394,13 @@ const Util = {
         }
 
     },
-    handleSetting: function (key, value) {
+    handleSetting: function (key, value, userInteraction) {
         switch (key) {
             case SettingId.extensionButton:
-                Manager.updateExtensionButton(value);
+                Manager.updateExtensionButton(value, userInteraction);
                 break;
             case SettingId.syncSettings:
-                Manager.updateSyncSettings(value);
+                Manager.updateSyncSettings(value, userInteraction);
                 break;
             case SettingId.adOptOutAll:
             case SettingId.adSubscribed:
@@ -367,64 +410,64 @@ const Util = {
             case SettingId.adMasthead:
             case SettingId.adHomeFeed:
             case SettingId.adSearchFeed:
-                Manager.updateAdManager(key, value);
+                Manager.updateAdManager(key, value, userInteraction);
                 break;
             case SettingId.theme:
-                Manager.updateTheme(value);
+                Manager.updateTheme(value, userInteraction);
                 break;
             case SettingId.logoSubscriptions:
-                Manager.updateLogoSubscriptions(value);
+                Manager.updateLogoSubscriptions(value, userInteraction);
                 break;
             case SettingId.homeShorts:
             case SettingId.subscriptionsShorts:
             case SettingId.searchShorts:
-                Manager.updateShorts(key, value);
+                Manager.updateShorts(key, value, userInteraction);
                 break;
             case SettingId.videoFocus:
-                Manager.updateVideoFocus(value);
+                Manager.updateVideoFocus(value, userInteraction);
                 break;
             case SettingId.defaultQuality:
-                Manager.updateDefaultQuality(value);
+                Manager.updateDefaultQuality(value, userInteraction);
                 break;
             case SettingId.defaultSpeed:
-                Manager.updateDefaultSpeed(value);
+                Manager.updateDefaultSpeed(value, userInteraction);
                 break;
             case SettingId.autoplay:
-                Manager.updateAutoplay(value);
+                Manager.updateAutoplay(value, userInteraction);
                 break;
             case SettingId.loudness:
-                Manager.updateLoudness(value);
+                Manager.updateLoudness(value, userInteraction);
                 break;
             case SettingId.scrollVolume:
-                Manager.updateScrollVolume(value);
+                Manager.updateScrollVolume(value, userInteraction);
                 break;
             case SettingId.infoCards:
-                Manager.updateInfoCards(value);
+                Manager.updateInfoCards(value, userInteraction);
                 break;
             case SettingId.endScreen:
-                Manager.updateEndScreen(value);
+                Manager.updateEndScreen(value, userInteraction);
                 break;
             case SettingId.hfrAllowed:
-                Manager.updateHFRAllowed(value);
+                Manager.updateHFRAllowed(value, userInteraction);
                 break;
             case SettingId.videoScreenshot:
-                Manager.updateVideoScreenshot(value);
+                Manager.updateVideoScreenshot(value, userInteraction);
                 break;
             case SettingId.videoThumbnail:
-                Manager.updateVideoThumbnail(value);
+                Manager.updateVideoThumbnail(value, userInteraction);
                 break;
             case SettingId.monetizationInfo:
-                Manager.updateMonetizationInfo(value);
+                Manager.updateMonetizationInfo(value, userInteraction);
                 break;
         }
     },
     settingAction: function (event) {
         if (event.target?.type === "checkbox") {
-            Util.handleSetting(event.target?.dataset?.setting, event.target?.checked);
+            Util.handleSetting(event.target?.dataset?.setting, event.target?.checked, true);
         } else if (event.target?.type === "radio") {
-            Util.handleSetting(event.target?.dataset?.setting, event.target?.value);
+            Util.handleSetting(event.target?.dataset?.setting, event.target?.value, true);
         } else if (event.target?.type === "select-one") {
-            Util.handleSetting(event.target?.dataset?.setting, event.target?.value);
+            Util.handleSetting(event.target?.dataset?.setting, event.target?.value, true);
         } else if (event.target?.dataset?.action) {
             switch (event.target?.dataset?.action) {
                 case "import":
@@ -466,27 +509,27 @@ const Util = {
     resetSettings: function () {
         if (window.confirm("You are about to reset the settings to default, do you want to continue?")) {
 
-            Util.updateAllSettings(structuredClone(DEFAULT_SETTINGS));
+            Util.updateSettings(structuredClone(DEFAULT_SETTINGS));
 
             for (let key in settings) {
-                Util.handleSetting(key, settings[key]);
+                Util.handleSetting(key, settings[key], false);
             }
 
         }
     },
-    onSettingsChanged: function (data) {
+    onStorageChangedListener: data => {
 
-        const filtered = {};
+        const changedData = {};
 
         for (let key in data) {
             const change = data[key];
-            if (change.newValue !== change.oldValue && Object.hasOwn(settings, key) && settings[key] !== change.newValue) {
-                filtered[key] = change.newValue;
+            if (change.newValue !== change.oldValue && settings[key] !== change.newValue) {
+                settings[key] = changedData[key] = change.newValue;
             }
         }
 
-        if (Object.keys(filtered).length > 0) {
-            Util.updateAllSettings(filtered);
+        if (Object.keys(changedData).length > 0) {
+            Util.updateSettings(changedData);
         }
 
     },
@@ -499,19 +542,36 @@ const Util = {
             }
         }
 
-        Util.updateAllSettings(items);
-
         for (let key in items) {
-            Util.handleSetting(key, items[key]);
+            settings[key] = items[key];
+            Util.handleSetting(key, items[key], false);
         }
 
     },
-    checkSyncStorage: function (items) {
+    checkStorage: async function () {
 
-        if (Object.keys(items).length > 0 && items[SettingId.syncSettings] === true) {
-            Util.initialLoad(items);
+        const dataSync = await browser.storage.sync.get();
+
+        if (Object.keys(dataSync).length > 0 && dataSync[SettingId.syncSettings] === true) {
+
+            Util.initialLoad(dataSync);
+            browser.storage.sync.onChanged.addListener(Util.onStorageChangedListener);
+
         } else {
-            browser.storage.local.get().then(Util.initialLoad);
+
+            const dataLocal = await browser.storage.local.get();
+
+            // storage will be empty during first installation
+            // this ensures the first load stores the default settings
+            if (Object.keys(dataLocal).length === 0) {
+                await browser.storage.local.set(DEFAULT_SETTINGS);
+                Util.initialLoad(DEFAULT_SETTINGS);
+            } else {
+                Util.initialLoad(dataLocal);
+            }
+
+            browser.storage.local.onChanged.addListener(Util.onStorageChangedListener);
+
         }
 
     },
@@ -523,8 +583,7 @@ const Util = {
         document.getElementById("contents")?.addEventListener("change", Util.settingAction, true);
         document.querySelectorAll("[data-menu]").forEach(Util.populateOptions);
 
-        browser.storage.local.onChanged.addListener(Util.onSettingsChanged);
-        browser.storage.sync.get().then(Util.checkSyncStorage);
+        Util.checkStorage().then();
 
     },
 };

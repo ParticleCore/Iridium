@@ -1,37 +1,56 @@
 "use strict";
 
 const channel = new BroadcastChannel(browser.runtime.id);
-const port = browser.runtime.connect(browser.runtime.id);
-let broadcastId = "";
+let port = null;
 
 channel.addEventListener("message", (message) => {
-    if (broadcastId !== "" && message?.data?.broadcastId === broadcastId) {
-        port.postMessage(message.data);
+
+    if (!port) {
+        port = browser.runtime.connect(browser.runtime.id);
+        port?.onDisconnect?.addListener(() => port = null);
     }
+
+    port?.postMessage(message.data);
+
 });
 
-port.onMessage.addListener((data) => {
+(async () => {
+    const onStorageChanged = changes => {
 
-    const id = data["broadcastId"]?.trim()  || "";
-    const newId = data["newBroadcastId"]?.trim() || "";
+        const changeData = {};
 
-    if (!id && !newId) {
-        return;
+        for (let key in changes) {
+            const change = changes[key];
+            if (change.newValue !== change.oldValue) {
+                changeData[key] = change.newValue;
+            }
+        }
+
+        if (Object.keys(changeData).length > 0) {
+
+            channel.postMessage(changeData);
+
+            // check if user switched storage areas
+            if (Object.hasOwn(changeData, SettingId.syncSettings)) {
+                if (changeData[SettingId.syncSettings] === true) {
+                    browser.storage.local.onChanged.removeListener(onStorageChanged);
+                    browser.storage.sync.onChanged.addListener(onStorageChanged);
+                } else {
+                    browser.storage.sync.onChanged.removeListener(onStorageChanged);
+                    browser.storage.local.onChanged.addListener(onStorageChanged);
+                }
+            }
+
+        }
+
+    };
+
+    const dataSync = await browser.storage.sync.get();
+
+    if (dataSync?.[SettingId.syncSettings] === true) {
+        browser.storage.sync.onChanged.addListener(onStorageChanged);
+    } else {
+        browser.storage.local.onChanged.addListener(onStorageChanged);
     }
 
-    if (newId) {
-        if (newId !== broadcastId) {
-            broadcastId = newId;
-        }
-    } else if (id && id !== broadcastId) {
-        if (!broadcastId) {
-            data["broadcastId"] = id;
-        } else {
-            data["newBroadcastId"] = broadcastId;
-        }
-        broadcastId = id;
-    }
-
-    channel.postMessage(data);
-
-});
+})();

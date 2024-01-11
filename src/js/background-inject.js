@@ -1,6 +1,6 @@
 "use strict";
 
-function mainScript(extensionId, broadcastId, SettingId, Names, settings) {
+function mainScript(extensionId, SettingId, Names, settings) {
 
     const Util = {
         getSingleObjectByKey: function (obj, keys, match) {
@@ -952,21 +952,12 @@ function mainScript(extensionId, broadcastId, SettingId, Names, settings) {
 
     const onMessageListener = function (event) {
 
-        if (event?.data?.broadcastId !== broadcastId) {
+        if (!event?.data) {
             return;
         }
 
-        if (event?.data?.newBroadcastId) {
-            broadcastId = event?.data?.newBroadcastId;
-            return;
-        }
-
-        if (!event?.data?.payload) {
-            return;
-        }
-
-        for (let key in event.data.payload) {
-            Feature[key]?.(event.data.payload?.[key]);
+        for (let key in event.data) {
+            Feature[key]?.(event.data?.[key]);
         }
 
     };
@@ -985,7 +976,6 @@ function mainScript(extensionId, broadcastId, SettingId, Names, settings) {
         }
 
         broadcastChannel.postMessage({
-            broadcastId: broadcastId,
             type: "action",
             payload: "extensionButton"
         });

@@ -1,5 +1,5 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
     "name": "Iridium for YouTube",
     "version": "2.0.1",
     "description": "YouTube with more freedom",
@@ -15,7 +15,7 @@
         "64": "icons/64.png",
         "128": "icons/128.png"
     },
-    "browser_action": {
+    "action": {
         "default_icon": {
             "16": "icons/16.png",
             "32": "icons/32.png",
@@ -29,15 +29,18 @@
             "js/setting-data.js",
             "js/background-inject.js",
             "js/background.js"
-        ],
-        "persistent": true
+        ]
     },
     "content_scripts": [
         {
             "matches": [
                 "*://www.youtube.com/*"
             ],
+            "css" : [
+                "css/content-script.css"
+            ],
             "js": [
+                "js/setting-data.js",
                 "js/content-script.js"
             ],
             "run_at": "document_start"
@@ -47,7 +50,9 @@
         "storage",
         "webRequest",
         "webRequestBlocking",
-        "webRequestFilterResponse",
+        "webRequestFilterResponse"
+    ],
+    "host_permissions": [
         "*://www.youtube.com/*"
     ],
     "browser_specific_settings": {

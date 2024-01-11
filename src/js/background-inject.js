@@ -481,6 +481,19 @@ function mainScript(extensionId, SettingId, Names, settings) {
                 }
             }
         },
+        iniCreatorMerch: function (data) {
+            if (!settings.creatorMerch) {
+                const contents = Util.getSingleObjectByKey(data, "contents", (matched, _) => matched?.find((item) => Object.hasOwn(item, "merchandiseShelfRenderer")));
+                if (contents?.length > 0) {
+                    for (let i = contents.length - 1; i >= 0; i--) {
+                        const item = contents[i];
+                        if (Object.hasOwn(item, "merchandiseShelfRenderer")) {
+                            contents.splice(i, 1);
+                        }
+                    }
+                }
+            }
+        },
         iniScrollVolume: function (event) {
 
             const api = document.getElementById("movie_player");
@@ -865,6 +878,11 @@ function mainScript(extensionId, SettingId, Names, settings) {
             }
 
         },
+        [SettingId.creatorMerch]: function (value) {
+            if (settings.creatorMerch !== value) {
+                settings.creatorMerch = value;
+            }
+        },
         [SettingId.defaultQuality]: function (value) {
             if (settings.defaultQuality !== value) {
                 settings.defaultQuality = value;
@@ -987,6 +1005,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
         Api.iniLogoShortcut(arguments);
         Api.iniPageAdManager(arguments);
         Api.iniExcludeShorts(arguments);
+        Api.iniCreatorMerch(arguments);
         Api.iniInfoCards(arguments);
     };
 

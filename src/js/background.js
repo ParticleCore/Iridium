@@ -77,6 +77,13 @@ const Api = {
 
         const settings = await Api.getSettings();
 
+        // ensure new features are applied
+        for (let key in DEFAULT_SETTINGS) {
+            if (!Object.hasOwn(settings, key)) {
+                settings[key] = DEFAULT_SETTINGS[key];
+            }
+        }
+
         Api.filterEngine(details, str => str
             .replace(
                 "<head>",

@@ -183,6 +183,20 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
+    updateCreatorMerch: function (newState, userInteraction) {
+
+        const settingId = SettingId.creatorMerch;
+        const ui = document.querySelector(`[data-setting=${settingId}]`);
+
+        if (ui != null && ui.checked !== newState) {
+            ui.checked = newState;
+        }
+
+        if (!userInteraction) return;
+
+        Util.updateSingleSetting(settingId, newState);
+
+    },
     updateAutoplay: function (newState, userInteraction) {
 
         const settingId = SettingId.autoplay;
@@ -426,6 +440,9 @@ const Util = {
             case SettingId.videoFocus:
                 Manager.updateVideoFocus(value, userInteraction);
                 break;
+            case SettingId.creatorMerch:
+                Manager.updateCreatorMerch(value, userInteraction);
+                break;
             case SettingId.defaultQuality:
                 Manager.updateDefaultQuality(value, userInteraction);
                 break;
@@ -535,7 +552,7 @@ const Util = {
     },
     initialLoad: function (items) {
 
-        // ensure new features apply to stored settings
+        // ensure new features are applied
         for (let key in DEFAULT_SETTINGS) {
             if (!Object.hasOwn(settings, key)) {
                 settings[key] = DEFAULT_SETTINGS[key];
@@ -553,10 +570,8 @@ const Util = {
         const dataSync = await browser.storage.sync.get();
 
         if (Object.keys(dataSync).length > 0 && dataSync[SettingId.syncSettings] === true) {
-
             Util.initialLoad(dataSync);
             browser.storage.sync.onChanged.addListener(Util.onStorageChangedListener);
-
         } else {
 
             const dataLocal = await browser.storage.local.get();

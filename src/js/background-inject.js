@@ -175,21 +175,24 @@ function mainScript(extensionId, SettingId, Names, settings) {
             });
 
         },
-        iniLogoShortcut: function (data) {
+        iniLogoShortcut: function (event) {
 
-            if (settings.logoSubscriptions) {
+            let link = event.target;
 
-                const topbarLogoRenderer = Util.getSingleObjectByKey(data, "topbarLogoRenderer");
-                const endpoint = topbarLogoRenderer?.["endpoint"];
+            while (link && (link?.tagName !== "A" || link?.id !== "logo")) {
+                link = link.parentNode;
+            }
 
-                if (endpoint?.["browseEndpoint"]?.["browseId"]) {
-                    endpoint["browseEndpoint"]["browseId"] = "FEsubscriptions";
-                }
+            if (!link) {
+                return;
+            }
 
-                if (endpoint?.["commandMetadata"]?.["webCommandMetadata"]?.["url"]) {
-                    endpoint["commandMetadata"]["webCommandMetadata"]["url"] = "/feed/subscriptions";
-                }
+            const browseEndpoint = link?.["data"]?.["browseEndpoint"];
+            const metadata = link?.["data"]?.["commandMetadata"]?.["webCommandMetadata"];
 
+            if (browseEndpoint && metadata) {
+                browseEndpoint.browseId = "FEsubscriptions";
+                metadata.url = "/feed/subscriptions";
             }
 
         },
@@ -851,9 +854,17 @@ function mainScript(extensionId, SettingId, Names, settings) {
 
         },
         [SettingId.logoSubscriptions]: function (value) {
+
             if (settings.logoSubscriptions !== value) {
                 settings.logoSubscriptions = value;
             }
+
+            if (settings.logoSubscriptions) {
+                window.addEventListener("mouseup", Api.iniLogoShortcut, true);
+            } else {
+                window.removeEventListener("mouseup", Api.iniLogoShortcut, true);
+            }
+
         },
         [SettingId.homeShorts]: function (value) {
             if (settings.homeShorts !== value) {
@@ -1010,7 +1021,6 @@ function mainScript(extensionId, SettingId, Names, settings) {
 
     window[Names.pageModifier] = function () {
         Api.iniSettingsButton(arguments);
-        Api.iniLogoShortcut(arguments);
         Api.iniPageAdManager(arguments);
         Api.iniExcludeShorts(arguments);
         Api.iniCreatorMerch(arguments);

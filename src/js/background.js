@@ -53,12 +53,33 @@ const Api = {
 
         };
     },
+    checkNewFeatures: async (settings) => {
+
+        const newFeatures = {};
+
+        for (let key in DEFAULT_SETTINGS) {
+            if (!Object.hasOwn(settings, key)) {
+                settings[key] = newFeatures[key] = DEFAULT_SETTINGS[key];
+            }
+        }
+
+        if (Object.keys(newFeatures).length > 0) {
+            if (settings[SettingId.syncSettings] === true) {
+                await browser.storage.sync.set(newFeatures);
+            } else {
+                await browser.storage.local.set(newFeatures);
+            }
+        }
+
+        return settings;
+
+    },
     getSettings: async function () {
 
         const dataSync = await browser.storage.sync.get();
 
         if (Object.keys(dataSync).length > 0 && dataSync[SettingId.syncSettings] === true) {
-            return dataSync;
+            return await Api.checkNewFeatures(dataSync);
         }
 
         const dataLocal = await browser.storage.local.get();
@@ -70,19 +91,12 @@ const Api = {
             return DEFAULT_SETTINGS;
         }
 
-        return dataLocal;
+        return await Api.checkNewFeatures(dataLocal);
 
     },
     onWebPage: details => new Promise((resolve) => (async () => {
 
         const settings = await Api.getSettings();
-
-        // ensure new features are applied
-        for (let key in DEFAULT_SETTINGS) {
-            if (!Object.hasOwn(settings, key)) {
-                settings[key] = DEFAULT_SETTINGS[key];
-            }
-        }
 
         Api.filterEngine(details, str => str
             .replace(

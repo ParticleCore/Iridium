@@ -1,6 +1,6 @@
 "use strict";
 
-const settings = structuredClone(DEFAULT_SETTINGS) || {};
+const settings = {};
 const options = [];
 const Manager = {
     updateSyncSettings: function (newState, userInteraction) {
@@ -253,6 +253,20 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
+    updateAnnotations: function (newState, userInteraction) {
+
+        const settingId = SettingId.annotations;
+        const ui = document.querySelector(`[data-setting=${settingId}]`);
+
+        if (ui != null && ui.checked !== newState) {
+            ui.checked = newState;
+        }
+
+        if (!userInteraction) return;
+
+        Util.updateSingleSetting(settingId, newState);
+
+    },
     updateEndScreen: function (newState, userInteraction) {
 
         const settingId = SettingId.endScreen;
@@ -461,6 +475,9 @@ const Util = {
             case SettingId.infoCards:
                 Manager.updateInfoCards(value, userInteraction);
                 break;
+            case SettingId.annotations:
+                Manager.updateAnnotations(value, userInteraction);
+                break;
             case SettingId.endScreen:
                 Manager.updateEndScreen(value, userInteraction);
                 break;
@@ -550,18 +567,31 @@ const Util = {
         }
 
     },
-    initialLoad: function (items) {
+    initialLoad: async function (items) {
+
+        const newFeatures = {};
 
         // ensure new features are applied
         for (let key in DEFAULT_SETTINGS) {
             if (!Object.hasOwn(settings, key)) {
-                settings[key] = DEFAULT_SETTINGS[key];
+                settings[key] = newFeatures[key] = DEFAULT_SETTINGS[key];
+            }
+        }
+
+        if (Object.keys(newFeatures).length > 0) {
+            if (settings[SettingId.syncSettings] === true) {
+                await browser.storage.sync.set(newFeatures);
+            } else {
+                await browser.storage.local.set(newFeatures);
             }
         }
 
         for (let key in items) {
             settings[key] = items[key];
-            Util.handleSetting(key, items[key], false);
+        }
+
+        for (let key in settings) {
+            Util.handleSetting(key, settings[key], false);
         }
 
     },
@@ -570,7 +600,7 @@ const Util = {
         const dataSync = await browser.storage.sync.get();
 
         if (Object.keys(dataSync).length > 0 && dataSync[SettingId.syncSettings] === true) {
-            Util.initialLoad(dataSync);
+            await Util.initialLoad(dataSync);
             browser.storage.sync.onChanged.addListener(Util.onStorageChangedListener);
         } else {
 
@@ -580,9 +610,9 @@ const Util = {
             // this ensures the first load stores the default settings
             if (Object.keys(dataLocal).length === 0) {
                 await browser.storage.local.set(DEFAULT_SETTINGS);
-                Util.initialLoad(DEFAULT_SETTINGS);
+                await Util.initialLoad(DEFAULT_SETTINGS);
             } else {
-                Util.initialLoad(dataLocal);
+                await Util.initialLoad(dataLocal);
             }
 
             browser.storage.local.onChanged.addListener(Util.onStorageChangedListener);

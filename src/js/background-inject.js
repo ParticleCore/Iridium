@@ -109,6 +109,13 @@ function mainScript(extensionId, SettingId, Names, settings) {
                     }
                 });
             },
+            function (api) {
+                api.addEventListener("videodatachange", () => {
+                    if (!settings.annotations) {
+                        api?.["unloadModule"]?.("annotations_module");
+                    }
+                });
+            },
         ],
         qualityList: [
             "highres",
@@ -336,21 +343,17 @@ function mainScript(extensionId, SettingId, Names, settings) {
             }
 
         },
-        iniPlayerConfig: function (original) {
+        iniPlayerConfig: function (args) {
 
-            const data = structuredClone(original?.["0"]);
-
-            original["0"] = data;
-
-            const subscribeButtonRenderer = Util.getSingleObjectByKey(data, "subscribeButtonRenderer");
+            const subscribeButtonRenderer = Util.getSingleObjectByKey(args, "subscribeButtonRenderer");
             const isSubscribed = subscribeButtonRenderer?.["subscribed"] === true;
             const isInVideoAdsAllowed = Api.isAdAllowed(isSubscribed, settings.adInVideo);
 
             if (!isInVideoAdsAllowed) {
 
-                const adPlacements = Util.getSingleObjectByKey(data, "adPlacements");
-                const adSlots = Util.getSingleObjectByKey(data, "adSlots");
-                const playerAds = Util.getSingleObjectByKey(data, "playerAds");
+                const adPlacements = Util.getSingleObjectByKey(args, "adPlacements");
+                const adSlots = Util.getSingleObjectByKey(args, "adSlots");
+                const playerAds = Util.getSingleObjectByKey(args, "playerAds");
 
                 if (adPlacements?.length) {
                     adPlacements.length = 0;
@@ -368,8 +371,8 @@ function mainScript(extensionId, SettingId, Names, settings) {
 
             if (!settings.loudness) {
 
-                const audioConfig = Util.getSingleObjectByKey(data, "audioConfig");
-                const adaptiveFormats = Util.getSingleObjectByKey(data, "adaptiveFormats");
+                const audioConfig = Util.getSingleObjectByKey(args, "audioConfig");
+                const adaptiveFormats = Util.getSingleObjectByKey(args, "adaptiveFormats");
 
                 if (audioConfig) {
                     audioConfig["loudnessDb"] = 0;
@@ -389,7 +392,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
 
             if (!settings.hfrAllowed) {
 
-                const adaptiveFormats = Util.getSingleObjectByKey(data, "adaptiveFormats");
+                const adaptiveFormats = Util.getSingleObjectByKey(args, "adaptiveFormats");
 
                 if (adaptiveFormats) {
                     if (adaptiveFormats.constructor === Array && adaptiveFormats.length > 0) {
@@ -921,6 +924,11 @@ function mainScript(extensionId, SettingId, Names, settings) {
                 settings.infoCards = value;
             }
         },
+        [SettingId.annotations]: function (value) {
+            if (settings.annotations !== value) {
+                settings.annotations = value;
+            }
+        },
         [SettingId.endScreen]: function (value) {
 
             if (settings.endScreen !== value) {
@@ -1035,6 +1043,11 @@ function mainScript(extensionId, SettingId, Names, settings) {
     window[Names.patchApplicationCreate] = function (original) {
         return function () {
 
+            const args = structuredClone(arguments?.["1"]);
+            arguments["1"] = args;
+
+            Api.iniPlayerConfig(args);
+
             const created = original.apply(this, arguments);
             const moviePlayer = created?.["template"]?.["element"];
 
@@ -1045,7 +1058,9 @@ function mainScript(extensionId, SettingId, Names, settings) {
 
                 created["loadVideoByPlayerVars"] = function () {
 
-                    Api.iniPlayerConfig(arguments);
+                    const args = structuredClone(arguments?.["0"]);
+                    arguments["0"] = args;
+                    Api.iniPlayerConfig(args);
 
                     if (window.location.pathname === "/watch" && !settings.autoplay) {
                         created?.["cueVideoByPlayerVars"]?.apply(this, arguments);
@@ -1056,7 +1071,9 @@ function mainScript(extensionId, SettingId, Names, settings) {
                 }
 
                 created["cueVideoByPlayerVars"] = function () {
-                    Api.iniPlayerConfig(arguments);
+                    const args = structuredClone(arguments?.["0"]);
+                    arguments["0"] = args;
+                    Api.iniPlayerConfig(args);
                     cueVideoByPlayerVars?.apply(this, arguments);
                 }
 

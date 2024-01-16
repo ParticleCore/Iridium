@@ -359,7 +359,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
                 const playerAds = Util.getSingleObjectByKey(args, "playerAds");
 
                 if (adPlacements?.length) {
-                    adPlacements.length = 0;
+                    adPlacements.fill({});
                 }
 
                 if (adSlots?.length) {
@@ -1053,8 +1053,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
     window[Names.patchApplicationCreate] = function (original) {
         return function () {
 
-            const args = structuredClone(arguments?.["1"]);
-            arguments["1"] = args;
+            const args = arguments?.["1"];
 
             Api.iniPlayerConfig(args);
 
@@ -1068,8 +1067,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
 
                 created["loadVideoByPlayerVars"] = function () {
 
-                    const args = structuredClone(arguments?.["0"]);
-                    arguments["0"] = args;
+                    const args = arguments?.["0"];
                     Api.iniPlayerConfig(args);
 
                     if (window.location.pathname === "/watch" && !settings.autoplay) {
@@ -1081,8 +1079,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
                 }
 
                 created["cueVideoByPlayerVars"] = function () {
-                    const args = structuredClone(arguments?.["0"]);
-                    arguments["0"] = args;
+                    const args = arguments?.["0"];
                     Api.iniPlayerConfig(args);
                     cueVideoByPlayerVars?.apply(this, arguments);
                 }

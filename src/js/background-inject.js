@@ -196,6 +196,68 @@ function mainScript(extensionId, SettingId, Names, settings) {
             }
 
         },
+        iniDefaultTab: function (event) {
+
+            if (settings.channelTab === "featured") {
+                return
+            }
+
+            let link = event.target;
+
+            while (link && (link?.tagName !== "A")) {
+                link = link.parentNode;
+            }
+
+            if (!link) {
+                return;
+            }
+
+            const browseEndpoint = link?.["data"]?.["browseEndpoint"];
+            const metadata = link?.["data"]?.["commandMetadata"]?.["webCommandMetadata"];
+
+            if (browseEndpoint && metadata) {
+
+                let param = "";
+
+                switch (settings.channelTab) {
+                    case "featured":
+                        param = "EghmZWF0dXJlZPIGBAoCMgA%3D";
+                        break;
+                    case "videos":
+                        param = "EgZ2aWRlb3PyBgQKAjoA";
+                        break;
+                    case "shorts":
+                        param = "EgZzaG9ydHPyBgUKA5oBAA%3D%3D";
+                        break;
+                    case "streams":
+                        param = "EgdzdHJlYW1z8gYECgJ6AA%3D%3D";
+                        break;
+                    case "podcasts":
+                        param = "Eghwb2RjYXN0c_IGBQoDugEA";
+                        break;
+                    case "playlists":
+                        param = "EglwbGF5bGlzdHPyBgQKAkIA";
+                        break;
+                    case "community":
+                        param = "Egljb21tdW5pdHnyBgQKAkoA";
+                        break;
+                    case "channels":
+                        param = "EghjaGFubmVscw%3D%3D";
+                        break;
+                    case "store":
+                        param = "EgVzdG9yZfIGBAoCGgA%3D";
+                        break;
+                }
+
+                if (param !== "") {
+                    browseEndpoint.params = param;
+                }
+
+                metadata.url = link.href = `${browseEndpoint["canonicalBaseUrl"]}/${settings.channelTab}`;
+
+            }
+
+        },
         isAdAllowed: function (isSubscribed, enabled) {
 
             // when all ads are opted out
@@ -866,6 +928,19 @@ function mainScript(extensionId, SettingId, Names, settings) {
             }
 
         },
+        [SettingId.channelTab]: function (value) {
+
+            if (settings.channelTab !== value) {
+                settings.channelTab = value;
+            }
+
+            if (settings.channelTab) {
+                window.addEventListener("mouseup", Api.iniDefaultTab, true);
+            } else {
+                window.removeEventListener("mouseup", Api.iniDefaultTab, true);
+            }
+
+        },
         [SettingId.homeShorts]: function (value) {
             if (settings.homeShorts !== value) {
                 settings.homeShorts = value;
@@ -1018,6 +1093,13 @@ function mainScript(extensionId, SettingId, Names, settings) {
         });
 
     };
+
+    window[Names.parseBypass] = function () {
+        const parsed = JSON.parse.apply(this, arguments);
+        window[Names.pageModifier](parsed);
+        Api.iniPlayerConfig(parsed);
+        return parsed;
+    }
 
     window[Names.pageModifier] = function () {
         Api.iniSettingsButton(arguments);

@@ -119,6 +119,10 @@ const Api = {
     })()),
     onBaseJS: details => Api.filterEngine(details, str => str
         .replace(
+            /=JSON\.parse\(/g,
+            `=(window?.["${Names.parseBypass}"]||JSON.parse)(`
+        )
+        .replace(
             /"yt\.player\.Application\.create",(.*?create)\);/g,
             `"yt.player.Application.create",window?.["${Names.patchApplicationCreate}"]?.($1)||$1);`
         )

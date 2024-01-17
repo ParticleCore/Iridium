@@ -120,6 +120,20 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
+    updateChannelTab: function (newState, userInteraction) {
+
+        const settingId = SettingId.channelTab;
+        const ui = document.querySelector(`[data-setting=${settingId}]`);
+
+        if (ui != null && ui.value !== newState) {
+            ui.value = newState;
+        }
+
+        if (!userInteraction) return;
+
+        Util.updateSingleSetting(settingId, newState);
+
+    },
     updateShorts: function (id, newState, userInteraction) {
 
         const settingId = id;
@@ -446,6 +460,9 @@ const Util = {
             case SettingId.logoSubscriptions:
                 Manager.updateLogoSubscriptions(value, userInteraction);
                 break;
+            case SettingId.channelTab:
+                Manager.updateChannelTab(value, userInteraction);
+                break;
             case SettingId.homeShorts:
             case SettingId.subscriptionsShorts:
             case SettingId.searchShorts:
@@ -573,13 +590,13 @@ const Util = {
 
         // ensure new features are applied
         for (let key in DEFAULT_SETTINGS) {
-            if (!Object.hasOwn(settings, key)) {
-                settings[key] = newFeatures[key] = DEFAULT_SETTINGS[key];
+            if (!Object.hasOwn(items, key)) {
+                items[key] = newFeatures[key] = DEFAULT_SETTINGS[key];
             }
         }
 
         if (Object.keys(newFeatures).length > 0) {
-            if (settings[SettingId.syncSettings] === true) {
+            if (items[SettingId.syncSettings] === true) {
                 await browser.storage.sync.set(newFeatures);
             } else {
                 await browser.storage.local.set(newFeatures);

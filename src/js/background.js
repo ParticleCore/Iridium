@@ -161,7 +161,7 @@ const Api = {
 }
 
 browser.runtime.onConnect.addListener((port) => port.onMessage.addListener(Api.onMessageListener));
-browser.action.onClicked.addListener(() => browser.runtime.openOptionsPage().then());
+browser.browserAction.onClicked.addListener(() => browser.runtime.openOptionsPage().then());
 browser.webRequest.onBeforeRequest.addListener(
     Api.onWebPage,
     {

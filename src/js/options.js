@@ -337,6 +337,20 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
+    updateVideoFocusToggle: function (newState, userInteraction) {
+
+        const settingId = SettingId.videoFocusToggle;
+        const ui = document.querySelector(`[data-setting=${settingId}]`);
+
+        if (ui != null && ui.checked !== newState) {
+            ui.checked = newState;
+        }
+
+        if (!userInteraction) return;
+
+        Util.updateSingleSetting(settingId, newState);
+
+    },
     updateVideoScreenshot: function (newState, userInteraction) {
 
         const settingId = SettingId.videoScreenshot;
@@ -500,6 +514,9 @@ const Util = {
                 break;
             case SettingId.hfrAllowed:
                 Manager.updateHFRAllowed(value, userInteraction);
+                break;
+            case SettingId.videoFocusToggle:
+                Manager.updateVideoFocusToggle(value, userInteraction);
                 break;
             case SettingId.videoScreenshot:
                 Manager.updateVideoScreenshot(value, userInteraction);

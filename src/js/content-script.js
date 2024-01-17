@@ -3,15 +3,46 @@
 const channel = new BroadcastChannel(browser.runtime.id);
 let port = null;
 
-channel.addEventListener("message", (message) => {
+const saveSettings = async data => {
+
+    if (!data) {
+        return;
+    }
+
+    const dataSync = await browser.storage.sync.get();
+
+    if (dataSync?.[SettingId.syncSettings] === true) {
+        await browser.storage.sync.set(data);
+    } else {
+        await browser.storage.local.set(data);
+    }
+
+};
+
+const portMessage = data => {
+
+    if (!data) {
+        return;
+    }
 
     if (!port) {
         port = browser.runtime.connect(browser.runtime.id);
         port?.onDisconnect?.addListener(() => port = null);
     }
 
-    port?.postMessage(message.data);
+    port?.postMessage(data);
 
+};
+
+channel.addEventListener("message", (message) => {
+    switch (message?.data?.type) {
+        case "setting":
+            saveSettings(message?.data?.payload).then();
+            break;
+        case "action":
+            portMessage(message?.data);
+            break;
+    }
 });
 
 (async () => {

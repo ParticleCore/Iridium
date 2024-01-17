@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Iridium for YouTube",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "description": "YouTube with more freedom",
     "default_locale": "en_US",
     "options_ui": {

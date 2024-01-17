@@ -215,47 +215,47 @@ function mainScript(extensionId, SettingId, Names, settings) {
             const browseEndpoint = link?.["data"]?.["browseEndpoint"];
             const metadata = link?.["data"]?.["commandMetadata"]?.["webCommandMetadata"];
 
-            if (browseEndpoint && metadata) {
-
-                let param = "";
-
-                switch (settings.channelTab) {
-                    case "featured":
-                        param = "EghmZWF0dXJlZPIGBAoCMgA%3D";
-                        break;
-                    case "videos":
-                        param = "EgZ2aWRlb3PyBgQKAjoA";
-                        break;
-                    case "shorts":
-                        param = "EgZzaG9ydHPyBgUKA5oBAA%3D%3D";
-                        break;
-                    case "streams":
-                        param = "EgdzdHJlYW1z8gYECgJ6AA%3D%3D";
-                        break;
-                    case "podcasts":
-                        param = "Eghwb2RjYXN0c_IGBQoDugEA";
-                        break;
-                    case "playlists":
-                        param = "EglwbGF5bGlzdHPyBgQKAkIA";
-                        break;
-                    case "community":
-                        param = "Egljb21tdW5pdHnyBgQKAkoA";
-                        break;
-                    case "channels":
-                        param = "EghjaGFubmVscw%3D%3D";
-                        break;
-                    case "store":
-                        param = "EgVzdG9yZfIGBAoCGgA%3D";
-                        break;
-                }
-
-                if (param !== "") {
-                    browseEndpoint.params = param;
-                }
-
-                metadata.url = link.href = `${browseEndpoint["canonicalBaseUrl"]}/${settings.channelTab}`;
-
+            if (!browseEndpoint || metadata["webPageType"] !== "WEB_PAGE_TYPE_CHANNEL") {
+                return;
             }
+
+            let param = "";
+
+            switch (settings.channelTab) {
+                case "featured":
+                    param = "EghmZWF0dXJlZPIGBAoCMgA%3D";
+                    break;
+                case "videos":
+                    param = "EgZ2aWRlb3PyBgQKAjoA";
+                    break;
+                case "shorts":
+                    param = "EgZzaG9ydHPyBgUKA5oBAA%3D%3D";
+                    break;
+                case "streams":
+                    param = "EgdzdHJlYW1z8gYECgJ6AA%3D%3D";
+                    break;
+                case "podcasts":
+                    param = "Eghwb2RjYXN0c_IGBQoDugEA";
+                    break;
+                case "playlists":
+                    param = "EglwbGF5bGlzdHPyBgQKAkIA";
+                    break;
+                case "community":
+                    param = "Egljb21tdW5pdHnyBgQKAkoA";
+                    break;
+                case "channels":
+                    param = "EghjaGFubmVscw%3D%3D";
+                    break;
+                case "store":
+                    param = "EgVzdG9yZfIGBAoCGgA%3D";
+                    break;
+            }
+
+            if (param !== "") {
+                browseEndpoint.params = param;
+            }
+
+            metadata.url = link.href = `${browseEndpoint["canonicalBaseUrl"]}/${settings.channelTab}`;
 
         },
         isAdAllowed: function (isSubscribed, enabled) {

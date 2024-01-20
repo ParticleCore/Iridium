@@ -81,11 +81,35 @@ html .iridium-options:hover yt-icon {
     pointer-events: none;
     user-select: none;
 }
+#iridium-video-focus:not([iridium-enabled]) #iridium-on,
+#iridium-video-focus[iridium-enabled] #iridium-off {
+    display: none;
+}
+#iridium-monetization:not(.monetized) .iridium-on,
+#iridium-monetization.monetized .iridium-off {
+    display: none;
+}
 html[dark] #iridium-player-tools .monetized {
-    fill: #71ff3e;
+    fill: #3fd20a;
 }
 #iridium-player-tools .monetized {
     fill: #3ad406;
+}
+html[dark] #iridium-player-tools .sponsored {
+    fill: #3e8bff;
+}
+#iridium-player-tools .sponsored {
+    fill: #0677d4;
+}
+#iridium-monetization-count {
+    font-size: 10px;
+    position: absolute;
+    color: var(--yt-spec-text-primary);
+    bottom: 0;
+    right: 0;
+    background: var(--yt-spec-base-background);
+    border-radius: 12px;
+    padding: 0 3px;
 }
 #iridium-monetization-count {
     font-size: 10px;

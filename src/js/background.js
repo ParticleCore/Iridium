@@ -5,7 +5,6 @@ const Names = {
     modArgs: "modArgs",
     imageLoader: "imageLoader",
     pageModifier: "pageModifier",
-    onAppReady: "onAppReady",
     parseBypass: "parseBypass",
     patchApplicationCreate: "patchApplicationCreate",
     patchYtInitialData: "patchYtInitialData",
@@ -123,21 +122,13 @@ const Api = {
             `=(window?.["${Names.parseBypass}"]||JSON.parse)(`
         )
         .replace(
-            /"yt\.player\.Application\.create",(.*?create)\);/g,
-            `"yt.player.Application.create",window?.["${Names.patchApplicationCreate}"]?.($1)||$1);`
-        )
-        .replace(
-            /"yt\.player\.Application\.createAlternate",(.*?create)\);/g,
-            `"yt.player.Application.createAlternate",window?.["${Names.patchApplicationCreate}"]?.($1)||$1);`
+            /"yt\.player\.Application\.(create|createAlternate)",(.*?create)\);/g,
+            `"yt.player.Application.$1",window?.["${Names.patchApplicationCreate}"]?.($2)||$2);`
         )),
     onDesktopPolymerJS: details => Api.filterEngine(details, str => str
         .replace(
             /text\(\)\.then(\(function\(([a-z0-9]+)\){)/gi,
             `text().then(function($2){return window?.["${Names.navigationMod}"]?.($2)||$2;}).then$1`
-        )
-        .replace(
-            /(transition\("rendering"\))/gi,
-            `$1;window?.["${Names.onAppReady}"]?.()`
         )
         .replace(
             /config\.loaded=!0\)/g,

@@ -3,7 +3,7 @@
 const settings = {};
 const options = [];
 const Manager = {
-    updateSyncSettings: function (newState, userInteraction) {
+    updateSyncSettings: (newState, userInteraction) => {
 
         const settingId = SettingId.syncSettings;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -42,7 +42,7 @@ const Manager = {
         })();
 
     },
-    updateExtensionButton: function (newState, userInteraction) {
+    updateExtensionButton: (newState, userInteraction) => {
 
         const settingId = SettingId.extensionButton;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -56,7 +56,7 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateTheme: function (newState, userInteraction) {
+    updateTheme: (newState, userInteraction) => {
 
         function toggleTheme(isDark) {
             if (isDark) {
@@ -106,7 +106,7 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateLogoSubscriptions: function (newState, userInteraction) {
+    updateLogoSubscriptions: (newState, userInteraction) => {
 
         const settingId = SettingId.logoSubscriptions;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -120,7 +120,7 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateChannelTab: function (newState, userInteraction) {
+    updateChannelTab: (newState, userInteraction) => {
 
         const settingId = SettingId.channelTab;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -134,7 +134,7 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateShorts: function (id, newState, userInteraction) {
+    updateShorts: (id, newState, userInteraction) => {
 
         const settingId = id;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -148,7 +148,7 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateAdManager: function (id, newState, userInteraction) {
+    updateAdManager: (id, newState, userInteraction) => {
 
         const settingId = id;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -183,7 +183,7 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateVideoFocus: function (newState, userInteraction) {
+    updateVideoFocus: (newState, userInteraction) => {
 
         const settingId = SettingId.videoFocus;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -197,7 +197,7 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateCreatorMerch: function (newState, userInteraction) {
+    updateCreatorMerch: (newState, userInteraction) => {
 
         const settingId = SettingId.creatorMerch;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -211,7 +211,7 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateAutoplay: function (newState, userInteraction) {
+    updateAutoplay: (newState, userInteraction) => {
 
         const settingId = SettingId.autoplay;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -225,7 +225,7 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateLoudness: function (newState, userInteraction) {
+    updateLoudness: (newState, userInteraction) => {
 
         const settingId = SettingId.loudness;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -239,7 +239,7 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateScrollVolume: function (newState, userInteraction) {
+    updateScrollVolume: (newState, userInteraction) => {
 
         const settingId = SettingId.scrollVolume;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -253,7 +253,7 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateInfoCards: function (newState, userInteraction) {
+    updateInfoCards: (newState, userInteraction) => {
 
         const settingId = SettingId.infoCards;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -267,7 +267,7 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateAnnotations: function (newState, userInteraction) {
+    updateAnnotations: (newState, userInteraction) => {
 
         const settingId = SettingId.annotations;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -281,7 +281,7 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateEndScreen: function (newState, userInteraction) {
+    updateEndScreen: (newState, userInteraction) => {
 
         const settingId = SettingId.endScreen;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -295,7 +295,7 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateDefaultQuality: function (newState, userInteraction) {
+    updateDefaultQuality: (newState, userInteraction) => {
 
         const settingId = SettingId.defaultQuality;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -309,7 +309,7 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateDefaultSpeed: function (newState, userInteraction) {
+    updateDefaultSpeed: (newState, userInteraction) => {
 
         const settingId = SettingId.defaultSpeed;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -323,7 +323,7 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateHFRAllowed: function (newState, userInteraction) {
+    updateHFRAllowed: (newState, userInteraction) => {
 
         const settingId = SettingId.hfrAllowed;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -337,7 +337,7 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateVideoFocusToggle: function (newState, userInteraction) {
+    updateVideoFocusToggle: (newState, userInteraction) => {
 
         const settingId = SettingId.videoFocusToggle;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -351,7 +351,7 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateVideoScreenshot: function (newState, userInteraction) {
+    updateVideoScreenshot: (newState, userInteraction) => {
 
         const settingId = SettingId.videoScreenshot;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -365,7 +365,7 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateVideoThumbnail: function (newState, userInteraction) {
+    updateVideoThumbnail: (newState, userInteraction) => {
 
         const settingId = SettingId.videoThumbnail;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -379,7 +379,7 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
-    updateMonetizationInfo: function (newState, userInteraction) {
+    updateMonetizationInfo: (newState, userInteraction) => {
 
         const settingId = SettingId.monetizationInfo;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
@@ -395,14 +395,14 @@ const Manager = {
     },
 };
 const Util = {
-    saveData: async function (data) {
+    saveData: async data => {
         if (settings.syncSettings === true) {
             await browser.storage.sync.set(data);
         } else {
             await browser.storage.local.set(data);
         }
     },
-    updateSettings: function (data) {
+    updateSettings: data => {
 
         for (let key in data) {
             settings[key] = data[key];
@@ -411,7 +411,7 @@ const Util = {
         Util.saveData(data).then();
 
     },
-    updateSingleSetting: function (key, value) {
+    updateSingleSetting: (key, value) => {
 
         if (settings[key] === value) {
             return;
@@ -422,13 +422,13 @@ const Util = {
         Util.saveData({[key]: value}).then();
 
     },
-    populateOptions: function (item) {
+    populateOptions: item => {
         const id = item?.dataset?.menu?.trim();
         if (id != null && id !== "") {
             options.push(id);
         }
     },
-    toggleMenuItem: function (event) {
+    toggleMenuItem: event => {
 
         const itemId = event?.target?.dataset?.menu;
 
@@ -450,7 +450,7 @@ const Util = {
         }
 
     },
-    handleSetting: function (key, value, userInteraction) {
+    handleSetting: (key, value, userInteraction) => {
         switch (key) {
             case SettingId.extensionButton:
                 Manager.updateExtensionButton(value, userInteraction);
@@ -529,7 +529,7 @@ const Util = {
                 break;
         }
     },
-    settingAction: function (event) {
+    settingAction: event => {
         if (event.target?.type === "checkbox") {
             Util.handleSetting(event.target?.dataset?.setting, event.target?.checked, true);
         } else if (event.target?.type === "radio") {
@@ -550,7 +550,7 @@ const Util = {
             }
         }
     },
-    importSettings: function () {
+    importSettings: () => {
         try {
             const input = document.createElement("input");
             input.multiple = false;
@@ -565,7 +565,7 @@ const Util = {
         } catch (ignore) {
         }
     },
-    exportSettings: function () {
+    exportSettings: () => {
         try {
             const a = document.createElement("a");
             a.href = URL.createObjectURL(new Blob([JSON.stringify(settings, null, 2)], {type: "application/json"}));
@@ -574,7 +574,7 @@ const Util = {
         } catch (ignore) {
         }
     },
-    resetSettings: function () {
+    resetSettings: () => {
         if (window.confirm("You are about to reset the settings to default, do you want to continue?")) {
 
             Util.updateSettings(structuredClone(DEFAULT_SETTINGS));
@@ -601,7 +601,7 @@ const Util = {
         }
 
     },
-    initialLoad: async function (items) {
+    initialLoad: async items => {
 
         const newFeatures = {};
 
@@ -629,7 +629,7 @@ const Util = {
         }
 
     },
-    checkStorage: async function () {
+    checkStorage: async () => {
 
         const dataSync = await browser.storage.sync.get();
 
@@ -654,7 +654,7 @@ const Util = {
         }
 
     },
-    ini: function () {
+    ini: () => {
 
         document.getElementById("version").textContent = browser.runtime.getManifest().version;
         document.getElementById("items")?.addEventListener("click", Util.toggleMenuItem, true);

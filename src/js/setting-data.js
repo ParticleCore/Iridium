@@ -51,7 +51,7 @@ const DEFAULT_SETTINGS = {
     [SettingId.videoFocus]: true,
     [SettingId.creatorMerch]: true,
     [SettingId.defaultQuality]: "auto",
-    [SettingId.defaultSpeed]: "1",
+    [SettingId.defaultSpeed]: "-1",
     [SettingId.hfrAllowed]: true,
     [SettingId.autoplay]: false,
     [SettingId.loudness]: false,

@@ -102,10 +102,19 @@ function mainScript(extensionId, SettingId, Names, settings) {
                 });
             },
             function (api) {
+                let currentId = "";
                 api.addEventListener("onStateChange", function () {
-                    const currentSpeed = api?.["getPlaybackRate"]?.()?.toString();
-                    if (settings.defaultSpeed !== currentSpeed) {
-                        api?.["setPlaybackRate"]?.(Number(settings.defaultSpeed));
+                    if (settings.defaultSpeed !== "-1" && Api.isValidSpeed(settings.defaultSpeed)) {
+                        const videoId = api?.["getVideoData"]?.()?.["video_id"] || "";
+                        const currentSpeed = api?.["getPlaybackRate"]?.()?.toString();
+                        if (settings.defaultSpeed !== currentSpeed && currentId !== videoId) {
+                            const availableSpeedList = api?.["getAvailablePlaybackRates"]?.();
+                            if (availableSpeedList?.length > 0) {
+                                currentId = videoId;
+                                const speedSet = Api.getAvailableSpeed(settings.defaultSpeed, availableSpeedList);
+                                api?.["setPlaybackRate"]?.(speedSet);
+                            }
+                        }
                     }
                 });
             },
@@ -136,6 +145,26 @@ function mainScript(extensionId, SettingId, Names, settings) {
                 return quality;
             } else {
                 return availableList[0];
+            }
+        },
+        speedList: [
+            "0.25",
+            "0.5",
+            "0.75",
+            "1",
+            "1.25",
+            "1.5",
+            "1.75",
+            "2",
+            "-1",
+        ],
+        isValidSpeed: speed => Api.speedList.indexOf(speed) > -1,
+        getAvailableSpeed : function (speed, availableList) {
+            const speedNumber = Number(speed);
+            if (availableList.indexOf(speedNumber) > -1) {
+                return speedNumber;
+            } else {
+                return 1;
             }
         },
         iniSettingsButton: function (data) {

@@ -334,6 +334,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
 
                 // home page ads
                 const richGridRenderer = Util.getSingleObjectByKey(data, "richGridRenderer");
+                const appendContinuationItemsAction = Util.getSingleObjectByKey(data, "appendContinuationItemsAction");
 
                 if (!isAdMastheadAllowed) {
                     // home page masthead banner
@@ -344,14 +345,14 @@ function mainScript(extensionId, SettingId, Names, settings) {
 
                 if (!isAdHomeFeedAllowed) {
 
-                    const richGridRendererContents = richGridRenderer?.["contents"];
+                    const itemContainer = richGridRenderer?.["contents"] || appendContinuationItemsAction?.["continuationItems"];
 
                     // home page list ads
-                    if (richGridRendererContents?.constructor === Array && richGridRendererContents.length > 0) {
-                        for (let i = richGridRendererContents.length - 1; i >= 0; i--) {
-                            const itemRenderer = richGridRendererContents[i];
+                    if (itemContainer?.constructor === Array && itemContainer.length > 0) {
+                        for (let i = itemContainer.length - 1; i >= 0; i--) {
+                            const itemRenderer = itemContainer[i];
                             if (itemRenderer?.["richItemRenderer"]?.["content"]?.["adSlotRenderer"]) {
-                                richGridRendererContents.splice(i, 1);
+                                itemContainer.splice(i, 1);
                             }
                         }
                     }
@@ -1060,7 +1061,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
 
     window[Names.navigationMod] = function (data) {
         try {
-            const response = JSON.parse(data);
+            const response = JSON.parse(data?.replace(")]}'\n",""));
             window[Names.pageModifier](response);
             return JSON.stringify(response);
         } catch (ignore) {

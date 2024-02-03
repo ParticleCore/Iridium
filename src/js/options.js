@@ -393,6 +393,100 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
+    updateBlacklistEnabled: (newState, userInteraction) => {
+
+        const settingId = SettingId.blacklistEnabled;
+        const ui = document.querySelector(`[data-setting=${settingId}]`);
+
+        if (ui != null && ui.checked !== newState) {
+            ui.checked = newState;
+        }
+
+        const dependent = document.querySelector(`[data-id=${SettingId.blacklistButton}]`);
+
+        if (newState) {
+            dependent?.classList.remove("disabled");
+        } else {
+            dependent?.classList.add("disabled");
+        }
+
+        if (!userInteraction) return;
+
+        Util.updateSingleSetting(settingId, newState);
+
+    },
+    updateBlacklistButton: (newState, userInteraction) => {
+
+        const settingId = SettingId.blacklistButton;
+        const ui = document.querySelector(`[data-setting=${settingId}]`);
+
+        if (ui != null && ui.checked !== newState) {
+            ui.checked = newState;
+        }
+
+        if (!userInteraction) return;
+
+        Util.updateSingleSetting(settingId, newState);
+
+    },
+    updateBlacklist: (newList, userInteraction) => {
+
+        const settingId = SettingId.blacklist;
+        const container = document.getElementById("blacklistChannels");
+
+        if (container) {
+            container.innerHTML = "";
+        }
+
+        const keys = Object.keys(newList);
+
+        if (keys.length === 0) {
+
+            const child = document.createElement("div");
+
+            child.id = "blacklistEmpty";
+            child.textContent = "nothing is blocked";
+            child.style.flex = "1";
+            child.style.textAlign = "center";
+
+            document.getElementById("blacklistChannels")?.appendChild(child);
+
+        } else {
+
+            document.getElementById("blacklistEmpty")?.remove();
+
+            const newNodeList = []
+
+            keys.forEach((item) => {
+
+                const child = document.createElement("div");
+
+                child.title = "remove";
+                child.classList.add("channel");
+                child.dataset.name = newList[item].name.toLowerCase();
+                child.dataset.handle = newList[item].handle;
+                child.dataset.ucid = item;
+                child.innerHTML = `
+                    <div class="channelName">${newList[item].name || "<i>@" + newList[item].handle + "</i>"}</div>
+                    <svg class="remove" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+                        <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/>
+                    </svg>`;
+
+                newNodeList.push(child);
+
+            });
+
+            if (newNodeList.length > 0) {
+                container?.append(...newNodeList);
+            }
+
+        }
+
+        if (!userInteraction) return;
+
+        Util.updateSingleSetting(settingId, newList);
+
+    },
 };
 const Util = {
     saveData: async data => {
@@ -527,6 +621,15 @@ const Util = {
             case SettingId.monetizationInfo:
                 Manager.updateMonetizationInfo(value, userInteraction);
                 break;
+            case SettingId.blacklistEnabled:
+                Manager.updateBlacklistEnabled(value, userInteraction);
+                break;
+            case SettingId.blacklistButton:
+                Manager.updateBlacklistButton(value, userInteraction);
+                break;
+            case SettingId.blacklist:
+                Manager.updateBlacklist(value, userInteraction);
+                break;
         }
     },
     settingAction: event => {
@@ -590,10 +693,22 @@ const Util = {
         const changedData = {};
 
         for (let key in data) {
+
             const change = data[key];
-            if (change.newValue !== change.oldValue && settings[key] !== change.newValue) {
+            let newObject = change.newValue;
+            let oldObject = change.oldValue;
+            let currentObject = settings[key];
+
+            if (change.newValue?.constructor === Object) {
+                newObject = JSON.stringify(change.newValue);
+                oldObject = JSON.stringify(change.oldValue);
+                currentObject = JSON.stringify(settings[key]);
+            }
+
+            if (newObject !== oldObject && currentObject !== newObject) {
                 settings[key] = changedData[key] = change.newValue;
             }
+
         }
 
         if (Object.keys(changedData).length > 0) {
@@ -654,6 +769,263 @@ const Util = {
         }
 
     },
+    onBlacklistFilterChange: (event) => {
+
+        const items = Array.from(document.querySelectorAll(".channel")).map((item) => ({name: item.dataset.name, target: item}));
+
+        if (items.length === 0) {
+            return;
+        }
+
+        const filteredItems = items.filter((item) => {
+            const name = item.target.dataset.name || item.target.dataset.handle;
+            const matched = name?.includes(event?.target?.value?.toLowerCase() || "") === true;
+            item.target.style.display = matched ? "" : "none";
+            return matched;
+        });
+
+        document.getElementById("blacklistNoResults")?.remove();
+
+        if (filteredItems.length === 0) {
+
+            const child = document.createElement("div");
+
+            child.id = "blacklistNoResults";
+            child.textContent = "no results found";
+            child.style.flex = "1";
+            child.style.textAlign = "center";
+
+            document.getElementById("blacklistChannels")?.appendChild(child);
+
+        }
+
+    },
+    iniBlacklistSearch: () => {
+
+        let url = "";
+        const channelData = document.getElementById("channelDataInput")?.value?.trim();
+        const onError = (error) => {
+
+            const dialog = document.getElementById("dialog");
+
+            if (dialog) {
+                dialog.classList.add("noResults");
+                dialog.classList.remove("channelBlocked");
+            }
+
+            const message = document.getElementById("searchResultMessage");
+
+            if (message) {
+                message.textContent = error;
+            }
+
+        };
+
+        if (channelData) {
+            if (channelData.startsWith("@")) {
+                url = "https://www.youtube.com/" + channelData;
+            } else if (channelData.toUpperCase().startsWith("UC")) {
+                url = "https://www.youtube.com/channel/" + channelData;
+            }
+        }
+
+        if (url === "") {
+            onError("Search term must start with @... or UC...");
+            return;
+        }
+
+        fetch(url).then((response) => response.text().then((b) => {
+
+            let matched = b.match(/var ytInitialData = (\{.*?});/)?.[1];
+
+            if (matched) {
+                try {
+
+                    const pageData = JSON.parse(matched);
+                    const metadata = pageData?.metadata?.["channelMetadataRenderer"];
+
+                    if (metadata) {
+
+                        const dataObject = {
+                            avatar: metadata?.["avatar"]?.["thumbnails"][0]?.url?.split("=")?.[0],
+                            channelHandle: metadata?.["vanityChannelUrl"]?.split("@")?.[1],
+                            channelName: metadata?.title,
+                            channelId: metadata?.["externalId"]
+                        }
+
+                        const dialog = document.getElementById("dialog");
+
+                        if (dialog) {
+
+                            dialog.classList.remove("noResults");
+
+                            if (Object.hasOwn(settings.blacklist, dataObject.channelId)) {
+                                dialog.classList.add("channelBlocked");
+                            } else {
+                                dialog.classList.remove("channelBlocked");
+                            }
+
+                        }
+
+                        const avatarContainer = document.getElementById("searchChannelAvatar");
+
+                        if (avatarContainer) {
+                            avatarContainer.src = dataObject.avatar;
+                        }
+
+                        const nameContainer = document.getElementById("searchChannelName");
+
+                        if (nameContainer) {
+                            if (dataObject.channelName) {
+                                nameContainer.textContent = dataObject.channelName;
+                            } else {
+                                nameContainer.innerHTML = "<i>empty channel name</i>";
+                            }
+                        }
+
+                        const addDialog = document.getElementById("addDialog");
+
+                        if (addDialog) {
+                            addDialog.dataset.channelHandle = dataObject.channelHandle;
+                            addDialog.dataset.channelName = dataObject.channelName;
+                            addDialog.dataset.channelId = dataObject.channelId;
+                        }
+
+                    } else {
+                        onError("Something went wrong");
+                    }
+
+                } catch (e) {
+                    onError("Something went wrong");
+                }
+            } else {
+                onError(`No results for ${channelData}`);
+            }
+
+        }));
+
+    },
+    iniBlacklistAdd: () => {
+
+        const backdrop = document.createElement("div");
+
+        backdrop.id = "backdrop";
+        backdrop.innerHTML = `
+            <div id="dialog" class="noResults">
+                <div id="searchForm">
+                    <input id="channelDataInput" type="text" placeholder="@handle or UCxxx"/>
+                    <div id="searchDialog" class="action-button">Search</div>
+                </div>
+                <div id="searchResult">
+                    <div id="searchResultMessage">Enter channel handle or channel id</div>
+                    <div id="searchChannelAvatarContainer">
+                        <img id="searchChannelAvatar" alt="" src=""/>
+                    </div>
+                    <div id="blockedIndicator">BLOCKED</div>
+                    <div id="searchChannelName">.</div>
+                </div>
+                <div id="dialogAction">
+                    <div id="closeDialog" class="action-button">Close</div>
+                    <div id="addDialog" class="action-button">Add</div>
+                </div>
+            </div>`;
+
+        document.body.appendChild(backdrop);
+
+        backdrop.querySelector("#closeDialog")?.addEventListener("click", () => backdrop.remove());
+        backdrop.querySelector("#searchDialog")?.addEventListener("click", () => Util.iniBlacklistSearch());
+        backdrop.querySelector("#channelDataInput")?.focus();
+        backdrop.querySelector("#channelDataInput")?.addEventListener("keyup", (event) => {
+            if (event.key === "Enter") {
+                Util.iniBlacklistSearch();
+            }
+        });
+        backdrop.querySelector("#addDialog")?.addEventListener("click", (event) => {
+
+            const dataObject = {
+                channelHandle: event.target.dataset?.channelHandle,
+                channelName: event.target.dataset?.channelName,
+                channelId: event.target.dataset?.channelId
+            }
+
+            if (!Object.hasOwn(settings.blacklist, dataObject.channelId)) {
+                document.getElementById("dialog")?.classList.add("channelBlocked");
+                const listCopy = structuredClone(settings.blacklist);
+                listCopy[dataObject.channelId] = {
+                    name: dataObject.channelName,
+                    handle: dataObject.channelHandle
+                };
+                Manager.updateBlacklist(listCopy, true);
+            }
+
+        });
+
+    },
+    onBlacklistRemove: event => {
+
+        const channelId = event.target?.dataset?.ucid;
+
+        if (channelId && Object.hasOwn(settings.blacklist, channelId)) {
+            const newList = structuredClone(settings.blacklist);
+            delete newList[channelId];
+            Manager.updateBlacklist(newList, true);
+        }
+
+    },
+    onBlacklistImport: () => {
+        try {
+            const input = document.createElement("input");
+            input.multiple = false;
+            input.accept = "application/json";
+            input.type = "file";
+            input.onchange = () => {
+                if (input.files.length > 0) {
+                    input.files[0].text().then(data => {
+
+                        const parsedData = JSON.parse(data);
+                        const newList = structuredClone(settings.blacklist);
+
+                        Object.keys(parsedData).forEach((item) => {
+                            if (!Object.hasOwn(settings.blacklist, item)) {
+                                const name = parsedData[item]?.name;
+                                const handle = parsedData[item]?.handle;
+                                // channel must have either a name or a handle
+                                if (name || handle) {
+                                    newList[item] = {
+                                        name: parsedData[item]?.name,
+                                        handle: parsedData[item]?.handle
+                                    }
+                                }
+                            }
+                        });
+
+                        if (Object.keys(newList).length > 0) {
+                            Manager.updateBlacklist(newList, true);
+                        }
+
+                    });
+                }
+            };
+            input.click();
+        } catch (ignore) {
+        }
+    },
+    onBlacklistExport: () => {
+        try {
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(new Blob([JSON.stringify(settings.blacklist, null, 2)], {type: "application/json"}));
+            a.download = `Iridium${browser.runtime.getManifest().version}-blacklist.json`;
+            a.click();
+        } catch (ignore) {
+        }
+    },
+    iniBlacklist: () => {
+        document.getElementById("filterChannels")?.addEventListener("keyup", Util.onBlacklistFilterChange);
+        document.getElementById("blacklistChannels")?.addEventListener("click", Util.onBlacklistRemove);
+        document.getElementById("addChannel")?.addEventListener("click", Util.iniBlacklistAdd);
+        document.getElementById("importList")?.addEventListener("click", Util.onBlacklistImport);
+        document.getElementById("exportList")?.addEventListener("click", Util.onBlacklistExport);
+    },
     ini: () => {
 
         document.getElementById("version").textContent = browser.runtime.getManifest().version;
@@ -662,6 +1034,7 @@ const Util = {
         document.getElementById("contents")?.addEventListener("change", Util.settingAction, true);
         document.querySelectorAll("[data-menu]").forEach(Util.populateOptions);
 
+        Util.iniBlacklist();
         Util.checkStorage().then();
 
     },

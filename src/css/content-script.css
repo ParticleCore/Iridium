@@ -46,7 +46,7 @@ html .iridium-options:hover yt-icon {
     display: inline-block;
     padding: 10px 20px;
     font-size: 175%;
-    background: rgba(0,0,0,.5);
+    background: rgba(0, 0, 0, .5);
     pointer-events: none;
     border-radius: 3px;
 }

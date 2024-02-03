@@ -5,6 +5,10 @@ function mainScript(extensionId, SettingId, Names, settings) {
     const Util = {
         getSingleObjectByKey: function (obj, keys, match) {
 
+            if (!obj) {
+                return null;
+            }
+
             for (let property in obj) {
 
                 if (!obj.hasOwnProperty(property) || obj[property] === null || obj[property] === undefined) {
@@ -43,7 +47,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
                 }
 
                 if ((keys.constructor.name === "String" ? keys === property : keys.indexOf(property) > -1)
-                    && (!match || /*obj[property].constructor.name !== "Object" &&*/ match(obj[property], obj))
+                    && (!match || match(obj[property], obj))
                 ) {
                     return {
                         parent: obj,
@@ -159,7 +163,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
             "-1",
         ],
         isValidSpeed: speed => Api.speedList.indexOf(speed) > -1,
-        getAvailableSpeed : function (speed, availableList) {
+        getAvailableSpeed: function (speed, availableList) {
             const speedNumber = Number(speed);
             if (availableList.indexOf(speedNumber) > -1) {
                 return speedNumber;
@@ -337,10 +341,20 @@ function mainScript(extensionId, SettingId, Names, settings) {
                 const appendContinuationItemsAction = Util.getSingleObjectByKey(data, "appendContinuationItemsAction");
 
                 if (!isAdMastheadAllowed) {
-                    // home page masthead banner
-                    if (richGridRenderer?.["masthead"]?.["bannerPromoRenderer"] || richGridRenderer?.["masthead"]?.["adSlotRenderer"]) {
+
+                    const exists = richGridRenderer?.["masthead"]?.["bannerPromoRenderer"]
+                        || richGridRenderer?.["masthead"]?.["adSlotRenderer"];
+
+                    if (exists) {
                         delete richGridRenderer["masthead"];
                     }
+
+                    const bigYoodle = richGridRenderer?.["bigYoodle"];
+
+                    if (bigYoodle) {
+                        delete richGridRenderer?.["bigYoodle"];
+                    }
+
                 }
 
                 if (!isAdHomeFeedAllowed) {
@@ -350,10 +364,17 @@ function mainScript(extensionId, SettingId, Names, settings) {
                     // home page list ads
                     if (itemContainer?.constructor === Array && itemContainer.length > 0) {
                         for (let i = itemContainer.length - 1; i >= 0; i--) {
+
                             const itemRenderer = itemContainer[i];
-                            if (itemRenderer?.["richItemRenderer"]?.["content"]?.["adSlotRenderer"]) {
+                            const exists = itemRenderer?.["richItemRenderer"]?.["content"]?.["adSlotRenderer"]
+                                || itemRenderer?.["richSectionRenderer"]?.["content"]?.["statementBannerRenderer"]
+                                || itemRenderer?.["richSectionRenderer"]?.["content"]?.["brandVideoShelfRenderer"]
+                                || itemRenderer?.["richSectionRenderer"]?.["content"]?.["brandVideoSingletonRenderer"];
+
+                            if (exists) {
                                 itemContainer.splice(i, 1);
                             }
+
                         }
                     }
 
@@ -648,6 +669,337 @@ function mainScript(extensionId, SettingId, Names, settings) {
                 levelContainer.timeoutId = setTimeout(() => levelContainer.style.display = "none", 1000);
 
             }
+
+        },
+        runBlacklist: function (data) {
+
+            if (!data) {
+                return;
+            }
+
+            if (window.location.pathname === "/") {
+
+                // home page
+
+                const richGridRenderer = Util.getSingleObjectByKey(data, "richGridRenderer");
+                const appendContinuationItemsAction = Util.getSingleObjectByKey(data, "appendContinuationItemsAction");
+                const itemContainer = richGridRenderer?.["contents"]
+                    || appendContinuationItemsAction?.["continuationItems"];
+
+                if (itemContainer?.constructor === Array && itemContainer.length > 0) {
+
+                    for (let i = itemContainer.length - 1; i >= 0; i--) {
+
+                        const richShelfRendererContents = itemContainer[i]
+                            ?.["richSectionRenderer"]
+                            ?.["content"]
+                            ?.["richShelfRenderer"]
+                            ?.["contents"];
+
+                        if (richShelfRendererContents?.constructor === Array && richShelfRendererContents.length > 0) {
+
+                            for (let j = richShelfRendererContents.length - 1; j >= 0; j--) {
+
+                                const browseId = richShelfRendererContents[j]
+                                    ?.["richItemRenderer"]
+                                    ?.["content"]
+                                    ?.["videoRenderer"]
+                                    ?.["shortBylineText"]
+                                    ?.["runs"]
+                                    ?.[0]
+                                    ?.["navigationEndpoint"]
+                                    ?.["browseEndpoint"]
+                                    ?.["browseId"];
+
+                                if (settings.blacklist[browseId]) {
+                                    richShelfRendererContents.splice(j, 1);
+                                }
+
+                            }
+
+                            if (richShelfRendererContents.length === 0) {
+                                itemContainer.splice(i, 1);
+                            }
+
+                        }
+
+                        const browseId = itemContainer[i]
+                            ?.["richItemRenderer"]
+                            ?.["content"]
+                            ?.["videoRenderer"]
+                            ?.["shortBylineText"]
+                            ?.["runs"]
+                            ?.[0]
+                            ?.["navigationEndpoint"]
+                            ?.["browseEndpoint"]
+                            ?.["browseId"];
+
+                        if (settings.blacklist[browseId]) {
+                            itemContainer.splice(i, 1);
+                        }
+
+                    }
+
+                }
+
+            } else if (window.location.pathname === "/watch") {
+
+                // watch page
+
+                const secondaryResults = Util.getSingleObjectByKey(data, "secondaryResults");
+                const appendContinuationItemsAction = Util.getSingleObjectByKey(data, "appendContinuationItemsAction");
+                const itemContainer = secondaryResults?.["secondaryResults"]?.["results"]
+                    || appendContinuationItemsAction?.["continuationItems"];
+
+                if (itemContainer?.constructor === Array && itemContainer.length > 0) {
+
+                    for (let i = itemContainer.length - 1; i >= 0; i--) {
+
+                        const browseId = itemContainer[i]
+                            ?.["compactVideoRenderer"]
+                            ?.["shortBylineText"]
+                            ?.["runs"]
+                            ?.[0]
+                            ?.["navigationEndpoint"]
+                            ?.["browseEndpoint"]
+                            ?.["browseId"];
+
+                        if (settings.blacklist[browseId]) {
+                            itemContainer.splice(i, 1);
+                        }
+
+                    }
+
+                }
+
+            } else if (window.location.pathname === "/results") {
+
+                // search page
+
+                const sectionListRenderer = Util.getSingleObjectByKey(data, "sectionListRenderer");
+                const appendContinuationItemsAction = Util.getSingleObjectByKey(data, "appendContinuationItemsAction");
+                const itemContainer = sectionListRenderer?.["contents"]
+                    || appendContinuationItemsAction?.["continuationItems"];
+
+                if (itemContainer?.constructor === Array && itemContainer.length > 0) {
+
+                    for (let i = itemContainer.length - 1; i >= 0; i--) {
+
+                        const items = itemContainer[i]?.["itemSectionRenderer"]?.["contents"]
+                            || itemContainer[i]?.["shelfRenderer"]?.["content"]?.["verticalListRenderer"]?.["items"];
+
+                        if (items?.constructor === Array && items.length > 0) {
+
+                            for (let j = items.length - 1; j >= 0; j--) {
+
+                                const browseId = items[j]?.["channelRenderer"]?.["channelId"]
+                                    || items[j]
+                                        ?.["videoRenderer"]
+                                        ?.["ownerText"]
+                                        ?.["runs"]
+                                        ?.[0]
+                                        ?.["navigationEndpoint"]
+                                        ?.["browseEndpoint"]
+                                        ?.["browseId"];
+
+                                if (settings.blacklist[browseId]) {
+                                    items.splice(j, 1);
+                                }
+
+                                const shelfItems = items[j]
+                                    ?.["shelfRenderer"]
+                                    ?.["content"]
+                                    ?.["verticalListRenderer"]
+                                    ?.["items"];
+
+                                if (shelfItems?.constructor === Array && shelfItems.length > 0) {
+
+                                    for (let k = shelfItems.length - 1; k >= 0; k--) {
+
+                                        const shelfItemId = shelfItems[k]
+                                            ?.["videoRenderer"]
+                                            ?.["ownerText"]
+                                            ?.["runs"]
+                                            ?.[0]
+                                            ?.["navigationEndpoint"]
+                                            ?.["browseEndpoint"]
+                                            ?.["browseId"];
+
+                                        if (settings.blacklist[shelfItemId]) {
+                                            shelfItems.splice(k, 1);
+                                        }
+
+                                    }
+
+                                    if (shelfItems.length === 0) {
+                                        items.splice(j, 1);
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        },
+        iniBlacklist: function (data) {
+
+            if (!settings.blacklistEnabled) {
+                return;
+            }
+
+            if (data?.constructor !== Object || !data?.["responseContext"]) {
+                return;
+            }
+
+            Api.runBlacklist(data);
+
+            const items = Array.from(document.querySelectorAll([
+                "ytd-rich-item-renderer",
+                "ytd-video-renderer",
+                "ytd-compact-video-renderer"
+            ].join(",")));
+
+            items.forEach(item => {
+
+                const renderer = item?.["data"]?.["content"]?.["videoRenderer"] || item?.["data"];
+                const browseId = renderer
+                    ?.["shortBylineText"]
+                    ?.["runs"]
+                    ?.[0]
+                    ?.["navigationEndpoint"]
+                    ?.["browseEndpoint"]
+                    ?.["browseId"];
+
+                if (settings.blacklist[browseId]) {
+                    item.remove();
+                }
+
+            });
+
+            document.querySelector("ytd-rich-grid-renderer")?.["reflowContent"]?.();
+            document.querySelector("ytd-video-preview")?.["deactivate"]?.();
+
+        },
+        iniBlacklistButton: event => {
+
+            if (!settings.blacklistEnabled || !settings.blacklistButton) {
+                return;
+            }
+
+            const actionName = event.detail?.["actionName"];
+
+            if (actionName === "yt-open-popup-action") {
+
+                const items = event.detail
+                    ?.["args"]
+                    ?.[0]
+                    ?.["openPopupAction"]
+                    ?.["popup"]
+                    ?.["menuPopupRenderer"]
+                    ?.["items"];
+
+                if (items?.constructor !== Array) {
+                    return;
+                }
+
+                const parentList = Array.from(document.querySelectorAll([
+                    "ytd-rich-item-renderer",
+                    "ytd-video-renderer",
+                    "ytd-compact-video-renderer"
+                ].join(",")));
+                const parent = parentList.find(item => item.contains(event.target));
+
+                if (!parent) {
+
+                    for (let i = items.length - 1; i >= 0; i--) {
+                        if (items[i]?.["menuServiceItemRenderer"]?.["id"] === "blockChannel") {
+                            items.splice(i, 1);
+                        }
+                    }
+
+                } else {
+
+                    if (!items.some(item => item?.["menuServiceItemRenderer"]?.["id"] === "blockChannel")) {
+
+                        const renderer = parent?.["data"]?.["content"]?.["videoRenderer"] || parent?.["data"];
+                        const channelUC = renderer
+                            ?.["shortBylineText"]
+                            ?.["runs"]
+                            ?.[0]
+                            ?.["navigationEndpoint"]
+                            ?.["browseEndpoint"]
+                            ?.["browseId"];
+
+                        if (!channelUC) {
+                            return;
+                        }
+
+                        const channelName = parent.querySelector("yt-formatted-string.ytd-channel-name")?.title;
+                        const canonicalBaseUrl = Util.getSingleObjectByKey(parent.data, "canonicalBaseUrl");
+
+                        if (!channelName && !canonicalBaseUrl) {
+                            return;
+                        }
+
+                        items.unshift({
+                            menuServiceItemRenderer: {
+                                id: "blockChannel",
+                                channelData: {
+                                    channelUC: channelUC,
+                                    channelName: channelName,
+                                    canonicalBaseUrl: canonicalBaseUrl,
+                                },
+                                hasSeparator: true,
+                                text: {runs: [{text: "Block channel"}]},
+                                icon: {iconType: "CANCEL"}
+                            }
+                        });
+
+                    }
+
+                }
+
+            } else if (actionName === "yt-menu-service-item-selected-action") {
+
+                const channelData = event.detail?.["args"]?.[0]?.["channelData"];
+                const channelUC = channelData?.["channelUC"];
+
+                if (!channelUC) {
+                    return;
+                }
+
+                const channelName = channelData?.["channelName"];
+                const canonicalBaseUrl = channelData?.["canonicalBaseUrl"];
+
+                if (!channelName && !canonicalBaseUrl) {
+                    return;
+                }
+
+                if (!settings.blacklist[channelUC]) {
+
+                    settings.blacklist[channelUC] = {
+                        name: channelName,
+                        handle: canonicalBaseUrl
+                    };
+
+                    broadcastChannel.postMessage({
+                        type: "setting",
+                        payload: {[SettingId.blacklist]: settings.blacklist}
+                    });
+
+                }
+
+                Api.iniBlacklist(document.querySelector("ytd-app")?.["data"]?.["response"]);
+
+            }
+
 
         },
         getPlayerTools: function () {
@@ -947,6 +1299,9 @@ function mainScript(extensionId, SettingId, Names, settings) {
             Api.checkTools();
 
         },
+        onYtAction: event => {
+            Api.iniBlacklistButton(event);
+        }
     };
 
     const Feature = {
@@ -1009,6 +1364,41 @@ function mainScript(extensionId, SettingId, Names, settings) {
         [SettingId.videoScreenshot]: () => Api.checkTools(),
         [SettingId.videoThumbnail]: () => Api.checkTools(),
         [SettingId.monetizationInfo]: () => Api.checkTools(),
+        [SettingId.blacklistButton]: () => {
+
+            document.querySelector("tp-yt-iron-dropdown")?.["close"]?.();
+
+            if (!settings.blacklistButton) {
+
+                const menus = Array.from(document.querySelectorAll("ytd-menu-renderer"));
+
+                menus.forEach(menu => {
+
+                    const items = menu?.["data"]?.["items"];
+                    const backupItems = menu?.["__data"]?.["items"];
+
+                    if (items?.constructor === Array) {
+                        for (let i = items.length - 1; i >= 0; i--) {
+                            if (items[i]?.["menuServiceItemRenderer"]?.["id"] === "blockChannel") {
+                                items.splice(i, 1);
+                            }
+                        }
+                    }
+
+                    if (backupItems?.constructor === Array) {
+                        for (let i = backupItems.length - 1; i >= 0; i--) {
+                            if (backupItems[i]?.["menuServiceItemRenderer"]?.["id"] === "blockChannel") {
+                                backupItems.splice(i, 1);
+                            }
+                        }
+                    }
+
+                });
+
+            }
+
+        },
+        [SettingId.blacklist]: () => Api.iniBlacklist(document.querySelector("ytd-app")?.["data"]?.["response"]),
     }
 
     const onMessageListener = function (event) {
@@ -1051,17 +1441,18 @@ function mainScript(extensionId, SettingId, Names, settings) {
         return parsed;
     }
 
-    window[Names.pageModifier] = function () {
-        Api.iniSettingsButton(arguments);
-        Api.iniPageAdManager(arguments);
-        Api.iniExcludeShorts(arguments);
-        Api.iniCreatorMerch(arguments);
-        Api.iniInfoCards(arguments);
+    window[Names.pageModifier] = function (data) {
+        Api.iniSettingsButton(data);
+        Api.iniPageAdManager(data);
+        Api.iniExcludeShorts(data);
+        Api.iniCreatorMerch(data);
+        Api.iniInfoCards(data);
+        Api.iniBlacklist(data);
     };
 
     window[Names.navigationMod] = function (data) {
         try {
-            const response = JSON.parse(data?.replace(")]}'\n",""));
+            const response = JSON.parse(data?.replace(")]}'\n", ""));
             window[Names.pageModifier](response);
             return JSON.stringify(response);
         } catch (ignore) {
@@ -1116,11 +1507,13 @@ function mainScript(extensionId, SettingId, Names, settings) {
         }
     };
 
+    window.addEventListener("yt-next-continuation-data-updated", Api.onPageChanges, true);
     window.addEventListener("yt-page-data-updated", Api.onPageChanges, true);
     window.addEventListener("yt-navigate-start", Api.onPageChanges, false);
     window.addEventListener("yt-navigate-finish", Api.onPageChanges, false);
     window.addEventListener("popstate", Api.onPageChanges, true);
 
+    document.documentElement.addEventListener("yt-action", Api.onYtAction, false);
     document.documentElement.addEventListener("click", onDocumentClick, false);
 
     const broadcastChannel = new BroadcastChannel(extensionId);

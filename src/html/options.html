@@ -527,16 +527,43 @@
             <div class="contentTitle" data-id="blackList" data-locale="contentTitle">Blacklist</div>
             <div class="contentDescription borderBottom" data-id="blackList" data-locale="contentDescription">Videos from blocked channels will no longer be displayed</div>
             <div class="settingGroup">
+                <div class="settingLabel">Blacklist</div>
                 <div class="settingOptions">
-                    <div class="setting">
+                    <div class="setting" data-id="blacklistEnabled">
+                        <label class="switch">
+                            <input data-setting="blacklistEnabled" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
                         <div class="settingDescription">
-                            <div class="settingDescription highlight">Coming in a future version</div>
-                            <div class="settingDescription">This feature will allow the user to remove all videos belonging to a channel</div>
-                            <div class="settingDescription">For more details check the <a target="_blank" href="https://github.com/ParticleCore/Iridium/issues/796">tracking case</a></div>
+                            <div class="settingDescription highlight">Blacklist enabled</div>
+                            <div class="settingDescription">Videos from channels in the blacklist will not be displayed except in its own channel page</div>
+                        </div>
+                    </div>
+                    <div class="setting" data-id="blacklistButton">
+                        <label class="switch">
+                            <input data-setting="blacklistButton" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight">Blacklist button</div>
+                            <div class="settingDescription">Displays a button in the three vertical dots context menu of video thumbnails to add that channel to the blacklist. This option is not available on vertical shorts thumbnails</div>
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="contentTitle" data-locale="contentTitle">Blacklisted channels</div>
+            <div class="contentDescription borderBottom" data-locale="contentDescription">Remove blacklisted channels, add channels manually, import from an existing backup, or export the current list</div>
+            <div id="blacklistControls">
+                <div id="filterChannelsContainer">
+                    <input id="filterChannels" type="text" placeholder="filter channels"/>
+                </div>
+                <div id="blacklistActions">
+                    <div id="addChannel" class="action-button">Add</div>
+                    <div id="importList" class="action-button">Import</div>
+                    <div id="exportList" class="action-button">Export</div>
+                </div>
+            </div>
+            <div id="blacklistChannels"></div>
         </div>
         <div class="content" data-content="language">
             <div class="contentTitle" data-id="language" data-locale="contentTitle">Language</div>

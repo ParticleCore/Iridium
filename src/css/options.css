@@ -56,12 +56,16 @@ html {
     --text-primary-color: #0f0f0f;
     --text-secondary-color: #606060;
     --divider-border-color: #0000001a;
+    --pre-background-color: #00000024;
     --item-hover-background-color: #0000000d;
     --item-selected-background-color: #0000001a;
     --toggle-switch-button-color: #030303;
     --toggle-switch-button-active-color: #065fd4;
     --toggle-switch-slider-color: #909090;
     --dropdown-background-color: #e5e5e5;
+    --button-background-color: var(--background-color);
+    --button-background-color-hover: #def1ff;
+    --button-text-color: var(--toggle-switch-button-active-color);
 }
 
 html[dark] {
@@ -72,12 +76,16 @@ html[dark] {
     --text-primary-color: #fff;
     --text-secondary-color: #aaa;
     --divider-border-color: #fff3;
+    --pre-background-color: #ffffff24;
     --item-hover-background-color: #ffffff1a;
     --item-selected-background-color: #fff3;
     --toggle-switch-button-color: #fff;
     --toggle-switch-button-active-color: #3ea6ff;
     --toggle-switch-slider-color: #717171;
     --dropdown-background-color: #3f3f3f;
+    --button-background-color: var(--background-color);
+    --button-background-color-hover: #263850;
+    --button-text-color: var(--toggle-switch-button-active-color);
 }
 
 body {
@@ -108,6 +116,13 @@ a,
 
 [hidden] {
     display: none;
+}
+
+pre {
+    display: inline;
+    background: var(--pre-background-color);
+    padding: 2px 6px;
+    border-radius: 4px;
 }
 
 #version {
@@ -295,7 +310,7 @@ a,
     pointer-events: none;
 }
 
-.slider:before {
+.slider::before {
     position: absolute;
     content: "";
     background-color: var(--toggle-switch-slider-color);
@@ -307,7 +322,7 @@ a,
     border-radius: 8px;
 }
 
-.slider:after {
+.slider::after {
     position: absolute;
     box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.6);
     content: "";
@@ -320,7 +335,7 @@ a,
     border-radius: 50%;
 }
 
-input:checked + .slider:after {
+input:checked + .slider::after {
     background-color: var(--toggle-switch-button-active-color);
     left: 18px;
 }
@@ -351,7 +366,7 @@ input:checked + .slider:after {
     display: none;
 }
 
-.radio .button:before {
+.radio .button::before {
     position: absolute;
     content: "";
     border: 2px solid var(--toggle-switch-button-color);
@@ -363,7 +378,7 @@ input:checked + .slider:after {
     border-radius: 50%;
 }
 
-.radio .button:after {
+.radio .button::after {
     position: absolute;
     content: "";
     background-color: var(--toggle-switch-button-color);
@@ -379,11 +394,291 @@ input:checked + .slider:after {
     transform: scale(0);
 }
 
-input:checked + .button:before {
+input:checked + .button::before {
     border-color: var(--toggle-switch-button-active-color);
 }
 
-input:checked + .button:after {
+input:checked + .button::after {
     background-color: var(--toggle-switch-button-active-color);
     transform: scale(1);
+}
+
+#blacklistControls {
+    display: flex;
+    margin-bottom: 12px;
+    gap: 16px;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 500;
+    justify-content: space-between;
+}
+
+#filterChannelsContainer {
+    position: relative;
+    line-height: 46px;
+    padding: 0 16px;
+}
+
+#filterChannelsContainer::before {
+    position: absolute;
+    content: "";
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 12px;
+    border: 1px solid var(--divider-border-color);
+}
+
+#filterChannels {
+    font-family: "Roboto", "Arial", sans-serif;
+    position: relative;
+    background: var(--background-color);
+    color: var(--text-color);
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+#blacklistChannels {
+    padding: 8px;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    line-height: 36px;
+}
+
+#blacklistChannels::before {
+    position: absolute;
+    content: "";
+    border-radius: 10px;
+    background: var(--toggle-switch-slider-color);
+    opacity: 0.1;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: -1;
+}
+
+#blacklistActions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.action-button {
+    background-color: var(--button-background-color);
+    color: var(--button-text-color);
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 100px;
+    text-align: center;
+    padding: 10px 16px;
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid var(--divider-border-color);
+    text-transform: uppercase;
+}
+
+.action-button:not(.disabled):hover {
+    background-color: var(--button-background-color-hover);
+    border-color: transparent;
+}
+
+.action-button.disabled {
+    pointer-events: none;
+    filter: grayscale(1);
+}
+
+.channel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    padding: 0 16px;
+    background: var(--item-selected-background-color);
+    border-radius: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    line-height: 36px;
+    min-width: 60px;
+    justify-content: center;
+}
+
+.remove {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    fill: var(--text-color);
+    transition: 0.2s;
+    user-select: none;
+    pointer-events: none;
+}
+
+.channel:not(:hover) .remove {
+    opacity: 0;
+}
+
+.channelName {
+    transition: 0.2s;
+    user-select: none;
+    pointer-events: none;
+}
+
+.channel:hover .channelName {
+    opacity: 0.2;
+}
+
+#backdrop {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#backdrop::before {
+    position: absolute;
+    content: "";
+    background-color: var(--button-background-color);
+    opacity: 0.9;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: -1;
+}
+
+#dialog {
+    background-color: var(--background-color);
+    min-width: 400px;
+    padding: 24px;
+    border-radius: 20px;
+    box-shadow: 0 5px 20px black;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+#dialog input {
+    font-family: "Roboto", "Arial", sans-serif;
+    background-color: var(--background-color);
+    font-size: 16px;
+    border-radius: 8px;
+    line-height: 26px;
+    padding: 4px 8px;
+    flex: 1;
+    color: var(--text-color);
+    border: 1px solid var(--divider-border-color);
+}
+
+#searchForm {
+    display: flex;
+    gap: 16px;
+    color: var(--text-secondary-color);
+}
+
+#searchResult {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    flex-flow: column;
+    gap: 8px;
+}
+
+#searchResult::before {
+    position: absolute;
+    content: "";
+    background: var(--toggle-switch-slider-color);
+    opacity: 0.1;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 10px;
+    user-select: none;
+    pointer-events: none;
+}
+
+#searchResult > div {
+    z-index: 0;
+}
+
+#searchChannelAvatarContainer {
+    border-radius: 100%;
+    width: 64px;
+    height: 64px;
+    overflow: hidden;
+}
+
+#searchChannelName {
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+#searchResultMessage {
+    position: absolute;
+    opacity: 1;
+    top: 0;
+    bottom: 0;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+}
+
+#searchChannelAvatar {
+    height: 100%;
+    width: 100%;
+}
+
+#dialog:not(.noResults) #searchResultMessage {
+    display: none;
+}
+
+#dialog.noResults #searchChannelAvatarContainer,
+#dialog.noResults #searchChannelName {
+    opacity: 0;
+    user-select: none;
+    pointer-events: none;
+}
+
+#blockedIndicator {
+    color: var(--background-color);
+    font-size: 10px;
+    font-weight: 500;
+    margin-top: -20px;
+    background: var(--link-color);
+    padding: 2px 4px;
+    border-radius: 4px;
+    user-select: none;
+    pointer-events: none;
+}
+
+#dialog:not(.channelBlocked) #blockedIndicator {
+    opacity: 0;
+}
+
+#dialogAction {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+}
+
+#dialog:not(.noResults) #addDialog:hover,
+#dialog:not(.channelBlocked) #addDialog:hover {
+    background-color: var(--button-background-color-hover);
+    border-color: transparent;
+}
+
+#dialog.noResults #addDialog,
+#dialog.channelBlocked #addDialog {
+    pointer-events: none;
+    filter: grayscale(1);
 }

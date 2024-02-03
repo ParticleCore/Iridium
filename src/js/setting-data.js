@@ -30,6 +30,9 @@ const SettingId = {
     videoScreenshot: "videoScreenshot",
     videoThumbnail: "videoThumbnail",
     monetizationInfo: "monetizationInfo",
+    blacklistEnabled: "blacklistEnabled",
+    blacklistButton: "blacklistButton",
+    blacklist: "blacklist",
 };
 const DEFAULT_SETTINGS = {
     [SettingId.extensionButton]: true,
@@ -63,4 +66,7 @@ const DEFAULT_SETTINGS = {
     [SettingId.videoScreenshot]: true,
     [SettingId.videoThumbnail]: true,
     [SettingId.monetizationInfo]: true,
+    [SettingId.blacklistEnabled]: true,
+    [SettingId.blacklistButton]: true,
+    [SettingId.blacklist]: {},
 };

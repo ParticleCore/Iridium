@@ -1,8 +1,8 @@
 {
-    "locale-id": {
+    "locale_id": {
         "message": "English (US)"
     },
-    "page-title": {
+    "page_title": {
         "message": "Iridium"
     }
 }

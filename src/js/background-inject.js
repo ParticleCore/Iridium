@@ -1,6 +1,8 @@
 "use strict";
 
-function mainScript(extensionId, SettingId, Names, settings) {
+function mainScript(extensionId, SettingData) {
+
+    window.iridiumSettings = {};
 
     const Util = {
         getSingleObjectByKey: function (obj, keys, match) {
@@ -78,7 +80,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
         onYTPCreated: [
             function (api) {
                 api.addEventListener("onStateChange", function (state) {
-                    if (settings.videoFocus) {
+                    if (iridiumSettings.videoFocus) {
                         switch (state) {
                             case 1:
                             case 3:
@@ -92,12 +94,12 @@ function mainScript(extensionId, SettingId, Names, settings) {
             },
             function (api) {
                 api.addEventListener("onStateChange", function () {
-                    if (settings.defaultQuality !== "auto" && Api.isValidQuality(settings.defaultQuality)) {
+                    if (iridiumSettings.defaultQuality !== "auto" && Api.isValidQuality(iridiumSettings.defaultQuality)) {
                         const currentQuality = api?.["getPreferredQuality"]?.();
                         if (currentQuality === "auto") {
                             const availableQualityList = api?.["getAvailableQualityLevels"]?.();
                             if (availableQualityList?.length > 0) {
-                                const qualitySet = Api.getAvailableQuality(settings.defaultQuality, availableQualityList)
+                                const qualitySet = Api.getAvailableQuality(iridiumSettings.defaultQuality, availableQualityList)
                                 api?.["setPlaybackQuality"]?.(qualitySet);
                                 api?.["setPlaybackQualityRange"]?.(qualitySet);
                             }
@@ -108,14 +110,14 @@ function mainScript(extensionId, SettingId, Names, settings) {
             function (api) {
                 let currentId = "";
                 api.addEventListener("onStateChange", function () {
-                    if (settings.defaultSpeed !== "-1" && Api.isValidSpeed(settings.defaultSpeed)) {
+                    if (iridiumSettings.defaultSpeed !== "-1" && Api.isValidSpeed(iridiumSettings.defaultSpeed)) {
                         const videoId = api?.["getVideoData"]?.()?.["video_id"] || "";
                         const currentSpeed = api?.["getPlaybackRate"]?.()?.toString();
-                        if (settings.defaultSpeed !== currentSpeed && currentId !== videoId) {
+                        if (iridiumSettings.defaultSpeed !== currentSpeed && currentId !== videoId) {
                             const availableSpeedList = api?.["getAvailablePlaybackRates"]?.();
                             if (availableSpeedList?.length > 0) {
                                 currentId = videoId;
-                                const speedSet = Api.getAvailableSpeed(settings.defaultSpeed, availableSpeedList);
+                                const speedSet = Api.getAvailableSpeed(iridiumSettings.defaultSpeed, availableSpeedList);
                                 api?.["setPlaybackRate"]?.(speedSet);
                             }
                         }
@@ -124,7 +126,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
             },
             function (api) {
                 api.addEventListener("videodatachange", () => {
-                    if (!settings.annotations) {
+                    if (!iridiumSettings.annotations) {
                         api?.["unloadModule"]?.("annotations_module");
                     }
                 });
@@ -173,7 +175,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
         },
         iniSettingsButton: function (data) {
 
-            if (!settings.extensionButton) {
+            if (!iridiumSettings.extensionButton) {
                 return
             }
 
@@ -231,7 +233,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
         },
         iniDefaultTab: function (event) {
 
-            if (settings.channelTab === "featured") {
+            if (iridiumSettings.channelTab === "featured") {
                 return
             }
 
@@ -254,7 +256,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
 
             let param = "";
 
-            switch (settings.channelTab) {
+            switch (iridiumSettings.channelTab) {
                 case "featured":
                     param = "EghmZWF0dXJlZPIGBAoCMgA%3D";
                     break;
@@ -288,24 +290,24 @@ function mainScript(extensionId, SettingId, Names, settings) {
                 browseEndpoint.params = param;
             }
 
-            metadata.url = link.href = `${browseEndpoint["canonicalBaseUrl"]}/${settings.channelTab}`;
+            metadata.url = link.href = `${browseEndpoint["canonicalBaseUrl"]}/${iridiumSettings.channelTab}`;
 
         },
         isAdAllowed: function (isSubscribed, enabled) {
 
             // when all ads are opted out
-            if (settings.adOptOutAll) {
+            if (iridiumSettings.adOptOutAll) {
                 // ads will be allowed only if:
                 // the exception for videos from subscribed channels is enabled
                 // and the video belongs to a subscribed channel
-                return settings.adSubscribed && isSubscribed;
+                return iridiumSettings.adSubscribed && isSubscribed;
             }
 
             // ads will be allowed if:
             // the exception for videos from subscribed channels is enabled
             // the video belongs to a subscribed channel
             // and the option is enabled
-            if (settings.adSubscribed) {
+            if (iridiumSettings.adSubscribed) {
                 return isSubscribed && enabled;
             }
 
@@ -317,7 +319,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
 
             const subscribeButtonRenderer = Util.getSingleObjectByKey(data, "subscribeButtonRenderer");
             const isSubscribed = subscribeButtonRenderer?.["subscribed"] === true;
-            const isAdTaggedProductsAllowed = Api.isAdAllowed(isSubscribed, settings.adTaggedProducts);
+            const isAdTaggedProductsAllowed = Api.isAdAllowed(isSubscribed, iridiumSettings.adTaggedProducts);
 
             if (!isAdTaggedProductsAllowed) {
 
@@ -331,8 +333,8 @@ function mainScript(extensionId, SettingId, Names, settings) {
 
             }
 
-            const isAdMastheadAllowed = Api.isAdAllowed(isSubscribed, settings.adMasthead);
-            const isAdHomeFeedAllowed = Api.isAdAllowed(isSubscribed, settings.adHomeFeed);
+            const isAdMastheadAllowed = Api.isAdAllowed(isSubscribed, iridiumSettings.adMasthead);
+            const isAdHomeFeedAllowed = Api.isAdAllowed(isSubscribed, iridiumSettings.adHomeFeed);
 
             if (!isAdMastheadAllowed || !isAdHomeFeedAllowed) {
 
@@ -382,7 +384,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
 
             }
 
-            const isAdSearchFeedAllowed = Api.isAdAllowed(isSubscribed, settings.adSearchFeed);
+            const isAdSearchFeedAllowed = Api.isAdAllowed(isSubscribed, iridiumSettings.adSearchFeed);
 
             if (!isAdSearchFeedAllowed) {
 
@@ -416,7 +418,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
 
             }
 
-            const isAdVideoFeedAllowed = Api.isAdAllowed(isSubscribed, settings.adVideoFeed);
+            const isAdVideoFeedAllowed = Api.isAdAllowed(isSubscribed, iridiumSettings.adVideoFeed);
 
             if (!isAdVideoFeedAllowed) {
 
@@ -463,7 +465,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
 
             const subscribeButtonRenderer = Util.getSingleObjectByKey(args, "subscribeButtonRenderer");
             const isSubscribed = subscribeButtonRenderer?.["subscribed"] === true;
-            const isInVideoAdsAllowed = Api.isAdAllowed(isSubscribed, settings.adInVideo);
+            const isInVideoAdsAllowed = Api.isAdAllowed(isSubscribed, iridiumSettings.adInVideo);
 
             if (!isInVideoAdsAllowed) {
 
@@ -485,7 +487,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
 
             }
 
-            if (!settings.loudness) {
+            if (!iridiumSettings.loudness) {
 
                 const audioConfig = Util.getSingleObjectByKey(args, "audioConfig");
                 const adaptiveFormats = Util.getSingleObjectByKey(args, "adaptiveFormats");
@@ -506,7 +508,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
 
             }
 
-            if (!settings.hfrAllowed) {
+            if (!iridiumSettings.hfrAllowed) {
 
                 const adaptiveFormats = Util.getSingleObjectByKey(args, "adaptiveFormats");
 
@@ -525,7 +527,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
         },
         iniExcludeShorts: function (data) {
 
-            if (!settings.searchShorts) {
+            if (!iridiumSettings.searchShorts) {
 
                 // search results shorts
                 const itemSectionRenderer = Util.getSingleObjectByKey(arguments, "itemSectionRenderer");
@@ -560,7 +562,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
 
             }
 
-            if ((!settings.homeShorts && window.location.pathname === "/") || (!settings.subscriptionsShorts && window.location.pathname === "/feed/subscriptions")) {
+            if ((!iridiumSettings.homeShorts && window.location.pathname === "/") || (!iridiumSettings.subscriptionsShorts && window.location.pathname === "/feed/subscriptions")) {
 
                 // home page and subscriptions shorts
                 const richGridRenderer = Util.getSingleObjectByKey(arguments, "richGridRenderer");
@@ -593,7 +595,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
 
         },
         iniInfoCards: function (data) {
-            if (!settings.infoCards) {
+            if (!iridiumSettings.infoCards) {
                 const cards = Util.getSingleObjectAndParentByKey(arguments, "cards", (cards, _) => !!cards?.["cardCollectionRenderer"]);
                 if (cards?.parent?.["cards"]) {
                     delete cards.parent["cards"];
@@ -601,7 +603,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
             }
         },
         iniCreatorMerch: function (data) {
-            if (!settings.creatorMerch) {
+            if (!iridiumSettings.creatorMerch) {
                 const contents = Util.getSingleObjectByKey(data, "contents", (matched, _) => matched?.find((item) => Object.hasOwn(item, "merchandiseShelfRenderer")));
                 if (contents?.length > 0) {
                     for (let i = contents.length - 1; i >= 0; i--) {
@@ -711,7 +713,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
                                     ?.["browseEndpoint"]
                                     ?.["browseId"];
 
-                                if (settings.blacklist[browseId]) {
+                                if (iridiumSettings.blacklist[browseId]) {
                                     richShelfRendererContents.splice(j, 1);
                                 }
 
@@ -734,7 +736,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
                             ?.["browseEndpoint"]
                             ?.["browseId"];
 
-                        if (settings.blacklist[browseId]) {
+                        if (iridiumSettings.blacklist[browseId]) {
                             itemContainer.splice(i, 1);
                         }
 
@@ -764,7 +766,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
                             ?.["browseEndpoint"]
                             ?.["browseId"];
 
-                        if (settings.blacklist[browseId]) {
+                        if (iridiumSettings.blacklist[browseId]) {
                             itemContainer.splice(i, 1);
                         }
 
@@ -802,7 +804,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
                                         ?.["browseEndpoint"]
                                         ?.["browseId"];
 
-                                if (settings.blacklist[browseId]) {
+                                if (iridiumSettings.blacklist[browseId]) {
                                     items.splice(j, 1);
                                 }
 
@@ -825,7 +827,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
                                             ?.["browseEndpoint"]
                                             ?.["browseId"];
 
-                                        if (settings.blacklist[shelfItemId]) {
+                                        if (iridiumSettings.blacklist[shelfItemId]) {
                                             shelfItems.splice(k, 1);
                                         }
 
@@ -850,7 +852,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
         },
         iniBlacklist: function (data) {
 
-            if (!settings.blacklistEnabled) {
+            if (!iridiumSettings.blacklistEnabled) {
                 return;
             }
 
@@ -877,7 +879,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
                     ?.["browseEndpoint"]
                     ?.["browseId"];
 
-                if (settings.blacklist[browseId]) {
+                if (iridiumSettings.blacklist[browseId]) {
                     item.remove();
                 }
 
@@ -889,7 +891,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
         },
         iniBlacklistButton: event => {
 
-            if (!settings.blacklistEnabled || !settings.blacklistButton) {
+            if (!iridiumSettings.blacklistEnabled || !iridiumSettings.blacklistButton) {
                 return;
             }
 
@@ -982,16 +984,16 @@ function mainScript(extensionId, SettingId, Names, settings) {
                     return;
                 }
 
-                if (!settings.blacklist[channelUC]) {
+                if (!iridiumSettings.blacklist[channelUC]) {
 
-                    settings.blacklist[channelUC] = {
+                    iridiumSettings.blacklist[channelUC] = {
                         name: channelName,
                         handle: canonicalBaseUrl
                     };
 
                     broadcastChannel.postMessage({
                         type: "setting",
-                        payload: {[SettingId.blacklist]: settings.blacklist}
+                        payload: {[SettingData.blacklist.id]: iridiumSettings.blacklist}
                     });
 
                 }
@@ -1026,7 +1028,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
         },
         checkVideoFocusToggleTool: function (playerTools) {
 
-            if (!settings.videoFocusToggle) {
+            if (!iridiumSettings.videoFocusToggle) {
                 document.getElementById("iridium-focus")?.remove();
             } else {
 
@@ -1053,18 +1055,18 @@ function mainScript(extensionId, SettingId, Names, settings) {
 
                 if (videoFocusButton) {
 
-                    Feature[SettingId.videoFocus]();
+                    Feature[SettingData.videoFocus.id]();
 
                     videoFocusButton.onclick = () => {
 
-                        settings.videoFocus = !settings.videoFocus;
+                        iridiumSettings.videoFocus = !iridiumSettings.videoFocus;
 
                         broadcastChannel.postMessage({
                             type: "setting",
-                            payload: {[SettingId.videoFocus]: settings.videoFocus}
+                            payload: {[SettingData.videoFocus.id]: iridiumSettings.videoFocus}
                         });
 
-                        Feature[SettingId.videoFocus]();
+                        Feature[SettingData.videoFocus.id]();
 
                     };
 
@@ -1075,7 +1077,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
         },
         checkScreenshotTool: function (playerTools) {
 
-            if (!settings.videoScreenshot) {
+            if (!iridiumSettings.videoScreenshot) {
                 document.getElementById("iridium-screenshot")?.remove();
             } else {
 
@@ -1131,7 +1133,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
         },
         checkThumbnailTool: function (playerTools) {
 
-            if (!settings.videoThumbnail) {
+            if (!iridiumSettings.videoThumbnail) {
                 document.getElementById("iridium-thumbnail")?.remove();
             } else {
 
@@ -1188,7 +1190,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
         },
         checkMonetizationInfoTool: function (playerTools) {
 
-            if (!settings.monetizationInfo) {
+            if (!iridiumSettings.monetizationInfo) {
                 document.getElementById("iridium-monetization")?.remove();
             } else {
 
@@ -1273,7 +1275,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
         },
         checkTools: function () {
 
-            if (!settings.videoFocusToggle && !settings.videoScreenshot && !settings.videoThumbnail && !settings.monetizationInfo) {
+            if (!iridiumSettings.videoFocusToggle && !iridiumSettings.videoScreenshot && !iridiumSettings.videoThumbnail && !iridiumSettings.monetizationInfo) {
                 document.getElementById("iridium-player-tools")?.remove();
                 return;
             }
@@ -1287,10 +1289,18 @@ function mainScript(extensionId, SettingId, Names, settings) {
             Api.checkPlayerToolsSpacing(playerTools);
 
         },
-        onPageChanges: function (_) {
+        pageModifier: function (data) {
+            Api.iniSettingsButton(data);
+            Api.iniPageAdManager(data);
+            Api.iniExcludeShorts(data);
+            Api.iniCreatorMerch(data);
+            Api.iniInfoCards(data);
+            Api.iniBlacklist(data);
+        },
+        onPageChanges: function () {
 
             for (let featureKey in Feature) {
-                const setting = settings?.[featureKey];
+                const setting = iridiumSettings?.[featureKey];
                 if (setting !== undefined) {
                     Feature?.[featureKey]?.(setting);
                 }
@@ -1299,14 +1309,182 @@ function mainScript(extensionId, SettingId, Names, settings) {
             Api.checkTools();
 
         },
+        onPageDataFetched: (data) => {
+
+            const response = data?.["detail"]?.["pageData"]?.["response"];
+
+            if (response) {
+                Api.pageModifier(response);
+            }
+
+        },
         onYtAction: event => {
             Api.iniBlacklistButton(event);
         }
     };
 
+    const Override = {
+        jsonParse: function () {
+
+            const original = JSON.parse?.["original"] || JSON.parse;
+
+            JSON.parse = function (text, reviver) {
+
+                const temp = original.apply(this, arguments);
+
+                if (temp?.constructor === Object) {
+                    Api.pageModifier(temp);
+                    Api.iniPlayerConfig(temp);
+                }
+
+                return temp;
+
+            };
+
+            JSON.parse.original = original;
+
+        },
+        responseText: function () {
+
+            const navigationMod = data => {
+                try {
+                    const response = JSON.parse?.["original"]?.(data?.replace(")]}'\n", ""));
+                    Api.pageModifier(response);
+                    return JSON.stringify(response);
+                } catch (ignore) {
+                    return data;
+                }
+            };
+
+            const originalResponseText = Response.prototype.text?.["original"] || Response.prototype.text;
+
+            Response.prototype.text = function () {
+                return originalResponseText.apply(this, arguments).then(data => navigationMod(data));
+            };
+
+            Response.prototype.text.original = originalResponseText;
+
+        },
+        applicationCreate: function () {
+
+            function patchApplicationCreate(original) {
+                return function () {
+
+                    if (!original) {
+                        return;
+                    }
+
+                    Api.iniPlayerConfig(arguments);
+
+                    const created = original.apply(this, arguments);
+                    const moviePlayer = created?.["template"]?.["element"];
+
+
+                    if (moviePlayer?.["id"] === "movie_player") {
+
+                        const loadVideoByPlayerVars = created?.["loadVideoByPlayerVars"];
+                        const cueVideoByPlayerVars = created?.["cueVideoByPlayerVars"];
+
+                        created["loadVideoByPlayerVars"] = function () {
+
+                            Api.iniPlayerConfig(arguments);
+
+                            if (window.location.pathname === "/watch" && !iridiumSettings.autoplay) {
+                                created?.["cueVideoByPlayerVars"]?.apply(this, arguments);
+                            } else {
+                                loadVideoByPlayerVars?.apply(this, arguments);
+                            }
+
+                        }
+
+                        created["cueVideoByPlayerVars"] = function () {
+                            Api.iniPlayerConfig(arguments);
+                            cueVideoByPlayerVars?.apply(this, arguments);
+                        }
+
+                        Api.onYTPCreated.forEach(callback => callback(moviePlayer));
+
+                    }
+
+                    return created;
+
+                }
+            }
+
+            window.yt = {player: {Application: {}}};
+
+            Object.defineProperty(yt.player.Application, "create", {
+                set(data) {
+                    this._create = data;
+                },
+                get() {
+                    if (this._create) {
+                        return patchApplicationCreate(this._create);
+                    } else {
+                        return this._create;
+                    }
+                }
+            });
+
+            Object.defineProperty(yt.player.Application, "createAlternate", {
+                set: function (data) {
+                    this._createAlternate = data;
+                },
+                get: function () {
+                    if (this._createAlternate) {
+                        return patchApplicationCreate(this._createAlternate);
+                    } else {
+                        return this._createAlternate;
+                    }
+                }
+            });
+        },
+        bootstrapPlayerContainer: function () {
+
+            // prevents the video from directly loading on first load
+            Object.defineProperty(Object.prototype, "bootstrapPlayerContainer", {
+                set(data) {
+                },
+                get: () => undefined
+            });
+
+        },
+        configLoaded: function () {
+
+            function setLoaded(host) {
+                Object.defineProperty(host, "loaded", {
+                    set(data) {
+                    },
+                    get: () => false
+                });
+            }
+
+            // we need to keep config.loaded = false to prevent autoplay on first load
+            Object.defineProperty(Object.prototype, "config", {
+                set(data) {
+                    if (data?.args) {
+                        setLoaded(data);
+                    }
+                    this._config = data;
+                },
+                get() {
+                    return this._config;
+                }
+            });
+
+        },
+        ini: () => {
+            Override.jsonParse();
+            Override.responseText();
+            Override.applicationCreate();
+            Override.bootstrapPlayerContainer();
+            Override.configLoaded();
+        }
+    };
+
     const Feature = {
-        [SettingId.theme]: () => {
-            switch (settings.theme) {
+        [SettingData.theme.id]: () => {
+            switch (iridiumSettings.theme) {
                 case "deviceTheme":
                     document.querySelector("ytd-app")?.["handleSignalActionToggleDarkThemeDevice"]?.();
                     break;
@@ -1318,22 +1496,22 @@ function mainScript(extensionId, SettingId, Names, settings) {
                     break;
             }
         },
-        [SettingId.logoSubscriptions]: () => {
-            if (settings.logoSubscriptions) {
+        [SettingData.logoSubscriptions.id]: () => {
+            if (iridiumSettings.logoSubscriptions) {
                 window.addEventListener("mouseup", Api.iniLogoShortcut, true);
             } else {
                 window.removeEventListener("mouseup", Api.iniLogoShortcut, true);
             }
         },
-        [SettingId.channelTab]: () => {
-            if (settings.channelTab) {
+        [SettingData.channelTab.id]: () => {
+            if (iridiumSettings.channelTab) {
                 window.addEventListener("mouseup", Api.iniDefaultTab, true);
             } else {
                 window.removeEventListener("mouseup", Api.iniDefaultTab, true);
             }
         },
-        [SettingId.videoFocus]: () => {
-            if (settings.videoFocus) {
+        [SettingData.videoFocus.id]: () => {
+            if (iridiumSettings.videoFocus) {
                 document.getElementById("iridium-video-focus")?.setAttribute("iridium-enabled", "");
                 switch (document.getElementById("movie_player")?.["getPlayerState"]?.()) {
                     case 1:
@@ -1346,29 +1524,29 @@ function mainScript(extensionId, SettingId, Names, settings) {
                 document.documentElement.removeAttribute("dim");
             }
         },
-        [SettingId.scrollVolume]: () => {
-            if (settings.scrollVolume) {
+        [SettingData.scrollVolume.id]: () => {
+            if (iridiumSettings.scrollVolume) {
                 document.addEventListener("wheel", Api.iniScrollVolume, {passive: false});
             } else {
                 document.removeEventListener("wheel", Api.iniScrollVolume);
             }
         },
-        [SettingId.endScreen]: () => {
-            if (settings.endScreen) {
+        [SettingData.endScreen.id]: () => {
+            if (iridiumSettings.endScreen) {
                 document.documentElement.classList.add("iridium-hide-end-screen-cards");
             } else {
                 document.documentElement.classList.remove("iridium-hide-end-screen-cards");
             }
         },
-        [SettingId.videoFocusToggle]: () => Api.checkTools(),
-        [SettingId.videoScreenshot]: () => Api.checkTools(),
-        [SettingId.videoThumbnail]: () => Api.checkTools(),
-        [SettingId.monetizationInfo]: () => Api.checkTools(),
-        [SettingId.blacklistButton]: () => {
+        [SettingData.videoFocusToggle.id]: () => Api.checkTools(),
+        [SettingData.videoScreenshot.id]: () => Api.checkTools(),
+        [SettingData.videoThumbnail.id]: () => Api.checkTools(),
+        [SettingData.monetizationInfo.id]: () => Api.checkTools(),
+        [SettingData.blacklistButton.id]: () => {
 
             document.querySelector("tp-yt-iron-dropdown")?.["close"]?.();
 
-            if (!settings.blacklistButton) {
+            if (!iridiumSettings.blacklistButton) {
 
                 const menus = Array.from(document.querySelectorAll("ytd-menu-renderer"));
 
@@ -1398,7 +1576,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
             }
 
         },
-        [SettingId.blacklist]: () => Api.iniBlacklist(document.querySelector("ytd-app")?.["data"]?.["response"]),
+        [SettingData.blacklist.id]: () => Api.iniBlacklist(document.querySelector("ytd-app")?.["data"]?.["response"]),
     }
 
     const onMessageListener = function (event) {
@@ -1408,7 +1586,7 @@ function mainScript(extensionId, SettingId, Names, settings) {
         }
 
         for (let key in event.data) {
-            settings[key] = event.data?.[key];
+            iridiumSettings[key] = event.data?.[key];
             Feature[key]?.(event.data?.[key]);
         }
 
@@ -1434,84 +1612,14 @@ function mainScript(extensionId, SettingId, Names, settings) {
 
     };
 
-    window[Names.parseBypass] = function () {
-        const parsed = JSON.parse.apply(this, arguments);
-        window[Names.pageModifier](parsed);
-        Api.iniPlayerConfig(parsed);
-        return parsed;
-    }
-
-    window[Names.pageModifier] = function (data) {
-        Api.iniSettingsButton(data);
-        Api.iniPageAdManager(data);
-        Api.iniExcludeShorts(data);
-        Api.iniCreatorMerch(data);
-        Api.iniInfoCards(data);
-        Api.iniBlacklist(data);
-    };
-
-    window[Names.navigationMod] = function (data) {
-        try {
-            const response = JSON.parse(data?.replace(")]}'\n", ""));
-            window[Names.pageModifier](response);
-            return JSON.stringify(response);
-        } catch (ignore) {
-            return data;
-        }
-    };
-
-    window[Names.patchYtInitialData] = function (data) {
-        window[Names.pageModifier](data);
-    };
-
-    window[Names.patchApplicationCreate] = function (original) {
-        return function () {
-
-            const args = arguments?.["1"];
-
-            Api.iniPlayerConfig(args);
-
-            const created = original.apply(this, arguments);
-            const moviePlayer = created?.["template"]?.["element"];
-
-            if (moviePlayer?.["id"] === "movie_player") {
-
-                const loadVideoByPlayerVars = created?.["loadVideoByPlayerVars"];
-                const cueVideoByPlayerVars = created?.["cueVideoByPlayerVars"];
-
-                created["loadVideoByPlayerVars"] = function () {
-
-                    const args = arguments?.["0"];
-                    Api.iniPlayerConfig(args);
-
-                    if (window.location.pathname === "/watch" && !settings.autoplay) {
-                        created?.["cueVideoByPlayerVars"]?.apply(this, arguments);
-                    } else {
-                        loadVideoByPlayerVars?.apply(this, arguments);
-                    }
-
-                }
-
-                created["cueVideoByPlayerVars"] = function () {
-                    const args = arguments?.["0"];
-                    Api.iniPlayerConfig(args);
-                    cueVideoByPlayerVars?.apply(this, arguments);
-                }
-
-                Api.onYTPCreated.forEach(callback => callback(moviePlayer));
-
-            }
-
-            return created;
-
-        }
-    };
+    Override.ini();
 
     window.addEventListener("yt-next-continuation-data-updated", Api.onPageChanges, true);
     window.addEventListener("yt-page-data-updated", Api.onPageChanges, true);
     window.addEventListener("yt-navigate-start", Api.onPageChanges, false);
     window.addEventListener("yt-navigate-finish", Api.onPageChanges, false);
     window.addEventListener("popstate", Api.onPageChanges, true);
+    window.addEventListener("yt-page-data-fetched", Api.onPageDataFetched, true);
 
     document.documentElement.addEventListener("yt-action", Api.onYtAction, false);
     document.documentElement.addEventListener("click", onDocumentClick, false);

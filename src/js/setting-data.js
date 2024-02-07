@@ -1,72 +1,142 @@
-const SettingId = {
-    extensionButton: "extensionButton",
-    syncSettings: "syncSettings",
-    theme: "theme",
-    logoSubscriptions: "logoSubscriptions",
-    channelTab: "channelTab",
-    homeShorts: "homeShorts",
-    subscriptionsShorts: "subscriptionsShorts",
-    searchShorts: "searchShorts",
-    adOptOutAll: "adOptOutAll",
-    adSubscribed: "adSubscribed",
-    adVideoFeed: "adVideoFeed",
-    adInVideo: "adInVideo",
-    adTaggedProducts: "adTaggedProducts",
-    adMasthead: "adMasthead",
-    adHomeFeed: "adHomeFeed",
-    adSearchFeed: "adSearchFeed",
-    videoFocus: "videoFocus",
-    creatorMerch: "creatorMerch",
-    defaultQuality: "defaultQuality",
-    defaultSpeed: "defaultSpeed",
-    hfrAllowed: "hfrAllowed",
-    autoplay: "autoplay",
-    loudness: "loudness",
-    scrollVolume: "scrollVolume",
-    infoCards: "infoCards",
-    annotations: "annotations",
-    endScreen: "endScreen",
-    videoFocusToggle: "videoFocusToggle",
-    videoScreenshot: "videoScreenshot",
-    videoThumbnail: "videoThumbnail",
-    monetizationInfo: "monetizationInfo",
-    blacklistEnabled: "blacklistEnabled",
-    blacklistButton: "blacklistButton",
-    blacklist: "blacklist",
+const SettingData = {
+    extensionButton: {
+        id: "extensionButton",
+        default: true,
+    },
+    syncSettings: {
+        id: "syncSettings",
+        default: false,
+    },
+    theme: {
+        id: "theme",
+        default: "deviceTheme",
+    },
+    logoSubscriptions: {
+        id: "logoSubscriptions",
+        default: false,
+    },
+    channelTab: {
+        id: "channelTab",
+        default: "featured",
+    },
+    homeShorts: {
+        id: "homeShorts",
+        default: true,
+    },
+    subscriptionsShorts: {
+        id: "subscriptionsShorts",
+        default: true,
+    },
+    searchShorts: {
+        id: "searchShorts",
+        default: true,
+    },
+    adOptOutAll: {
+        id: "adOptOutAll",
+        default: false,
+    },
+    adSubscribed: {
+        id: "adSubscribed",
+        default: false,
+    },
+    adVideoFeed: {
+        id: "adVideoFeed",
+        default: false,
+    },
+    adInVideo: {
+        id: "adInVideo",
+        default: false,
+    },
+    adTaggedProducts: {
+        id: "adTaggedProducts",
+        default: false,
+    },
+    adMasthead: {
+        id: "adMasthead",
+        default: false,
+    },
+    adHomeFeed: {
+        id: "adHomeFeed",
+        default: false,
+    },
+    adSearchFeed: {
+        id: "adSearchFeed",
+        default: false,
+    },
+    videoFocus: {
+        id: "videoFocus",
+        default: true,
+    },
+    creatorMerch: {
+        id: "creatorMerch",
+        default: true,
+    },
+    defaultQuality: {
+        id: "defaultQuality",
+        default: "auto",
+    },
+    defaultSpeed: {
+        id: "defaultSpeed",
+        default: "-1",
+    },
+    hfrAllowed: {
+        id: "hfrAllowed",
+        default: true,
+    },
+    autoplay: {
+        id: "autoplay",
+        default: false,
+    },
+    loudness: {
+        id: "loudness",
+        default: false,
+    },
+    scrollVolume: {
+        id: "scrollVolume",
+        default: true,
+    },
+    infoCards: {
+        id: "infoCards",
+        default: false,
+    },
+    annotations: {
+        id: "annotations",
+        default: true,
+    },
+    endScreen: {
+        id: "endScreen",
+        default: false,
+    },
+    videoFocusToggle: {
+        id: "videoFocusToggle",
+        default: true,
+    },
+    videoScreenshot: {
+        id: "videoScreenshot",
+        default: true,
+    },
+    videoThumbnail: {
+        id: "videoThumbnail",
+        default: true,
+    },
+    monetizationInfo: {
+        id: "monetizationInfo",
+        default: true,
+    },
+    blacklistEnabled: {
+        id: "blacklistEnabled",
+        default: true,
+    },
+    blacklistButton: {
+        id: "blacklistButton",
+        default: true,
+    },
+    blacklist: {
+        id: "blacklist",
+        default: {},
+    },
 };
-const DEFAULT_SETTINGS = {
-    [SettingId.extensionButton]: true,
-    [SettingId.syncSettings]: false,
-    [SettingId.theme]: "deviceTheme",
-    [SettingId.logoSubscriptions]: false,
-    [SettingId.channelTab]: "featured",
-    [SettingId.homeShorts]: true,
-    [SettingId.subscriptionsShorts]: true,
-    [SettingId.searchShorts]: true,
-    [SettingId.adOptOutAll]: false,
-    [SettingId.adSubscribed]: false,
-    [SettingId.adVideoFeed]: false,
-    [SettingId.adInVideo]: false,
-    [SettingId.adTaggedProducts]: false,
-    [SettingId.adMasthead]: false,
-    [SettingId.adHomeFeed]: false,
-    [SettingId.adSearchFeed]: false,
-    [SettingId.videoFocus]: true,
-    [SettingId.creatorMerch]: true,
-    [SettingId.defaultQuality]: "auto",
-    [SettingId.defaultSpeed]: "-1",
-    [SettingId.hfrAllowed]: true,
-    [SettingId.autoplay]: false,
-    [SettingId.loudness]: false,
-    [SettingId.scrollVolume]: true,
-    [SettingId.infoCards]: false,
-    [SettingId.annotations]: true,
-    [SettingId.endScreen]: false,
-    [SettingId.videoFocusToggle]: true,
-    [SettingId.videoScreenshot]: true,
-    [SettingId.videoThumbnail]: true,
-    [SettingId.monetizationInfo]: true,
-    [SettingId.blacklistEnabled]: true,
-    [SettingId.blacklistButton]: true,
-    [SettingId.blacklist]: {},
-};
+const getDefaultSettings = () => Object.keys(SettingData).reduce((previousValue, currentValue) => ({
+    ...previousValue,
+    [currentValue]: SettingData[currentValue].default
+}), {});

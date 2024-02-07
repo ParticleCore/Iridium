@@ -27,7 +27,6 @@
     "background": {
         "scripts": [
             "js/setting-data.js",
-            "js/background-inject.js",
             "js/background.js"
         ],
         "persistent": false
@@ -37,22 +36,19 @@
             "matches": [
                 "*://www.youtube.com/*"
             ],
-            "css" : [
+            "css": [
                 "css/content-script.css"
             ],
             "js": [
                 "js/setting-data.js",
+                "js/background-inject.js",
                 "js/content-script.js"
             ],
             "run_at": "document_start"
         }
     ],
     "permissions": [
-        "storage",
-        "webRequest",
-        "webRequestBlocking",
-        "webRequestFilterResponse",
-        "*://www.youtube.com/*"
+        "storage"
     ],
     "browser_specific_settings": {
         "gecko": {

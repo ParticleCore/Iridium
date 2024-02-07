@@ -5,7 +5,7 @@ const options = [];
 const Manager = {
     updateSyncSettings: (newState, userInteraction) => {
 
-        const settingId = SettingId.syncSettings;
+        const settingId = SettingData.syncSettings.id;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
 
         if (ui != null && ui.checked !== newState) {
@@ -29,13 +29,13 @@ const Manager = {
                 browser.storage.local.onChanged.removeListener(Util.onStorageChangedListener);
                 browser.storage.sync.onChanged.addListener(Util.onStorageChangedListener);
                 await Util.saveData(settings);
-                await browser.storage.local.set({[SettingId.syncSettings]: newState});
+                await browser.storage.local.set({[SettingData.syncSettings.id]: newState});
                 await browser.storage.local.clear();
             } else {
                 browser.storage.sync.onChanged.removeListener(Util.onStorageChangedListener);
                 browser.storage.local.onChanged.addListener(Util.onStorageChangedListener);
                 await Util.saveData(settings);
-                await browser.storage.sync.set({[SettingId.syncSettings]: newState});
+                await browser.storage.sync.set({[SettingData.syncSettings.id]: newState});
                 await browser.storage.sync.clear();
             }
 
@@ -44,7 +44,7 @@ const Manager = {
     },
     updateExtensionButton: (newState, userInteraction) => {
 
-        const settingId = SettingId.extensionButton;
+        const settingId = SettingData.extensionButton.id;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
 
         if (ui != null && ui.checked !== newState) {
@@ -82,7 +82,7 @@ const Manager = {
             newState = "darkTheme";
         }
 
-        const settingId = SettingId.theme;
+        const settingId = SettingData.theme.id;
         const ui = document.querySelector(`[data-setting=${settingId}][value=${newState}]`);
 
         if (ui != null && !ui.checked) {
@@ -108,7 +108,7 @@ const Manager = {
     },
     updateLogoSubscriptions: (newState, userInteraction) => {
 
-        const settingId = SettingId.logoSubscriptions;
+        const settingId = SettingData.logoSubscriptions.id;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
 
         if (ui != null && ui.checked !== newState) {
@@ -122,7 +122,7 @@ const Manager = {
     },
     updateChannelTab: (newState, userInteraction) => {
 
-        const settingId = SettingId.channelTab;
+        const settingId = SettingData.channelTab.id;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
 
         if (ui != null && ui.value !== newState) {
@@ -157,15 +157,15 @@ const Manager = {
             ui.checked = newState;
         }
 
-        if (id === SettingId.adOptOutAll) {
+        if (id === SettingData.adOptOutAll.id) {
 
             const idList = [
-                SettingId.adVideoFeed,
-                SettingId.adInVideo,
-                SettingId.adTaggedProducts,
-                SettingId.adMasthead,
-                SettingId.adHomeFeed,
-                SettingId.adSearchFeed,
+                SettingData.adVideoFeed.id,
+                SettingData.adInVideo.id,
+                SettingData.adTaggedProducts.id,
+                SettingData.adMasthead.id,
+                SettingData.adHomeFeed.id,
+                SettingData.adSearchFeed.id,
             ].map(value => `[data-id="${value}"]`).join();
 
             const dependents = document.querySelectorAll(idList);
@@ -185,7 +185,7 @@ const Manager = {
     },
     updateVideoFocus: (newState, userInteraction) => {
 
-        const settingId = SettingId.videoFocus;
+        const settingId = SettingData.videoFocus.id;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
 
         if (ui != null && ui.checked !== newState) {
@@ -199,7 +199,7 @@ const Manager = {
     },
     updateCreatorMerch: (newState, userInteraction) => {
 
-        const settingId = SettingId.creatorMerch;
+        const settingId = SettingData.creatorMerch.id;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
 
         if (ui != null && ui.checked !== newState) {
@@ -213,7 +213,7 @@ const Manager = {
     },
     updateAutoplay: (newState, userInteraction) => {
 
-        const settingId = SettingId.autoplay;
+        const settingId = SettingData.autoplay.id;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
 
         if (ui != null && ui.checked !== newState) {
@@ -227,7 +227,7 @@ const Manager = {
     },
     updateLoudness: (newState, userInteraction) => {
 
-        const settingId = SettingId.loudness;
+        const settingId = SettingData.loudness.id;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
 
         if (ui != null && ui.checked !== newState) {
@@ -241,7 +241,7 @@ const Manager = {
     },
     updateScrollVolume: (newState, userInteraction) => {
 
-        const settingId = SettingId.scrollVolume;
+        const settingId = SettingData.scrollVolume.id;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
 
         if (ui != null && ui.checked !== newState) {
@@ -255,7 +255,7 @@ const Manager = {
     },
     updateInfoCards: (newState, userInteraction) => {
 
-        const settingId = SettingId.infoCards;
+        const settingId = SettingData.infoCards.id;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
 
         if (ui != null && ui.checked !== newState) {
@@ -269,7 +269,7 @@ const Manager = {
     },
     updateAnnotations: (newState, userInteraction) => {
 
-        const settingId = SettingId.annotations;
+        const settingId = SettingData.annotations.id;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
 
         if (ui != null && ui.checked !== newState) {
@@ -283,7 +283,7 @@ const Manager = {
     },
     updateEndScreen: (newState, userInteraction) => {
 
-        const settingId = SettingId.endScreen;
+        const settingId = SettingData.endScreen.id;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
 
         if (ui != null && ui.checked !== newState) {
@@ -297,7 +297,7 @@ const Manager = {
     },
     updateDefaultQuality: (newState, userInteraction) => {
 
-        const settingId = SettingId.defaultQuality;
+        const settingId = SettingData.defaultQuality.id;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
 
         if (ui != null && ui.value !== newState) {
@@ -311,7 +311,7 @@ const Manager = {
     },
     updateDefaultSpeed: (newState, userInteraction) => {
 
-        const settingId = SettingId.defaultSpeed;
+        const settingId = SettingData.defaultSpeed.id;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
 
         if (ui != null && ui.value !== newState) {
@@ -325,7 +325,7 @@ const Manager = {
     },
     updateHFRAllowed: (newState, userInteraction) => {
 
-        const settingId = SettingId.hfrAllowed;
+        const settingId = SettingData.hfrAllowed.id;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
 
         if (ui != null && ui.checked !== newState) {
@@ -339,7 +339,7 @@ const Manager = {
     },
     updateVideoFocusToggle: (newState, userInteraction) => {
 
-        const settingId = SettingId.videoFocusToggle;
+        const settingId = SettingData.videoFocusToggle.id;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
 
         if (ui != null && ui.checked !== newState) {
@@ -353,7 +353,7 @@ const Manager = {
     },
     updateVideoScreenshot: (newState, userInteraction) => {
 
-        const settingId = SettingId.videoScreenshot;
+        const settingId = SettingData.videoScreenshot.id;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
 
         if (ui != null && ui.checked !== newState) {
@@ -367,7 +367,7 @@ const Manager = {
     },
     updateVideoThumbnail: (newState, userInteraction) => {
 
-        const settingId = SettingId.videoThumbnail;
+        const settingId = SettingData.videoThumbnail.id;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
 
         if (ui != null && ui.checked !== newState) {
@@ -381,7 +381,7 @@ const Manager = {
     },
     updateMonetizationInfo: (newState, userInteraction) => {
 
-        const settingId = SettingId.monetizationInfo;
+        const settingId = SettingData.monetizationInfo.id;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
 
         if (ui != null && ui.checked !== newState) {
@@ -395,14 +395,14 @@ const Manager = {
     },
     updateBlacklistEnabled: (newState, userInteraction) => {
 
-        const settingId = SettingId.blacklistEnabled;
+        const settingId = SettingData.blacklistEnabled.id;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
 
         if (ui != null && ui.checked !== newState) {
             ui.checked = newState;
         }
 
-        const dependent = document.querySelector(`[data-id=${SettingId.blacklistButton}]`);
+        const dependent = document.querySelector(`[data-id=${SettingData.blacklistButton.id}]`);
 
         if (newState) {
             dependent?.classList.remove("disabled");
@@ -417,7 +417,7 @@ const Manager = {
     },
     updateBlacklistButton: (newState, userInteraction) => {
 
-        const settingId = SettingId.blacklistButton;
+        const settingId = SettingData.blacklistButton.id;
         const ui = document.querySelector(`[data-setting=${settingId}]`);
 
         if (ui != null && ui.checked !== newState) {
@@ -431,7 +431,7 @@ const Manager = {
     },
     updateBlacklist: (newList, userInteraction) => {
 
-        const settingId = SettingId.blacklist;
+        const settingId = SettingData.blacklist.id;
         const container = document.getElementById("blacklistChannels");
 
         if (container) {
@@ -548,88 +548,88 @@ const Util = {
     },
     handleSetting: (key, value, userInteraction) => {
         switch (key) {
-            case SettingId.extensionButton:
+            case SettingData.extensionButton.id:
                 Manager.updateExtensionButton(value, userInteraction);
                 break;
-            case SettingId.syncSettings:
+            case SettingData.syncSettings.id:
                 Manager.updateSyncSettings(value, userInteraction);
                 break;
-            case SettingId.adOptOutAll:
-            case SettingId.adSubscribed:
-            case SettingId.adVideoFeed:
-            case SettingId.adInVideo:
-            case SettingId.adTaggedProducts:
-            case SettingId.adMasthead:
-            case SettingId.adHomeFeed:
-            case SettingId.adSearchFeed:
+            case SettingData.adOptOutAll.id:
+            case SettingData.adSubscribed.id:
+            case SettingData.adVideoFeed.id:
+            case SettingData.adInVideo.id:
+            case SettingData.adTaggedProducts.id:
+            case SettingData.adMasthead.id:
+            case SettingData.adHomeFeed.id:
+            case SettingData.adSearchFeed.id:
                 Manager.updateAdManager(key, value, userInteraction);
                 break;
-            case SettingId.theme:
+            case SettingData.theme.id:
                 Manager.updateTheme(value, userInteraction);
                 break;
-            case SettingId.logoSubscriptions:
+            case SettingData.logoSubscriptions.id:
                 Manager.updateLogoSubscriptions(value, userInteraction);
                 break;
-            case SettingId.channelTab:
+            case SettingData.channelTab.id:
                 Manager.updateChannelTab(value, userInteraction);
                 break;
-            case SettingId.homeShorts:
-            case SettingId.subscriptionsShorts:
-            case SettingId.searchShorts:
+            case SettingData.homeShorts.id:
+            case SettingData.subscriptionsShorts.id:
+            case SettingData.searchShorts.id:
                 Manager.updateShorts(key, value, userInteraction);
                 break;
-            case SettingId.videoFocus:
+            case SettingData.videoFocus.id:
                 Manager.updateVideoFocus(value, userInteraction);
                 break;
-            case SettingId.creatorMerch:
+            case SettingData.creatorMerch.id:
                 Manager.updateCreatorMerch(value, userInteraction);
                 break;
-            case SettingId.defaultQuality:
+            case SettingData.defaultQuality.id:
                 Manager.updateDefaultQuality(value, userInteraction);
                 break;
-            case SettingId.defaultSpeed:
+            case SettingData.defaultSpeed.id:
                 Manager.updateDefaultSpeed(value, userInteraction);
                 break;
-            case SettingId.autoplay:
+            case SettingData.autoplay.id:
                 Manager.updateAutoplay(value, userInteraction);
                 break;
-            case SettingId.loudness:
+            case SettingData.loudness.id:
                 Manager.updateLoudness(value, userInteraction);
                 break;
-            case SettingId.scrollVolume:
+            case SettingData.scrollVolume.id:
                 Manager.updateScrollVolume(value, userInteraction);
                 break;
-            case SettingId.infoCards:
+            case SettingData.infoCards.id:
                 Manager.updateInfoCards(value, userInteraction);
                 break;
-            case SettingId.annotations:
+            case SettingData.annotations.id:
                 Manager.updateAnnotations(value, userInteraction);
                 break;
-            case SettingId.endScreen:
+            case SettingData.endScreen.id:
                 Manager.updateEndScreen(value, userInteraction);
                 break;
-            case SettingId.hfrAllowed:
+            case SettingData.hfrAllowed.id:
                 Manager.updateHFRAllowed(value, userInteraction);
                 break;
-            case SettingId.videoFocusToggle:
+            case SettingData.videoFocusToggle.id:
                 Manager.updateVideoFocusToggle(value, userInteraction);
                 break;
-            case SettingId.videoScreenshot:
+            case SettingData.videoScreenshot.id:
                 Manager.updateVideoScreenshot(value, userInteraction);
                 break;
-            case SettingId.videoThumbnail:
+            case SettingData.videoThumbnail.id:
                 Manager.updateVideoThumbnail(value, userInteraction);
                 break;
-            case SettingId.monetizationInfo:
+            case SettingData.monetizationInfo.id:
                 Manager.updateMonetizationInfo(value, userInteraction);
                 break;
-            case SettingId.blacklistEnabled:
+            case SettingData.blacklistEnabled.id:
                 Manager.updateBlacklistEnabled(value, userInteraction);
                 break;
-            case SettingId.blacklistButton:
+            case SettingData.blacklistButton.id:
                 Manager.updateBlacklistButton(value, userInteraction);
                 break;
-            case SettingId.blacklist:
+            case SettingData.blacklist.id:
                 Manager.updateBlacklist(value, userInteraction);
                 break;
         }
@@ -682,7 +682,7 @@ const Util = {
     resetSettings: () => {
         if (window.confirm("You are about to reset the settings to default, do you want to continue?")) {
 
-            Util.updateSettings(structuredClone(DEFAULT_SETTINGS));
+            Util.updateSettings(getDefaultSettings());
 
             for (let key in settings) {
                 Util.handleSetting(key, settings[key], false);
@@ -721,16 +721,17 @@ const Util = {
     initialLoad: async items => {
 
         const newFeatures = {};
+        const defaultSettings = getDefaultSettings();
 
         // ensure new features are applied
-        for (let key in DEFAULT_SETTINGS) {
+        for (let key in defaultSettings) {
             if (!Object.hasOwn(items, key)) {
-                items[key] = newFeatures[key] = DEFAULT_SETTINGS[key];
+                items[key] = newFeatures[key] = defaultSettings[key];
             }
         }
 
         if (Object.keys(newFeatures).length > 0) {
-            if (items[SettingId.syncSettings] === true) {
+            if (items[SettingData.syncSettings.id] === true) {
                 await browser.storage.sync.set(newFeatures);
             } else {
                 await browser.storage.local.set(newFeatures);
@@ -750,7 +751,7 @@ const Util = {
 
         const dataSync = await browser.storage.sync.get();
 
-        if (Object.keys(dataSync).length > 0 && dataSync[SettingId.syncSettings] === true) {
+        if (Object.keys(dataSync).length > 0 && dataSync[SettingData.syncSettings.id] === true) {
             await Util.initialLoad(dataSync);
             browser.storage.sync.onChanged.addListener(Util.onStorageChangedListener);
         } else {
@@ -760,8 +761,9 @@ const Util = {
             // storage will be empty during first installation
             // this ensures the first load stores the default settings
             if (Object.keys(dataLocal).length === 0) {
-                await browser.storage.local.set(DEFAULT_SETTINGS);
-                await Util.initialLoad(DEFAULT_SETTINGS);
+                const defaultSettings = getDefaultSettings();
+                await browser.storage.local.set(defaultSettings);
+                await Util.initialLoad(defaultSettings);
             } else {
                 await Util.initialLoad(dataLocal);
             }

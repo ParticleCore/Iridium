@@ -15,6 +15,9 @@
         "64": "icons/64.png",
         "128": "icons/128.png"
     },
+    "permissions": [
+        "storage"
+    ],
     "browser_action": {
         "default_icon": {
             "16": "icons/16.png",
@@ -46,9 +49,6 @@
             ],
             "run_at": "document_start"
         }
-    ],
-    "permissions": [
-        "storage"
     ],
     "browser_specific_settings": {
         "gecko": {

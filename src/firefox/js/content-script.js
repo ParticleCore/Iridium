@@ -127,19 +127,11 @@ browser.storage.sync.get().then(dataSync => {
     }
 });
 
-getSettings().then(settings => {
-    const script = document.createElement("script");
-    script.textContent = `window.iridiumSettings = ${JSON.stringify(settings)}`;
-    document.documentElement.appendChild(script);
-});
+getSettings().then(settings => channel.postMessage(settings));
 
-if (document.getElementById("iridium-inject")) {
-    // maybe show a prompt to the user explaining
-    // an update is ready and waiting for the page to be refreshed
-    console.debug("already injected, will wait for fresh page load");
-} else {
+if (!document.getElementById("iridium-inject")) {
     const script = document.createElement("script");
     script.id = "iridium-inject";
-    script.textContent = `(${mainScript}("${browser.runtime.id}",${JSON.stringify(SettingData)}))`;
+    script.textContent = `(${mainScript}("${browser.runtime.id}",${JSON.stringify(SettingData)},${JSON.stringify(getDefaultSettings())}))`;
     document.documentElement.appendChild(script);
 }

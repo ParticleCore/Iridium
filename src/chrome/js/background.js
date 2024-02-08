@@ -1,6 +1,7 @@
 "use strict";
 
-const browser = chrome || browser;
+globalThis.browser ??= chrome;
+
 const openOptions = () => {
     browser.runtime.openOptionsPage()?.then?.();
 }

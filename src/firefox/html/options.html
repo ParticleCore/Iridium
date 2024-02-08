@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html dark="" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title data-locale="text|page-title">Iridium</title>
+    <link href="../css/options.css" rel="stylesheet" type="text/css">
+    <link href="../icons/favicon.ico" rel="shortcut icon" type="image/x-icon">
+    <link href="../icons/32.png" rel="icon" sizes="32x32">
+    <link href="../icons/48.png" rel="icon" sizes="48x48">
+    <link href="../icons/64.png" rel="icon" sizes="64x64">
+    <link href="../icons/128.png" rel="icon" sizes="128x128">
+    <link href="../icons/144.png" rel="icon" sizes="144x144">
+    <script src="../js/setting-data.js"></script>
+</head>
+<body>
+<div id="title">
+    <svg id="logo" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 80 20" focusable="false">
+        <g>
+            <radialGradient id="logo-gradient" cx="-0.8889" cy="2101.1111" r="20.5555" gradientTransform="matrix(1 0 0 1 0 -2080)" gradientUnits="userSpaceOnUse">
+                <stop class="logo-start-gradient" offset="0"/>
+                <stop class="logo-stop-gradient" offset="1"/>
+            </radialGradient>
+            <polygon opacity="0.5" fill="url(#logo-gradient)" points="0,0 17.3,10 0,20 	"/>
+            <path fill="url(#logo-gradient)" d="M0,0v20l17.3-10L0,0z M3.3,5.8l7.3,4.2l-7.3,4.2C3.3,14.2,3.3,5.8,3.3,5.8z"/>
+        </g>
+        <g class="name">
+            <path d="M25,20V0h3v20H25z"/>
+            <path d="M29,20V5h2.9v1.7l0,0c0.7-1.2,2-2,3.5-2H36V8c-0.5-0.1-1.1-0.3-1.9-0.3c-1,0-2.1,0.6-2.1,1.9V20H29L29,20z"/>
+            <path d="M37,2.8V0h3v2.8H37z M37,20V5h3v15H37z"/>
+            <path d="M47.2,20v-1.8l0,0c-1,1.2-1.7,1.8-3.2,1.8c-1.8,0-3-1.4-3-4.1v-7c0-2.7,1.2-4.1,3-4.1c1.3,0,1.9,0.5,3,1.5V0h3v20H47.2zM47.1,8c-0.6-0.4-1.1-0.7-1.7-0.7c-0.8,0-1.5,0.4-1.5,2.4v5.4c0,1.9,0.6,2.4,1.5,2.4c0.6,0,1.1-0.3,1.7-0.7V8z"/>
+            <path d="M51,2.8V0h3v2.8H51z M51,20V5h3v15H51z"/>
+            <path d="M64,5v15h-2.9v-1.7c-1.3,1.1-1.9,1.7-3.6,1.7c-1.6,0-2.5-1.1-2.5-3.1V5h3v11.5c0,0.7,0.4,1.1,1.1,1.1c0.6,0,1.2-0.4,1.9-0.9V5H64z"/>
+            <path d="M71,8.3c0-0.7-0.4-1.1-1.1-1.1s-1.3,0.5-1.9,1V20h-3V5h2.9v1.5c1.3-1.1,1.9-1.7,3.3-1.7c1.5,0,2,0.5,2.7,1.7c1.5-1.4,2.3-1.7,3.3-1.7C79.1,4.8,80,6,80,7.9V20h-3V8.3c0-0.7-0.5-1.1-1.1-1.1S74.7,7.6,74,8.1V20h-3"/>
+        </g>
+    </svg>
+</div>
+<div id="container">
+    <div id="menu">
+        <div id="items">
+            <div class="item" data-menu="general" data-id="general" data-locale="item" data-active="">General</div>
+            <div class="item" data-menu="adManager" data-id="adManager" data-locale="item">Ad manager</div>
+            <div class="item" data-menu="website" data-id="website" data-locale="item">Website</div>
+            <div class="item" data-menu="videoPage" data-id="videoPage" data-locale="item">Video page</div>
+            <div class="item" data-menu="blackList" data-id="blackList" data-locale="item">Blacklist</div>
+            <div class="item" data-menu="help" data-id="help" data-locale="item">Help</div>
+        </div>
+    </div>
+    <div id="contents">
+        <div class="content" data-content="general" data-active="">
+            <div class="contentTitle" data-id="general" data-locale="contentTitle">General</div>
+            <div class="contentDescription borderBottom" data-id="general" data-locale="contentDescription">Various settings that control the extension and website</div>
+            <div class="settingGroup">
+                <div class="settingLabel" data-id="general" data-locale="extensionSettings">Extension settings</div>
+                <div class="settingOptions">
+                    <div class="setting">
+                        <label class="switch">
+                            <input data-setting="extensionButton" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight" data-id="extensionButton" data-locale="highlight">Display extension button on YouTube</div>
+                            <div class="settingDescription" data-id="extensionButton" data-locale="description">Show an extension shortcut button on YouTube pages</div>
+                        </div>
+                    </div>
+                    <div class="setting">
+                        <label class="switch">
+                            <input data-setting="syncSettings" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight" data-id="syncSettings" data-locale="highlight">Sync extension settings</div>
+                            <div class="settingDescription" data-id="syncSettings" data-locale="description">Extension settings will be synced across browsers with the same user profile logged in</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="settingGroup">
+                <div class="settingLabel" data-id="general" data-locale="manageSettings">Manage settings</div>
+                <div class="settingOptions">
+                    <div class="setting">
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight faux-link" data-id="export" data-locale="export" data-action="export">Export settings into a file</div>
+                            <div class="settingDescription" data-id="export" data-locale="description">Extension settings are exported in a json file format</div>
+                        </div>
+                    </div>
+                    <div class="setting">
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight faux-link" data-id="import" data-locale="import" data-action="import">Import settings from backup</div>
+                            <div class="settingDescription" data-id="import" data-locale="description">Restore settings from an existing backup json file format</div>
+                        </div>
+                    </div>
+                    <div class="setting">
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight faux-link" data-id="reset" data-locale="reset" data-action="reset">Reset settings</div>
+                            <div class="settingDescription" data-id="reset" data-locale="description">Resetting the extension settings may help resolve certain issues, but remember to back up the current settings first</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="contentTitle shimmer" data-id="donate" data-locale="contentTitle">Donate</div>
+            <div class="contentDescription borderBottom" data-id="donate" data-locale="contentDescription">Contribute to help keep the extension alive</div>
+            <div class="settingGroup">
+                <div class="settingLabel">Donation options</div>
+                <div class="settingOptions">
+                    <div class="setting">
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight"><a target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW&lc=US">Paypal</a></div>
+                            <div class="settingDescription">You may donate one time only or set up a monthly donation</div>
+                        </div>
+                    </div>
+                    <div class="setting">
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight"><a target="_blank" href="https://www.patreon.com/particle">Patreon</a></div>
+                            <div class="settingDescription">Join my patreon and follow up with less technical summarized updates</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content" data-content="adManager">
+            <div class="contentTitle" data-id="adManager" data-locale="contentTitle">Ad manager</div>
+            <div class="contentDescription borderBottom" data-id="adManager" data-locale="contentDescription">Manage how ads are displayed in video and other web pages</div>
+            <div class="settingGroup">
+                <div class="settingLabel" data-id="adManager" data-locale="videoPage">General</div>
+                <div class="settingOptions">
+                    <div class="setting" data-id="adOptOutAll">
+                        <label class="switch">
+                            <input data-setting="adOptOutAll" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight" data-locale="highlight">Opt out of all ads</div>
+                            <div class="settingDescription" data-locale="description">No ads will be displayed on the website, but other settings may take precedence</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="settingGroup">
+                <div class="settingLabel" data-id="adManager" data-locale="homePage">Home page</div>
+                <div class="settingOptions">
+                    <div class="setting" data-id="adMasthead">
+                        <label class="switch">
+                            <input data-setting="adMasthead" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight" data-locale="highlight">Masthead ad</div>
+                            <div class="settingDescription" data-locale="description">Allow a large banner ad to show on the top of the page</div>
+                        </div>
+                    </div>
+                    <div class="setting" data-id="adHomeFeed">
+                        <label class="switch">
+                            <input data-setting="adHomeFeed" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight" data-locale="highlight">In-feed ads</div>
+                            <div class="settingDescription" data-locale="description">Allow ads to show in the home page video list</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="settingGroup">
+                <div class="settingLabel" data-id="adManager" data-locale="searchPage">Search page</div>
+                <div class="settingOptions">
+                    <div class="setting" data-id="adSearchFeed">
+                        <label class="switch">
+                            <input data-setting="adSearchFeed" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight" data-locale="highlight">In-feed ads</div>
+                            <div class="settingDescription" data-locale="description">Allow ads to show in the search page results</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="settingGroup">
+                <div class="settingLabel" data-id="adManager" data-locale="videoPage">Video page</div>
+                <div class="settingOptions">
+                    <div class="setting" data-id="adSubscribed">
+                        <label class="switch">
+                            <input data-setting="adSubscribed" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight" data-locale="highlight">Subscribed ads</div>
+                            <div class="settingDescription" data-locale="description">Only show ads on videos from subscribed channels</div>
+                        </div>
+                    </div>
+                    <div class="setting" data-id="adVideoFeed">
+                        <label class="switch">
+                            <input data-setting="adVideoFeed" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight" data-locale="highlight">In-feed ads</div>
+                            <div class="settingDescription" data-locale="description">Allow ads to be displayed in the suggested videos sidebar</div>
+                        </div>
+                    </div>
+                    <div class="setting" data-id="adInVideo">
+                        <label class="switch">
+                            <input data-setting="adInVideo" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight" data-locale="highlight">Video ads</div>
+                            <div class="settingDescription" data-locale="description">Allow ads to be displayed in the video</div>
+                        </div>
+                    </div>
+                    <div class="setting" data-id="adTaggedProducts">
+                        <label class="switch">
+                            <input data-setting="adTaggedProducts" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight" data-locale="highlight">Tagged product ads</div>
+                            <div class="settingDescription" data-locale="description">Allow small banners of tagged affiliate products in the video</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content" data-content="website">
+            <div class="contentTitle" data-id="website" data-locale="contentTitle">Website</div>
+            <div class="contentDescription borderBottom" data-id="website" data-locale="contentDescription">Personalize the aspect and behavior of YouTube</div>
+            <div class="settingGroup">
+                <div class="settingLabel" data-id="website" data-locale="theme">Theme</div>
+                <div class="settingOptions">
+                    <div class="setting" data-id="theme">
+                        <fieldset class="radioGroup">
+                            <label class="radio">
+                                <input data-setting="theme" value="deviceTheme" type="radio" name="theme">
+                                <span class="button"></span>
+                                Device theme
+                            </label>
+                            <label class="radio">
+                                <input data-setting="theme" value="lightTheme" type="radio" name="theme">
+                                <span class="button"></span>
+                                Light theme
+                            </label>
+                            <label class="radio">
+                                <input data-setting="theme" value="darkTheme" type="radio" name="theme">
+                                <span class="button"></span>
+                                Dark theme
+                            </label>
+                            <div class="settingDescription">
+                                <div class="settingDescription" data-locale="description">Enforces the selected theme on YouTube and in the extension options page. Device theme will default to Dark theme when not available</div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+            <div class="settingGroup">
+                <div class="settingLabel">Logo redirect</div>
+                <div class="settingOptions">
+                    <div class="setting" data-id="logoSubscriptions">
+                        <label class="switch">
+                            <input data-setting="logoSubscriptions" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight">Redirect to subscriptions page</div>
+                            <div class="settingDescription">Clicking on the YouTube logo will redirect to the subscriptions page instead of the homepage</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="settingGroup">
+                <div class="settingLabel">Channel tab</div>
+                <div class="settingOptions">
+                    <div class="setting" data-id="channelTab">
+                        <div class="settingDescription">
+                            <label>
+                                <select data-setting="channelTab">
+                                    <option value="featured" selected="selected">Home</option>
+                                    <option value="videos">Videos</option>
+                                    <option value="shorts">Shorts</option>
+                                    <option value="streams">Live</option>
+                                    <option value="podcasts">Podcasts</option>
+                                    <option value="playlists">Playlists</option>
+                                    <option value="community">Community</option>
+                                    <option value="channels">Channels</option>
+                                    <option value="store">Store</option>
+                                </select>
+                            </label>
+                            <div class="settingDescription">Clicking on a channel link will automatically open the specified tab</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="settingGroup">
+                <div class="settingLabel">Shorts</div>
+                <div class="settingOptions">
+                    <div class="setting" data-id="homeShorts">
+                        <label class="switch">
+                            <input data-setting="homeShorts" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight">Home page</div>
+                            <div class="settingDescription">Short videos will show on the home page</div>
+                        </div>
+                    </div>
+                    <div class="setting" data-id="subscriptionsShorts">
+                        <label class="switch">
+                            <input data-setting="subscriptionsShorts" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight">Subscriptions</div>
+                            <div class="settingDescription">Short videos will show in the subscriptions</div>
+                        </div>
+                    </div>
+                    <div class="setting" data-id="searchShorts">
+                        <label class="switch">
+                            <input data-setting="searchShorts" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight">Search results</div>
+                            <div class="settingDescription">Short videos will show in search results</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content" data-content="videoPage">
+            <div class="contentTitle" data-id="videoPage" data-locale="contentTitle">Video page</div>
+            <div class="contentDescription borderBottom" data-id="videoPage" data-locale="contentDescription">Customize the video page and player</div>
+            <div class="settingGroup">
+                <div class="settingLabel">Page</div>
+                <div class="settingOptions">
+                    <div class="setting" data-id="videoFocus">
+                        <label class="switch">
+                            <input data-setting="videoFocus" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight">Video focus</div>
+                            <div class="settingDescription">Fade out the webpage while the video is playing</div>
+                        </div>
+                    </div>
+                    <div class="setting" data-id="creatorMerch">
+                        <label class="switch">
+                            <input data-setting="creatorMerch" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight">Creator merch</div>
+                            <div class="settingDescription">Allows the creator merch to be shown below the video details</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="settingGroup">
+                <div class="settingLabel">Video quality</div>
+                <div class="settingOptions">
+                    <div class="setting" data-id="defaultQuality">
+                        <div class="settingDescription">
+                            <label>
+                                <select data-setting="defaultQuality">
+                                    <option value="highres">4320p (8k)</option>
+                                    <option value="hd2880">2880p (5k)</option>
+                                    <option value="hd2160">2160p (4k)</option>
+                                    <option value="hd1440">1440p</option>
+                                    <option value="hd1080">1080p</option>
+                                    <option value="hd720">720p</option>
+                                    <option value="large">480p</option>
+                                    <option value="medium">360p</option>
+                                    <option value="small">240p</option>
+                                    <option value="tiny">144p</option>
+                                    <option value="auto" selected="selected">Auto</option>
+                                </select>
+                            </label>
+                            <div class="settingDescription">Enforces the preferred or closest quality option</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="settingGroup">
+                <div class="settingLabel">Playback speed</div>
+                <div class="settingOptions">
+                    <div class="setting" data-id="defaultSpeed">
+                        <div class="settingDescription">
+                            <label>
+                                <select data-setting="defaultSpeed">
+                                    <option value="0.25">0.25</option>
+                                    <option value="0.5">0.5</option>
+                                    <option value="0.75">0.75</option>
+                                    <option value="1">Normal</option>
+                                    <option value="1.25">1.25</option>
+                                    <option value="1.5">1.5</option>
+                                    <option value="1.75">1.75</option>
+                                    <option value="2">2</option>
+                                    <option value="-1" selected="selected">Auto</option>
+                                </select>
+                            </label>
+                            <div class="settingDescription">Enforces the preferred or closest playback speed option</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="settingGroup">
+                <div class="settingLabel">Player</div>
+                <div class="settingOptions">
+                    <div class="setting" data-id="hfrAllowed">
+                        <label class="switch">
+                            <input data-setting="hfrAllowed" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight">HFR allowed</div>
+                            <div class="settingDescription">Allows HFR (High Frame Rate) streams to be played. YouTube no longer provides normal framerate options above 720p when the respective HFR exists</div>
+                        </div>
+                    </div>
+                    <div class="setting" data-id="autoplay">
+                        <label class="switch">
+                            <input data-setting="autoplay" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight">Autoplay</div>
+                            <div class="settingDescription">Videos will play automatically. Does not override the browser settings</div>
+                        </div>
+                    </div>
+                    <div class="setting" data-id="loudness">
+                        <label class="switch">
+                            <input data-setting="loudness" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight">Loudness normalization</div>
+                            <div class="settingDescription">Enables YouTube's audio loudness normalization</div>
+                        </div>
+                    </div>
+                    <div class="setting" data-id="scrollVolume">
+                        <label class="switch">
+                            <input data-setting="scrollVolume" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight">Scroll volume</div>
+                            <div class="settingDescription">Change volume by scrolling over the player</div>
+                        </div>
+                    </div>
+                    <div class="setting" data-id="infoCards">
+                        <label class="switch">
+                            <input data-setting="infoCards" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight">Info cards</div>
+                            <div class="settingDescription">Allows info cards to show on the video</div>
+                        </div>
+                    </div>
+                    <div class="setting" data-id="annotations">
+                        <label class="switch">
+                            <input data-setting="annotations" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight">Annotations</div>
+                            <div class="settingDescription">Allow annotations to show on the video</div>
+                        </div>
+                    </div>
+                    <div class="setting" data-id="endScreen">
+                        <label class="switch">
+                            <input data-setting="endScreen" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight">End screen hidden</div>
+                            <div class="settingDescription">Hide end screen when the cursor is over the video</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="settingGroup">
+                <div class="settingLabel">Tools</div>
+                <div class="settingOptions">
+                    <div class="setting" data-id="videoFocusToggle">
+                        <label class="switch">
+                            <input data-setting="videoFocusToggle" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight">Video focus</div>
+                            <div class="settingDescription">Fade out the webpage while the video is playing</div>
+                        </div>
+                    </div>
+                    <div class="setting" data-id="videoScreenshot">
+                        <label class="switch">
+                            <input data-setting="videoScreenshot" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight">Video screenshot</div>
+                            <div class="settingDescription">Allows a screenshot to be taken of a playing video at the current native resolution</div>
+                        </div>
+                    </div>
+                    <div class="setting" data-id="videoThumbnail">
+                        <label class="switch">
+                            <input data-setting="videoThumbnail" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight">Video thumbnail</div>
+                            <div class="settingDescription">Opens the highest quality thumbnail available</div>
+                        </div>
+                    </div>
+                    <div class="setting" data-id="monetizationInfo">
+                        <label class="switch">
+                            <input data-setting="monetizationInfo" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight">Monetization info</div>
+                            <div class="settingDescription">Shows if a video is monetized and how many ads are configured</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content" data-content="blackList">
+            <div class="contentTitle" data-id="blackList" data-locale="contentTitle">Blacklist</div>
+            <div class="contentDescription borderBottom" data-id="blackList" data-locale="contentDescription">Videos from blocked channels will no longer be displayed</div>
+            <div class="settingGroup">
+                <div class="settingLabel">Blacklist</div>
+                <div class="settingOptions">
+                    <div class="setting" data-id="blacklistEnabled">
+                        <label class="switch">
+                            <input data-setting="blacklistEnabled" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight">Blacklist enabled</div>
+                            <div class="settingDescription">Videos from channels in the blacklist will not be displayed except in its own channel page</div>
+                        </div>
+                    </div>
+                    <div class="setting" data-id="blacklistButton">
+                        <label class="switch">
+                            <input data-setting="blacklistButton" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight">Blacklist button</div>
+                            <div class="settingDescription">Displays a button in the three vertical dots context menu of video thumbnails to add that channel to the blacklist. This option is not available on vertical shorts thumbnails</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="contentTitle" data-locale="contentTitle">Blacklisted channels</div>
+            <div class="contentDescription borderBottom" data-locale="contentDescription">Remove blacklisted channels, add channels manually, import from an existing backup, or export the current list</div>
+            <div id="blacklistControls">
+                <div id="filterChannelsContainer">
+                    <input id="filterChannels" type="text" placeholder="filter channels"/>
+                </div>
+                <div id="blacklistActions">
+                    <div id="addChannel" class="action-button">Add</div>
+                    <div id="importList" class="action-button">Import</div>
+                    <div id="exportList" class="action-button">Export</div>
+                </div>
+            </div>
+            <div id="blacklistChannels"></div>
+        </div>
+        <div class="content" data-content="help">
+            <div class="contentTitle" data-id="help" data-locale="contentTitle">Help</div>
+            <div class="contentDescription borderBottom" data-id="help" data-locale="contentDescription">Troubleshoot or report problems with the extension</div>
+            <div class="settingGroup">
+                <div class="settingOptions">
+                    <div class="setting">
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight">Report a problem</div>
+                            <div class="settingDescription">If you found an issue or a bug with the extension please follow the instructions for reporting a bug below</div>
+                            <div class="settingDescription"><a target="_blank" href="https://github.com/ParticleCore/Iridium/wiki/Report-a-bug">Report bug</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="version"></div>
+<script src="../js/options.js"></script>
+</body>
+</html>

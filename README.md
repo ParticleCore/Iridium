@@ -1,4 +1,4 @@
-# Iridium [![current version](https://img.shields.io/github/release/ParticleCore/Iridium/all.svg)](https://github.com/ParticleCore/Iridium/releases/latest)
+# Iridium [![current version](https://img.shields.io/github/release/ParticleCore/Iridium/all.svg)](https://github.com/ParticleCore/Iridium/releases/latest) ![firefox](https://img.shields.io/amo/users/particle-iridium?logo=firefoxbrowser&logoColor=white&label=%20) ![chrome](https://img.shields.io/chrome-web-store/users/gbjmgndncjkjfcnpfhgidhbgokofegbl?logo=googlechrome&logoColor=white&label=%20)
 
 **[Download](https://github.com/ParticleCore/Iridium/wiki/Download) | [Report a problem](https://github.com/ParticleCore/Iridium/wiki/Report-a-bug) | [Donate](https://github.com/ParticleCore/Iridium/wiki/Donate)**
 

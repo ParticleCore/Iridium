@@ -194,7 +194,8 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         const listeners = [];
         const navigationMod = data => {
             try {
-                const response = JSON.parse?.["original"]?.(data?.replace(")]}'\n", ""));
+                const parser = JSON.parse?.["original"] || JSON.parse;
+                const response = parser?.(data?.replace(")]}'\n", ""));
                 listeners.forEach(listener => listener?.(response));
                 return JSON.stringify(response);
             } catch (ignore) {
@@ -1289,7 +1290,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             if (!iridiumSettings.searchShorts) {
 
                 // search results shorts
-                const itemSectionRenderer = Util.getSingleObjectByKey(arguments, "itemSectionRenderer");
+                const itemSectionRenderer = Util.getSingleObjectByKey(data, "itemSectionRenderer");
                 const itemSectionRendererContents = itemSectionRenderer?.["contents"];
 
                 if (itemSectionRendererContents) {
@@ -1326,7 +1327,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             ) {
 
                 // home page and subscriptions shorts
-                const richGridRenderer = Util.getSingleObjectByKey(arguments, "richGridRenderer");
+                const richGridRenderer = Util.getSingleObjectByKey(data, "richGridRenderer");
                 const richGridRendererContents = richGridRenderer?.["contents"];
 
                 if (richGridRendererContents?.constructor === Array && richGridRendererContents.length > 0) {
@@ -1400,7 +1401,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         const listener = data => {
             if (!iridiumSettings.infoCards) {
-                const cards = Util.getSingleObjectAndParentByKey(arguments, "cards", (cards, _) => !!cards?.["cardCollectionRenderer"]);
+                const cards = Util.getSingleObjectAndParentByKey(data, "cards", (cards, _) => !!cards?.["cardCollectionRenderer"]);
                 if (cards?.parent?.["cards"]) {
                     delete cards.parent["cards"];
                 }

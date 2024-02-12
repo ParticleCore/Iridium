@@ -7,9 +7,9 @@ html #below {
     transition-timing-function: ease !important;;
     transition-delay: 0.25s !important;;
 }
-html[dim] #masthead-container,
-html[dim] #secondary,
-html[dim] #below {
+html[dim] #masthead-container:not(:hover),
+html[dim] #secondary:not(:hover),
+html[dim] #below:not(:hover) {
     opacity: 0.1;
 }
 /* end | video focus */

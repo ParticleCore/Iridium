@@ -1,0 +1,20 @@
+{
+  "description": "TypeScript definitions for Chrome extensions",
+  "license": "Apache-2.0",
+  "types": "index.d.ts",
+  "type": "module",
+  "name": "chrome-types",
+  "config": {
+    "build-hash": "7b9ad915b95393b2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GoogleChrome/chrome-types.git"
+  },
+  "author": "The Chromium Authors",
+  "bugs": {
+    "url": "https://github.com/GoogleChrome/chrome-types/issues"
+  },
+  "homepage": "https://github.com/GoogleChrome/chrome-types",
+  "version": "0.1.263"
+}

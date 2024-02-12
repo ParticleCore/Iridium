@@ -7,7 +7,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
     const OnPageDataChanged = (() => {
 
         const listeners = [];
-        const onEvent = (event) => listeners.forEach(listener => listener?.(event));
+        const onEvent = event => listeners.forEach(listener => listener?.(event));
 
         window.addEventListener("yt-page-data-updated", onEvent, true);
         window.addEventListener("yt-navigate-start", onEvent, false);
@@ -17,7 +17,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         return {
             addListener: listener => listeners.push(listener)
-        }
+        };
 
     })();
 
@@ -38,7 +38,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         return {
             addListener: listener => listeners.push(listener)
-        }
+        };
 
     })();
 
@@ -47,7 +47,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
     // ini utils
 
     const Util = {
-        getSingleObjectByKey: function (obj, keys, match) {
+        getSingleObjectByKey: (obj, keys, match) => {
 
             if (!obj) {
                 return null;
@@ -82,7 +82,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             }
 
         },
-        getSingleObjectAndParentByKey: function (obj, keys, match) {
+        getSingleObjectAndParentByKey: (obj, keys, match) => {
 
             for (let property in obj) {
 
@@ -169,16 +169,12 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         const listeners = [];
         const original = JSON.parse?.["original"] || JSON.parse;
 
-        JSON.parse = function (text, reviver) {
-
+        JSON.parse = function () {
             const temp = original.apply(this, arguments);
-
             if (temp?.constructor === Object) {
                 listeners.forEach((listener) => listener?.(temp));
             }
-
             return temp;
-
         };
 
         JSON.parse.original = original;
@@ -192,6 +188,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
     const OverrideResponseText = (() => {
 
         const listeners = [];
+        const original = Response.prototype.text?.["original"] || Response.prototype.text;
         const navigationMod = data => {
             try {
                 const parser = JSON.parse?.["original"] || JSON.parse;
@@ -203,13 +200,11 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             }
         };
 
-        const originalResponseText = Response.prototype.text?.["original"] || Response.prototype.text;
-
         Response.prototype.text = function () {
-            return originalResponseText.apply(this, arguments).then(data => navigationMod(data));
+            return original.apply(this, arguments).then(data => navigationMod(data));
         };
 
-        Response.prototype.text.original = originalResponseText;
+        Response.prototype.text.original = original;
 
         return {
             onResponseListener: listener => listeners.push(listener)
@@ -234,7 +229,6 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
                 const created = original.apply(this, arguments);
                 const moviePlayer = created?.["template"]?.["element"];
-
 
                 if (moviePlayer?.["id"] === "movie_player") {
 
@@ -283,10 +277,10 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         });
 
         Object.defineProperty(yt.player.Application, "createAlternate", {
-            set: function (data) {
+            set(data) {
                 this._createAlternate = data;
             },
-            get: function () {
+            get() {
                 if (this._createAlternate) {
                     return patchApplicationCreate(this._createAlternate);
                 } else {
@@ -309,7 +303,9 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         Object.defineProperty(Object.prototype, "bootstrapPlayerContainer", {
             set(data) {
             },
-            get: () => undefined
+            get() {
+                return undefined;
+            }
         });
 
         return {};
@@ -322,7 +318,9 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             Object.defineProperty(host, "loaded", {
                 set(data) {
                 },
-                get: () => false
+                get() {
+                    return false;
+                }
             });
         };
 
@@ -522,7 +520,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         return {
             update: update
-        }
+        };
 
     })();
 
@@ -562,7 +560,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         return {
             update: update
-        }
+        };
 
     })();
 
@@ -644,7 +642,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         return {
             get: getPlayerTools,
             update: update
-        }
+        };
 
     })();
 
@@ -1430,7 +1428,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         return {
             update: update
-        }
+        };
 
     })();
 
@@ -1568,7 +1566,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         return {
             update: update
-        }
+        };
 
     })();
 

@@ -1570,53 +1570,14 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
     })();
 
-    const FeatureBlacklistButton = (() => {
-
-        const update = () => {
-
-            document.querySelector("tp-yt-iron-dropdown")?.["close"]?.();
-
-            if (!iridiumSettings.blacklistButton) {
-
-                const menus = Array.from(document.querySelectorAll("ytd-menu-renderer"));
-
-                menus.forEach(menu => {
-
-                    const items = menu?.["data"]?.["items"];
-                    const backupItems = menu?.["__data"]?.["items"];
-
-                    if (items?.constructor === Array) {
-                        for (let i = items.length - 1; i >= 0; i--) {
-                            if (items[i]?.["menuServiceItemRenderer"]?.["id"] === "blockChannel") {
-                                items.splice(i, 1);
-                            }
-                        }
-                    }
-
-                    if (backupItems?.constructor === Array) {
-                        for (let i = backupItems.length - 1; i >= 0; i--) {
-                            if (backupItems[i]?.["menuServiceItemRenderer"]?.["id"] === "blockChannel") {
-                                backupItems.splice(i, 1);
-                            }
-                        }
-                    }
-
-                });
-
-            }
-
-        };
-
-        FeatureUpdater.register(SettingData.blacklistButton.id, update);
-
-        return {
-            update: update
-        };
-
-    })();
-
     const FeatureBlacklist = (() => {
 
+        const targetTags = [
+            "ytd-rich-item-renderer",
+            "ytd-video-renderer",
+            "ytd-grid-video-renderer",
+            "ytd-compact-video-renderer"
+        ];
         const removeItems = data => {
 
             if (!data) {
@@ -1807,11 +1768,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
             removeItems(data);
 
-            const items = Array.from(document.querySelectorAll([
-                "ytd-rich-item-renderer",
-                "ytd-video-renderer",
-                "ytd-compact-video-renderer"
-            ].join(",")));
+            const items = Array.from(document.querySelectorAll(targetTags.join(",")));
 
             items.forEach(item => {
 
@@ -1835,9 +1792,66 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         };
 
+        FeatureUpdater.register(SettingData.blacklist.id, () => {
+            update(document.querySelector("ytd-app")?.["data"]?.["response"]);
+        });
+
+        OnYtPageDataFetched.addListener(update);
+
+        return {
+            targetTags: targetTags,
+            update: update
+        };
+
+    })();
+
+    const FeatureBlacklistButton = (() => {
+
+        const update = () => {
+
+            document.querySelector("tp-yt-iron-dropdown")?.["close"]?.();
+
+            if (!iridiumSettings.blacklistButton) {
+
+                const menus = Array.from(document.querySelectorAll("ytd-menu-renderer"));
+
+                menus.forEach(menu => {
+
+                    const items = menu?.["data"]?.["items"];
+                    const backupItems = menu?.["__data"]?.["items"];
+
+                    if (items?.constructor === Array) {
+                        for (let i = items.length - 1; i >= 0; i--) {
+                            if (items[i]?.["menuServiceItemRenderer"]?.["id"] === "blockChannel") {
+                                items.splice(i, 1);
+                            }
+                        }
+                    }
+
+                    if (backupItems?.constructor === Array) {
+                        for (let i = backupItems.length - 1; i >= 0; i--) {
+                            if (backupItems[i]?.["menuServiceItemRenderer"]?.["id"] === "blockChannel") {
+                                backupItems.splice(i, 1);
+                            }
+                        }
+                    }
+
+                });
+
+            }
+
+        };
+
         const iniBlacklistButton = event => {
 
             if (!iridiumSettings.blacklistEnabled || !iridiumSettings.blacklistButton) {
+                return;
+            }
+
+            if (window.location.pathname !== "/"
+                && window.location.pathname !== "/watch"
+                && window.location.pathname !== "/results"
+            ) {
                 return;
             }
 
@@ -1857,11 +1871,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                     return;
                 }
 
-                const parent = Array.from(document.querySelectorAll([
-                    "ytd-rich-item-renderer",
-                    "ytd-video-renderer",
-                    "ytd-compact-video-renderer"
-                ].join(",")))
+                const parent = Array.from(document.querySelectorAll(FeatureBlacklist.targetTags.join(",")))
                     .find(item => item.contains(event.target));
 
                 if (!parent) {
@@ -1944,17 +1954,13 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
                 }
 
-                update(document.querySelector("ytd-app")?.["data"]?.["response"]);
+                FeatureBlacklist.update(document.querySelector("ytd-app")?.["data"]?.["response"]);
 
             }
 
         };
 
-        FeatureUpdater.register(SettingData.blacklist.id, () => {
-            update(document.querySelector("ytd-app")?.["data"]?.["response"]);
-        });
-
-        OnYtPageDataFetched.addListener(update);
+        FeatureUpdater.register(SettingData.blacklistButton.id, update);
 
         document.documentElement.addEventListener("yt-action", iniBlacklistButton, false);
 

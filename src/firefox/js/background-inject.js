@@ -235,11 +235,22 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                     const loadVideoByPlayerVars = created?.["loadVideoByPlayerVars"];
                     const cueVideoByPlayerVars = created?.["cueVideoByPlayerVars"];
 
+                    let lastVideoId = "";
+
                     created["loadVideoByPlayerVars"] = function () {
 
                         loadListeners.forEach(listener => listener?.(arguments));
 
-                        if (window.location.pathname === "/watch" && !iridiumSettings.autoplay) {
+                        // [1 playing][2 paused][3 buffering]
+                        const isActive = [1, 2, 3].includes(moviePlayer?.["getPlayerState"]?.());
+                        const newVideoId = arguments?.[0]?.["watch_endpoint"]?.["videoId"]
+                            || arguments?.[0]?.["raw_player_response"]?.["videoDetails"]?.["videoId"]
+                            || Util.getSingleObjectByKey(arguments, "videoId");
+                        const canCue = !isActive || lastVideoId !== newVideoId;
+
+                        lastVideoId = newVideoId;
+
+                        if (window.location.pathname === "/watch" && !iridiumSettings.autoplay && canCue) {
                             created?.["cueVideoByPlayerVars"]?.apply(this, arguments);
                         } else {
                             loadVideoByPlayerVars?.apply(this, arguments);

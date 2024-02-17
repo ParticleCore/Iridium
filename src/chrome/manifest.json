@@ -16,7 +16,8 @@
         "128": "icons/128.png"
     },
     "permissions": [
-        "storage"
+        "storage",
+        "*://www.youtube.com/*"
     ],
     "action": {
         "default_icon": {

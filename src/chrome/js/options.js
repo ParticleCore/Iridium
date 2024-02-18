@@ -4,6 +4,47 @@ globalThis.browser ??= chrome;
 
 const settings = {};
 const options = [];
+const j2d = (() => {
+
+    const processNode = (element, attributes, children) => {
+
+        if (Array.isArray(attributes)
+            || typeof attributes === "string"
+            || attributes instanceof String
+        ) {
+            children = attributes;
+            attributes = {};
+        }
+
+        for (let name in attributes) {
+            element.setAttribute(name, attributes[name]);
+        }
+
+        if (children) {
+            if (Array.isArray(children)) {
+                for (let child of children) {
+                    if (child.constructor === String) {
+                        const textNode = document.createTextNode(child);
+                        element.appendChild(textNode);
+                    } else {
+                        element.appendChild(child);
+                    }
+                }
+            } else if (children.constructor === String) {
+                element.textContent = children;
+            }
+        }
+
+        return element;
+
+    };
+
+    return {
+        make: (node, attributes, children) => processNode(document.createElement(node), attributes, children),
+        makeSVG: (node, attributes, children) => processNode(document.createElementNS("http://www.w3.org/2000/svg", node), attributes, children)
+    };
+
+})();
 const Manager = {
     updateSyncSettings: (newState, userInteraction) => {
 
@@ -437,7 +478,7 @@ const Manager = {
         const container = document.getElementById("blacklistChannels");
 
         if (container) {
-            container.innerHTML = "";
+            container.replaceChildren();
         }
 
         const keys = Object.keys(newList);
@@ -462,19 +503,31 @@ const Manager = {
             keys.forEach((item) => {
 
                 const child = document.createElement("div");
-
                 child.title = "remove";
                 child.classList.add("channel");
                 child.dataset.name = newList[item].name.toLowerCase();
                 child.dataset.handle = newList[item].handle;
                 child.dataset.ucid = item;
-                child.innerHTML = `
-                    <div class="channelName"></div>
-                    <svg class="remove" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
-                        <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/>
-                    </svg>`;
+                child.replaceChildren(
+                    j2d.make("div", {class: "channelName"}),
+                    j2d.makeSVG("svg", {class: "remove", viewBox: "0 -960 960 960", height: "24", width: "24"}, [
+                        j2d.makeSVG("path", {d: "M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"})
+                    ])
+                );
 
-                child.querySelector(".channelName").textContent = newList[item].name || "<i>@" + newList[item].handle + "</i>";
+                const channelName = child.querySelector(".channelName");
+
+                if (channelName) {
+
+                    const name = newList[item].name;
+
+                    if (name) {
+                        channelName.textContent = name;
+                    } else {
+                        channelName.appendChild(j2d.make("i", `@${newList[item].handle}`));
+                    }
+
+                }
 
                 newNodeList.push(child);
 
@@ -885,7 +938,7 @@ const Util = {
                             if (dataObject.channelName) {
                                 nameContainer.textContent = dataObject.channelName;
                             } else {
-                                nameContainer.innerHTML = "<i>empty channel name</i>";
+                                nameContainer.replaceChildren(j2d.make("i", "empty channel name"));
                             }
                         }
 
@@ -914,27 +967,27 @@ const Util = {
     iniBlacklistAdd: () => {
 
         const backdrop = document.createElement("div");
-
         backdrop.id = "backdrop";
-        backdrop.innerHTML = `
-            <div id="dialog" class="noResults">
-                <div id="searchForm">
-                    <input id="channelDataInput" type="text" placeholder="@handle or UCxxx"/>
-                    <div id="searchDialog" class="action-button">Search</div>
-                </div>
-                <div id="searchResult">
-                    <div id="searchResultMessage">Enter channel handle or channel id</div>
-                    <div id="searchChannelAvatarContainer">
-                        <img id="searchChannelAvatar" alt="" src=""/>
-                    </div>
-                    <div id="blockedIndicator">BLOCKED</div>
-                    <div id="searchChannelName">.</div>
-                </div>
-                <div id="dialogAction">
-                    <div id="closeDialog" class="action-button">Close</div>
-                    <div id="addDialog" class="action-button">Add</div>
-                </div>
-            </div>`;
+        backdrop.appendChild(
+            j2d.make("div", {id: "dialog", class: "noResults"}, [
+                j2d.make("div", {id: "searchForm"}, [
+                    j2d.make("input", {id: "channelDataInput", type: "text", placeholder: "@handle or UCxxx"}),
+                    j2d.make("div", {id: "searchDialog", class: "action-button"}, "Search")
+                ]),
+                j2d.make("div", {id: "searchResult"}, [
+                    j2d.make("div", {id: "searchResultMessage"}, "Enter channel handle or channel id"),
+                    j2d.make("div", {id: "searchChannelAvatarContainer"}, [
+                        j2d.make("img", {id: "searchChannelAvatar", alt: "", src: ""}),
+                    ]),
+                    j2d.make("div", {id: "blockedIndicator"}, "BLOCKED"),
+                    j2d.make("div", {id: "searchChannelName"}, "."),
+                ]),
+                j2d.make("div", {id: "dialogAction"}, [
+                    j2d.make("div", {id: "closeDialog", class: "action-button"}, "Close"),
+                    j2d.make("div", {id: "addDialog", class: "action-button"}, "Add"),
+                ]),
+            ])
+        );
 
         document.body.appendChild(backdrop);
 

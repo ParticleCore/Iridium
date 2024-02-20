@@ -349,6 +349,7 @@ input:checked + .slider::after {
 
 .radio {
     --radio-width: 20px;
+    font-size: 16px;
     position: relative;
     display: flex;
     height: 20px;

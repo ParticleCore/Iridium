@@ -7,6 +7,10 @@ const SettingData = {
         id: "syncSettings",
         default: false,
     },
+    fullTitles: {
+        id: "fullTitles",
+        default: true,
+    },
     theme: {
         id: "theme",
         default: "deviceTheme",

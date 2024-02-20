@@ -28,11 +28,5 @@ const onConnect = (port) => {
 }
 
 browser.runtime.onConnect.addListener(onConnect);
-
-if (browser.action) {
-    // mv3
-    browser.action.onClicked.addListener(openOptions);
-} else {
-    // mv2
-    browser.browserAction.onClicked.addListener(openOptions);
-}
+// chrome mv3
+browser.action.onClicked.addListener(openOptions);

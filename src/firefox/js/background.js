@@ -1,5 +1,7 @@
 "use strict";
 
+globalThis.browser ??= chrome;
+
 const openOptions = () => {
     browser.runtime.openOptionsPage()?.then?.();
 }
@@ -26,11 +28,5 @@ const onConnect = (port) => {
 }
 
 browser.runtime.onConnect.addListener(onConnect);
-
-if (browser.action) {
-    // mv3
-    browser.action.onClicked.addListener(openOptions);
-} else {
-    // mv2
-    browser.browserAction.onClicked.addListener(openOptions);
-}
+// firefox mv2
+browser.browserAction.onClicked.addListener(openOptions);

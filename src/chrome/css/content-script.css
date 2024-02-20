@@ -27,6 +27,16 @@ html .iridium-options:hover yt-icon {
 }
 /* end | iridium icon */
 
+/* ini | full titles */
+html.iridium-full-titles #video-title.ytd-video-renderer,
+html.iridium-full-titles #video-title.ytd-compact-video-renderer,
+html.iridium-full-titles #video-title.ytd-reel-item-renderer,
+html.iridium-full-titles #video-title.ytd-rich-grid-media {
+    max-height: unset;
+    -webkit-line-clamp: unset;
+}
+/* end | full titles */
+
 /* ini | hide end screen cards */
 .iridium-hide-end-screen-cards #movie_player:hover .ytp-ce-element:not(:hover) {
     opacity: 0;

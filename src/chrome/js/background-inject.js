@@ -207,35 +207,13 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
     // ini overrides
 
-    const OverrideJsonParse = (() => {
-
-        const listeners = [];
-        const original = JSON.parse?.["original"] || JSON.parse;
-
-        JSON.parse = function () {
-            const temp = original.apply(this, arguments);
-            if (temp?.constructor === Object) {
-                listeners.forEach((listener) => listener?.(temp));
-            }
-            return temp;
-        };
-
-        JSON.parse.original = original;
-
-        return {
-            onParseListener: listener => listeners.push(listener)
-        };
-
-    })();
-
     const OverrideResponseText = (() => {
 
         const listeners = [];
         const original = Response.prototype.text?.["original"] || Response.prototype.text;
         const navigationMod = data => {
             try {
-                const parser = JSON.parse?.["original"] || JSON.parse;
-                const response = parser?.(data?.replace(")]}'\n", ""));
+                const response = JSON.parse(data?.replace(")]}'\n", ""));
                 listeners.forEach(listener => listener?.(response));
                 return JSON.stringify(response);
             } catch (ignore) {
@@ -304,35 +282,60 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             }
         };
 
-        const createKey = crypto.randomUUID();
+        const setCreate = (host, currentValue) => {
 
-        window.yt = {player: {Application: {}}};
+            const createKey = crypto.randomUUID();
 
-        Object.defineProperty(yt.player.Application, "create", {
+            host[createKey] = currentValue;
+
+            Object.defineProperty(host, "create", {
+                set(data) {
+                    this[createKey] = data;
+                },
+                get() {
+                    if (this[createKey]) {
+                        return patchApplicationCreate(this[createKey]);
+                    } else {
+                        return this[createKey];
+                    }
+                }
+            });
+
+        };
+
+        const setCreateAlternate = (host, currentValue) => {
+
+            const createAlternateKey = crypto.randomUUID();
+
+            host[createAlternateKey] = currentValue;
+
+            Object.defineProperty(host, "createAlternate", {
+                set(data) {
+                    this[createAlternateKey] = data;
+                },
+                get() {
+                    if (this[createAlternateKey]) {
+                        return patchApplicationCreate(this[createAlternateKey]);
+                    } else {
+                        return this[createAlternateKey];
+                    }
+                }
+            });
+
+        };
+
+        const ApplicationKey = crypto.randomUUID();
+
+        Object.defineProperty(Object.prototype, "Application", {
             set(data) {
-                this[createKey] = data;
+                this[ApplicationKey] = data;
+                if (data.constructor === Object) {
+                    setCreate(data, data?.create);
+                    setCreateAlternate(data, data?.createAlternate);
+                }
             },
             get() {
-                if (this[createKey]) {
-                    return patchApplicationCreate(this[createKey]);
-                } else {
-                    return this[createKey];
-                }
-            }
-        });
-
-        const createAlternateKey = crypto.randomUUID();
-
-        Object.defineProperty(yt.player.Application, "createAlternate", {
-            set(data) {
-                this[createAlternateKey] = data;
-            },
-            get() {
-                if (this[createAlternateKey]) {
-                    return patchApplicationCreate(this[createAlternateKey]);
-                } else {
-                    return this[createAlternateKey];
-                }
+                return this[ApplicationKey];
             }
         });
 
@@ -345,6 +348,26 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
     })();
 
+    const OverrideCreatePlayerCallback = (() => {
+
+        const createPlayerCallbackKey = crypto.randomUUID();
+
+        Object.defineProperty(Object.prototype, "createPlayerCallback", {
+            set(data) {
+                this[createPlayerCallbackKey] = data;
+            },
+            get() {
+                if (this?.config?.loaded) {
+                    this.config.loaded = false;
+                }
+                return this[createPlayerCallbackKey];
+            }
+        });
+
+        return {};
+
+    })();
+
     const OverridePlayerContainer = (() => {
 
         const bootstrapPlayerContainerKey = crypto.randomUUID();
@@ -354,8 +377,9 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                 this[bootstrapPlayerContainerKey] = data;
             },
             get() {
-                if (iridiumSettings.autoplay) {
-                    return this[bootstrapPlayerContainerKey];
+                const data = this[bootstrapPlayerContainerKey];
+                if (iridiumSettings.autoplay || !(data instanceof HTMLElement)) {
+                    return data;
                 } else {
                     return undefined;
                 }
@@ -366,45 +390,27 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
     })();
 
-    const OverrideConfigLoaded = (() => {
-
-        const loadedKey = crypto.randomUUID();
-
-        const setLoaded = host => Object.defineProperty(host, "loaded", {
-            set(data) {
-                this[loadedKey] = data;
-            },
-            get() {
-                if (iridiumSettings.autoplay) {
-                    return this[loadedKey];
-                } else {
-                    return false;
-                }
-            }
-        });
-
-        const configKey = crypto.randomUUID();
-
-        // we need to keep config.loaded = false to prevent autoplay on first load
-        Object.defineProperty(Object.prototype, "config", {
-            set(data) {
-                if (data?.args) {
-                    setLoaded(data);
-                }
-                this[configKey] = data;
-            },
-            get() {
-                return this[configKey];
-            }
-        });
-
-        return {};
-
-    })();
-
     // end overrides
 
     // ini features
+
+    const FeatureFullTitles = (() => {
+
+        const update = () => {
+            if (iridiumSettings.fullTitles) {
+                document.documentElement.classList.add("iridium-full-titles");
+            } else {
+                document.documentElement.classList.remove("iridium-full-titles");
+            }
+        };
+
+        FeatureUpdater.register(SettingData.fullTitles.id, update);
+
+        return {
+            update: update
+        };
+
+    })();
 
     const FeatureTheme = (() => {
 
@@ -497,7 +503,6 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         document.documentElement.addEventListener("click", onDocumentClick, false);
 
         OnYtPageDataFetched.addListener(listener);
-        OverrideJsonParse.onParseListener(listener);
         OverrideResponseText.onResponseListener(listener);
 
         return {};
@@ -917,59 +922,72 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
     const FeatureMonetizationInfo = (() => {
 
-        const update = playerTools => {
+        const monetizationKey = crypto.randomUUID();
+
+        const update = data => {
 
             if (!iridiumSettings.monetizationInfo) {
                 document.getElementById("iridium-monetization")?.remove();
             } else {
 
+                const playerResponse = data.constructor === Object
+                    ? Util.getSingleObjectByKey(data, "raw_player_response")
+                    : document.querySelector("ytd-page-manager")?.["getCurrentData"]?.()?.["playerResponse"];
+
+                if (!playerResponse) {
+                    return;
+                }
+
+                const videoId = playerResponse["videoDetails"]?.["videoId"];
+                const stored = playerResponse[monetizationKey] ??= {
+                    id: "",
+                    sponsored: false,
+                    adCount: 0,
+                };
+
+                if (stored.id !== videoId) {
+                    stored.id = videoId;
+                    stored.sponsored = playerResponse["paidContentOverlay"];
+                    stored.adCount = playerResponse["adPlacements"]?.length || 0;
+                }
+
+                const playerTools = data instanceof HTMLElement ? data : null;
+
                 let monetizationButton = document.getElementById("iridium-monetization");
 
-                if (!monetizationButton) {
+                if (!monetizationButton && playerTools) {
 
-                    monetizationButton = document.createElement("div");
-                    monetizationButton.id = "iridium-monetization";
-                    monetizationButton.title = "Monetization state";
-                    monetizationButton.replaceChildren(
+                    monetizationButton = j2d.make("div", {id: "iridium-monetization", title: "Monetization state"}, [
                         j2d.makeSVG("svg", {viewBox: "0 -960 960 960", height: "24", width: "24"}, [
                             j2d.makeSVG("path", {class: "iridium-on", d: "M324-370q14 48 43.5 77.5T444-252v17q0 14 10.5 24.5T479-200q14 0 24.5-10.5T514-235v-15q50-9 86-39t36-89q0-42-24-77t-96-61q-60-20-83-35t-23-41q0-26 18.5-41t53.5-15q32 0 50 15.5t26 38.5l64-26q-11-35-40.5-61T516-710v-15q0-14-10.5-24.5T481-760q-14 0-24.5 10.5T446-725v15q-50 11-78 44t-28 74q0 47 27.5 76t86.5 50q63 23 87.5 41t24.5 47q0 33-23.5 48.5T486-314q-33 0-58.5-20.5T390-396l-66 26ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"}),
                             j2d.makeSVG("path", {class: "iridium-off", d: "M328-364.769q15.077 47.077 45.808 74.538 30.73 27.462 75.577 37.923V-231q0 12.846 8.384 21.231 8.385 8.384 21.231 8.384 12.846 0 21.231-8.384 8.384-8.385 8.384-21.231v-19.308q49.077-8.615 86.539-36.923 37.461-28.307 37.461-88.769 0-44-24.538-76.615-24.538-32.616-98.538-58.616-65.154-23.077-86.039-38.615-20.885-15.539-20.885-44.154 0-27.615 21.385-45.5t58-17.885q31.462 0 50.269 15.462 18.808 15.462 29.423 37.923l54.77-21.692q-12.077-32.846-40.77-57.308-28.692-24.462-65.077-26.692V-729q0-12.846-8.384-21.231-8.385-8.384-21.231-8.384-12.846 0-21.231 8.384-8.384 8.385-8.384 21.231v19.308q-52.308 9.692-80.154 42.5-27.846 32.807-27.846 73.192 0 46.154 28.115 75.077Q399.615-490 462-467.692q64.538 23.769 88.731 41.923 24.192 18.154 24.192 49.769 0 38.231-27.308 54.808-27.307 16.577-61.23 16.577-34.923 0-62.231-20.616-27.308-20.615-40.923-60.769L328-364.769Zm152.134 276.77q-81.673 0-152.91-30.84t-124.365-83.922q-53.127-53.082-83.993-124.257Q88-398.194 88-479.866q0-81.673 30.839-153.41 30.84-71.737 83.922-124.865 53.082-53.127 124.257-83.493Q398.194-872 479.866-872q81.673 0 153.41 30.339 71.737 30.34 124.865 83.422 53.127 53.082 83.493 124.757Q872-561.806 872-480.134q0 81.673-30.339 152.91-30.34 71.237-83.422 124.365-53.082 53.127-124.757 83.993Q561.806-88 480.134-88ZM480-154q137 0 231.5-94.5T806-480q0-137-94.5-231.5T480-806q-137 0-231.5 94.5T154-480q0 137 94.5 231.5T480-154Zm0-326Z"})
                         ]),
                         j2d.make("div", {id: "iridium-monetization-count"})
-                    );
+                    ]);
 
-                    playerTools?.appendChild(monetizationButton);
+                    playerTools.appendChild(monetizationButton);
 
                 }
 
                 if (monetizationButton) {
 
                     const title = [];
-                    const playerResponse = document.querySelector("ytd-page-manager")?.["getCurrentData"]?.()?.["playerResponse"];
-                    const sponsored = playerResponse?.["paidContentOverlay"];
 
-                    if (sponsored) {
+                    if (stored.sponsored) {
                         monetizationButton.classList.add("sponsored");
                         title.push("Sponsored");
                     } else {
                         monetizationButton.classList.remove("sponsored");
                     }
 
-                    const adCount = playerResponse?.["adPlacements"]?.length || 0;
-                    const countInfo = document.getElementById("iridium-monetization-count");
-
-                    if (adCount > 0) {
+                    if (stored.adCount > 0) {
                         monetizationButton.classList.add("monetized");
-                        title.push(`Monetized (${adCount} ads)`);
-                        if (countInfo) {
-                            countInfo.textContent = adCount;
-                        }
+                        title.push(`Monetized (${stored.adCount} ads)`);
+                        document.getElementById("iridium-monetization-count")?.replaceChildren(document.createTextNode(stored.adCount));
                     } else {
                         monetizationButton.classList.remove("monetized");
                         title.push("Not monetized");
-                        if (countInfo) {
-                            countInfo.textContent = "";
-                        }
+                        document.getElementById("iridium-monetization-count")?.replaceChildren(document.createTextNode(""));
                     }
 
                     monetizationButton.title = title.join("\n");
@@ -979,6 +997,10 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             }
 
         };
+
+        OverrideApplicationCreate.onCreateListener(update);
+        OverrideApplicationCreate.onLoadListener(update);
+        OverrideApplicationCreate.onCueListener(update);
 
         return {
             update: update
@@ -1290,20 +1312,20 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
             if (!isInVideoAdsAllowed) {
 
-                const adPlacements = Util.getSingleObjectByKey(args, "adPlacements");
-                const adSlots = Util.getSingleObjectByKey(args, "adSlots");
-                const playerAds = Util.getSingleObjectByKey(args, "playerAds");
+                const adPlacementsParent = Util.getSingleObjectAndParentByKey(args, "adPlacements");
+                const adSlotsParent = Util.getSingleObjectAndParentByKey(args, "adSlots");
+                const playerAdsParent = Util.getSingleObjectAndParentByKey(args, "playerAds");
 
-                if (adPlacements?.length) {
-                    adPlacements.fill({});
+                if (adPlacementsParent?.parent?.["adPlacements"]) {
+                    delete adPlacementsParent.parent["adPlacements"];
                 }
 
-                if (adSlots?.length) {
-                    adSlots.length = 0;
+                if (adSlotsParent?.parent?.["adSlots"]) {
+                    delete adSlotsParent.parent["adSlots"];
                 }
 
-                if (playerAds?.length) {
-                    playerAds.length = 0;
+                if (playerAdsParent?.parent?.["playerAds"]) {
+                    delete playerAdsParent.parent["playerAds"];
                 }
 
             }
@@ -1311,9 +1333,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         };
 
         OnYtPageDataFetched.addListener(listener);
-        OverrideJsonParse.onParseListener(listener);
         OverrideResponseText.onResponseListener(listener);
-        OverrideJsonParse.onParseListener(playerConfig);
         OverrideApplicationCreate.onCreateListener(playerConfig);
         OverrideApplicationCreate.onLoadListener(playerConfig);
         OverrideApplicationCreate.onCueListener(playerConfig);
@@ -1398,7 +1418,6 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         };
 
         OnYtPageDataFetched.addListener(listener);
-        OverrideJsonParse.onParseListener(listener);
         OverrideResponseText.onResponseListener(listener);
 
         return {};
@@ -1410,11 +1429,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         const listener = data => {
             if (!iridiumSettings.creatorMerch) {
 
-                const contents = Util.getSingleObjectByKey(
-                    data,
-                    "contents",
-                    (matched, _) => matched?.find((item) => Object.hasOwn(item, "merchandiseShelfRenderer"))
-                );
+                const contents = Util.getSingleObjectByKey(data, "contents", (matched, _) => matched?.find((item) => Object.hasOwn(item, "merchandiseShelfRenderer")));
 
                 if (contents?.length > 0) {
                     for (let i = contents.length - 1; i >= 0; i--) {
@@ -1429,7 +1444,6 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         };
 
         OnYtPageDataFetched.addListener(listener);
-        OverrideJsonParse.onParseListener(listener);
         OverrideResponseText.onResponseListener(listener);
 
         return {};
@@ -1448,7 +1462,6 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         };
 
         OnYtPageDataFetched.addListener(listener);
-        OverrideJsonParse.onParseListener(listener);
         OverrideResponseText.onResponseListener(listener);
 
         return {};
@@ -1481,7 +1494,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                 const audioConfig = Util.getSingleObjectByKey(data, "audioConfig");
                 const adaptiveFormats = Util.getSingleObjectByKey(data, "adaptiveFormats");
 
-                if (audioConfig) {
+                if (audioConfig && Object.hasOwn(audioConfig, "loudnessDb")) {
                     audioConfig["loudnessDb"] = 0;
                 }
 
@@ -1498,7 +1511,6 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             }
         };
 
-        OverrideJsonParse.onParseListener(listener);
         OverrideApplicationCreate.onCreateListener(listener);
         OverrideApplicationCreate.onLoadListener(listener);
         OverrideApplicationCreate.onCueListener(listener);
@@ -1525,7 +1537,6 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             }
         };
 
-        OverrideJsonParse.onParseListener(listener);
         OverrideApplicationCreate.onCreateListener(listener);
         OverrideApplicationCreate.onLoadListener(listener);
         OverrideApplicationCreate.onCueListener(listener);

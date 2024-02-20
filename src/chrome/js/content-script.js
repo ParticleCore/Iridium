@@ -11,6 +11,10 @@ const SettingData = {
         id: "syncSettings",
         default: false,
     },
+    fullTitles: {
+        id: "fullTitles",
+        default: true,
+    },
     theme: {
         id: "theme",
         default: "deviceTheme",
@@ -148,9 +152,40 @@ const getDefaultSettings = () => Object.keys(SettingData).reduce((previousValue,
 const channel = new BroadcastChannel("fdhajofnodmginhfnknimmpdhcgkcldj");
 let port = null;
 
+const validContext = () => {
+
+    const isValid = !!browser.runtime?.id;
+
+    if (!isValid) {
+        channel.removeEventListener("message", channelListener);
+        channel.close();
+    }
+
+    return isValid;
+
+};
+
+const channelListener = message => {
+
+    if (!validContext()) {
+        return;
+    }
+
+    if (message?.data?.type === "setting") {
+        saveSettings(message?.data?.payload).then();
+    } else if (message?.data?.type === "action") {
+        portMessage(message?.data);
+    }
+
+};
+
 const portMessage = data => {
 
     if (!data) {
+        return;
+    }
+
+    if (!validContext()) {
         return;
     }
 
@@ -169,6 +204,10 @@ const saveSettings = async data => {
         return;
     }
 
+    if (!validContext()) {
+        return;
+    }
+
     const dataSync = await browser.storage.sync.get();
 
     if (dataSync?.[SettingData.syncSettings.id] === true) {
@@ -180,6 +219,10 @@ const saveSettings = async data => {
 };
 
 const onStorageChanged = changes => {
+
+    if (!validContext()) {
+        return;
+    }
 
     const changeData = {};
 
@@ -256,13 +299,7 @@ const getSettings = async () => {
 
 };
 
-channel.addEventListener("message", (message) => {
-    if (message?.data?.type === "setting") {
-        saveSettings(message?.data?.payload).then();
-    } else if (message?.data?.type === "action") {
-        portMessage(message?.data);
-    }
-});
+channel.addEventListener("message", channelListener);
 
 browser.storage.sync.get().then(dataSync => {
     if (dataSync?.[SettingData.syncSettings.id] === true) {

@@ -99,6 +99,20 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
+    updateFullTitles: (newState, userInteraction) => {
+
+        const settingId = SettingData.fullTitles.id;
+        const ui = document.querySelector(`[data-setting=${settingId}]`);
+
+        if (ui != null && ui.checked !== newState) {
+            ui.checked = newState;
+        }
+
+        if (!userInteraction) return;
+
+        Util.updateSingleSetting(settingId, newState);
+
+    },
     updateTheme: (newState, userInteraction) => {
 
         function toggleTheme(isDark) {
@@ -618,6 +632,9 @@ const Util = {
             case SettingData.adHomeFeed.id:
             case SettingData.adSearchFeed.id:
                 Manager.updateAdManager(key, value, userInteraction);
+                break;
+            case SettingData.fullTitles.id:
+                Manager.updateFullTitles(value, userInteraction);
                 break;
             case SettingData.theme.id:
                 Manager.updateTheme(value, userInteraction);

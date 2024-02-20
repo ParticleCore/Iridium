@@ -1,5 +1,3 @@
-"use strict";
-
 const SettingData = {
     extensionButton: {
         id: "extensionButton",
@@ -8,6 +6,10 @@ const SettingData = {
     syncSettings: {
         id: "syncSettings",
         default: false,
+    },
+    fullTitles: {
+        id: "fullTitles",
+        default: true,
     },
     theme: {
         id: "theme",

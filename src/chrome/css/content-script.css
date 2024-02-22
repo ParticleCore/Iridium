@@ -37,6 +37,37 @@ html.iridium-full-titles #video-title.ytd-rich-grid-media {
 }
 /* end | full titles */
 
+/* ini | super theater */
+html[super-theater] #masthead-container.ytd-app:has( > [theater][is-watch-page]) #masthead {
+    transform: translateY(-100%);
+    transition: transform .5s ease-out !important;
+}
+html[super-theater] #masthead-container.ytd-app:has( > [theater][is-watch-page]):hover #masthead {
+    transform: translateY(0);
+}
+html[super-theater] ytd-watch-flexy[full-bleed-player]:not([hidden]) #full-bleed-container.ytd-watch-flexy {
+    max-height: calc(100vh);
+    height: calc(100vh);
+    min-height: unset;
+}
+html[super-theater] #page-manager.ytd-app:has( > [theater]:not([hidden])) {
+    margin-top: 0;
+}
+/* end | super theater */
+
+/* ini | sidebar chat */
+html[sidebar-chat]:not([super-theater]) #masthead-container.ytd-app,
+html[sidebar-chat][super-theater] #masthead-container.ytd-app:not(:has( > [is-watch-page])) {
+    width: 100% !important;
+}
+html[sidebar-chat] #page-manager.ytd-app:has( > [theater]:not([hidden])) #chat-container {
+    position: relative;
+}
+html[sidebar-chat] #page-manager.ytd-app:has( > [theater]:not([hidden])) ytd-live-chat-frame {
+    min-height: unset !important;
+}
+/* end | sidebar chat */
+
 /* ini | hide end screen cards */
 .iridium-hide-end-screen-cards #movie_player:hover .ytp-ce-element:not(:hover) {
     opacity: 0;

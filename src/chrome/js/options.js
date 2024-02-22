@@ -268,6 +268,34 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
+    updateSuperTheater: (newState, userInteraction) => {
+
+        const settingId = SettingData.superTheater.id;
+        const ui = document.querySelector(`[data-setting=${settingId}]`);
+
+        if (ui != null && ui.checked !== newState) {
+            ui.checked = newState;
+        }
+
+        if (!userInteraction) return;
+
+        Util.updateSingleSetting(settingId, newState);
+
+    },
+    updateSidebarChat: (newState, userInteraction) => {
+
+        const settingId = SettingData.sidebarChat.id;
+        const ui = document.querySelector(`[data-setting=${settingId}]`);
+
+        if (ui != null && ui.checked !== newState) {
+            ui.checked = newState;
+        }
+
+        if (!userInteraction) return;
+
+        Util.updateSingleSetting(settingId, newState);
+
+    },
     updateAutoplay: (newState, userInteraction) => {
 
         const settingId = SettingData.autoplay.id;
@@ -655,6 +683,12 @@ const Util = {
                 break;
             case SettingData.creatorMerch.id:
                 Manager.updateCreatorMerch(value, userInteraction);
+                break;
+            case SettingData.superTheater.id:
+                Manager.updateSuperTheater(value, userInteraction);
+                break;
+            case SettingData.sidebarChat.id:
+                Manager.updateSidebarChat(value, userInteraction);
                 break;
             case SettingData.defaultQuality.id:
                 Manager.updateDefaultQuality(value, userInteraction);

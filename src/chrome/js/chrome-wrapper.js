@@ -82,6 +82,14 @@
             id: "creatorMerch",
             default: true,
         },
+        superTheater: {
+            id: "superTheater",
+            default: true,
+        },
+        sidebarChat: {
+            id: "sidebarChat",
+            default: true,
+        },
         defaultQuality: {
             id: "defaultQuality",
             default: "auto",

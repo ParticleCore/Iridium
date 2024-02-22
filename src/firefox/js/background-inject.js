@@ -630,6 +630,112 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
     })();
 
+    const FeatureSuperTheater = (() => {
+
+        const update = () => {
+            if (iridiumSettings.superTheater) {
+                document.documentElement.setAttribute("super-theater", "");
+            } else {
+                document.documentElement.removeAttribute("super-theater");
+            }
+        };
+
+        FeatureUpdater.register(SettingData.superTheater.id, update);
+
+        return {};
+
+    })();
+
+    const FeatureSidebarChat = (() => {
+
+        const onResize = event => {
+
+            const ytdApp = document.querySelector("ytd-app");
+            const masthead = document.getElementById("masthead-container");
+            const chat = document.getElementById("chat-container");
+
+            if (iridiumSettings.sidebarChat
+                && ytdApp?.["fullscreen"] !== true
+                && ytdApp?.["isWatchPage"] === true
+                && ytdApp?.["isTheaterMode"]?.() === true
+                && document.getElementById("chat")?.["isHiddenByUser"] !== true
+            ) {
+
+                const newWidth = `${event.width}px`;
+
+                if (newWidth !== masthead.style.width) {
+                    masthead.style.width = newWidth;
+                }
+
+                if (chat) {
+
+                    const videoContainer = document.getElementById("full-bleed-container");
+
+                    if (!videoContainer.contains(chat)) {
+                        videoContainer.appendChild(chat);
+                    }
+
+                }
+
+            } else {
+
+                if (masthead.style.width !== "") {
+                    masthead.style.width = "";
+                }
+
+                if (chat) {
+
+                    const sidebar = document.getElementById("secondary-inner");
+
+                    if (!sidebar.contains(chat)) {
+
+                        const donationShelf = document.getElementById("donation-shelf");
+
+                        if (donationShelf) {
+                            sidebar.insertBefore(chat, donationShelf);
+                        } else {
+                            sidebar.prepend(chat);
+                        }
+
+                    }
+
+                }
+
+            }
+
+        };
+
+        const onYTAction = event => {
+            if (iridiumSettings.sidebarChat && event?.detail?.["actionName"] === "yt-set-live-chat-collapsed") {
+                window.dispatchEvent(new CustomEvent("resize"));
+            }
+        };
+
+        const created = api => {
+            api.addEventListener("resize", onResize, false);
+            document.documentElement.addEventListener("yt-action", onYTAction, false);
+        };
+
+        const update = () => {
+
+            if (iridiumSettings.sidebarChat) {
+                document.documentElement.setAttribute("sidebar-chat", "");
+            } else {
+                document.documentElement.removeAttribute("sidebar-chat");
+            }
+
+            window.dispatchEvent(new CustomEvent("resize"));
+
+        };
+
+        FeatureUpdater.register(SettingData.sidebarChat.id, update);
+
+        OverrideApplicationCreate.onCreatedListener(created);
+
+        return {};
+
+    })();
+
     const FeaturePlayerTools = (() => {
 
         const getPlayerTools = () => {
@@ -1549,60 +1655,63 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         const iniScrollVolume = event => {
 
-            const api = document.getElementById("movie_player");
-            const playerState = api?.["getPlayerState"]?.() || -1;
-            const ivDrawer = document.querySelector(".iv-drawer");
-            const playerSettings = document.querySelector(".ytp-settings-menu");
-            const fullscreenPlaylist = document.querySelector(".ytp-playlist-menu");
-            const canScroll = (!fullscreenPlaylist || !fullscreenPlaylist.contains(event.target))
-                && (!ivDrawer || !ivDrawer.contains(event.target))
-                && (!playerSettings || !playerSettings.contains(event.target));
-
-            if (api && api.contains(event.target) && playerState > 0 && playerState < 5 && canScroll) {
-
-                event.preventDefault();
-
-                const direction = event.deltaY;
-                const oldVolume = api?.["getVolume"]?.() || 0;
-                let newVolume = oldVolume - (Math.sign(direction) * 5);
-
-                if (newVolume < 0) {
-                    newVolume = 0;
-                } else if (newVolume > 100) {
-                    newVolume = 100;
-                }
-
-                if (newVolume > oldVolume && api?.["isMuted"]?.() === true) {
-                    api?.["unMute"]?.();
-                }
-
-                api?.["setVolume"]?.(newVolume);
-
-                let levelText = document.getElementById("iridium-scroll-volume-level");
-
-                if (!levelText) {
-                    levelText = document.createElement("div");
-                    levelText.id = "iridium-scroll-volume-level";
-                }
-
-                levelText.textContent = `${newVolume}%`;
-
-                let levelContainer = document.getElementById("iridium-scroll-volume-level-container");
-
-                if (!levelContainer) {
-                    levelContainer = document.createElement("div");
-                    levelContainer.id = "iridium-scroll-volume-level-container";
-                    levelContainer.appendChild(levelText);
-                    api.prepend(levelContainer);
-                } else {
-                    levelContainer.style.display = "";
-                }
-
-                clearTimeout(levelContainer.timeoutId);
-
-                levelContainer.timeoutId = setTimeout(() => levelContainer.style.display = "none", 1000);
-
+            if (!event.shiftKey) {
+                return;
             }
+
+            const ytdApp = document.querySelector("ytd-app");
+
+            if (ytdApp?.["isWatchPage"] !== true) {
+                return;
+            }
+
+            const api = document.getElementById("movie_player");
+
+            if (!api) {
+                return;
+            }
+
+            event.preventDefault();
+
+            const direction = event.deltaY;
+            const oldVolume = api?.["getVolume"]?.() || 0;
+            let newVolume = oldVolume - (Math.sign(direction) * 5);
+
+            if (newVolume < 0) {
+                newVolume = 0;
+            } else if (newVolume > 100) {
+                newVolume = 100;
+            }
+
+            if (newVolume > oldVolume && api?.["isMuted"]?.() === true) {
+                api?.["unMute"]?.();
+            }
+
+            api?.["setVolume"]?.(newVolume);
+
+            let levelText = document.getElementById("iridium-scroll-volume-level");
+
+            if (!levelText) {
+                levelText = document.createElement("div");
+                levelText.id = "iridium-scroll-volume-level";
+            }
+
+            levelText.textContent = `${newVolume}%`;
+
+            let levelContainer = document.getElementById("iridium-scroll-volume-level-container");
+
+            if (!levelContainer) {
+                levelContainer = document.createElement("div");
+                levelContainer.id = "iridium-scroll-volume-level-container";
+                levelContainer.appendChild(levelText);
+                api.prepend(levelContainer);
+            } else {
+                levelContainer.style.display = "";
+            }
+
+            clearTimeout(levelContainer.timeoutId);
+
+            levelContainer.timeoutId = setTimeout(() => levelContainer.style.display = "none", 1000);
 
         };
 

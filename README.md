@@ -3,10 +3,10 @@
 
 **[Download](https://github.com/ParticleCore/Iridium/wiki/Download) | [Report a problem](https://github.com/ParticleCore/Iridium/wiki/Report-a-bug) | [Donate](https://github.com/ParticleCore/Iridium/wiki/Donate)**
 
-# v2.0 is out
+# Iridium v2.0 is out and working again
+The extension is now available for download and you can find it on Firefox AMO Store, Chrome Web Store, or the self-hosted option which is updated faster. You can find more information in the [download](https://github.com/ParticleCore/Iridium/wiki/Download) instructions.
 
-## Iridium is working again
-The extension is now available for download and you can find it on AMO or the self-hosted option which is updated faster, you can find more at the download link instructions provided above.
+If you have any issue with the extension please follow the [instructions](https://github.com/ParticleCore/Iridium/wiki/Report-a-bug) before opening a new bug report.
 
 A list of available features will be eventually updated and linked here, but for now check the projects for a draft of features implemented in each version update, as well as features planned for future versions.
 

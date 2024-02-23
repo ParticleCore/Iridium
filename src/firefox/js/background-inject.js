@@ -663,15 +663,15 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
                 const newWidth = `${event.width}px`;
 
-                if (newWidth !== masthead.style.width) {
+                if (masthead && newWidth !== masthead.style.width) {
                     masthead.style.width = newWidth;
                 }
 
                 if (chat) {
 
-                    const videoContainer = document.getElementById("full-bleed-container");
+                    const videoContainer = document.getElementById("player-full-bleed-container");
 
-                    if (!videoContainer.contains(chat)) {
+                    if (videoContainer && !videoContainer.contains(chat)) {
                         videoContainer.appendChild(chat);
                     }
 
@@ -679,11 +679,11 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
             } else {
 
-                if (masthead.style.width !== "") {
+                if (masthead && masthead.style.width !== "") {
                     masthead.style.width = "";
                 }
 
-                if (chat) {
+                if (chat && document.getElementById("full-bleed-container")) {
 
                     const sidebar = document.getElementById("secondary-inner");
 
@@ -740,7 +740,8 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         const getPlayerTools = () => {
 
-            const titleSection = document.querySelector("#below ytd-watch-metadata #title");
+            const titleSection = document.querySelector("#below ytd-watch-metadata #title")
+                || document.querySelector("#bottom-grid");
 
             if (!titleSection) {
                 return null;
@@ -751,7 +752,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             if (!playerTools) {
                 playerTools = document.createElement("div");
                 playerTools.id = "iridium-player-tools";
-                titleSection.appendChild(playerTools);
+                titleSection.prepend(playerTools);
                 titleSection.style.position = "relative";
             } else {
                 playerTools.replaceChildren();

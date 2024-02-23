@@ -45,7 +45,8 @@ html[super-theater] #masthead-container.ytd-app:has( > [theater][is-watch-page])
 html[super-theater] #masthead-container.ytd-app:has( > [theater][is-watch-page]):hover #masthead {
     transform: translateY(0);
 }
-html[super-theater] ytd-watch-flexy[full-bleed-player]:not([hidden]) #full-bleed-container.ytd-watch-flexy {
+html[super-theater] ytd-watch-flexy[full-bleed-player]:not([hidden]) #full-bleed-container.ytd-watch-flexy,
+html[super-theater] ytd-watch-grid[full-bleed-player]:not([hidden]) #player-full-bleed-container.ytd-watch-grid {
     max-height: calc(100vh);
     height: calc(100vh);
     min-height: unset;
@@ -56,6 +57,14 @@ html[super-theater] #page-manager.ytd-app:has( > [theater]:not([hidden])) {
 /* end | super theater */
 
 /* ini | sidebar chat */
+html[sidebar-chat] #player-full-bleed-container {
+    display: flex;
+    flex-direction: row;
+}
+html[sidebar-chat] #player-full-bleed-container #player-container {
+    position: relative;
+    flex: 1;
+}
 html[sidebar-chat]:not([super-theater]) #masthead-container.ytd-app,
 html[sidebar-chat][super-theater] #masthead-container.ytd-app:not(:has( > [is-watch-page])) {
     width: 100% !important;
@@ -64,6 +73,7 @@ html[sidebar-chat] #page-manager.ytd-app:has( > [theater]:not([hidden])) #chat-c
     position: relative;
 }
 html[sidebar-chat] #page-manager.ytd-app:has( > [theater]:not([hidden])) ytd-live-chat-frame {
+    height: 100% !important;
     min-height: unset !important;
 }
 /* end | sidebar chat */
@@ -104,6 +114,10 @@ html[sidebar-chat] #page-manager.ytd-app:has( > [theater]:not([hidden])) ytd-liv
     right: 0;
     bottom: 0;
 }
+#bottom-grid #iridium-player-tools {
+    position: unset;
+    margin-left: auto;
+}
 #iridium-player-tools > div {
     cursor: pointer;
     width: 36px;
@@ -111,7 +125,7 @@ html[sidebar-chat] #page-manager.ytd-app:has( > [theater]:not([hidden])) ytd-liv
     justify-content: center;
     display: flex;
     align-items: center;
-    fill: currentColor;
+    fill: var(--yt-spec-text-primary);
     position: relative;
 }
 #iridium-player-tools > div:hover {

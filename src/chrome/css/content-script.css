@@ -75,6 +75,7 @@ html[sidebar-chat] #page-manager.ytd-app:has( > [theater]:not([hidden])) #chat-c
 html[sidebar-chat] #page-manager.ytd-app:has( > [theater]:not([hidden])) ytd-live-chat-frame {
     height: 100% !important;
     min-height: unset !important;
+    top: unset !important;
 }
 /* end | sidebar chat */
 

@@ -54,30 +54,30 @@ html[super-theater] ytd-watch-grid[full-bleed-player]:not([hidden]) #player-full
 html[super-theater] #page-manager.ytd-app:has( > [theater]:not([hidden])) {
     margin-top: 0;
 }
-/* end | super theater */
-
-/* ini | sidebar chat */
-html[sidebar-chat] #player-full-bleed-container {
+html[super-theater] #page-manager.ytd-app:has( > [theater]:not([hidden])) ytd-live-chat-frame {
+    top: 0 !important;
+}
+html[super-theater] #player-full-bleed-container {
     display: flex;
     flex-direction: row;
 }
-html[sidebar-chat] #player-full-bleed-container #player-container {
+html[super-theater] #player-full-bleed-container #player-container {
     position: relative;
     flex: 1;
 }
-html[sidebar-chat]:not([super-theater]) #masthead-container.ytd-app,
-html[sidebar-chat][super-theater] #masthead-container.ytd-app:not(:has( > [is-watch-page])) {
+html[super-theater]:not([super-theater]) #masthead-container.ytd-app,
+html[super-theater][super-theater] #masthead-container.ytd-app:not(:has( > [is-watch-page])) {
     width: 100% !important;
 }
-html[sidebar-chat] #page-manager.ytd-app:has( > [theater]:not([hidden])) #chat-container {
+html[super-theater] #page-manager.ytd-app:has( > [theater]:not([hidden])) #chat-container {
     position: relative;
 }
-html[sidebar-chat] #page-manager.ytd-app:has( > [theater]:not([hidden])) ytd-live-chat-frame {
+html[super-theater] #page-manager.ytd-app:has( > [theater]:not([hidden])) ytd-live-chat-frame {
     height: 100% !important;
     min-height: unset !important;
     top: unset !important;
 }
-/* end | sidebar chat */
+/* end | super theater */
 
 /* ini | hide end screen cards */
 .iridium-hide-end-screen-cards #movie_player:hover .ytp-ce-element:not(:hover) {

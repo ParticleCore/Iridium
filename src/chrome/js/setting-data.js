@@ -79,10 +79,6 @@ const SettingData = {
         id: "superTheater",
         default: true,
     },
-    sidebarChat: {
-        id: "sidebarChat",
-        default: true,
-    },
     defaultQuality: {
         id: "defaultQuality",
         default: "auto",

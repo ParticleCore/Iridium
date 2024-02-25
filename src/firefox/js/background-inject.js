@@ -632,62 +632,54 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
     const FeatureSuperTheater = (() => {
 
-        const update = () => {
-            if (iridiumSettings.superTheater) {
-                document.documentElement.setAttribute("super-theater", "");
-            } else {
-                document.documentElement.removeAttribute("super-theater");
-            }
-        };
-
-        FeatureUpdater.register(SettingData.superTheater.id, update);
-
-        return {};
-
-    })();
-
-    const FeatureSidebarChat = (() => {
-
         const onResize = event => {
 
-            const ytdApp = document.querySelector("ytd-app");
-            const masthead = document.getElementById("masthead-container");
-            const chat = document.getElementById("chat-container");
+            if (iridiumSettings.superTheater) {
 
-            if (iridiumSettings.sidebarChat
-                && ytdApp?.["fullscreen"] !== true
-                && ytdApp?.["isWatchPage"] === true
-                && ytdApp?.["isTheaterMode"]?.() === true
-                && document.getElementById("chat")?.["isHiddenByUser"] !== true
-            ) {
+                const ytdApp = document.querySelector("ytd-app");
 
-                const newWidth = `${event.width}px`;
+                if (ytdApp?.["fullscreen"] !== true
+                    && ytdApp?.["isWatchPage"] === true
+                    && ytdApp?.["isTheaterMode"]?.() === true
+                    && document.getElementById("chat")?.["isHiddenByUser"] !== true
+                ) {
 
-                if (masthead && newWidth !== masthead.style.width) {
-                    masthead.style.width = newWidth;
-                }
+                    const newWidth = `${event.width}px`;
+                    const masthead = document.getElementById("masthead-container");
 
-                if (chat) {
+                    if (masthead && newWidth !== masthead.style.width) {
+                        masthead.style.width = newWidth;
+                    }
 
-                    const videoContainer = document.getElementById("player-full-bleed-container");
+                    const chat = document.getElementById("chat-container");
 
-                    if (videoContainer && !videoContainer.contains(chat)) {
-                        videoContainer.appendChild(chat);
+                    if (chat) {
+
+                        const videoContainer = document.getElementById("player-full-bleed-container");
+
+                        if (videoContainer && !videoContainer.contains(chat)) {
+                            videoContainer.appendChild(chat);
+                        }
+
                     }
 
                 }
 
             } else {
 
+                const masthead = document.getElementById("masthead-container");
+
                 if (masthead && masthead.style.width !== "") {
                     masthead.style.width = "";
                 }
+
+                const chat = document.getElementById("chat-container");
 
                 if (chat && document.getElementById("full-bleed-container")) {
 
                     const sidebar = document.getElementById("secondary-inner");
 
-                    if (!sidebar.contains(chat)) {
+                    if (sidebar && !sidebar.contains(chat)) {
 
                         const donationShelf = document.getElementById("donation-shelf");
 
@@ -706,7 +698,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         };
 
         const onYTAction = event => {
-            if (iridiumSettings.sidebarChat && event?.detail?.["actionName"] === "yt-set-live-chat-collapsed") {
+            if (iridiumSettings.superTheater && event?.detail?.["actionName"] === "yt-set-live-chat-collapsed") {
                 window.dispatchEvent(new CustomEvent("resize"));
             }
         };
@@ -718,17 +710,17 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         const update = () => {
 
-            if (iridiumSettings.sidebarChat) {
-                document.documentElement.setAttribute("sidebar-chat", "");
+            if (iridiumSettings.superTheater) {
+                document.documentElement.setAttribute("super-theater", "");
             } else {
-                document.documentElement.removeAttribute("sidebar-chat");
+                document.documentElement.removeAttribute("super-theater");
             }
 
             window.dispatchEvent(new CustomEvent("resize"));
 
         };
 
-        FeatureUpdater.register(SettingData.sidebarChat.id, update);
+        FeatureUpdater.register(SettingData.superTheater.id, update);
 
         OverrideApplicationCreate.onCreatedListener(created);
 

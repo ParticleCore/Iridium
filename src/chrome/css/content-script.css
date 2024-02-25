@@ -54,6 +54,9 @@ html[super-theater] ytd-watch-grid[full-bleed-player]:not([hidden]) #player-full
 html[super-theater] #page-manager.ytd-app:has( > [theater]:not([hidden])) {
     margin-top: 0;
 }
+html[super-theater] #masthead-container.ytd-app:has( > [theater][is-watch-page]) ~ #page-manager.ytd-app:has( > [theater]:not([hidden])) ytd-live-chat-frame {
+    top: 0 !important;
+}
 /* end | super theater */
 
 /* ini | sidebar chat */

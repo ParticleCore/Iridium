@@ -634,33 +634,30 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         const onResize = event => {
 
-            if (iridiumSettings.superTheater) {
+            const ytdApp = document.querySelector("ytd-app");
 
-                const ytdApp = document.querySelector("ytd-app");
+            if (iridiumSettings.superTheater
+                && ytdApp?.["fullscreen"] !== true
+                && ytdApp?.["isWatchPage"] === true
+                && ytdApp?.["isTheaterMode"]?.() === true
+                && document.getElementById("chat")?.["isHiddenByUser"] !== true
+            ) {
 
-                if (ytdApp?.["fullscreen"] !== true
-                    && ytdApp?.["isWatchPage"] === true
-                    && ytdApp?.["isTheaterMode"]?.() === true
-                    && document.getElementById("chat")?.["isHiddenByUser"] !== true
-                ) {
+                const newWidth = `${event.width}px`;
+                const masthead = document.getElementById("masthead-container");
 
-                    const newWidth = `${event.width}px`;
-                    const masthead = document.getElementById("masthead-container");
+                if (masthead && newWidth !== masthead.style.width) {
+                    masthead.style.width = newWidth;
+                }
 
-                    if (masthead && newWidth !== masthead.style.width) {
-                        masthead.style.width = newWidth;
-                    }
+                const chat = document.getElementById("chat-container");
 
-                    const chat = document.getElementById("chat-container");
+                if (chat) {
 
-                    if (chat) {
+                    const videoContainer = document.getElementById("player-full-bleed-container");
 
-                        const videoContainer = document.getElementById("player-full-bleed-container");
-
-                        if (videoContainer && !videoContainer.contains(chat)) {
-                            videoContainer.appendChild(chat);
-                        }
-
+                    if (videoContainer && !videoContainer.contains(chat)) {
+                        videoContainer.appendChild(chat);
                     }
 
                 }

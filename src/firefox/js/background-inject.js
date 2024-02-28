@@ -1052,7 +1052,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         const onCreated = api => {
             api.addEventListener("onStateChange", state => {
-                if (iridiumSettings.videoFocus && iridiumSettings.videoFocusToggle) {
+                if (iridiumSettings.videoFocus) {
                     switch (state) {
                         case 1:
                         case 3:
@@ -1066,7 +1066,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         };
 
         const update = () => {
-            if (iridiumSettings.videoFocus && iridiumSettings.videoFocusToggle) {
+            if (iridiumSettings.videoFocus) {
                 document.getElementById("iridium-video-focus")?.setAttribute("iridium-enabled", "");
                 switch (document.getElementById("movie_player")?.["getPlayerState"]?.()) {
                     case 1:

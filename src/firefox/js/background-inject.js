@@ -241,6 +241,36 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
     })();
 
+    const OverrideHandleResponse = (() => {
+
+        const listeners = [];
+        const handleResponseKey = crypto.randomUUID();
+
+        Object.defineProperty(Object.prototype, "handleResponse", {
+            set(data) {
+                this[handleResponseKey] = data;
+            },
+            get() {
+                const original = this[handleResponseKey];
+                return function (url, code, response, callback) {
+                    if (response?.constructor === String) {
+                        try {
+                            const parsed = JSON.parse(response);
+                            listeners?.forEach(listener => listener?.(parsed));
+                        } catch (e) {
+                        }
+                    }
+                    return original?.apply(this, arguments);
+                };
+            }
+        });
+
+        return {
+            onHandleResponseListener: listener => listeners.push(listener)
+        };
+
+    })();
+
     const OverrideApplicationCreate = (() => {
 
         const createListeners = [];
@@ -1309,6 +1339,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         };
 
+        OverrideHandleResponse.onHandleResponseListener(update);
         OverrideApplicationCreate.onCreateListener(update);
         OverrideApplicationCreate.onLoadListener(update);
         OverrideApplicationCreate.onCueListener(update);
@@ -1645,6 +1676,8 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         OnYtPageDataFetched.addListener(listener);
         OverrideResponseText.onResponseListener(listener);
+        OverrideHandleResponse.onHandleResponseListener(listener);
+        OverrideHandleResponse.onHandleResponseListener(playerConfig);
         OverrideApplicationCreate.onCreateListener(playerConfig);
         OverrideApplicationCreate.onLoadListener(playerConfig);
         OverrideApplicationCreate.onCueListener(playerConfig);
@@ -1822,6 +1855,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             }
         };
 
+        OverrideHandleResponse.onHandleResponseListener(listener);
         OverrideApplicationCreate.onCreateListener(listener);
         OverrideApplicationCreate.onLoadListener(listener);
         OverrideApplicationCreate.onCueListener(listener);
@@ -1848,6 +1882,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             }
         };
 
+        OverrideHandleResponse.onHandleResponseListener(listener);
         OverrideApplicationCreate.onCreateListener(listener);
         OverrideApplicationCreate.onLoadListener(listener);
         OverrideApplicationCreate.onCueListener(listener);

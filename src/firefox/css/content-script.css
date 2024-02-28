@@ -181,3 +181,43 @@ html[dark] #iridium-player-tools .sponsored {
     display: none;
 }
 /* end | player tools */
+
+/* ini | always visible */
+html[always-visible-player]:not(:has(ytd-watch-flexy[fullscreen])) #movie_player {
+    position: fixed;
+    z-index: 9999;
+    height: 225px;
+    width: 400px;
+    bottom: 10px;
+    right: 10px;
+    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12), 0 2px 4px -1px rgba(0, 0, 0, .4);
+}
+html[always-visible-player] #movie_player::before {
+    background-color: #000;
+    bottom: 0;
+    content: "";
+    display: block;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+html[always-visible-player][moving] #movie_player {
+    opacity: 0.9;
+}
+html[always-visible-player][moving] #movie_player::after {
+    background-color: #fff;
+    bottom: 0;
+    content: "";
+    display: block;
+    left: 0;
+    opacity: .4;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 99;
+}
+html[dark][always-visible-player][moving] #movie_player::after {
+    background-color: #000;
+}
+/* end | always visible */

@@ -198,7 +198,15 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         channel.addEventListener("message", onMessageListener);
 
         return {
-            postMessage: message => channel.postMessage(message)
+            postMessage: message => channel.postMessage(message),
+            doAction: action => channel.postMessage({
+                type: "action",
+                payload: action
+            }),
+            saveSetting: settingId => channel.postMessage({
+                type: "setting",
+                payload: {[settingId]: iridiumSettings[settingId]}
+            })
         };
 
     })();
@@ -390,6 +398,34 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
     })();
 
+    const OverrideSetInternalSize = (() => {
+
+        const setInternalSizeKey = crypto.randomUUID();
+
+        Object.defineProperty(Object.prototype, "setInternalSize", {
+            set(data) {
+                this[setInternalSizeKey] = data;
+            },
+            get() {
+                const original = this[setInternalSizeKey];
+                if (original?.toString()?.startsWith("function(a)")) {
+                    return function (size) {
+                        if (iridiumSettings.alwaysVisible && Object.hasOwn(size, "width") && Object.hasOwn(size, "height")) {
+                            arguments[0].width = NaN;
+                            arguments[0].height = NaN;
+                        }
+                        return original?.apply(this, arguments);
+                    }
+                } else {
+                    return original;
+                }
+            }
+        });
+
+        return {};
+
+    })();
+
     // end overrides
 
     // ini features
@@ -493,10 +529,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                 document.activeElement.blur();
             }
 
-            Broadcaster.postMessage({
-                type: "action",
-                payload: "extensionButton"
-            });
+            Broadcaster.doAction("extensionButton");
 
         };
 
@@ -725,6 +758,191 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
     })();
 
+    const FeatureAlwaysVisible = (() => {
+
+        let moviePlayer = null;
+        let maxX = null;
+        let maxY = null;
+        let pos = {x1: 0, x2: 0, y1: 0, y2: 0}
+
+        const offset = 10;
+
+        const isPlayer = target => target.id === "movie_player" || document.getElementById("movie_player")?.contains(target);
+
+        const isAlwaysVisible = () => document.documentElement.hasAttribute("always-visible-player");
+
+        const updatePosition = () => {
+
+            if (!isAlwaysVisible() || !moviePlayer) {
+                return;
+            }
+
+            const newX = iridiumSettings.alwaysVisiblePosition.x ??= offset;
+            const newY = iridiumSettings.alwaysVisiblePosition.y ??= offset;
+            const snapRight = iridiumSettings.alwaysVisiblePosition.snapRight ??= true;
+            const snapBottom = iridiumSettings.alwaysVisiblePosition.snapBottom ??= true;
+
+            if (newX < offset) {
+                moviePlayer.style.left = `${offset}px`;
+                moviePlayer.style.right = "unset";
+            } else if (snapRight || newX > maxX) {
+                moviePlayer.style.left = "unset";
+                moviePlayer.style.right = `${offset}px`;
+            } else {
+                moviePlayer.style.left = `${newX}px`;
+                moviePlayer.style.right = "unset";
+            }
+
+            if (newY < offset) {
+                moviePlayer.style.top = `${offset}px`;
+                moviePlayer.style.bottom = "unset";
+            } else if (snapBottom || newY > maxY) {
+                moviePlayer.style.top = "unset";
+                moviePlayer.style.bottom = `${offset}px`;
+            } else {
+                moviePlayer.style.top = `${newY}px`;
+                moviePlayer.style.bottom = "unset";
+            }
+
+        };
+
+        const onMouseMove = event => {
+
+            if (document.fullscreenElement || !moviePlayer) {
+                return false;
+            }
+
+            pos.x1 = pos.x2 - event.clientX;
+            pos.y1 = pos.y2 - event.clientY;
+
+            const newX = moviePlayer.offsetLeft - pos.x1;
+            const newY = moviePlayer.offsetTop - pos.y1;
+
+            if (newX > offset && newX < maxX) {
+                pos.x2 = event.clientX;
+                iridiumSettings.alwaysVisiblePosition.x = newX;
+                iridiumSettings.alwaysVisiblePosition.snapRight = false;
+            }
+
+            if (newY > offset && newY < maxY) {
+                pos.y2 = event.clientY;
+                iridiumSettings.alwaysVisiblePosition.y = newY;
+                iridiumSettings.alwaysVisiblePosition.snapBottom = false;
+            }
+
+            iridiumSettings.alwaysVisiblePosition.snapRight = newX >= maxX;
+            iridiumSettings.alwaysVisiblePosition.snapBottom = newY >= maxY;
+
+            updatePosition()
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            return true;
+
+        };
+
+        const onMouseDown = event => {
+
+            if (document.fullscreenElement || event.buttons !== 2 || !isPlayer(event.target)) {
+                return true;
+            }
+
+            document.documentElement.setAttribute("moving", "");
+
+            pos.x2 = event.clientX;
+            pos.y2 = event.clientY;
+
+            maxX = document.documentElement.clientWidth - moviePlayer.offsetWidth - offset;
+            maxY = document.documentElement.clientHeight - moviePlayer.offsetHeight - offset;
+
+            const onMouseUp = function () {
+                document.documentElement.removeAttribute("moving");
+                window.removeEventListener("mouseup", onMouseUp, true);
+                window.removeEventListener("mousemove", onMouseMove, true);
+                Broadcaster.saveSetting(SettingData.alwaysVisiblePosition.id);
+            };
+
+            window.addEventListener("mousemove", onMouseMove, true);
+            window.addEventListener("mouseup", onMouseUp, true);
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            return true;
+
+        };
+
+        const onContextMenu = function (event) {
+
+            if (document.fullscreenElement || !isAlwaysVisible() || !isPlayer(event.target)) {
+                return false;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            return true;
+
+        };
+
+        const updateState = event => {
+
+            moviePlayer ??= document.getElementById("movie_player");
+
+            const parentRects = moviePlayer?.parentElement?.getBoundingClientRect();
+
+            if (!parentRects) {
+                return;
+            }
+
+            maxX = document.documentElement.clientWidth - moviePlayer.offsetWidth - offset;
+            maxY = document.documentElement.clientHeight - moviePlayer.offsetHeight - offset;
+
+            if (event?.type === "resize") {
+                updatePosition();
+            }
+
+            if (!document.fullscreenElement && window.location.pathname === "/watch" && parentRects.bottom < parentRects.height * .5) {
+                if (!isAlwaysVisible()) {
+                    document.documentElement.setAttribute("always-visible-player", "");
+                    window.addEventListener("mousedown", onMouseDown, true);
+                    window.addEventListener("contextmenu", onContextMenu, true);
+                    updatePosition();
+                    window.dispatchEvent(new CustomEvent("resize"));
+                }
+            } else if (isAlwaysVisible()) {
+                document.documentElement.removeAttribute("always-visible-player");
+                window.removeEventListener("mousedown", onMouseDown, true);
+                window.removeEventListener("contextmenu", onContextMenu, true);
+                moviePlayer.removeAttribute("style");
+                window.dispatchEvent(new CustomEvent("resize"));
+            }
+
+        };
+
+        const update = () => {
+
+            if (iridiumSettings.alwaysVisible) {
+                window.addEventListener("yt-navigate-finish", updateState, false);
+                window.addEventListener("scroll", updateState, false);
+                window.addEventListener("resize", updateState, false);
+            } else {
+                window.removeEventListener("yt-navigate-finish", updateState, false);
+                window.removeEventListener("scroll", updateState, false);
+                window.removeEventListener("resize", updateState, false);
+            }
+
+            updateState();
+
+        };
+
+        FeatureUpdater.register(SettingData.alwaysVisible.id, update);
+
+        return {};
+
+    })();
+
     const FeaturePlayerTools = (() => {
 
         const getPlayerTools = () => {
@@ -865,10 +1083,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
                     videoFocusButton.onclick = () => {
                         iridiumSettings.videoFocus = !iridiumSettings.videoFocus;
-                        Broadcaster.postMessage({
-                            type: "setting",
-                            payload: {[SettingData.videoFocus.id]: iridiumSettings.videoFocus}
-                        });
+                        Broadcaster.saveSetting(SettingData.videoFocus.id);
                         update();
                     };
 
@@ -2098,10 +2313,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                         handle: canonicalBaseUrl
                     };
 
-                    Broadcaster.postMessage({
-                        type: "setting",
-                        payload: {[SettingData.blacklist.id]: iridiumSettings.blacklist}
-                    });
+                    Broadcaster.saveSetting(SettingData.blacklist.id);
 
                 }
 

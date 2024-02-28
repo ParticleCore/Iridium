@@ -394,6 +394,20 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
+    updateAlwaysVisible: (newState, userInteraction) => {
+
+        const settingId = SettingData.alwaysVisible.id;
+        const ui = document.querySelector(`[data-setting=${settingId}]`);
+
+        if (ui != null && ui.checked !== newState) {
+            ui.checked = newState;
+        }
+
+        if (!userInteraction) return;
+
+        Util.updateSingleSetting(settingId, newState);
+
+    },
     updateHFRAllowed: (newState, userInteraction) => {
 
         const settingId = SettingData.hfrAllowed.id;
@@ -696,6 +710,9 @@ const Util = {
                 break;
             case SettingData.endScreen.id:
                 Manager.updateEndScreen(value, userInteraction);
+                break;
+            case SettingData.alwaysVisible.id:
+                Manager.updateAlwaysVisible(value, userInteraction);
                 break;
             case SettingData.hfrAllowed.id:
                 Manager.updateHFRAllowed(value, userInteraction);

@@ -91,6 +91,14 @@ const SettingData = {
         id: "defaultSpeed",
         default: "-1",
     },
+    alwaysVisible: {
+        id: "alwaysVisible",
+        default: true,
+    },
+    alwaysVisiblePosition: {
+        id: "alwaysVisiblePosition",
+        default: {},
+    },
     hfrAllowed: {
         id: "hfrAllowed",
         default: true,

@@ -706,9 +706,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                 && document.getElementById("chat")?.["isHiddenByUser"] !== true
             ) {
 
-                const masthead = document.getElementById("masthead-container");
                 const chat = document.getElementById("chat-container");
-                let mastheadRight = "";
 
                 if (chat) {
 
@@ -718,19 +716,28 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                         videoContainer.appendChild(chat);
                     }
 
-                    mastheadRight = `${chat.offsetWidth}px`;
-
                 }
 
-                if (masthead && masthead.style.right !== mastheadRight) {
-                    masthead.style.right = mastheadRight;
-                    masthead.style.left = "0px";
-                    masthead.style.width = "auto";
+                const masthead = document.getElementById("masthead-container");
+                const moviePlayerParent = document.getElementById("movie_player")?.parentElement;
+
+                if (masthead && moviePlayerParent?.offsetWidth > 0) {
+
+                    const width = `${moviePlayerParent.offsetWidth}px`;
+
+                    if (masthead.style.width !== width) {
+                        masthead.style.width = width;
+                    }
+
                 }
 
             } else {
 
-                document.getElementById("masthead-container")?.removeAttribute("style");
+                const moviePlayerParent = document.getElementById("movie_player")?.parentElement;
+
+                if (moviePlayerParent) {
+                    moviePlayerParent.style.width = "";
+                }
 
                 const chat = document.getElementById("chat-container");
 

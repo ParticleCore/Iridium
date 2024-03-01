@@ -803,7 +803,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         const updatePosition = () => {
 
-            if (!isAlwaysVisible() || !moviePlayer) {
+            if (!iridiumSettings.alwaysVisible || !isAlwaysVisible() || !moviePlayer) {
                 return;
             }
 
@@ -933,7 +933,11 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                 updatePosition();
             }
 
-            if (!document.fullscreenElement && window.location.pathname === "/watch" && parentRects.bottom < parentRects.height * .5) {
+            if (iridiumSettings.alwaysVisible
+                && !document.fullscreenElement
+                && window.location.pathname === "/watch"
+                && parentRects.bottom < parentRects.height * .5
+            ) {
                 if (!isAlwaysVisible()) {
                     document.documentElement.setAttribute("always-visible-player", "");
                     window.addEventListener("mousedown", onMouseDown, true);

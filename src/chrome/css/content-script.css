@@ -183,6 +183,10 @@ html[dark] #iridium-player-tools .sponsored {
 /* end | player tools */
 
 /* ini | always visible */
+html[always-visible-player] .ytp-miniplayer-button,
+html[always-visible-player] .ytp-size-button {
+    display: none !important;
+}
 html[always-visible-player]:not(:has(ytd-watch-flexy[fullscreen])) #movie_player {
     position: fixed;
     z-index: 9999;

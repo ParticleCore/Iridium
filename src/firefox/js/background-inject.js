@@ -916,6 +916,40 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         };
 
+        const preventScrollTop = (() => {
+
+            let original = null;
+
+            const override = () => {
+
+                const watchFlexy = document.querySelector("ytd-watch-flexy");
+
+                if (watchFlexy) {
+                    original = watchFlexy.setScrollTop;
+                    watchFlexy.setScrollTop = () => {
+                    };
+                }
+
+            };
+
+            const restore = () => {
+
+                const watchFlexy = document.querySelector("ytd-watch-flexy");
+
+                if (watchFlexy) {
+                    watchFlexy.setScrollTop = original;
+                    original = null;
+                }
+
+            };
+
+            return {
+                override: override,
+                restore: restore
+            }
+
+        })();
+
         const updateState = event => {
 
             moviePlayer ??= document.getElementById("movie_player");
@@ -939,6 +973,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                 && parentRects.bottom < parentRects.height * .5
             ) {
                 if (!isAlwaysVisible()) {
+                    preventScrollTop.override();
                     document.documentElement.setAttribute("always-visible-player", "");
                     window.addEventListener("mousedown", onMouseDown, true);
                     window.addEventListener("contextmenu", onContextMenu, true);
@@ -946,6 +981,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                     window.dispatchEvent(new CustomEvent("resize"));
                 }
             } else if (isAlwaysVisible()) {
+                preventScrollTop.restore();
                 document.documentElement.removeAttribute("always-visible-player");
                 window.removeEventListener("mousedown", onMouseDown, true);
                 window.removeEventListener("contextmenu", onContextMenu, true);

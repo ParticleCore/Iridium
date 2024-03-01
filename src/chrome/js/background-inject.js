@@ -695,7 +695,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
     const FeatureSuperTheater = (() => {
 
-        const onResize = event => {
+        const onResize = () => {
 
             const ytdApp = document.querySelector("ytd-app");
 
@@ -706,14 +706,9 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                 && document.getElementById("chat")?.["isHiddenByUser"] !== true
             ) {
 
-                const newWidth = `${event.width}px`;
                 const masthead = document.getElementById("masthead-container");
-
-                if (masthead && newWidth !== masthead.style.width) {
-                    masthead.style.width = newWidth;
-                }
-
                 const chat = document.getElementById("chat-container");
+                let mastheadRight = "";
 
                 if (chat) {
 
@@ -723,15 +718,19 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                         videoContainer.appendChild(chat);
                     }
 
+                    mastheadRight = `${chat.offsetWidth}px`;
+
+                }
+
+                if (masthead && masthead.style.right !== mastheadRight) {
+                    masthead.style.right = mastheadRight;
+                    masthead.style.left = "0px";
+                    masthead.style.width = "auto";
                 }
 
             } else {
 
-                const masthead = document.getElementById("masthead-container");
-
-                if (masthead && masthead.style.width !== "") {
-                    masthead.style.width = "";
-                }
+                document.getElementById("masthead-container")?.removeAttribute("style");
 
                 const chat = document.getElementById("chat-container");
 

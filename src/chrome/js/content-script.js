@@ -131,6 +131,10 @@ const SettingData = {
         id: "endScreen",
         default: false,
     },
+    autoplayShortcut: {
+        id: "autoplayShortcut",
+        default: true,
+    },
     videoFocusToggle: {
         id: "videoFocusToggle",
         default: true,

@@ -1074,6 +1074,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                 return;
             }
 
+            FeatureAutoplayShortcut.check(playerTools);
             FeatureVideoFocus.check(playerTools);
             FeatureScreenshot.update(playerTools);
             FeatureThumbnail.update(playerTools);
@@ -1175,7 +1176,6 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         OverrideApplicationCreate.onCreatedListener(onCreated);
 
         return {
-            update: update,
             check: check
         };
 
@@ -1392,6 +1392,70 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         return {
             update: update
+        };
+
+    })();
+
+    const FeatureAutoplayShortcut = (() => {
+
+        const update = () => {
+
+            const button = document.getElementById("iridium-autoplay-shortcut");
+
+            if (!button) {
+                return;
+            }
+
+            if (iridiumSettings.autoplay) {
+                button.setAttribute("iridium-enabled", "");
+                button.title = "Autoplay on";
+            } else {
+                button.removeAttribute("iridium-enabled");
+                button.title = "Autoplay off";
+            }
+
+        };
+
+        const check = playerTools => {
+
+            if (!iridiumSettings.autoplayShortcut) {
+                document.getElementById("iridium-autoplay-shortcut")?.remove();
+            } else if (playerTools) {
+
+                let button = document.getElementById("iridium-autoplay-shortcut");
+
+                if (!button) {
+
+                    button = j2d.make("div", {id: "iridium-autoplay-shortcut", title: "Monetization state", "iridium-enabled": "",}, [
+                        j2d.makeSVG("svg", {viewBox: "0 -960 960 960", height: "24", width: "24"}, [
+                            j2d.makeSVG("path", {d: "M320-263v-438q0-15 10-24.167 10-9.167 23.333-9.167 4.333 0 8.833 1.167t8.834 3.5L715.667-510q7.667 5.333 11.5 12.333T731-482q0 8.667-3.833 15.667-3.833 6.999-11.5 12.333L371-234.333q-4.334 2.333-8.834 3.5-4.5 1.166-8.833 1.166-13.333 0-23.333-9.166Q320-248 320-263Z"})
+                        ])
+                    ]);
+
+                    playerTools.appendChild(button);
+
+                }
+
+                if (button) {
+
+                    update();
+
+                    button.onclick = () => {
+                        iridiumSettings.autoplay = !iridiumSettings.autoplay;
+                        Broadcaster.saveSetting(SettingData.autoplay.id);
+                        update();
+                    };
+
+                }
+
+            }
+
+        };
+
+        FeatureUpdater.register(SettingData.autoplayShortcut.id, update);
+
+        return {
+            check: check
         };
 
     })();

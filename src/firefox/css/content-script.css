@@ -137,6 +137,9 @@ html[super-theater] #page-manager.ytd-app:has( > [theater]:not([hidden])) ytd-li
     pointer-events: none;
     user-select: none;
 }
+#iridium-autoplay-shortcut:not([iridium-enabled]) {
+    opacity: 0.5;
+}
 #iridium-video-focus:not([iridium-enabled]) #iridium-on,
 #iridium-video-focus[iridium-enabled] #iridium-off {
     display: none;

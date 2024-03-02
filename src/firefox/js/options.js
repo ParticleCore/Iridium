@@ -444,6 +444,20 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
+    updateAutoplayShortcut: (newState, userInteraction) => {
+
+        const settingId = SettingData.autoplayShortcut.id;
+        const ui = document.querySelector(`[data-setting=${settingId}]`);
+
+        if (ui != null && ui.checked !== newState) {
+            ui.checked = newState;
+        }
+
+        if (!userInteraction) return;
+
+        Util.updateSingleSetting(settingId, newState);
+
+    },
     updateVideoFocusToggle: (newState, userInteraction) => {
 
         const settingId = SettingData.videoFocusToggle.id;
@@ -741,6 +755,9 @@ const Util = {
                 break;
             case SettingData.hfrAllowed.id:
                 Manager.updateHFRAllowed(value, userInteraction);
+                break;
+            case SettingData.autoplayShortcut.id:
+                Manager.updateAutoplayShortcut(value, userInteraction);
                 break;
             case SettingData.videoFocusToggle.id:
                 Manager.updateVideoFocusToggle(value, userInteraction);

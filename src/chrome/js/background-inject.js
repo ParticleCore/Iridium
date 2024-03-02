@@ -1961,7 +1961,8 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
             const direction = event.deltaY;
             const oldVolume = api?.["getVolume"]?.() || 0;
-            let newVolume = oldVolume - (Math.sign(direction) * 5);
+            const steps = Math.max(1, Math.min(iridiumSettings.scrollVolumeStep || 5, 10));
+            let newVolume = oldVolume - (Math.sign(direction) * steps);
 
             if (newVolume < 0) {
                 newVolume = 0;

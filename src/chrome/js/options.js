@@ -319,6 +319,28 @@ const Manager = {
             ui.checked = newState;
         }
 
+        const dependents = document.querySelectorAll(`[data-id="${SettingData.scrollVolumeStep.id}"]`);
+
+        if (newState) {
+            dependents.forEach(value => value.classList.remove("disabled"));
+        } else {
+            dependents.forEach(value => value.classList.add("disabled"));
+        }
+
+        if (!userInteraction) return;
+
+        Util.updateSingleSetting(settingId, newState);
+
+    },
+    updateScrollVolumeStep: (newState, userInteraction) => {
+
+        const settingId = SettingData.scrollVolumeStep.id;
+        const ui = document.querySelector(`[data-setting=${settingId}]`);
+
+        if (ui != null && ui.value !== newState) {
+            ui.value = newState;
+        }
+
         if (!userInteraction) return;
 
         Util.updateSingleSetting(settingId, newState);
@@ -701,6 +723,9 @@ const Util = {
                 break;
             case SettingData.scrollVolume.id:
                 Manager.updateScrollVolume(value, userInteraction);
+                break;
+            case SettingData.scrollVolumeStep.id:
+                Manager.updateScrollVolumeStep(value, userInteraction);
                 break;
             case SettingData.infoCards.id:
                 Manager.updateInfoCards(value, userInteraction);

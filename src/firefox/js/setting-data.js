@@ -111,6 +111,10 @@ const SettingData = {
         id: "scrollVolume",
         default: true,
     },
+    scrollVolumeStep: {
+        id: "scrollVolumeStep",
+        default: 5,
+    },
     infoCards: {
         id: "infoCards",
         default: false,

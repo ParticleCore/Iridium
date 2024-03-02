@@ -267,6 +267,7 @@ pre {
     border-radius: 6px;
     border: 0 none;
     margin-bottom: 6px;
+    min-width: 120px;
 }
 
 .settingDescription {

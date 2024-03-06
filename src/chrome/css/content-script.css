@@ -1,3 +1,9 @@
+/* ini | autoplay */
+#movie_player.unstarted-mode > *:not(.ytp-cued-thumbnail-overlay) {
+    display: none;
+}
+/* end | autoplay */
+
 /* ini | video focus */
 html #masthead-container,
 html #secondary,

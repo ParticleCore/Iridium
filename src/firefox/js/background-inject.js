@@ -158,6 +158,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             }
 
         },
+        isWatchPage: () => window.location.pathname === "/watch" || window.location.pathname.startsWith("/clip")
     };
 
     const FeatureUpdater = (() => {
@@ -218,7 +219,6 @@ function mainScript(extensionId, SettingData, defaultSettings) {
     const OverrideResponseText = (() => {
 
         const listeners = [];
-        const original = Response.prototype.text?.["original"] || Response.prototype.text;
         const navigationMod = data => {
             try {
                 const response = JSON.parse(data?.replace(")]}'\n", ""));
@@ -228,6 +228,8 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                 return data;
             }
         };
+
+        const original = Response.prototype.text?.["original"] || Response.prototype.text;
 
         Response.prototype.text = function () {
             return original.apply(this, arguments).then(data => navigationMod(data));
@@ -271,6 +273,97 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
     })();
 
+    const OverrideVideoPlay = (() => {
+
+        let canPlay = false;
+        let timer = null;
+        let previousVideoId = null;
+
+        const containers = [
+            "#player:has(#movie_player)",
+            "#player-container:has(#movie_player)",
+            "#ytd-player:has(#movie_player)",
+            "#movie_player"
+        ].join(",");
+
+        const onClick = event => {
+
+            clearTimeout(timer);
+
+            canPlay = document.querySelector(containers)?.contains(event.target) === true;
+
+            if (canPlay) {
+                previousVideoId = document.getElementById("movie_player")?.["getVideoData"]()?.["video_id"] || null;
+            }
+
+            timer = setTimeout(() => canPlay = false, 300);
+
+        }
+
+        const override = () => {
+
+            const original = HTMLVideoElement.prototype.play?.["original"] || HTMLVideoElement.prototype.play;
+
+            HTMLVideoElement.prototype.play = function () {
+
+                const moviePlayer = document.getElementById("movie_player");
+                const isMoviePlayer = moviePlayer?.contains(this) === true;
+                const currentVideoId = moviePlayer?.["getVideoData"]()?.["video_id"] || "";
+                const allowed = !isMoviePlayer || iridiumSettings.autoplay || canPlay || previousVideoId === currentVideoId;
+
+                if (allowed) {
+
+                    if (isMoviePlayer) {
+                        previousVideoId = currentVideoId;
+                    } else {
+                        previousVideoId = null;
+                    }
+
+                    return original.apply(this, arguments);
+
+                } else {
+
+                    previousVideoId = null;
+
+                    return new Promise((resolve, reject) => reject(new DOMException("rejected")));
+
+                }
+
+            };
+
+            HTMLVideoElement.prototype.play.original = original;
+
+        };
+
+        const reset = () => {
+
+            HTMLVideoElement.prototype.play = HTMLVideoElement.prototype.play?.["original"] || HTMLVideoElement.prototype.play;
+            delete HTMLVideoElement.prototype.play?.["original"];
+
+            canPlay = false;
+            timer = null;
+            previousVideoId = null;
+
+        };
+
+        const update = () => {
+            if (iridiumSettings.autoplay) {
+                document.documentElement.removeEventListener("click", onClick, true);
+                reset();
+            } else {
+                document.documentElement.addEventListener("click", onClick, true);
+                override();
+            }
+        };
+
+        update();
+
+        FeatureUpdater.register(SettingData.autoplay.id, update);
+
+        return {};
+
+    })();
+
     const OverrideApplicationCreate = (() => {
 
         const createListeners = [];
@@ -295,15 +388,8 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                     const cueVideoByPlayerVars = created?.["cueVideoByPlayerVars"];
 
                     created["loadVideoByPlayerVars"] = function () {
-                        if (window.location.pathname === "/watch"
-                            && !iridiumSettings.autoplay
-                            && arguments?.[0]?.["reload_reason"] !== "signature"
-                        ) {
-                            created?.["cueVideoByPlayerVars"]?.apply(this, arguments);
-                        } else {
-                            loadListeners.forEach(listener => listener?.(arguments));
-                            loadVideoByPlayerVars?.apply(this, arguments);
-                        }
+                        loadListeners.forEach(listener => listener?.(arguments));
+                        loadVideoByPlayerVars?.apply(this, arguments);
                     };
 
                     created["cueVideoByPlayerVars"] = function () {
@@ -383,48 +469,6 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             onCueListener: listener => cueListeners.push(listener),
             onCreatedListener: listener => createdListeners.push(listener),
         };
-
-    })();
-
-    const OverrideCreatePlayerCallback = (() => {
-
-        const createPlayerCallbackKey = crypto.randomUUID();
-
-        Object.defineProperty(Object.prototype, "createPlayerCallback", {
-            set(data) {
-                this[createPlayerCallbackKey] = data;
-            },
-            get() {
-                if (this?.config?.loaded) {
-                    this.config.loaded = false;
-                }
-                return this[createPlayerCallbackKey];
-            }
-        });
-
-        return {};
-
-    })();
-
-    const OverridePlayerContainer = (() => {
-
-        const bootstrapPlayerContainerKey = crypto.randomUUID();
-
-        Object.defineProperty(Object.prototype, "bootstrapPlayerContainer", {
-            set(data) {
-                this[bootstrapPlayerContainerKey] = data;
-            },
-            get() {
-                const data = this[bootstrapPlayerContainerKey];
-                if (iridiumSettings.autoplay || !(data instanceof HTMLElement)) {
-                    return data;
-                } else {
-                    return undefined;
-                }
-            }
-        });
-
-        return {};
 
     })();
 
@@ -975,7 +1019,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
             if (iridiumSettings.alwaysVisible
                 && !document.fullscreenElement
-                && window.location.pathname === "/watch"
+                && Util.isWatchPage()
                 && parentRects.bottom < parentRects.height * .5
             ) {
                 if (!isAlwaysVisible()) {
@@ -2161,7 +2205,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
                 }
 
-            } else if (window.location.pathname === "/watch") {
+            } else if (Util.isWatchPage()) {
 
                 // watch page
 
@@ -2361,7 +2405,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             }
 
             if (window.location.pathname !== "/"
-                && window.location.pathname !== "/watch"
+                && !Util.isWatchPage()
                 && window.location.pathname !== "/results"
             ) {
                 return;

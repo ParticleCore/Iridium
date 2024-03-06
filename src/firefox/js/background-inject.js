@@ -677,7 +677,12 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                 browseEndpoint.params = param;
             }
 
-            metadata.url = link.href = `${browseEndpoint["canonicalBaseUrl"]}/${iridiumSettings.channelTab}`;
+            const url = browseEndpoint["canonicalBaseUrl"]
+                || (browseEndpoint["browseId"] ? `/channel/${browseEndpoint["browseId"]}` : undefined) ;
+
+            if (url) {
+                metadata.url = link.href = `${url}/${iridiumSettings.channelTab}`;
+            }
 
         };
 

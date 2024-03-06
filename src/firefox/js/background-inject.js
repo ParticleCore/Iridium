@@ -294,9 +294,8 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
             if (canPlay) {
                 previousVideoId = document.getElementById("movie_player")?.["getVideoData"]()?.["video_id"] || null;
+                timer = setTimeout(() => canPlay = false, 300);
             }
-
-            timer = setTimeout(() => canPlay = false, 300);
 
         }
 
@@ -346,12 +345,22 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         };
 
+        const onNavigate = () => {
+            clearTimeout(timer);
+            canPlay = false;
+            previousVideoId = null;
+        };
+
         const update = () => {
             if (iridiumSettings.autoplay) {
                 document.documentElement.removeEventListener("click", onClick, true);
+                window.removeEventListener("yt-navigate-start", onNavigate, false);
+                window.removeEventListener("popstate", onNavigate, true);
                 reset();
             } else {
                 document.documentElement.addEventListener("click", onClick, true);
+                window.addEventListener("yt-navigate-start", onNavigate, false);
+                window.addEventListener("popstate", onNavigate, true);
                 override();
             }
         };
@@ -678,7 +687,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             }
 
             const url = browseEndpoint["canonicalBaseUrl"]
-                || (browseEndpoint["browseId"] ? `/channel/${browseEndpoint["browseId"]}` : undefined) ;
+                || (browseEndpoint["browseId"] ? `/channel/${browseEndpoint["browseId"]}` : undefined);
 
             if (url) {
                 metadata.url = link.href = `${url}/${iridiumSettings.channelTab}`;
@@ -798,7 +807,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
                         const donationShelf = document.getElementById("donation-shelf");
 
-                        if (donationShelf) {
+                        if (donationShelf && sidebar === donationShelf.parentElement) {
                             sidebar.insertBefore(chat, donationShelf);
                         } else {
                             sidebar.prepend(chat);

@@ -216,59 +216,66 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
     // ini overrides
 
-    const OverrideResponseText = (() => {
+    const OverrideFetch = (() => {
 
         const listeners = [];
-        const navigationMod = data => {
-            try {
-                const response = JSON.parse(data?.replace(")]}'\n", ""));
-                listeners.forEach(listener => listener?.(response));
-                return JSON.stringify(response);
-            } catch (ignore) {
-                return data;
+
+        const canProceed = data => data?.["contents"]
+            || data?.["videoDetails"]
+            || data?.["items"]
+            || data?.["onResponseReceivedActions"]
+            || data?.["onResponseReceivedEndpoints"]
+            || data?.["onResponseReceivedCommands"];
+
+        const override = function (target, thisArg, argArray) {
+            if (!argArray?.[0].url || Object.getOwnPropertyDescriptor(argArray[0], "url") !== undefined) {
+                return target.apply(thisArg, argArray);
+            } else {
+                return target.apply(thisArg, argArray).then(response => {
+                    return response.clone().text().then(text => {
+                        const data = JSON.parse(text.replace(")]}'\n", ""));
+                        if (canProceed(data)) {
+                            listeners?.forEach(listener => listener?.(data));
+                            return new Response(JSON.stringify(data));
+                        } else {
+                            return response;
+                        }
+                    }).catch(() => response);
+                });
             }
         };
 
-        const original = Response.prototype.text?.["original"] || Response.prototype.text;
+        const original = window.fetch?.["original"] || window.fetch;
 
-        Response.prototype.text = function () {
-            return original.apply(this, arguments).then(data => navigationMod(data));
-        };
+        window.fetch = new Proxy(window.fetch, {apply: override});
+        window.fetch.original = original;
 
-        Response.prototype.text.original = original;
+        let ytInitialData = undefined;
 
-        return {
-            onResponseListener: listener => listeners.push(listener)
-        };
-
-    })();
-
-    const OverrideHandleResponse = (() => {
-
-        const listeners = [];
-        const handleResponseKey = crypto.randomUUID();
-
-        Object.defineProperty(Object.prototype, "handleResponse", {
+        Object.defineProperty(window, "ytInitialData", {
             set(data) {
-                this[handleResponseKey] = data;
+                ytInitialData = data;
+                listeners?.forEach(listener => listener?.(ytInitialData));
             },
             get() {
-                const original = this[handleResponseKey];
-                return function (url, code, response, callback) {
-                    if (response?.constructor === String) {
-                        try {
-                            const parsed = JSON.parse(response);
-                            listeners?.forEach(listener => listener?.(parsed));
-                        } catch (e) {
-                        }
-                    }
-                    return original?.apply(this, arguments);
-                };
+                return ytInitialData;
+            }
+        });
+
+        let ytInitialPlayerResponse = undefined;
+
+        Object.defineProperty(window, "ytInitialPlayerResponse", {
+            set(data) {
+                ytInitialPlayerResponse = data;
+                listeners?.forEach(listener => listener?.(ytInitialPlayerResponse));
+            },
+            get() {
+                return ytInitialPlayerResponse;
             }
         });
 
         return {
-            onHandleResponseListener: listener => listeners.push(listener)
+            onFetchListener: listener => listeners.push(listener)
         };
 
     })();
@@ -373,110 +380,19 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
     })();
 
-    const OverrideApplicationCreate = (() => {
+    const OverrideOnYouTubePlayerReady = (() => {
 
-        const createListeners = [];
-        const loadListeners = [];
-        const cueListeners = [];
-        const createdListeners = [];
-        const patchApplicationCreate = function (original) {
-            return function () {
+        const listeners = [];
 
-                if (!original) {
-                    return;
-                }
-
-                createListeners.forEach(listener => listener?.(arguments));
-
-                const created = original.apply(this, arguments);
-                const moviePlayer = created?.["template"]?.["element"];
-
-                if (moviePlayer?.["id"] === "movie_player") {
-
-                    const loadVideoByPlayerVars = created?.["loadVideoByPlayerVars"];
-                    const cueVideoByPlayerVars = created?.["cueVideoByPlayerVars"];
-
-                    created["loadVideoByPlayerVars"] = function () {
-                        loadListeners.forEach(listener => listener?.(arguments));
-                        loadVideoByPlayerVars?.apply(this, arguments);
-                    };
-
-                    created["cueVideoByPlayerVars"] = function () {
-                        cueListeners.forEach(listener => listener?.(arguments));
-                        cueVideoByPlayerVars?.apply(this, arguments);
-                    };
-
-                    createdListeners.forEach(listener => listener?.(moviePlayer));
-
-                }
-
-                return created;
-
-            }
-        };
-
-        const setCreate = (host, currentValue) => {
-
-            const createKey = crypto.randomUUID();
-
-            host[createKey] = currentValue;
-
-            Object.defineProperty(host, "create", {
-                set(data) {
-                    this[createKey] = data;
-                },
-                get() {
-                    if (this[createKey]) {
-                        return patchApplicationCreate(this[createKey]);
-                    } else {
-                        return this[createKey];
-                    }
-                }
-            });
-
-        };
-
-        const setCreateAlternate = (host, currentValue) => {
-
-            const createAlternateKey = crypto.randomUUID();
-
-            host[createAlternateKey] = currentValue;
-
-            Object.defineProperty(host, "createAlternate", {
-                set(data) {
-                    this[createAlternateKey] = data;
-                },
-                get() {
-                    if (this[createAlternateKey]) {
-                        return patchApplicationCreate(this[createAlternateKey]);
-                    } else {
-                        return this[createAlternateKey];
-                    }
-                }
-            });
-
-        };
-
-        const ApplicationKey = crypto.randomUUID();
-
-        Object.defineProperty(Object.prototype, "Application", {
-            set(data) {
-                this[ApplicationKey] = data;
-                if (data.constructor === Object) {
-                    setCreate(data, data?.create);
-                    setCreateAlternate(data, data?.createAlternate);
-                }
-            },
-            get() {
-                return this[ApplicationKey];
-            }
-        });
+        window.onYouTubePlayerReady = (function (original) {
+            return function (api) {
+                listeners?.forEach(listener => listener?.(api));
+                original?.apply(this, arguments);
+            };
+        }(window.onYouTubePlayerReady));
 
         return {
-            onCreateListener: listener => createListeners.push(listener),
-            onLoadListener: listener => loadListeners.push(listener),
-            onCueListener: listener => cueListeners.push(listener),
-            onCreatedListener: listener => createdListeners.push(listener),
+            onReadyListener: listener => listeners.push(listener)
         };
 
     })();
@@ -619,7 +535,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         document.documentElement.addEventListener("click", onDocumentClick, false);
 
         OnYtPageDataFetched.addListener(listener);
-        OverrideResponseText.onResponseListener(listener);
+        OverrideFetch.onFetchListener(listener);
 
         return {};
 
@@ -846,7 +762,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         FeatureUpdater.register(SettingData.superTheater.id, update);
 
-        OverrideApplicationCreate.onCreatedListener(created);
+        OverrideOnYouTubePlayerReady.onReadyListener(created);
 
         return {};
 
@@ -1231,7 +1147,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         FeatureUpdater.register(SettingData.videoFocusToggle.id, update);
         FeatureUpdater.register(SettingData.videoFocus.id, update);
 
-        OverrideApplicationCreate.onCreatedListener(onCreated);
+        OverrideOnYouTubePlayerReady.onReadyListener(onCreated);
 
         return {
             check: check
@@ -1369,15 +1285,25 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         const monetizationKey = crypto.randomUUID();
 
+        const getData = data => {
+            if (data.constructor === Object) {
+                if (data["videoDetails"]) {
+                    return data;
+                } else {
+                    return Util.getSingleObjectByKey(data, "raw_player_response");
+                }
+            } else {
+                return document.querySelector("ytd-page-manager")?.["getCurrentData"]?.()?.["playerResponse"];
+            }
+        };
+
         const update = data => {
 
             if (!iridiumSettings.monetizationInfo) {
                 document.getElementById("iridium-monetization")?.remove();
             } else {
 
-                const playerResponse = data.constructor === Object
-                    ? Util.getSingleObjectByKey(data, "raw_player_response")
-                    : document.querySelector("ytd-page-manager")?.["getCurrentData"]?.()?.["playerResponse"];
+                const playerResponse = getData(data);
 
                 if (!playerResponse) {
                     return;
@@ -1443,10 +1369,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         };
 
-        OverrideHandleResponse.onHandleResponseListener(update);
-        OverrideApplicationCreate.onCreateListener(update);
-        OverrideApplicationCreate.onLoadListener(update);
-        OverrideApplicationCreate.onCueListener(update);
+        OverrideFetch.onFetchListener(update);
 
         return {
             update: update
@@ -1564,7 +1487,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         })
 
-        OverrideApplicationCreate.onCreatedListener(onCreated);
+        OverrideOnYouTubePlayerReady.onReadyListener(onCreated);
 
         return {};
 
@@ -1622,7 +1545,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             }
         });
 
-        OverrideApplicationCreate.onCreatedListener(onCreated);
+        OverrideOnYouTubePlayerReady.onReadyListener(onCreated);
 
         return {};
 
@@ -1636,7 +1559,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             }
         });
 
-        OverrideApplicationCreate.onCreatedListener(onCreated);
+        OverrideOnYouTubePlayerReady.onReadyListener(onCreated);
 
         return {};
 
@@ -1843,12 +1766,8 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         };
 
         OnYtPageDataFetched.addListener(listener);
-        OverrideResponseText.onResponseListener(listener);
-        OverrideHandleResponse.onHandleResponseListener(listener);
-        OverrideHandleResponse.onHandleResponseListener(playerConfig);
-        OverrideApplicationCreate.onCreateListener(playerConfig);
-        OverrideApplicationCreate.onLoadListener(playerConfig);
-        OverrideApplicationCreate.onCueListener(playerConfig);
+        OverrideFetch.onFetchListener(listener);
+        OverrideFetch.onFetchListener(playerConfig);
 
         return {};
 
@@ -1930,7 +1849,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         };
 
         OnYtPageDataFetched.addListener(listener);
-        OverrideResponseText.onResponseListener(listener);
+        OverrideFetch.onFetchListener(listener);
 
         return {};
 
@@ -1956,7 +1875,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         };
 
         OnYtPageDataFetched.addListener(listener);
-        OverrideResponseText.onResponseListener(listener);
+        OverrideFetch.onFetchListener(listener);
 
         return {};
 
@@ -1974,7 +1893,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         };
 
         OnYtPageDataFetched.addListener(listener);
-        OverrideResponseText.onResponseListener(listener);
+        OverrideFetch.onFetchListener(listener);
 
         return {};
 
@@ -2023,10 +1942,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             }
         };
 
-        OverrideHandleResponse.onHandleResponseListener(listener);
-        OverrideApplicationCreate.onCreateListener(listener);
-        OverrideApplicationCreate.onLoadListener(listener);
-        OverrideApplicationCreate.onCueListener(listener);
+        OverrideFetch.onFetchListener(listener);
 
         return {};
 
@@ -2050,10 +1966,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             }
         };
 
-        OverrideHandleResponse.onHandleResponseListener(listener);
-        OverrideApplicationCreate.onCreateListener(listener);
-        OverrideApplicationCreate.onLoadListener(listener);
-        OverrideApplicationCreate.onCueListener(listener);
+        OverrideFetch.onFetchListener(listener);
 
         return {};
 

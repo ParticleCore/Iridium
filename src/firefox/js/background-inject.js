@@ -1881,6 +1881,109 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
     })();
 
+    const FeatureVideoCount = (() => {
+
+        const onEvent = () => {
+
+            const subCount = document.getElementById("owner-sub-count");
+
+            if (!subCount) {
+                return;
+            }
+
+            const channelId = document.getElementById("movie_player")?.["getPlayerResponse"]()?.["videoDetails"]?.["channelId"] || "";
+
+            let url = null;
+
+            if (channelId.startsWith("UC")) {
+                url = `/channel/${channelId}`;
+            } else if (channelId.startsWith("/@")) {
+                url = channelId;
+            } else {
+                return;
+            }
+
+            if (subCount.parentElement.nodeName !== "A") {
+
+                const link = document.createElement("a");
+
+                link.href = `${url}/videos`;
+                link.className = "yt-simple-endpoint";
+
+                subCount.parentElement.appendChild(link);
+                link.appendChild(subCount);
+
+            }
+
+            fetch(url).then(response => response.text().then(data => {
+
+                let matched = data.match(/var ytInitialData = (\{.*?});/)?.[1];
+
+                if (matched) {
+                    try {
+
+                        const pageData = JSON.parse(matched);
+                        const videosCountText = pageData?.header?.["c4TabbedHeaderRenderer"]?.["videosCountText"]?.["runs"]?.map((entry) => entry.text)?.join("");
+
+                        if (videosCountText && subCount["textChanged_"] && subCount?.["text"]?.["simpleText"]) {
+
+                            subCount["textChanged_"]?.({
+                                runs: [
+                                    {text: subCount["text"]["simpleText"]},
+                                    {text: " ‧ "},
+                                    {text: videosCountText},
+                                ]
+                            });
+
+                            const parent = subCount.parentElement;
+
+                            if (parent?.nodeName === "A") {
+                                parent.title = subCount.textContent;
+                            }
+
+                        }
+
+                    } catch (e) {
+                    }
+                }
+
+            }));
+
+        };
+
+        const update = () => {
+            if (iridiumSettings.videoCount) {
+                window.addEventListener("yt-page-data-updated", onEvent, true);
+                onEvent();
+            } else {
+
+                window.removeEventListener("yt-page-data-updated", onEvent, true);
+
+                const subCount = document.getElementById("owner-sub-count");
+                const link = subCount?.parentElement;
+
+                if (link?.nodeName === "A") {
+                    link?.parentElement?.appendChild(subCount);
+                    link?.remove();
+                }
+
+                if (subCount?.["textChanged_"] && subCount?.["text"]?.["simpleText"]) {
+                    subCount["textChanged_"]?.({
+                        runs: [
+                            {text: subCount["text"]["simpleText"]},
+                        ]
+                    });
+                }
+
+            }
+        };
+
+        FeatureUpdater.register(SettingData.videoCount.id, update);
+
+        return {};
+
+    })();
+
     const FeatureInfoCards = (() => {
 
         const listener = data => {

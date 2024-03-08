@@ -268,6 +268,20 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
+    updateVideoCount: (newState, userInteraction) => {
+
+        const settingId = SettingData.videoCount.id;
+        const ui = document.querySelector(`[data-setting=${settingId}]`);
+
+        if (ui != null && ui.checked !== newState) {
+            ui.checked = newState;
+        }
+
+        if (!userInteraction) return;
+
+        Util.updateSingleSetting(settingId, newState);
+
+    },
     updateSuperTheater: (newState, userInteraction) => {
 
         const settingId = SettingData.superTheater.id;
@@ -719,6 +733,9 @@ const Util = {
                 break;
             case SettingData.creatorMerch.id:
                 Manager.updateCreatorMerch(value, userInteraction);
+                break;
+            case SettingData.videoCount.id:
+                Manager.updateVideoCount(value, userInteraction);
                 break;
             case SettingData.superTheater.id:
                 Manager.updateSuperTheater(value, userInteraction);

@@ -75,6 +75,10 @@ const SettingData = {
         id: "creatorMerch",
         default: true,
     },
+    videoCount: {
+        id: "videoCount",
+        default: true,
+    },
     superTheater: {
         id: "superTheater",
         default: true,

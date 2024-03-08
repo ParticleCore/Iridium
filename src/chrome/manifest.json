@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Iridium for YouTube",
-    "version": "2.0.6",
+    "version": "2.0.7",
     "description": "Take control of YouTube and boost your user experience with Iridium",
     "default_locale": "en_US",
     "options_ui": {

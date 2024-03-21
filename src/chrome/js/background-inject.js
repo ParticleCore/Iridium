@@ -316,7 +316,10 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         let canPlay = false;
         let timer = null;
         let previousVideoId = null;
+        let lastKey = -1;
 
+        const spacebar = 32;
+        const keyK = 75;
         const containers = [
             "#player:has(#movie_player)",
             "#player-container:has(#movie_player)",
@@ -326,9 +329,12 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         const onClick = event => {
 
+            lastKey = -1;
+
             clearTimeout(timer);
 
-            canPlay = document.querySelector(containers)?.contains(event.target) === true;
+            canPlay = event.target.id !== "player-wrap"
+                && document.querySelector(containers)?.contains(event.target) === true;
 
             if (canPlay) {
                 previousVideoId = document.getElementById("movie_player")?.["getVideoData"]()?.["video_id"] || null;
@@ -346,7 +352,14 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                 const moviePlayer = document.getElementById("movie_player");
                 const isMoviePlayer = moviePlayer?.contains(this) === true;
                 const currentVideoId = moviePlayer?.["getVideoData"]()?.["video_id"] || "";
-                const allowed = !isMoviePlayer || iridiumSettings.autoplay || canPlay || previousVideoId === currentVideoId;
+                const allowed = !isMoviePlayer
+                    || iridiumSettings.autoplay
+                    || canPlay
+                    || previousVideoId === currentVideoId
+                    || lastKey === keyK
+                    || lastKey === spacebar;
+
+                lastKey = -1;
 
                 if (allowed) {
 
@@ -389,16 +402,24 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             previousVideoId = null;
         };
 
+        const onKeyEvent = event => {
+            lastKey = event.keyCode
+        };
+
         const update = () => {
             if (iridiumSettings.autoplay) {
-                document.documentElement.removeEventListener("click", onClick, true);
                 window.removeEventListener("yt-navigate-start", onNavigate, false);
                 window.removeEventListener("popstate", onNavigate, true);
+                document.removeEventListener('keydown', onKeyEvent, true);
+                document.removeEventListener('keyup', onKeyEvent, true);
+                document.removeEventListener("click", onClick, true);
                 reset();
             } else {
-                document.documentElement.addEventListener("click", onClick, true);
                 window.addEventListener("yt-navigate-start", onNavigate, false);
                 window.addEventListener("popstate", onNavigate, true);
+                document.addEventListener('keydown', onKeyEvent, true);
+                document.addEventListener('keyup', onKeyEvent, true);
+                document.addEventListener("click", onClick, true);
                 override();
             }
         };

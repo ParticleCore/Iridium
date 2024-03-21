@@ -479,35 +479,6 @@
                             <div class="settingDescription">Enables YouTube's audio loudness normalization</div>
                         </div>
                     </div>
-                    <div class="setting" data-id="scrollVolume">
-                        <label class="switch">
-                            <input data-setting="scrollVolume" type="checkbox">
-                            <span class="slider"></span>
-                        </label>
-                        <div class="settingDescription">
-                            <div class="settingDescription highlight">Scroll volume</div>
-                            <div class="settingDescription">Change the video volume by holding the shift key and scrolling on the video page</div>
-                        </div>
-                    </div>
-                    <div class="setting" data-id="scrollVolumeStep">
-                        <div class="settingDescription">
-                            <label>
-                                <select data-setting="scrollVolumeStep">
-                                    <option value="10">10</option>
-                                    <option value="9">9</option>
-                                    <option value="8">8</option>
-                                    <option value="7">7</option>
-                                    <option value="6">6</option>
-                                    <option value="5" selected="selected">5</option>
-                                    <option value="4">4</option>
-                                    <option value="3">3</option>
-                                    <option value="2">2</option>
-                                    <option value="1">1</option>
-                                </select>
-                            </label>
-                            <div class="settingDescription">Number of volume steps each scroll will change at once</div>
-                        </div>
-                    </div>
                     <div class="setting" data-id="infoCards">
                         <label class="switch">
                             <input data-setting="infoCards" type="checkbox">
@@ -536,6 +507,50 @@
                         <div class="settingDescription">
                             <div class="settingDescription highlight">End screen hidden</div>
                             <div class="settingDescription">Hide end screen when the cursor is over the video</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="settingGroup">
+                <div class="settingLabel">Volume</div>
+                <div class="settingOptions">
+                    <div class="setting" data-id="scrollVolume">
+                        <label class="switch">
+                            <input data-setting="scrollVolume" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight">Scroll volume</div>
+                            <div class="settingDescription">Change video volume by scrolling on the video player, or by holding shift and scrolling anywhere in the page if the option below is enabled</div>
+                        </div>
+                    </div>
+                    <div class="setting" data-id="scrollVolumeShift">
+                        <label class="switch">
+                            <input data-setting="scrollVolumeShift" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="settingDescription">
+                            <div class="settingDescription highlight">Shift + scroll volume</div>
+                            <div class="settingDescription">Changing volume using the scroll wheel requires the shift key to be pressed, and can be done from anywhere in the page</div>
+                        </div>
+                    </div>
+                    <div class="setting" data-id="scrollVolumeStep">
+                        <div class="settingDescription">
+                            <label>
+                                <select data-setting="scrollVolumeStep">
+                                    <option value="10">10</option>
+                                    <option value="9">9</option>
+                                    <option value="8">8</option>
+                                    <option value="7">7</option>
+                                    <option value="6">6</option>
+                                    <option value="5" selected="selected">5</option>
+                                    <option value="4">4</option>
+                                    <option value="3">3</option>
+                                    <option value="2">2</option>
+                                    <option value="1">1</option>
+                                </select>
+                            </label>
+                            <div class="settingDescription">Number of volume steps each scroll will change at once</div>
                         </div>
                     </div>
                 </div>

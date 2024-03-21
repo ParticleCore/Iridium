@@ -2145,7 +2145,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         const iniScrollVolume = event => {
 
-            if (!event.shiftKey) {
+            if (iridiumSettings.scrollVolumeShift && !event.shiftKey) {
                 return;
             }
 
@@ -2159,6 +2159,24 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
             if (!api) {
                 return;
+            }
+
+            if (!iridiumSettings.scrollVolumeShift) {
+
+                const playerState = api["getPlayerState"]?.() || -1;
+
+                if (!api.contains(event.target) || !(playerState > 0) || !(playerState < 5)) {
+                    return;
+                }
+
+                const canScroll = document.querySelector(".ytp-playlist-menu")?.contains(event.target) === true
+                    || document.querySelector(".iv-drawer")?.contains(event.target) === true
+                    || document.querySelector(".ytp-settings-menu")?.contains(event.target) === true;
+
+                if (canScroll) {
+                    return;
+                }
+
             }
 
             event.preventDefault();

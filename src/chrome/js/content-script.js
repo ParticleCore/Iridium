@@ -119,6 +119,10 @@ const SettingData = {
         id: "scrollVolume",
         default: true,
     },
+    scrollVolumeShift: {
+        id: "scrollVolumeShift",
+        default: true,
+    },
     scrollVolumeStep: {
         id: "scrollVolumeStep",
         default: 5,

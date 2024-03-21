@@ -2009,15 +2009,21 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                         const pageData = JSON.parse(matched);
                         const videosCountText = pageData?.header?.["c4TabbedHeaderRenderer"]?.["videosCountText"]?.["runs"]?.map((entry) => entry.text)?.join("");
 
-                        if (videosCountText && subCount["textChanged_"] && subCount?.["text"]?.["simpleText"]) {
+                        if (videosCountText && subCount?.["text"]?.["simpleText"]) {
 
-                            subCount["textChanged_"]?.({
-                                runs: [
-                                    {text: subCount["text"]["simpleText"]},
-                                    {text: " ‧ "},
-                                    {text: videosCountText},
-                                ]
-                            });
+                            if (subCount["textChanged_"]) {
+
+                                subCount["textChanged_"]?.({
+                                    runs: [
+                                        {text: subCount["text"]["simpleText"]},
+                                        {text: " ‧ "},
+                                        {text: videosCountText},
+                                    ]
+                                });
+
+                            } else if (subCount.textContent === subCount["text"]["simpleText"]) {
+                                subCount.textContent = `${subCount["text"]["simpleText"]} ‧ ${videosCountText}`;
+                            }
 
                             const parent = subCount.parentElement;
 

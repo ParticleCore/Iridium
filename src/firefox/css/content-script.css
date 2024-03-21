@@ -1,5 +1,5 @@
 /* ini | autoplay */
-#movie_player.unstarted-mode:is(.playing-mode, .paused-mode) > *:not(.ytp-cued-thumbnail-overlay) {
+#movie_player.unstarted-mode:is(.playing-mode, .paused-mode):not(.buffering-mode) > *:not(.ytp-cued-thumbnail-overlay) {
     display: none;
 }
 /* end | autoplay */

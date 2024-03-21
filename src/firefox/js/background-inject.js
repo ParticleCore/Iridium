@@ -1850,7 +1850,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                 || (!iridiumSettings.subscriptionsShorts && window.location.pathname === "/feed/subscriptions")
             ) {
 
-                // home page and subscriptions shorts
+                // home page and grid view subscriptions shorts
                 const richGridRenderer = Util.getSingleObjectByKey(data, "richGridRenderer");
                 const richGridRendererContents = richGridRenderer?.["contents"];
 
@@ -1870,6 +1870,33 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
                             if (richShelfRendererContents.length === 0) {
                                 richGridRendererContents.splice(i, 1);
+                            }
+
+                        }
+
+                    }
+                }
+
+                // list view subscriptions shorts
+                const sectionListRenderer = Util.getSingleObjectByKey(data, "sectionListRenderer");
+                const sectionListRendererContents = sectionListRenderer?.["contents"];
+
+                if (sectionListRendererContents?.constructor === Array && sectionListRendererContents.length > 0) {
+                    for (let i = sectionListRendererContents.length - 1; i >= 0; i--) {
+
+                        const itemSectionRendererContents = sectionListRendererContents[i]?.["itemSectionRenderer"]?.["contents"];
+
+                        if (itemSectionRendererContents?.constructor === Array && itemSectionRendererContents.length > 0) {
+
+                            for (let j = itemSectionRendererContents.length - 1; j >= 0; j--) {
+                                const reelShelfRenderer = itemSectionRendererContents[j]?.["reelShelfRenderer"];
+                                if (reelShelfRenderer) {
+                                    itemSectionRendererContents.splice(j, 1);
+                                }
+                            }
+
+                            if (itemSectionRendererContents.length === 0) {
+                                sectionListRendererContents.splice(i, 1);
                             }
 
                         }

@@ -713,7 +713,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
                 const chat = document.getElementById("chat-container");
 
-                if (chat) {
+                if (chat && !chat.firstElementChild.hasAttribute("collapsed")) {
 
                     const videoContainer = document.getElementById("player-full-bleed-container");
 

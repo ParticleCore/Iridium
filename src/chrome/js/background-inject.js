@@ -216,6 +216,37 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
     // ini overrides
 
+    const OverrideHandleResponse = (() => {
+
+        const listeners = [];
+        const handleResponseKey = crypto.randomUUID();
+
+        Object.defineProperty(Object.prototype, "handleResponse", {
+            set(data) {
+                this[handleResponseKey] = data;
+            },
+            get() {
+                const original = this[handleResponseKey];
+                return function (url, code, response, callback) {
+                    if (response?.constructor === String && original?.toString()?.indexOf("\")]}'\"") !== -1) {
+                        try {
+                            const parsed = JSON.parse(response);
+                            listeners?.forEach(listener => listener?.(parsed));
+                            arguments[2] = JSON.stringify(parsed);
+                        } catch (e) {
+                        }
+                    }
+                    return original?.apply(this, arguments);
+                };
+            }
+        });
+
+        return {
+            onHandleResponseListener: listener => listeners.push(listener)
+        };
+
+    })();
+
     const OverrideFetch = (() => {
 
         const listeners = [];
@@ -1370,6 +1401,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         };
 
         OverrideFetch.onFetchListener(update);
+        OverrideHandleResponse.onHandleResponseListener(update);
 
         return {
             update: update
@@ -1768,6 +1800,8 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         OnYtPageDataFetched.addListener(listener);
         OverrideFetch.onFetchListener(listener);
         OverrideFetch.onFetchListener(playerConfig);
+        OverrideHandleResponse.onHandleResponseListener(listener);
+        OverrideHandleResponse.onHandleResponseListener(playerConfig);
 
         return {};
 
@@ -1850,6 +1884,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         OnYtPageDataFetched.addListener(listener);
         OverrideFetch.onFetchListener(listener);
+        OverrideHandleResponse.onHandleResponseListener(listener);
 
         return {};
 
@@ -1876,6 +1911,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         OnYtPageDataFetched.addListener(listener);
         OverrideFetch.onFetchListener(listener);
+        OverrideHandleResponse.onHandleResponseListener(listener);
 
         return {};
 
@@ -1997,6 +2033,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         OnYtPageDataFetched.addListener(listener);
         OverrideFetch.onFetchListener(listener);
+        OverrideHandleResponse.onHandleResponseListener(listener);
 
         return {};
 
@@ -2046,6 +2083,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         };
 
         OverrideFetch.onFetchListener(listener);
+        OverrideHandleResponse.onHandleResponseListener(listener);
 
         return {};
 
@@ -2070,6 +2108,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         };
 
         OverrideFetch.onFetchListener(listener);
+        OverrideHandleResponse.onHandleResponseListener(listener);
 
         return {};
 

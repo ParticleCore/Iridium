@@ -719,6 +719,233 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
     })();
 
+    const FeaturePlaylistReverse = (() => {
+
+        const buttonId = "reversePlaylistButton";
+
+        const reversePlaylist = data => {
+
+            if (!data) {
+                return;
+            }
+
+            const watchNextResults = data?.["contents"]?.["twoColumnWatchNextResults"];
+            const playlist = watchNextResults?.["playlist"]?.["playlist"];
+
+            if (!!playlist?.["isReversed"] === iridiumSettings.reversePlaylistToggled) {
+                return;
+            }
+
+            if (playlist) {
+                playlist["isReversed"] = iridiumSettings.reversePlaylistToggled;
+            }
+
+            const topLevelButtons = playlist?.["playlistButtons"]?.["menuRenderer"]?.["topLevelButtons"];
+
+            if (topLevelButtons?.constructor === Array) {
+
+                const length = topLevelButtons.length;
+
+                for (let i = 0; i < length; i++) {
+
+                    const button = topLevelButtons[i]?.["toggleButtonRenderer"];
+
+                    if (button?.id === "reversePlaylist") {
+                        button.isToggled = iridiumSettings.reversePlaylistToggled;
+                        break;
+                    }
+
+                }
+
+            }
+
+            const autoplay = watchNextResults?.["autoplay"]?.["autoplay"];
+            const autoplaySets = autoplay?.["sets"];
+
+            if (autoplaySets?.constructor === Array) {
+
+                for (let i = 0; i < autoplaySets.length; i++) {
+
+                    const item = autoplaySets[i];
+
+                    if (!item) {
+                        continue;
+                    }
+
+                    if (item["previousButtonVideo"] && item["nextButtonVideo"]) {
+                        item["autoplayVideo"] = item["previousButtonVideo"];
+                        item["previousButtonVideo"] = item["nextButtonVideo"];
+                        item["nextButtonVideo"] = item["autoplayVideo"];
+                    }
+
+                }
+
+            }
+
+            const contents = playlist?.["contents"];
+
+            if (contents?.constructor === Array) {
+
+                contents.reverse();
+
+                const count = contents.length;
+
+                for (let i = 0; i < count; i++) {
+
+                    const item = contents[i];
+
+                    if (item?.["playlistPanelVideoRenderer"]?.["indexText"]?.["simpleText"]) {
+                        item["playlistPanelVideoRenderer"]["indexText"]["simpleText"] = `${i + 1}`;
+                    }
+
+                }
+
+                if (playlist?.["currentIndex"]?.constructor === Number) {
+                    playlist["currentIndex"] = contents.length - playlist["currentIndex"] - 1;
+                }
+
+                if (playlist?.["localCurrentIndex"]?.constructor === Number) {
+                    playlist["localCurrentIndex"] = contents.length - playlist["localCurrentIndex"] - 1;
+                }
+
+            }
+
+        }
+
+        const listener = data => {
+
+            const topLevelButtons = data
+                ?.["contents"]
+                ?.["twoColumnWatchNextResults"]
+                ?.["playlist"]
+                ?.["playlist"]
+                ?.["playlistButtons"]
+                ?.["menuRenderer"]
+                ?.["topLevelButtons"];
+
+            if (topLevelButtons?.constructor !== Array) {
+                return;
+            }
+
+            const length = topLevelButtons.length;
+
+            for (let i = 0; i < length; i++) {
+
+                if (topLevelButtons[i]?.["toggleButtonRenderer"]?.id === "reversePlaylist") {
+
+                    if (iridiumSettings.reversePlaylist !== true) {
+                        topLevelButtons.splice(i, 1);
+                    }
+
+                    break;
+
+                }
+
+                if (i === length - 1 && iridiumSettings.reversePlaylist === true) {
+                    topLevelButtons.push({
+                        toggleButtonRenderer: {
+                            id: "reversePlaylist",
+                            style: {styleType: "STYLE_GREY_TEXT"},
+                            size: {sizeType: "SIZE_DEFAULT"},
+                            isToggled: iridiumSettings.reversePlaylistToggled,
+                            isDisabled: false,
+                            defaultIcon: {iconType: "IRIDIUM_PLAYLIST_SHUFFLE"},
+                            accessibility: {label: "reversePlaylistButton"},
+                            defaultTooltip: "Reverse playlist",
+                            toggledTooltip: "Reverse playlist",
+                            toggledStyle: {styleType: "STYLE_DEFAULT_ACTIVE"}
+                        }
+                    });
+                }
+
+            }
+
+            reversePlaylist(data);
+
+        };
+
+        const updateUI = data => {
+
+            if (!data) {
+                return;
+            }
+
+            const ytPlaylistManager = document.querySelector("yt-playlist-manager");
+
+            if (!ytPlaylistManager) {
+                return;
+            }
+
+            const watchNextResults = data?.["contents"]?.["twoColumnWatchNextResults"];
+            const autoplay = watchNextResults?.["autoplay"]?.["autoplay"];
+            const playlist = structuredClone(watchNextResults?.["playlist"]?.["playlist"]);
+
+            ytPlaylistManager?.["setAutoplayRenderer"]?.(autoplay);
+            ytPlaylistManager?.["setPlaylistData"]?.(playlist);
+            ytPlaylistManager?.["setPlayerPlaybackControlData"]?.({playlistPanelRenderer: playlist});
+
+        };
+
+        const onDocumentClick = event => {
+
+            const ytdWatchData = document.querySelector("ytd-watch-flexy")?.["data"];
+            const reverseButton = document.querySelector(`ytd-toggle-button-renderer:has([aria-label='${buttonId}'])`);
+            const isReverseButton = reverseButton?.contains(event.target);
+
+            if (isReverseButton && ytdWatchData) {
+
+                iridiumSettings.reversePlaylistToggled = !iridiumSettings.reversePlaylistToggled;
+                Broadcaster.saveSetting(SettingData.reversePlaylistToggled.id);
+
+                reversePlaylist(ytdWatchData);
+                updateUI(ytdWatchData);
+
+                document.querySelector("ytd-playlist-panel-video-renderer[selected]")?.scrollIntoView({block: "nearest"});
+
+            }
+
+        };
+
+        const update = () => {
+
+            const ytdWatchData = document.querySelector("ytd-watch-flexy")?.["data"];
+
+            if (iridiumSettings.reversePlaylist) {
+
+                document.documentElement.addEventListener("click", onDocumentClick, false);
+
+                if (ytdWatchData) {
+                    listener(ytdWatchData);
+                    updateUI(ytdWatchData);
+                }
+
+            } else {
+
+                iridiumSettings.reversePlaylistToggled = false;
+                Broadcaster.saveSetting(SettingData.reversePlaylistToggled.id);
+
+                if (ytdWatchData) {
+                    listener(ytdWatchData);
+                    updateUI(ytdWatchData);
+                    document.querySelector("ytd-playlist-panel-video-renderer[selected]")?.scrollIntoView({block: "nearest"});
+                }
+
+                document.documentElement.removeEventListener("click", onDocumentClick, false);
+
+            }
+
+        };
+
+        FeatureUpdater.register(SettingData.reversePlaylist.id, update);
+
+        OnYtPageDataFetched.addListener(listener);
+        OverrideFetch.onFetchListener(listener);
+        OverrideHandleResponse.onHandleResponseListener(listener);
+
+        return {}
+
+    })();
+
     const FeatureSuperTheater = (() => {
 
         const onResize = () => {

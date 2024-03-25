@@ -282,6 +282,20 @@ const Manager = {
         Util.updateSingleSetting(settingId, newState);
 
     },
+    updateReversePlaylist: (newState, userInteraction) => {
+
+        const settingId = SettingData.reversePlaylist.id;
+        const ui = document.querySelector(`[data-setting=${settingId}]`);
+
+        if (ui != null && ui.checked !== newState) {
+            ui.checked = newState;
+        }
+
+        if (!userInteraction) return;
+
+        Util.updateSingleSetting(settingId, newState);
+
+    },
     updateSuperTheater: (newState, userInteraction) => {
 
         const settingId = SettingData.superTheater.id;
@@ -755,6 +769,9 @@ const Util = {
                 break;
             case SettingData.videoCount.id:
                 Manager.updateVideoCount(value, userInteraction);
+                break;
+            case SettingData.reversePlaylist.id:
+                Manager.updateReversePlaylist(value, userInteraction);
                 break;
             case SettingData.superTheater.id:
                 Manager.updateSuperTheater(value, userInteraction);

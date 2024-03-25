@@ -36,6 +36,24 @@ html .iridium-options:hover yt-icon {
 }
 /* end | iridium icon */
 
+/* ini | reverse playlist */
+ytd-toggle-button-renderer:has([aria-label="reversePlaylistButton"]) {
+    margin-left: 0 !important;
+}
+html[dark] [aria-label="reversePlaylistButton"] yt-icon {
+    background: #f1f1f1;
+}
+[aria-label="reversePlaylistButton"] yt-icon {
+    background: #0f0f0f;
+}
+[aria-label="reversePlaylistButton"] yt-icon {
+    mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M352.307-467.692v-295.462L228.538-639.385 200-667.692 372.308-840l172.307 172.308-28.538 28.307-123.769-123.769v295.462h-40.001ZM586.923-120 414.615-292.308l28.539-28.307 123.769 123.769v-295.462h40v295.462l123.769-123.769 28.539 28.307L586.923-120Z"/></svg>');
+}
+[aria-label="reversePlaylistButton"][aria-pressed="true"] yt-icon {
+    mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M320-440v-287L217-624l-57-56 200-200 200 200-57 56-103-103v287h-80ZM600-80 400-280l57-56 103 103v-287h80v287l103-103 57 56L600-80Z"/></svg>');
+}
+/* end | reverse playlist */
+
 /* ini | full titles */
 html.iridium-full-titles #video-title.ytd-video-renderer,
 html.iridium-full-titles #video-title.ytd-compact-video-renderer,

@@ -83,6 +83,14 @@ const SettingData = {
         id: "videoCount",
         default: true,
     },
+    reversePlaylist: {
+        id: "reversePlaylist",
+        default: true,
+    },
+    reversePlaylistToggled: {
+        id: "reversePlaylistToggled",
+        default: false,
+    },
     superTheater: {
         id: "superTheater",
         default: true,

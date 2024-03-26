@@ -2502,15 +2502,22 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             "ytd-grid-video-renderer",
             "ytd-compact-video-renderer"
         ];
+        const richGridPages = [
+            "/",
+            "/podcasts",
+        ];
+        const sectionListPages = [
+            "/results",
+            "/feed/trending",
+            "/gaming",
+        ];
         const removeItems = data => {
 
             if (!data) {
                 return;
             }
 
-            if (window.location.pathname === "/") {
-
-                // home page
+            if (richGridPages.indexOf(window.location.pathname) > -1) {
 
                 const richGridRenderer = Util.getSingleObjectByKey(data, "richGridRenderer");
                 const appendContinuationItemsAction = Util.getSingleObjectByKey(data, "appendContinuationItemsAction");
@@ -2575,8 +2582,6 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
             } else if (Util.isWatchPage()) {
 
-                // watch page
-
                 const secondaryResults = Util.getSingleObjectByKey(data, "secondaryResults");
                 const appendContinuationItemsAction = Util.getSingleObjectByKey(data, "appendContinuationItemsAction");
                 const itemContainer = secondaryResults?.["secondaryResults"]?.["results"]
@@ -2603,9 +2608,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
                 }
 
-            } else if (window.location.pathname === "/results") {
-
-                // search page
+            } else if (sectionListPages.indexOf(window.location.pathname) > -1) {
 
                 const sectionListRenderer = Util.getSingleObjectByKey(data, "sectionListRenderer");
                 const appendContinuationItemsAction = Util.getSingleObjectByKey(data, "appendContinuationItemsAction");
@@ -2637,11 +2640,9 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                                     items.splice(j, 1);
                                 }
 
-                                const shelfItems = items[j]
-                                    ?.["shelfRenderer"]
-                                    ?.["content"]
-                                    ?.["verticalListRenderer"]
-                                    ?.["items"];
+                                const shelfRendererContent = items[j]?.["shelfRenderer"]?.["content"];
+                                const shelfItems = shelfRendererContent?.["verticalListRenderer"]?.["items"]
+                                    || shelfRendererContent?.["expandedShelfContentsRenderer"]?.["items"];
 
                                 if (shelfItems?.constructor === Array && shelfItems.length > 0) {
 
@@ -2724,7 +2725,9 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         return {
             targetTags: targetTags,
-            update: update
+            update: update,
+            allowedRichGridPages: richGridPages,
+            allowedSectionListPages: sectionListPages,
         };
 
     })();
@@ -2774,7 +2777,8 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
             if (window.location.pathname !== "/"
                 && !Util.isWatchPage()
-                && window.location.pathname !== "/results"
+                && FeatureBlacklist.allowedRichGridPages.indexOf(window.location.pathname) < 0
+                && FeatureBlacklist.allowedSectionListPages.indexOf(window.location.pathname) < 0
             ) {
                 return;
             }

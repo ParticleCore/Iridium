@@ -7,6 +7,15 @@
 }
 /* end | autoplay */
 
+/* ini | autoplay channel trailer */
+#c4-player.unstarted-mode:is(.playing-mode, .paused-mode):not(.buffering-mode) > *:not(.ytp-cued-thumbnail-overlay) {
+    display: none;
+}
+#c4-player > .ytp-cued-thumbnail-overlay > .ytp-cued-thumbnail-overlay-image {
+    background-size: contain !important;
+}
+/* end | autoplay channel trailer */
+
 /* ini | video focus */
 html #masthead-container,
 html #secondary,

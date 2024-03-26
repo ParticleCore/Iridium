@@ -23,6 +23,10 @@ const SettingData = {
         id: "logoSubscriptions",
         default: false,
     },
+    autoplayChannelTrailer: {
+        id: "autoplayChannelTrailer",
+        default: false,
+    },
     channelTab: {
         id: "channelTab",
         default: "featured",

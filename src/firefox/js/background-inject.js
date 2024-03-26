@@ -320,11 +320,17 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         const spacebar = 32;
         const keyK = 75;
-        const containers = [
+        const moviePlayerContainers = [
             "#player:has(#movie_player)",
             "#player-container:has(#movie_player)",
             "#ytd-player:has(#movie_player)",
-            "#movie_player"
+            "#movie_player",
+        ].join(",");
+        const c4PlayerContainers = [
+            "#player:has(#c4-player)",
+            "#player-container:has(#c4-player)",
+            "#ytd-player:has(#c4-player)",
+            "#c4-player",
         ].join(",");
 
         const onClick = event => {
@@ -333,8 +339,10 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
             clearTimeout(timer);
 
-            canPlay = event.target.id !== "player-wrap"
-                && document.querySelector(containers)?.contains(event.target) === true;
+            canPlay = event.target.id !== "player-wrap" && (
+                document.querySelector(moviePlayerContainers)?.contains(event.target) === true
+                || document.querySelector(c4PlayerContainers)?.contains(event.target) === true
+            );
 
             if (canPlay) {
                 previousVideoId = document.getElementById("movie_player")?.["getVideoData"]()?.["video_id"] || null;
@@ -342,6 +350,35 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             }
 
         }
+
+        const isAllowed = target => {
+
+            const currentKey = lastKey;
+
+            lastKey = -1;
+
+            const isMoviePlayer = document.getElementById("movie_player")?.contains(target) === true;
+
+            if (isMoviePlayer) {
+                return iridiumSettings.autoplay
+                    || canPlay
+                    || previousVideoId === (document.getElementById("movie_player")?.["getVideoData"]()?.["video_id"] || "")
+                    || lastKey === keyK
+                    || lastKey === spacebar;
+            }
+
+            const isC4Player = document.getElementById("c4-player")?.contains(target) === true;
+
+            if (isC4Player) {
+                return iridiumSettings.autoplayChannelTrailer
+                    || canPlay
+                    || lastKey === keyK
+                    || lastKey === spacebar;
+            }
+
+            return true;
+
+        };
 
         const override = () => {
 
@@ -352,16 +389,8 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                 const moviePlayer = document.getElementById("movie_player");
                 const isMoviePlayer = moviePlayer?.contains(this) === true;
                 const currentVideoId = moviePlayer?.["getVideoData"]()?.["video_id"] || "";
-                const allowed = !isMoviePlayer
-                    || iridiumSettings.autoplay
-                    || canPlay
-                    || previousVideoId === currentVideoId
-                    || lastKey === keyK
-                    || lastKey === spacebar;
 
-                lastKey = -1;
-
-                if (allowed) {
+                if (isAllowed(this)) {
 
                     if (isMoviePlayer) {
                         previousVideoId = currentVideoId;
@@ -406,15 +435,19 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             lastKey = event.keyCode
         };
 
+        let listenersActive = false;
+
         const update = () => {
-            if (iridiumSettings.autoplay) {
+            if (iridiumSettings.autoplay && iridiumSettings.autoplayChannelTrailer) {
+                listenersActive = false;
                 window.removeEventListener("yt-navigate-start", onNavigate, false);
                 window.removeEventListener("popstate", onNavigate, true);
                 document.removeEventListener('keydown', onKeyEvent, true);
                 document.removeEventListener('keyup', onKeyEvent, true);
                 document.removeEventListener("click", onClick, true);
                 reset();
-            } else {
+            } else if (!listenersActive) {
+                listenersActive = true;
                 window.addEventListener("yt-navigate-start", onNavigate, false);
                 window.addEventListener("popstate", onNavigate, true);
                 document.addEventListener('keydown', onKeyEvent, true);
@@ -427,6 +460,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         update();
 
         FeatureUpdater.register(SettingData.autoplay.id, update);
+        FeatureUpdater.register(SettingData.autoplayChannelTrailer.id, update);
 
         return {};
 

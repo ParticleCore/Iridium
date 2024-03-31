@@ -2642,6 +2642,31 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
                 }
 
+                const playerOverlays = Util.getSingleObjectByKey(data, "playerOverlays");
+                const endScreenRenderer = playerOverlays?.["playerOverlayRenderer"]?.["endScreen"]?.["watchNextEndScreenRenderer"];
+                const endScreenRendererResults = endScreenRenderer?.["results"];
+
+                if (endScreenRendererResults?.constructor === Array && endScreenRendererResults.length > 0) {
+
+                    for (let i = endScreenRendererResults.length - 1; i >= 0; i--) {
+
+                        const browseId = endScreenRendererResults[i]
+                            ?.["endScreenVideoRenderer"]
+                            ?.["shortBylineText"]
+                            ?.["runs"]
+                            ?.[0]
+                            ?.["navigationEndpoint"]
+                            ?.["browseEndpoint"]
+                            ?.["browseId"];
+
+                        if (iridiumSettings.blacklist[browseId]) {
+                            endScreenRendererResults.splice(i, 1);
+                        }
+
+                    }
+
+                }
+
             } else if (sectionListPages.indexOf(window.location.pathname) > -1) {
 
                 const sectionListRenderer = Util.getSingleObjectByKey(data, "sectionListRenderer");

@@ -466,19 +466,44 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
     })();
 
-    const OverrideOnYouTubePlayerReady = (() => {
+    const OverrideOnPlayerReady = (() => {
 
         const listeners = [];
+        const onPlayerReadyEventKey = crypto.randomUUID();
+        let recentApi = null;
 
-        window.onYouTubePlayerReady = (function (original) {
-            return function (api) {
-                listeners?.forEach(listener => listener?.(api));
-                original?.apply(this, arguments);
-            };
-        }(window.onYouTubePlayerReady));
+        Object.defineProperty(Object.prototype, "onPlayerReadyEvent_", {
+            set(data) {
+                this[onPlayerReadyEventKey] = data;
+            },
+            get() {
+
+                const original = this[onPlayerReadyEventKey];
+
+                if (original.constructor === Boolean) {
+                    return original
+                }
+
+                return function (api) {
+                    recentApi = api;
+                    listeners?.forEach(listener => listener?.(api));
+                    return original?.apply(this, arguments);
+                }
+            }
+        });
+
+        function addListener(listener) {
+
+            if (recentApi) {
+                listener(recentApi)
+            }
+
+            listeners.push(listener)
+
+        }
 
         return {
-            onReadyListener: listener => listeners.push(listener)
+            onReadyListener: listener => addListener(listener)
         };
 
     })();
@@ -1020,10 +1045,11 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
             } else {
 
+                const masthead = document.getElementById("masthead-container");
                 const moviePlayerParent = document.getElementById("movie_player")?.parentElement;
 
-                if (moviePlayerParent) {
-                    moviePlayerParent.style.width = "";
+                if (masthead) {
+                    masthead.style.width = "";
                 }
 
                 const chat = document.getElementById("chat-container");
@@ -1075,7 +1101,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         FeatureUpdater.register(SettingData.superTheater.id, update);
 
-        OverrideOnYouTubePlayerReady.onReadyListener(created);
+        OverrideOnPlayerReady.onReadyListener(created);
 
         return {};
 
@@ -1460,7 +1486,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
         FeatureUpdater.register(SettingData.videoFocusToggle.id, update);
         FeatureUpdater.register(SettingData.videoFocus.id, update);
 
-        OverrideOnYouTubePlayerReady.onReadyListener(onCreated);
+        OverrideOnPlayerReady.onReadyListener(onCreated);
 
         return {
             check: check
@@ -1801,7 +1827,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         })
 
-        OverrideOnYouTubePlayerReady.onReadyListener(onCreated);
+        OverrideOnPlayerReady.onReadyListener(onCreated);
 
         return {};
 
@@ -1859,7 +1885,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             }
         });
 
-        OverrideOnYouTubePlayerReady.onReadyListener(onCreated);
+        OverrideOnPlayerReady.onReadyListener(onCreated);
 
         return {};
 
@@ -1873,7 +1899,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             }
         });
 
-        OverrideOnYouTubePlayerReady.onReadyListener(onCreated);
+        OverrideOnPlayerReady.onReadyListener(onCreated);
 
         return {};
 

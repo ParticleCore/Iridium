@@ -2204,10 +2204,15 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                         if (richShelfRendererContents?.constructor === Array && richShelfRendererContents.length > 0) {
 
                             for (let j = richShelfRendererContents.length - 1; j >= 0; j--) {
-                                const reelItemRenderer = richShelfRendererContents[j]?.["richItemRenderer"]?.["content"]?.["reelItemRenderer"];
-                                if (reelItemRenderer) {
+
+                                const richItemRendererContent = richShelfRendererContents[j]?.["richItemRenderer"]?.["content"];
+                                const reelItemRenderer = richItemRendererContent?.["reelItemRenderer"];
+                                const shortsLockupViewModel = richItemRendererContent?.["shortsLockupViewModel"];
+
+                                if (reelItemRenderer || shortsLockupViewModel) {
                                     richShelfRendererContents.splice(j, 1);
                                 }
+
                             }
 
                             if (richShelfRendererContents.length === 0) {

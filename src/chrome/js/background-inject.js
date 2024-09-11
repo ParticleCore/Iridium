@@ -251,15 +251,29 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         const listeners = [];
 
-        const canProceed = data => data?.["contents"]
-            || data?.["videoDetails"]
-            || data?.["items"]
-            || data?.["onResponseReceivedActions"]
-            || data?.["onResponseReceivedEndpoints"]
-            || data?.["onResponseReceivedCommands"];
+        const canProceed = data => {
+
+            const endpoints = data?.["onResponseReceivedEndpoints"]
+
+            if (endpoints != null && endpoints?.constructor === Array && endpoints.length > 0) {
+                for (let i = endpoints.length - 1; i >= 0; i--) {
+                    if (endpoints[i]?.["reloadContinuationItemsCommand"]?.["targetId"] === "comments-section") {
+                        return false
+                    }
+                }
+            }
+
+            return data?.["contents"]
+                || data?.["videoDetails"]
+                || data?.["items"]
+                || data?.["onResponseReceivedActions"]
+                || data?.["onResponseReceivedEndpoints"]
+                || data?.["onResponseReceivedCommands"];
+
+        }
 
         const override = function (target, thisArg, argArray) {
-            if (!argArray?.[0].url || Object.getOwnPropertyDescriptor(argArray[0], "url") !== undefined) {
+            if (!argArray?.[0]?.url || Object.getOwnPropertyDescriptor(argArray[0], "url") !== undefined) {
                 return target.apply(thisArg, argArray);
             } else {
                 return target.apply(thisArg, argArray).then(response => {
@@ -590,7 +604,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                 return
             }
 
-            const topBarButtons = Util.getSingleObjectByKey(data, "topbarButtons");
+            const topBarButtons = data?.["topbar"]?.["desktopTopbarRenderer"]?.["topbarButtons"];
 
             if (!topBarButtons) {
                 return;
@@ -1930,6 +1944,24 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         };
 
+        const checkHomePageAds = itemContainer => {
+
+            for (let i = itemContainer.length - 1; i >= 0; i--) {
+
+                const itemRenderer = itemContainer[i];
+                const exists = itemRenderer?.["richItemRenderer"]?.["content"]?.["adSlotRenderer"]
+                    || itemRenderer?.["richSectionRenderer"]?.["content"]?.["statementBannerRenderer"]
+                    || itemRenderer?.["richSectionRenderer"]?.["content"]?.["brandVideoShelfRenderer"]
+                    || itemRenderer?.["richSectionRenderer"]?.["content"]?.["brandVideoSingletonRenderer"];
+
+                if (exists) {
+                    itemContainer.splice(i, 1);
+                }
+
+            }
+
+        };
+
         const listener = data => {
 
             const subscribeButtonRenderer = Util.getSingleObjectByKey(data, "subscribeButtonRenderer");
@@ -1955,7 +1987,6 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
                 // home page ads
                 const richGridRenderer = Util.getSingleObjectByKey(data, "richGridRenderer");
-                const appendContinuationItemsAction = Util.getSingleObjectByKey(data, "appendContinuationItemsAction");
 
                 if (!isAdMastheadAllowed) {
 
@@ -1976,20 +2007,23 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
                 if (!isAdHomeFeedAllowed) {
 
-                    const itemContainer = richGridRenderer?.["contents"] || appendContinuationItemsAction?.["continuationItems"];
+                    const itemContainer = richGridRenderer?.["contents"];
 
                     // home page list ads
                     if (itemContainer?.constructor === Array && itemContainer.length > 0) {
-                        for (let i = itemContainer.length - 1; i >= 0; i--) {
+                        checkHomePageAds(itemContainer);
+                    }
 
-                            const itemRenderer = itemContainer[i];
-                            const exists = itemRenderer?.["richItemRenderer"]?.["content"]?.["adSlotRenderer"]
-                                || itemRenderer?.["richSectionRenderer"]?.["content"]?.["statementBannerRenderer"]
-                                || itemRenderer?.["richSectionRenderer"]?.["content"]?.["brandVideoShelfRenderer"]
-                                || itemRenderer?.["richSectionRenderer"]?.["content"]?.["brandVideoSingletonRenderer"];
+                    const actions = data?.["onResponseReceivedActions"];
 
-                            if (exists) {
-                                itemContainer.splice(i, 1);
+                    // home page list continuation ads
+                    if (actions?.constructor === Array && actions.length > 0) {
+                        for (let i = actions.length - 1; i >= 0; i--) {
+
+                            const continuationItems = actions[i]?.["appendContinuationItemsAction"]?.["continuationItems"];
+
+                            if (continuationItems?.constructor === Array && continuationItems.length > 0) {
+                                checkHomePageAds(continuationItems);
                             }
 
                         }
@@ -2580,9 +2614,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             if (richGridPages.indexOf(window.location.pathname) > -1) {
 
                 const richGridRenderer = Util.getSingleObjectByKey(data, "richGridRenderer");
-                const appendContinuationItemsAction = Util.getSingleObjectByKey(data, "appendContinuationItemsAction");
-                const itemContainer = richGridRenderer?.["contents"]
-                    || appendContinuationItemsAction?.["continuationItems"];
+                const itemContainer = richGridRenderer?.["contents"];
 
                 if (itemContainer?.constructor === Array && itemContainer.length > 0) {
 
@@ -2643,9 +2675,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             } else if (Util.isWatchPage()) {
 
                 const secondaryResults = Util.getSingleObjectByKey(data, "secondaryResults");
-                const appendContinuationItemsAction = Util.getSingleObjectByKey(data, "appendContinuationItemsAction");
-                const itemContainer = secondaryResults?.["secondaryResults"]?.["results"]
-                    || appendContinuationItemsAction?.["continuationItems"];
+                const itemContainer = secondaryResults?.["secondaryResults"]?.["results"];
 
                 if (itemContainer?.constructor === Array && itemContainer.length > 0) {
 
@@ -2696,9 +2726,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             } else if (sectionListPages.indexOf(window.location.pathname) > -1) {
 
                 const sectionListRenderer = Util.getSingleObjectByKey(data, "sectionListRenderer");
-                const appendContinuationItemsAction = Util.getSingleObjectByKey(data, "appendContinuationItemsAction");
-                const itemContainer = sectionListRenderer?.["contents"]
-                    || appendContinuationItemsAction?.["continuationItems"];
+                const itemContainer = sectionListRenderer?.["contents"];
 
                 if (itemContainer?.constructor === Array && itemContainer.length > 0) {
 

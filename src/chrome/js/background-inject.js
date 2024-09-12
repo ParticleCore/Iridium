@@ -2717,17 +2717,27 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
                     for (let i = itemContainer.length - 1; i >= 0; i--) {
 
-                        const browseId = itemContainer[i]
-                            ?.["compactVideoRenderer"]
-                            ?.["shortBylineText"]
-                            ?.["runs"]
-                            ?.[0]
-                            ?.["navigationEndpoint"]
-                            ?.["browseEndpoint"]
-                            ?.["browseId"];
+                        const itemSectionRendererContents = itemContainer[i]?.["itemSectionRenderer"]?.["contents"];
 
-                        if (iridiumSettings.blacklist[browseId]) {
-                            itemContainer.splice(i, 1);
+                        if (itemSectionRendererContents?.constructor === Array && itemSectionRendererContents.length > 0) {
+
+                            for (let j = itemSectionRendererContents.length - 1; j >= 0; j--) {
+
+                                const browseId = itemSectionRendererContents[j]
+                                    ?.["compactVideoRenderer"]
+                                    ?.["shortBylineText"]
+                                    ?.["runs"]
+                                    ?.[0]
+                                    ?.["navigationEndpoint"]
+                                    ?.["browseEndpoint"]
+                                    ?.["browseId"];
+
+                                if (iridiumSettings.blacklist[browseId]) {
+                                    itemSectionRendererContents.splice(j, 1);
+                                }
+
+                            }
+
                         }
 
                     }
@@ -2918,6 +2928,37 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
         };
 
+        const onItemSelectedAction = event => {
+
+            const channelData = event.detail?.["args"]?.[0]?.["channelData"];
+            const channelUC = channelData?.["channelUC"];
+
+            if (!channelUC) {
+                return;
+            }
+
+            const channelName = channelData?.["channelName"];
+            const canonicalBaseUrl = channelData?.["canonicalBaseUrl"];
+
+            if (!channelName && !canonicalBaseUrl) {
+                return;
+            }
+
+            if (!iridiumSettings.blacklist[channelUC]) {
+
+                iridiumSettings.blacklist[channelUC] = {
+                    name: channelName,
+                    handle: canonicalBaseUrl
+                };
+
+                Broadcaster.saveSetting(SettingData.blacklist.id);
+
+            }
+
+            FeatureBlacklist.update(document.querySelector("ytd-app")?.["data"]?.["response"]);
+
+        }
+
         const iniBlacklistButton = event => {
 
             if (!iridiumSettings.blacklistEnabled || !iridiumSettings.blacklistButton) {
@@ -2932,107 +2973,85 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                 return;
             }
 
-            const actionName = event.detail?.["actionName"];
+            if (event.detail?.["actionName"] === "yt-menu-service-item-selected-action") {
+                onItemSelectedAction(event)
+            }
 
-            if (actionName === "yt-open-popup-action") {
+        };
 
-                const items = event.detail
-                    ?.["args"]
+        const checkBlacklistButton = data => {
+
+            const hostElement = data?.["hostElement"];
+            const items = data?.["items"];
+
+            if (!hostElement || items?.constructor !== Array) {
+                return;
+            }
+
+            const parent = Array.from(document.querySelectorAll(FeatureBlacklist.targetTags.join(",")))
+                .find(item => item.contains(hostElement));
+
+            if (!parent) {
+
+                for (let i = items.length - 1; i >= 0; i--) {
+                    if (items[i]?.["menuServiceItemRenderer"]?.["id"] === "blockChannel") {
+                        items.splice(i, 1);
+                    }
+                }
+
+            } else if (!items.some(item => item?.["menuServiceItemRenderer"]?.["id"] === "blockChannel")) {
+
+                const renderer = parent?.["data"]?.["content"]?.["videoRenderer"] || parent?.["data"];
+                const channelUC = renderer
+                    ?.["shortBylineText"]
+                    ?.["runs"]
                     ?.[0]
-                    ?.["openPopupAction"]
-                    ?.["popup"]
-                    ?.["menuPopupRenderer"]
-                    ?.["items"];
-
-                if (items?.constructor !== Array) {
-                    return;
-                }
-
-                const parent = Array.from(document.querySelectorAll(FeatureBlacklist.targetTags.join(",")))
-                    .find(item => item.contains(event.target));
-
-                if (!parent) {
-
-                    for (let i = items.length - 1; i >= 0; i--) {
-                        if (items[i]?.["menuServiceItemRenderer"]?.["id"] === "blockChannel") {
-                            items.splice(i, 1);
-                        }
-                    }
-
-                } else {
-
-                    if (!items.some(item => item?.["menuServiceItemRenderer"]?.["id"] === "blockChannel")) {
-
-                        const renderer = parent?.["data"]?.["content"]?.["videoRenderer"] || parent?.["data"];
-                        const channelUC = renderer
-                            ?.["shortBylineText"]
-                            ?.["runs"]
-                            ?.[0]
-                            ?.["navigationEndpoint"]
-                            ?.["browseEndpoint"]
-                            ?.["browseId"];
-
-                        if (!channelUC) {
-                            return;
-                        }
-
-                        const channelName = parent.querySelector("yt-formatted-string.ytd-channel-name")?.title;
-                        const canonicalBaseUrl = Util.getSingleObjectByKey(parent.data, "canonicalBaseUrl");
-
-                        if (!channelName && !canonicalBaseUrl) {
-                            return;
-                        }
-
-                        items.unshift({
-                            menuServiceItemRenderer: {
-                                id: "blockChannel",
-                                channelData: {
-                                    channelUC: channelUC,
-                                    channelName: channelName,
-                                    canonicalBaseUrl: canonicalBaseUrl,
-                                },
-                                hasSeparator: true,
-                                text: {runs: [{text: "Block channel"}]},
-                                icon: {iconType: "CANCEL"}
-                            }
-                        });
-
-                    }
-
-                }
-
-            } else if (actionName === "yt-menu-service-item-selected-action") {
-
-                const channelData = event.detail?.["args"]?.[0]?.["channelData"];
-                const channelUC = channelData?.["channelUC"];
+                    ?.["navigationEndpoint"]
+                    ?.["browseEndpoint"]
+                    ?.["browseId"];
 
                 if (!channelUC) {
                     return;
                 }
 
-                const channelName = channelData?.["channelName"];
-                const canonicalBaseUrl = channelData?.["canonicalBaseUrl"];
+                const channelName = parent.querySelector("yt-formatted-string.ytd-channel-name")?.title;
+                const canonicalBaseUrl = Util.getSingleObjectByKey(parent.data, "canonicalBaseUrl");
 
                 if (!channelName && !canonicalBaseUrl) {
                     return;
                 }
 
-                if (!iridiumSettings.blacklist[channelUC]) {
-
-                    iridiumSettings.blacklist[channelUC] = {
-                        name: channelName,
-                        handle: canonicalBaseUrl
-                    };
-
-                    Broadcaster.saveSetting(SettingData.blacklist.id);
-
-                }
-
-                FeatureBlacklist.update(document.querySelector("ytd-app")?.["data"]?.["response"]);
+                items.unshift({
+                    menuServiceItemRenderer: {
+                        id: "blockChannel",
+                        channelData: {
+                            channelUC: channelUC,
+                            channelName: channelName,
+                            canonicalBaseUrl: canonicalBaseUrl,
+                        },
+                        hasSeparator: true,
+                        text: {runs: [{text: "Block channel"}]},
+                        icon: {iconType: "CANCEL"}
+                    }
+                });
 
             }
 
         };
+
+        const onOverflowTapKey = crypto.randomUUID();
+
+        Object.defineProperty(Object.prototype, "onOverflowTap", {
+            set(data) {
+                this[onOverflowTapKey] = data;
+            },
+            get() {
+                if (iridiumSettings.blacklistEnabled && iridiumSettings.blacklistButton) {
+                    checkBlacklistButton(this);
+                }
+                return this[onOverflowTapKey]?.apply(this, arguments);
+            }
+        });
 
         FeatureUpdater.register(SettingData.blacklistButton.id, update);
 

@@ -42,6 +42,10 @@
             id: "subscriptionsShorts",
             default: true,
         },
+        videoPageShorts: {
+            id: "videoPageShorts",
+            default: true,
+        },
         searchShorts: {
             id: "searchShorts",
             default: true,

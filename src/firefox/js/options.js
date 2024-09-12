@@ -775,6 +775,7 @@ const Util = {
                 break;
             case SettingData.homeShorts.id:
             case SettingData.subscriptionsShorts.id:
+            case SettingData.videoPageShorts.id:
             case SettingData.searchShorts.id:
                 Manager.updateShorts(key, value, userInteraction);
                 break;

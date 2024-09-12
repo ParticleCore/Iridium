@@ -2253,6 +2253,37 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
             }
 
+            // video page sidebar shorts
+            if (!iridiumSettings.videoPageShorts && Util.isWatchPage()) {
+
+                const twoColumnWatchNextResults = Util.getSingleObjectByKey(data, "twoColumnWatchNextResults");
+                const itemContainer = twoColumnWatchNextResults?.["secondaryResults"]?.["secondaryResults"]?.["results"];
+
+                if (itemContainer?.constructor === Array && itemContainer.length > 0) {
+
+                    for (let i = itemContainer.length - 1; i >= 0; i--) {
+
+                        const itemRendererContents = itemContainer[i]?.["itemSectionRenderer"]?.["contents"];
+
+                        if (itemRendererContents?.constructor === Array && itemRendererContents.length > 0) {
+
+                            for (let j = itemRendererContents.length - 1; j >= 0; j--) {
+
+                                const reelShelfRenderer = itemRendererContents[j]?.["reelShelfRenderer"];
+
+                                if (reelShelfRenderer) {
+                                    itemRendererContents.splice(j, 1);
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
 
         };
 

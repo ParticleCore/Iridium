@@ -2324,6 +2324,26 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
     const FeatureVideoCount = (() => {
 
+        const onVideoCountData = (pageData, subCount, profileCounts) => {
+
+            if (!subCount?.["text"]?.["simpleText"]) {
+                return;
+            }
+
+            if (subCount["textChanged_"]) {
+                subCount["textChanged_"]?.({runs: [{text: profileCounts}]});
+            } else if (subCount.textContent === subCount["text"]["simpleText"]) {
+                subCount.textContent = profileCounts;
+            }
+
+            const parent = subCount.parentElement;
+
+            if (parent?.nodeName === "A") {
+                parent.title = subCount.textContent;
+            }
+
+        }
+
         const onEvent = () => {
 
             const subCount = document.getElementById("owner-sub-count");
@@ -2364,28 +2384,25 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                     try {
 
                         const pageData = JSON.parse(matched);
-                        const videosCountText = pageData?.header?.["c4TabbedHeaderRenderer"]?.["videosCountText"]?.["runs"]?.map((entry) => entry.text)?.join("");
+                        const metadataRows = pageData?.header
+                            ?.["pageHeaderRenderer"]
+                            ?.["content"]
+                            ?.["pageHeaderViewModel"]
+                            ?.["metadata"]
+                            ?.["contentMetadataViewModel"]
+                            ?.["metadataRows"];
 
-                        if (videosCountText && subCount?.["text"]?.["simpleText"]) {
+                        if (metadataRows?.constructor === Array && metadataRows.length > 0) {
 
-                            if (subCount["textChanged_"]) {
+                            for (let i = metadataRows.length - 1; i >= 0; i--) {
 
-                                subCount["textChanged_"]?.({
-                                    runs: [
-                                        {text: subCount["text"]["simpleText"]},
-                                        {text: " ‧ "},
-                                        {text: videosCountText},
-                                    ]
-                                });
+                                const metadataParts = metadataRows[i]?.["metadataParts"];
 
-                            } else if (subCount.textContent === subCount["text"]["simpleText"]) {
-                                subCount.textContent = `${subCount["text"]["simpleText"]} ‧ ${videosCountText}`;
-                            }
+                                if (metadataParts?.constructor === Array && metadataParts.length > 0) {
+                                    onVideoCountData(pageData, subCount, metadataParts.map((entry) => entry?.text?.content)?.join(" ‧ "));
+                                    break;
+                                }
 
-                            const parent = subCount.parentElement;
-
-                            if (parent?.nodeName === "A") {
-                                parent.title = subCount.textContent;
                             }
 
                         }

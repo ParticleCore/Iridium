@@ -2580,7 +2580,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                 api?.["unMute"]?.();
             }
 
-            api?.["setVolume"]?.(newVolume);
+            api?.["setVolume"]?.(newVolume, true);
 
             let levelText = document.getElementById("iridium-scroll-volume-level");
 

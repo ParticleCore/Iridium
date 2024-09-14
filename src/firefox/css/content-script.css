@@ -258,3 +258,9 @@ html[dark][always-visible-player][moving] #movie_player::after {
     background-color: #000;
 }
 /* end | always visible */
+
+/* ini | ambient mode disabled */
+html[ambient-mode-disabled] #cinematics-container {
+    display: none;
+}
+/* end | ambient mode disabled */

@@ -2448,6 +2448,32 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
     })();
 
+    const FeatureAmbientMode = (() => {
+
+        const created = api => {
+            api?.["updateCinematicSettings"]?.(iridiumSettings.ambientMode);
+        };
+
+        const update = () => {
+
+            if (iridiumSettings.ambientMode) {
+                document.documentElement.removeAttribute("ambient-mode-disabled");
+            } else {
+                document.documentElement.setAttribute("ambient-mode-disabled", "");
+            }
+
+            document.getElementById("movie_player")?.["updateCinematicSettings"]?.(iridiumSettings.ambientMode);
+
+        };
+
+        FeatureUpdater.register(SettingData.ambientMode.id, update);
+
+        OverrideOnPlayerReady.onReadyListener(created);
+
+        return {};
+
+    })();
+
     const FeatureInfoCards = (() => {
 
         const listener = data => {

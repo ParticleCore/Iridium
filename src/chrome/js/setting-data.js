@@ -87,6 +87,10 @@ const SettingData = {
         id: "videoCount",
         default: true,
     },
+    ambientMode: {
+        id: "ambientMode",
+        default: true,
+    },
     reversePlaylist: {
         id: "reversePlaylist",
         default: true,

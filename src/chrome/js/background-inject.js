@@ -1797,7 +1797,7 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
     const FeatureDefaultQuality = (() => {
 
-        const isValidQuality = quality => [
+        const qualityList = [
             "highres",
             "hd2880",
             "hd2160",
@@ -1809,13 +1809,49 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             "small",
             "tiny",
             "auto",
-        ].indexOf(quality) > -1;
+        ]
+        const isValidQuality = quality => qualityList.indexOf(quality) > -1;
+        const getClosestAvailableQuality = (quality, availableList) => {
+
+            const qualityIndex = qualityList.indexOf(quality);
+
+            if (qualityIndex === -1 || availableList?.length < 1) {
+                return availableList[0] || "auto";
+            }
+
+            const total = qualityList.length - 1;
+            let top = qualityIndex + 1;
+            let bottom = qualityIndex - 1;
+
+            for (let i = 0; i < total; i++) {
+
+                const topIndex = availableList.indexOf(qualityList[top]);
+                const bottomIndex = availableList.indexOf(qualityList[bottom]);
+
+                if (topIndex > -1) {
+                    return availableList[topIndex];
+                }
+
+                if (bottomIndex > -1) {
+                    return availableList[bottomIndex];
+                }
+
+                top += 1;
+                bottom -= 1;
+
+            }
+
+            return availableList[0] || "auto";
+
+        }
         const getAvailableQuality = (quality, availableList) => {
+
             if (availableList.indexOf(quality) > -1) {
                 return quality;
-            } else {
-                return availableList[0];
             }
+
+            return getClosestAvailableQuality(quality, availableList);
+
         }
         const onCreated = api => api.addEventListener("onStateChange", () => {
             if (iridiumSettings.defaultQuality !== "auto" && isValidQuality(iridiumSettings.defaultQuality)) {

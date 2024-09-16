@@ -1121,6 +1121,22 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
     })();
 
+    const FeatureSuperTheaterScrollbar = (() => {
+
+        const update = () => {
+            if (iridiumSettings.superTheaterScrollbar) {
+                document.documentElement.removeAttribute("super-theater-scrollbar");
+            } else {
+                document.documentElement.setAttribute("super-theater-scrollbar", "");
+            }
+        }
+
+        FeatureUpdater.register(SettingData.superTheaterScrollbar.id, update);
+
+        return {};
+
+    })();
+
     const FeatureAlwaysVisible = (() => {
 
         let moviePlayer = null;

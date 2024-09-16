@@ -109,6 +109,12 @@ html[super-theater] #page-manager.ytd-app:has( > [theater]:not([hidden])) ytd-li
 }
 /* end | super theater */
 
+/* ini | super theater scrollbar */
+html[super-theater][super-theater-scrollbar]:has( ytd-watch-flexy[theater]:not([hidden])) {
+    scrollbar-width: none;
+}
+/* end | super theater scrollbar */
+
 /* ini | hide end screen cards */
 .iridium-hide-end-screen-cards #movie_player:hover .ytp-ce-element:not(:hover) {
     opacity: 0;

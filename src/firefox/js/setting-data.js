@@ -103,6 +103,10 @@ const SettingData = {
         id: "superTheater",
         default: true,
     },
+    superTheaterScrollbar: {
+        id: "superTheaterScrollbar",
+        default: true,
+    },
     defaultQuality: {
         id: "defaultQuality",
         default: "auto",

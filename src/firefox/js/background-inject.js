@@ -2208,33 +2208,46 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             if (!iridiumSettings.searchShorts) {
 
                 // search results shorts
-                const itemSectionRenderer = Util.getSingleObjectByKey(data, "itemSectionRenderer");
-                const itemSectionRendererContents = itemSectionRenderer?.["contents"];
+                const sectionListRenderer = Util.getSingleObjectByKey(data, "sectionListRenderer");
+                const sectionListRendererContents = sectionListRenderer?.["contents"];
 
-                if (itemSectionRendererContents) {
-                    for (let i = itemSectionRendererContents.length - 1; i >= 0; i--) {
-                        if (itemSectionRendererContents[i]?.["reelShelfRenderer"] || itemSectionRendererContents[i]?.["videoRenderer"]?.["navigationEndpoint"]?.["reelWatchEndpoint"]) {
-                            itemSectionRendererContents.splice(i, 1);
-                        } else if (itemSectionRendererContents[i]?.["shelfRenderer"]) {
+                if (sectionListRendererContents) {
+                    for (let i = sectionListRendererContents.length - 1; i >= 0; i--) {
 
-                            const shelfRendererItems = itemSectionRendererContents[i]?.["shelfRenderer"]?.["content"]?.["verticalListRenderer"]?.["items"];
+                        const itemSectionRenderer = sectionListRendererContents[i]?.["itemSectionRenderer"];
+                        const itemSectionRendererContents = itemSectionRenderer?.["contents"];
 
-                            if (shelfRendererItems?.constructor === Array && shelfRendererItems.length > 0) {
+                        if (itemSectionRendererContents) {
+                            for (let j = itemSectionRendererContents.length - 1; j >= 0; j--) {
+                                if (itemSectionRendererContents[j]?.["reelShelfRenderer"] || itemSectionRendererContents[j]?.["videoRenderer"]?.["navigationEndpoint"]?.["reelWatchEndpoint"]) {
+                                    itemSectionRendererContents.splice(j, 1);
+                                } else if (itemSectionRendererContents[j]?.["shelfRenderer"]) {
 
-                                for (let j = shelfRendererItems.length - 1; j >= 0; j--) {
-                                    const reelWatchEndpoint = shelfRendererItems[j]?.["videoRenderer"]?.["navigationEndpoint"]?.["reelWatchEndpoint"];
-                                    if (reelWatchEndpoint) {
-                                        shelfRendererItems.splice(j, 1);
+                                    const shelfRendererItems = itemSectionRendererContents[j]?.["shelfRenderer"]?.["content"]?.["verticalListRenderer"]?.["items"];
+
+                                    if (shelfRendererItems?.constructor === Array && shelfRendererItems.length > 0) {
+
+                                        for (let k = shelfRendererItems.length - 1; k >= 0; k--) {
+                                            const reelWatchEndpoint = shelfRendererItems[k]?.["videoRenderer"]?.["navigationEndpoint"]?.["reelWatchEndpoint"];
+                                            if (reelWatchEndpoint) {
+                                                shelfRendererItems.splice(k, 1);
+                                            }
+                                        }
+
+                                        if (shelfRendererItems.length === 0) {
+                                            itemSectionRendererContents.splice(j, 1);
+                                        }
+
                                     }
-                                }
 
-                                if (itemSectionRendererContents.length === 0) {
-                                    itemSectionRendererContents.splice(i, 1);
                                 }
-
                             }
-
                         }
+
+                        if (itemSectionRendererContents.length === 0) {
+                            sectionListRendererContents.splice(i, 1);
+                        }
+
                     }
                 }
 

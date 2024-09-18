@@ -2907,35 +2907,49 @@ function mainScript(extensionId, SettingData, defaultSettings) {
                                     items.splice(j, 1);
                                 }
 
-                                const shelfRendererContent = items[j]?.["shelfRenderer"]?.["content"];
-                                const shelfItems = shelfRendererContent?.["verticalListRenderer"]?.["items"]
-                                    || shelfRendererContent?.["expandedShelfContentsRenderer"]?.["items"];
+                                const shelfRenderer = items[j]?.["shelfRenderer"];
+                                const shelfRendererId = shelfRenderer?.["endpoint"]?.["browseEndpoint"]?.["browseId"];
 
-                                if (shelfItems?.constructor === Array && shelfItems.length > 0) {
+                                if (iridiumSettings.blacklist[shelfRendererId]) {
+                                    items.splice(j, 1);
+                                } else {
 
-                                    for (let k = shelfItems.length - 1; k >= 0; k--) {
+                                    const shelfRendererContent = shelfRenderer?.["content"];
+                                    const shelfItems = shelfRendererContent?.["verticalListRenderer"]?.["items"]
+                                        || shelfRendererContent?.["horizontalListRenderer"]?.["items"]
+                                        || shelfRendererContent?.["expandedShelfContentsRenderer"]?.["items"];
 
-                                        const shelfItemId = shelfItems[k]
-                                            ?.["videoRenderer"]
-                                            ?.["ownerText"]
-                                            ?.["runs"]
-                                            ?.[0]
-                                            ?.["navigationEndpoint"]
-                                            ?.["browseEndpoint"]
-                                            ?.["browseId"];
+                                    if (shelfItems?.constructor === Array && shelfItems.length > 0) {
 
-                                        if (iridiumSettings.blacklist[shelfItemId]) {
-                                            shelfItems.splice(k, 1);
+                                        for (let k = shelfItems.length - 1; k >= 0; k--) {
+
+                                            const shelfItemId = shelfItems[k]
+                                                ?.["videoRenderer"]
+                                                ?.["ownerText"]
+                                                ?.["runs"]
+                                                ?.[0]
+                                                ?.["navigationEndpoint"]
+                                                ?.["browseEndpoint"]
+                                                ?.["browseId"];
+
+                                            if (iridiumSettings.blacklist[shelfItemId]) {
+                                                shelfItems.splice(k, 1);
+                                            }
+
+                                        }
+
+                                        if (shelfItems.length === 0) {
+                                            items.splice(j, 1);
                                         }
 
                                     }
 
-                                    if (shelfItems.length === 0) {
-                                        items.splice(j, 1);
-                                    }
-
                                 }
 
+                            }
+
+                            if (items.length === 0) {
+                                itemContainer.splice(i, 1);
                             }
 
                         }

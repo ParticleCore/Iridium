@@ -2208,16 +2208,17 @@ function mainScript(extensionId, SettingData, defaultSettings) {
             if (!iridiumSettings.searchShorts) {
 
                 // search results shorts
-                const sectionListRenderer = Util.getSingleObjectByKey(data, "sectionListRenderer");
-                const sectionListRendererContents = sectionListRenderer?.["contents"];
+                const listContents = Util.getSingleObjectByKey(data, "sectionListRenderer")?.["contents"]
+                    || Util.getSingleObjectByKey(data, "appendContinuationItemsAction")?.["continuationItems"];
 
-                if (sectionListRendererContents) {
-                    for (let i = sectionListRendererContents.length - 1; i >= 0; i--) {
+                if (listContents?.constructor === Array && listContents.length > 0) {
+                    for (let i = listContents.length - 1; i >= 0; i--) {
 
-                        const itemSectionRenderer = sectionListRendererContents[i]?.["itemSectionRenderer"];
+                        const itemSectionRenderer = listContents[i]?.["itemSectionRenderer"];
                         const itemSectionRendererContents = itemSectionRenderer?.["contents"];
 
-                        if (itemSectionRendererContents) {
+                        if (itemSectionRendererContents?.constructor === Array && itemSectionRendererContents.length > 0) {
+
                             for (let j = itemSectionRendererContents.length - 1; j >= 0; j--) {
                                 if (itemSectionRendererContents[j]?.["reelShelfRenderer"] || itemSectionRendererContents[j]?.["videoRenderer"]?.["navigationEndpoint"]?.["reelWatchEndpoint"]) {
                                     itemSectionRendererContents.splice(j, 1);
@@ -2242,10 +2243,11 @@ function mainScript(extensionId, SettingData, defaultSettings) {
 
                                 }
                             }
-                        }
 
-                        if (itemSectionRendererContents.length === 0) {
-                            sectionListRendererContents.splice(i, 1);
+                            if (itemSectionRendererContents.length === 0) {
+                                listContents.splice(i, 1);
+                            }
+
                         }
 
                     }

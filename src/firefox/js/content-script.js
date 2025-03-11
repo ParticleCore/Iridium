@@ -165,6 +165,6 @@ getSettings().then(settings => channel.postMessage(settings));
 if (!document.getElementById("iridium-inject")) {
     const script = document.createElement("script");
     script.id = "iridium-inject";
-    script.textContent = `(${mainScript}("${browser.runtime.id}",${JSON.stringify(SettingData)},${JSON.stringify(getDefaultSettings())}))`;
+    script.textContent = `(${iridium}("${browser.runtime.id}",${JSON.stringify(SettingData)},${JSON.stringify(getDefaultSettings())}))`;
     document.documentElement.appendChild(script);
 }

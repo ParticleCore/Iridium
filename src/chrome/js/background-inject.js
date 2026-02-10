@@ -1,4 +1,4 @@
-function mainScript(extensionId, SettingData, defaultSettings) {
+function iridium(extensionId, SettingData, defaultSettings) {
 
     const iridiumSettings = defaultSettings;
 

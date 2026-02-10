@@ -1,6 +1,6 @@
 (() => {
 
-    if (Object.hasOwn(window, "mainScript") && mainScript === undefined) {
+    if (Object.hasOwn(window, "iridium") && iridium === undefined) {
         return;
     }
 
@@ -205,8 +205,8 @@
     }), {});
     const defaultSettings = getDefaultSettings();
 
-    mainScript(extensionId, SettingData, defaultSettings);
+    iridium(extensionId, SettingData, defaultSettings);
 
-    mainScript = undefined;
+    iridium = undefined;
 
 })();
